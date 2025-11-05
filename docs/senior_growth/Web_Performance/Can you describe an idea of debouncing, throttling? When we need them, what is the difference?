@@ -1,0 +1,135 @@
+### Can you describe an idea of debouncing / throttling? When we need them, what is the difference?
+
+# Debouncing vs Throttling — Concepts, Use Cases, and Differences
+
+Both **debouncing** and **throttling** are techniques to **control how often a function executes** — especially useful for optimizing **high-frequency events** (like scroll, resize, keypress, or input).
+
+They help improve:
+- **Performance** (fewer function calls)
+- **Responsiveness** (avoid blocking the main thread)
+- **Resource efficiency** (fewer network or DOM updates)
+
+---
+
+## ⚙️ The Problem
+
+Some browser events fire **dozens of times per second**:
+
+| Event | Typical Frequency |
+|--------|------------------|
+| `scroll` | ~60 times per second |
+| `resize` | Continuous on window drag |
+| `input` / `keyup` | Every keystroke |
+| `mousemove` | Every few milliseconds |
+
+Without control, these cause:
+- Unnecessary **DOM updates**  
+- **API overuse** (e.g., calling search endpoint on each keystroke)  
+- **Lag** in UI responsiveness  
+
+---
+
+## 🧠 Debouncing
+
+**Definition:**  
+> Debouncing delays function execution until after a certain period of *inactivity*.
+
+If the event keeps firing, the timer resets — so the function runs **only once**, after the user stops triggering events.
+
+### Example Behavior
+Typing: `h → he → hel → hell → hello`  
+→ Function runs **once**, after user stops typing.
+
+### Example Use Case
+- Autocomplete input field  
+- Window resize handling  
+- Prevent multiple button clicks (e.g., “Submit” button)
+
+### Example Implementation
+
+```js
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+```
+
+// Usage
+const handleInput = debounce(() => console.log("Searching..."), 300);
+input.addEventListener("input", handleInput);
+➡️ Executes handleInput 300ms after the last keystroke.
+
+⚙️ Throttling
+Definition:
+
+Throttling ensures a function executes at most once every specified time interval, no matter how many times it’s triggered.
+
+Unlike debouncing, throttling does not delay indefinitely — it runs periodically.
+
+Example Behavior
+If scroll fires 60 times/second, with a throttle of 200ms,
+→ Function executes roughly 5 times/second.
+
+Example Use Case
+Scroll or resize event handlers
+
+Mouse move or drag tracking
+
+Continuous API polling with controlled frequency
+
+Example Implementation
+```js
+function throttle(fn, limit) {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      fn.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+```
+// Usage
+const handleScroll = throttle(() => console.log("Scroll event!"), 200);
+window.addEventListener("scroll", handleScroll);
+➡️ Executes handleScroll once every 200ms, regardless of event spam.
+
+🔍 Debounce vs Throttle — Comparison
+Feature	Debounce	Throttle
+Execution timing	After a pause in events	At regular intervals during events
+Ideal for	Waiting until user stops an action	Controlling execution rate during continuous activity
+Common use cases	Search input, resize end, button click prevention	Scroll events, drag tracking, API rate limiting
+Frequency of execution	Once after inactivity	Repeated at set intervals
+User experience	Feels “reactive” (fires after stop)	Feels “live” (updates continuously)
+
+🧩 Real-World Examples
+1. Debounced Search Field
+<input type="text" onInput={debounce(fetchResults, 300)} />
+Prevents API call for each keystroke.
+
+Only triggers when typing pauses for 300ms.
+
+2. Throttled Scroll Handler
+window.addEventListener("scroll", throttle(updateScrollPosition, 100));
+Updates position every 100ms, even if scroll fires 60x/sec.
+
+3. Debounce for Resize Events
+window.addEventListener("resize", debounce(recalculateLayout, 500));
+Prevents constant layout recalculation while resizing.
+
+✅ Summary
+Situation	Use	Why
+User stops typing → fetch suggestions	Debounce	Wait for typing to finish
+Continuous scroll or drag tracking	Throttle	Limit update rate
+Prevent multiple button clicks	Debounce	Avoid duplicate actions
+Resize window, reposition elements	Debounce	Only recalc after resizing stops
+
+🧠 Rule of Thumb:
+
+Use debounce when you care about the final event.
+
+Use throttle when you care about steady updates over time.

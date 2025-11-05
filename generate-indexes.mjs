@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const rootDir = path.resolve('./docs/senior_growth'); // 🔧 Adjust this if needed
+const rootDir = path.resolve('./docs/senior_growth');
 
 function getTitleFromFile(filePath) {
   try {
