@@ -1,4 +1,4 @@
-### Can SSR (Server-Side Rendering) Improve First Render?
+# Can SSR (Server-Side Rendering) Improve First Render?
 
 ✅ **Yes — Server-Side Rendering (SSR) can significantly improve the first render time**, especially for large or JavaScript-heavy single-page applications (SPAs).
 
@@ -101,19 +101,27 @@ export default function Home({ data }) {
   );
 }
 ```
+
 HTML is generated on the server (with content).
-
 Browser instantly displays rendered markup.
-
 React hydrates it for interactivity.
 
 ✅ Summary
-Metric	Client Rendering	Server Rendering
-FCP (First Contentful Paint)	⏳ Slow	⚡ Fast
-TTFB (Time to First Byte)	⚡ Fast	⏳ Slightly slower
-TTI (Time to Interactive)	🐢 Slower	⚡ Faster (perceived)
-SEO	Poor	Excellent
-Server Load	Low	High
+- **FCP (First Contentful Paint):**
+  - Client Rendering: ⏳ Slow
+  - Server Rendering: ⚡ Fast
+- **TTFB (Time to First Byte):**
+  - Client Rendering: ⚡ Fast
+  - Server Rendering: ⏳ Slightly slower
+- **TTI (Time to Interactive):**
+  - Client Rendering: 🐢 Slower
+  - Server Rendering: ⚡ Faster (perceived)
+- **SEO:**
+  - Client Rendering: Poor
+  - Server Rendering: Excellent
+- **Server Load:**
+  - Client Rendering: Low
+  - Server Rendering: High
 
 🧭 Final Takeaway
 SSR improves the perceived performance of the first render by giving the user visible content sooner.

@@ -16,8 +16,6 @@ Before ES6, JavaScript used a **prototype-based inheritance model**. This is qui
 Here’s an example of **prototype-based inheritance**:
 
 ```jsx
-javascript
-Copy code
 // Parent Object (Prototype)
 const Animal = {
   speak: function() {
@@ -92,9 +90,7 @@ However, despite the syntactic sugar, ES6 **classes** are still based on **proto
 
 ### **ES6 Class Syntax Example**:
 
-```jsx
-javascript
-Copy code
+```js
 // Parent Class
 class Animal {
   constructor(name) {
@@ -105,8 +101,9 @@ class Animal {
     console.log(`${this.name} says hello`);
   }
 }
-
+```
 // Child Class that extends Animal
+```js
 class Dog extends Animal {
   constructor(name, breed) {
     super(name);  // Call the parent class's constructor
@@ -117,11 +114,11 @@ class Dog extends Animal {
     console.log('Woof!');
   }
 }
-
+```
+```js
 const myDog = new Dog('Buddy', 'Golden Retriever');
 myDog.speak();  // Output: Buddy says hello (inherited from Animal)
 myDog.bark();   // Output: Woof! (defined in Dog)
-
 ```
 
 ### **Key Points of ES6 Classes in JavaScript:**

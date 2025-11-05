@@ -16,16 +16,17 @@ If you mutate an object directly, React can't know something changed without dee
 
 ```js
 state.user.name = "Lili"; // ❌ Mutating
+```
 // React would have to deep-compare every field to detect this change
 🔹 Immutable case (efficient)
 If you return a new object, React can detect a change by shallow comparison:
 
-js
-Copy code
+```js
 setState(prev => ({
   ...prev,
   user: { ...prev.user, name: "Lili" } // ✅ New reference
 }));
+```
 → Now prev.user !== newState.user, so React immediately knows that part of the UI should re-render.
 
 Result:
@@ -46,12 +47,12 @@ Libraries like React.memo() or useMemo() can skip re-renders safely.
 
 Example:
 
-jsx
-Copy code
+```jsx
 const List = React.memo(({ items }) => {
   console.log("Rendered");
   return <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>;
 });
+```
 
 // If `items` changes immutably → new ref → re-render only when needed
 ✅ Performance gain: fewer wasted renders → smoother UI.
@@ -75,11 +76,11 @@ Only the changed parts of an object are copied.
 
 Unchanged branches are reused via references.
 
-js
-Copy code
+```js
 const newState = produce(oldState, draft => {
   draft.user.name = "Lili";
 });
+```
 Even though immutability creates a “new” object, under the hood:
 
 Only the changed nodes are new; everything else reuses the same memory references.

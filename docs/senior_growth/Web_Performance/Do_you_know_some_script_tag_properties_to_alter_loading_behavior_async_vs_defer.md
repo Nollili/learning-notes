@@ -43,13 +43,13 @@ Execution order is not guaranteed.
 Scripts may run as soon as they finish downloading, out of order.
 
 Example:
-html
-Copy code
+```html
 <script src="https://www.googletagmanager.com/gtag/js" async></script>
+```
 🕓 defer Attribute
-html
-Copy code
+```html
 <script src="main.js" defer></script>
+```
 🔹 Behavior:
 Script is downloaded in parallel with HTML parsing.
 
@@ -70,10 +70,10 @@ Scripts that rely on others (executed in order they appear).
 Execution order is preserved even with multiple deferred scripts.
 
 Example:
-html
-Copy code
+```html
 <script src="/vendor.js" defer></script>
 <script src="/main.js" defer></script>
+```
 → vendor.js executes before main.js, after DOM is parsed.
 
 ⚖️ Comparison Table
@@ -84,9 +84,9 @@ defer	✅ (parallel)	After DOM parsed	✅ Ordered	❌ No	Main JS files depending
 type="module"	✅ (parallel)	Deferred by default	✅ Ordered imports	❌ No	ES Modules-based apps
 
 🧠 Extra: type="module"
-html
-Copy code
+```html
 <script type="module" src="app.js"></script>
+```
 Behavior:
 Treated as deferred by default.
 
@@ -112,9 +112,9 @@ referrerpolicy	Controls referrer info sent with script request	<script src="app.
 🚀 Best Practices for Senior Developers
 Always use defer for your main app scripts in modern SPAs:
 
-html
-Copy code
+```html
 <script src="/main.js" defer></script>
+```
 Use async only for independent scripts (analytics, ads).
 
 Never block rendering with large synchronous scripts in <head>.
@@ -123,10 +123,10 @@ Leverage type="module" for modern builds (automatic deferral, cleaner imports).
 
 Combine with preload for better prioritization:
 
-html
-Copy code
+```html
 <link rel="preload" href="/main.js" as="script">
 <script src="/main.js" defer></script>
+```
 ✅ Summary
 Attribute	Key Benefit	Typical Use Case
 async	Fast, non-blocking load — executes ASAP	Analytics, ads, tracking

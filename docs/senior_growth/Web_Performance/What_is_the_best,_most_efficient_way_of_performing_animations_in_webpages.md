@@ -49,6 +49,7 @@ If you animate **`transform` or `opacity`**, the browser skips directly to **com
   transform: scale(1.1);
   opacity: 0.8;
 }
+```
 ⚡ Tip: Use will-change: transform; to tell the browser to prepare GPU layers.
 
 2. requestAnimationFrame() (rAF) for JS-driven animations
@@ -60,13 +61,14 @@ Syncs with browser’s rendering cycle
 
 Prevents dropped frames
 
-js
-Copy code
+```js
 function animate(timestamp) {
   box.style.transform = `translateX(${Math.sin(timestamp / 100) * 50}px)`;
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
+```
+
 🧠 Use rAF over setTimeout() or setInterval() because it’s frame-synced and paused when the tab is inactive.
 
 3. Web Animations API (WAAPI)
@@ -78,12 +80,12 @@ Provides playback control (pause(), reverse(), finish())
 
 Can be combined with Promises and timelines
 
-js
-Copy code
+```js
 element.animate(
   [{ transform: "translateY(0)" }, { transform: "translateY(-20px)" }],
   { duration: 400, iterations: Infinity, direction: "alternate" }
 );
+```
 💡 Ideal when you need dynamic or user-triggered animations, but still want GPU efficiency.
 
 4. Animation Libraries

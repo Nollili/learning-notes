@@ -51,6 +51,7 @@ export function unused() {}
 // app.js
 import { used } from './utils';
 used();
+```
 After tree shaking, only used() remains in the bundle — unused() is removed.
 
 Key requirements:
@@ -73,10 +74,10 @@ Types of code splitting:
 Route-based:
 Load code only for the current route.
 
-js
-Copy code
+```js
 import { lazy, Suspense } from 'react';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+```
 Component-based:
 Split large UI modules or rarely used widgets.
 
@@ -120,14 +121,15 @@ Minification removes unnecessary characters (whitespace, comments, long variable
 
 Example:
 
-js
-Copy code
+```js
 // Before
 function greet(name) {
   console.log("Hello, " + name);
 }
 // After
 function a(b){console.log("Hello,"+b);}
+```
+
 Tools:
 
 Terser (default in most bundlers)
@@ -152,10 +154,10 @@ Use immutable for versioned static assets.
 
 Example:
 
-h
-Copy code
+```js
 Cache-Control: public, max-age=31536000, immutable
 Service Workers (Progressive Web Apps)
+```
 
 Use Workbox or custom caching strategies.
 

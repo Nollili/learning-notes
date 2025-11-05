@@ -1,6 +1,6 @@
-### What if we are facing performance issues because we have lots of requests?
+# What if we are facing performance issues because we have lots of requests?
 
-# Handling Performance Issues Caused by Too Many Requests
+### Handling Performance Issues Caused by Too Many Requests
 
 When an application sends **too many HTTP requests**, it can severely impact **initial load performance**, **runtime responsiveness**, and **server scalability**.  
 Each request adds **network latency**, **connection overhead**, and **blocking of critical rendering resources** — especially during app startup.
@@ -45,21 +45,24 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to analyze:
 - Dynamically import only what’s needed:
   ```js
   const Chart = React.lazy(() => import('./Chart'));
+  ```
 Load non-critical components after first render.
 
 3. Asset Caching
 Add long-term caching via HTTP headers:
 
-h
-Copy code
+```bash
 Cache-Control: max-age=31536000, immutable
-Version assets via file hashing (main.abc123.js).
+```
+Version assets via file hashing (e.g. main.abc123.js).
 
 4. Preload & Prefetch
-<link rel="preload"> for critical assets.
+Use HTML tags safely by escaping them:
 
-<link rel="prefetch"> for next-page assets.
-
+```perl
+&lt;link rel="preload"&gt; for critical assets  
+&lt;link rel="prefetch"&gt; for next-page assets
+```
 5. Serve Through a CDN
 Reduces latency by serving from geographically closer servers.
 
@@ -72,35 +75,39 @@ Combine small API calls into a single endpoint.
 Example: Instead of 10 /user/{id} calls, use /users?ids=1,2,3,….
 
 2. Use GraphQL or BFF (Backend-for-Frontend)
-Fetch exactly what the UI needs, not over-fetch or under-fetch.
+Fetch exactly what the UI needs — not over-fetch or under-fetch.
 
 3. Debounce or Throttle Frequent Requests
 Prevent flooding APIs from user input or scroll events.
 
-js
-Copy code
+```js
 const debouncedFetch = debounce(fetchData, 300);
+```
+
 4. Implement Caching Layers
 Client-side caching with React Query, SWR, or Redux Toolkit Query.
 
 Server-side caching (Redis, CDN edge cache).
 
-Use ETags or Last-Modified headers for conditional requests.
+Use ETag or Last-Modified headers for conditional requests.
 
 5. Lazy Load Non-Critical Data
 Load non-essential data after the main UI is interactive.
 
-js
-Copy code
+```js
 useEffect(() => {
   import('./analytics').then(m => m.init());
 }, []);
+```
 📱 Step 4: Image and Media Optimization
 1. Use Responsive Images
-<img srcset> or Next.js <Image> to serve appropriate sizes per device.
+Use escaped HTML:
+
+&lt;img srcset&gt; or Next.js &lt;Image&gt;
+to serve appropriate sizes per device.
 
 2. Lazy Loading
-loading="lazy" to defer off-screen image requests.
+Use loading="lazy" to defer off-screen image requests.
 
 3. Use Sprites or Icon Fonts
 Combine many small icons into one request (SVG sprite or icon font).
@@ -121,10 +128,10 @@ Unnecessary early requests	Lazy load, prefetch intelligently
 Network overhead	HTTP/2 + CDN + compression
 
 🧠 Rule of Thumb
-Aim for <100 total requests and <2MB total transferred for first meaningful paint on desktop.
+Aim for <100 total requests and <2 MB total transferred for first meaningful paint on desktop.
 Focus on reducing both number and timing of requests, not just size.
 
-Example Summary Workflow
+🧾 Example Summary Workflow
 Measure with Lighthouse or DevTools.
 
 Identify redundant or late-loaded assets.
@@ -135,4 +142,4 @@ Defer/lazy load non-critical modules.
 
 Cache aggressively (client, CDN, server).
 
-Monitor continuously (Lighthouse CI, Sentry Performance, or Datadog RUM).
+Monitor continuously (Lighthouse CI, Sentry Performance, Datadog RUM).

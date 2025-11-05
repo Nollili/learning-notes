@@ -67,33 +67,33 @@ Defer non-critical JS.
 2. Defer JavaScript Execution
 Use:
 
-html
-Copy code
+```html
 <script src="main.js" defer></script>
+```
 → Executes after DOM parsing.
 
 Or:
 
-html
-Copy code
+```html
 <script src="analytics.js" async></script>
+```
 → Downloads in parallel, executes when ready.
 
 3. Optimize CSS Delivery
 Mark non-critical CSS as media="print" or load asynchronously:
 
-html
-Copy code
+```html
 <link rel="stylesheet" href="print.css" media="print" onload="this.media='all'">
+```
 Avoid @import in CSS (creates additional requests).
 
 4. Reduce Render-Blocking Resources
 Use preload, preconnect, or dns-prefetch:
 
-html
-Copy code
+```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preload" href="/main.css" as="style">
+```
 Compress and cache all static assets.
 
 5. Optimize the Critical Rendering Path Length
@@ -106,9 +106,9 @@ Minimize DOM complexity — fewer nodes = faster layout & paint.
 6. Lazy Load Non-Essential Assets
 Lazy load images and components below the fold:
 
-html
-Copy code
+```html
 <img src="hero.jpg" loading="lazy">
+```
 Lazy import non-critical JS components via React.lazy() or dynamic imports.
 
 7. Font Optimization
@@ -122,8 +122,7 @@ Avoid deep nesting and layout thrashing (frequent style recalculations).
 Minimize forced reflows caused by JS modifying layout properties (offsetWidth, clientHeight, etc.).
 
 🧾 Example: Optimized Loading Sequence
-html
-Copy code
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -143,6 +142,7 @@ Copy code
     <section class="hero">Welcome</section>
   </body>
 </html>
+```
 This ensures:
 
 DOM loads immediately.

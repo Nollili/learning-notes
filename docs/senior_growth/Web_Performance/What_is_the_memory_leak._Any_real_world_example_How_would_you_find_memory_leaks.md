@@ -27,7 +27,7 @@ storeData("user", { name: "Lili" });
 🧨 Real-World Examples of Memory Leaks
 1. Forgotten Event Listeners
 If you attach an event listener to an element that gets removed from the DOM but don’t remove the listener, the element stays in memory.
-
+```js
 function addHandler() {
   const button = document.createElement("button");
   button.addEventListener("click", () => console.log("Clicked!"));
@@ -35,16 +35,16 @@ function addHandler() {
   // Later...
   document.body.removeChild(button); // ❌ Leak: listener still references button
 }
+```
 ✅ Fix:
 
-js
-Copy code
+```js
 button.removeEventListener("click", handleClick);
+```
 2. Closures Holding References
 Closures can accidentally capture and hold large objects in memory.
 
-js
-Copy code
+```js
 function setup() {
   const bigData = new Array(1000000).fill("x");
   return function logSomething() {
@@ -52,13 +52,13 @@ function setup() {
   };
 }
 const leaky = setup();
+```
 ✅ Fix: Avoid unnecessary outer references or isolate scopes.
 
 3. Detached DOM Nodes
 If a DOM node is removed but still referenced in JS, it remains in memory.
 
-js
-Copy code
+```js
 let cachedElement;
 function createElement() {
   const el = document.createElement("div");
@@ -66,30 +66,31 @@ function createElement() {
   cachedElement = el; // keeps reference
   document.body.removeChild(el); // ❌ Leak
 }
+```
 ✅ Fix: Set references to null when elements are removed.
 
 4. Timers and Intervals
 Intervals or timeouts that keep references alive.
 
-js
-Copy code
+```js
 setInterval(() => {
   console.log("Leaky interval");
 }, 1000); // ❌ Keeps function + scope alive forever
+```
 ✅ Fix:
 
-js
-Copy code
+```js
 const id = setInterval(...);
 clearInterval(id);
+```
 5. Global Variables
 Accidentally leaking variables into the global scope.
 
-js
-Copy code
+```js
 function leak() {
   leaked = "I’m global now"; // ❌ no 'let' or 'const'
 }
+```
 ✅ Fix: Always use let, const, or var to scope variables properly.
 
 🧰 How to Detect Memory Leaks
@@ -134,7 +135,7 @@ Keeping stale references in closures.
 Not aborting fetch calls when unmounted.
 
 Example:
-
+```js
 useEffect(() => {
   const controller = new AbortController();
   fetch("/api/data", { signal: controller.signal })
@@ -143,6 +144,7 @@ useEffect(() => {
 
   return () => controller.abort(); // ✅ cleanup on unmount
 }, []);
+```
 
 ✅ Prevention Checklist
 Practice	Why

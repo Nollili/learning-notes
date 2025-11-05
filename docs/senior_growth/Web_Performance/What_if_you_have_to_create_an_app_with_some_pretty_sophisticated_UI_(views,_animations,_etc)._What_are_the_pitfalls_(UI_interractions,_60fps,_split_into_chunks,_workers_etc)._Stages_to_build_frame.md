@@ -1,6 +1,6 @@
-### What if you have to create an app with some pretty sophisticated UI (views, animations, etc). What are the pitfalls? (UI interractions, 60fps, split into chunks, workers etc). Stages to build frame?
+# What if you have to create an app with some pretty sophisticated UI (views, animations, etc). What are the pitfalls? (UI interractions, 60fps, split into chunks, workers etc). Stages to build frame?
 
-# Building Sophisticated UI Apps — Performance Pitfalls and Best Practices
+## Building Sophisticated UI Apps — Performance Pitfalls and Best Practices
 
 When creating complex, animation-rich UIs (dashboards, visualizations, 3D interactions, etc.), **performance** becomes a core architectural concern.  
 The main goal: maintain **~60 FPS (frames per second)** and **<16ms per frame** for smooth, responsive UI.
@@ -75,11 +75,11 @@ opacity
 
 Use the will-change CSS hint:
 
-css
-Copy code
+```css
 .element {
   will-change: transform, opacity;
 }
+```
 5. Monolithic Rendering Logic
 Large React components re-render on every state change.
 

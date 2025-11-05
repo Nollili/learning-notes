@@ -47,7 +47,6 @@ An **impure function** is one that:
 
 ```jsx
 javascript
-Copy code
 let counter = 0;
 
 function incrementCounter() {

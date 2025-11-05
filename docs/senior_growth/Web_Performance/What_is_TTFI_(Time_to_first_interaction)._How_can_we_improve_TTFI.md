@@ -65,10 +65,11 @@ const Dashboard = React.lazy(() => import('./Dashboard'));
 2. Defer or Async Non-Critical JavaScript
 Prevent JS from blocking the main thread:
 
-html
-Copy code
+```html
 <script src="analytics.js" async></script>
 <script src="main.js" defer></script>
+```
+
 defer: executes after DOM parsing.
 
 async: loads in parallel, executes immediately after download.
@@ -84,13 +85,13 @@ Profile long tasks with Chrome DevTools → “Performance” tab → look for r
 
 Example:
 
-js
-Copy code
+```js
 // Instead of blocking:
 heavyInitFunction();
 
 // Defer non-critical work
 requestIdleCallback(() => heavyInitFunction());
+```
 4. Optimize Hydration in React Apps
 In SSR/SSG apps, client-side hydration can delay interactivity.
 
@@ -101,11 +102,11 @@ Defer hydration for below-the-fold components.
 5. Prioritize Event Listeners
 Attach event handlers early, even before full JS loads.
 
-js
-Copy code
+```js
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#menu').addEventListener('click', openMenu);
 });
+```
 Or use frameworks that prioritize event binding early (e.g., Preact Signals).
 
 6. Remove or Optimize Third-Party Scripts
@@ -118,11 +119,11 @@ Consider replacing blocking embeds (YouTube, maps) with placeholders or click-to
 7. Use Web Workers for Heavy Computation
 Move CPU-intensive logic off the main thread:
 
-js
-Copy code
+```js
 const worker = new Worker('worker.js');
 worker.postMessage(data);
 worker.onmessage = (e) => render(e.data);
+```
 → Keeps the UI thread free for user input.
 
 8. Optimize Bundle and Parsing
@@ -137,14 +138,13 @@ Analyze bundles with Vite Visualizer or Webpack Bundle Analyzer.
 9. Preload Critical Resources
 Speed up early resource discovery:
 
-html
-Copy code
+```html
 <link rel="preload" href="/main.js" as="script">
+```
 Ensures JS is downloaded early but still executed later (deferred).
 
 🧾 Example: Improved Initial Load Strategy
-html
-Copy code
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -163,6 +163,8 @@ Copy code
     <script src="/analytics.js" async></script>
   </body>
 </html>
+```
+
 This ensures that:
 
 Rendering starts early.
