@@ -1,94 +1,94 @@
-### What is reflow and repaint, what causes those events, why is it important to have them in mind?
+# What is reflow and repaint, what causes those events, why is it important to have them in mind?
 
-### 🧩 What Are Reflow and Repaint in the Browser Rendering Process?
+---
 
-When the browser renders a web page, it follows several key steps:
-1. **Parsing HTML → Building the DOM**
-2. **Parsing CSS → Building the CSSOM**
-3. **Combining both → Render Tree**
-4. **Layout (Reflow)** → Calculating size and position of each element
-5. **Painting (Repaint)** → Filling pixels on the screen
-6. **Compositing** → Combining painted layers into the final image
+## 🧩 What Are Reflow and Repaint?
 
-Reflow and repaint are **performance-critical operations** because they can block the main thread and cause jank or visible lag when over-triggered.
+When a browser renders a web page, it follows these steps:
+1. **Parse HTML → Build DOM**
+2. **Parse CSS → Build CSSOM**
+3. **Create Render Tree**
+4. **Layout (Reflow):** Calculate the size and position of elements
+5. **Paint (Repaint):** Fill in pixels for visual appearance
+6. **Composite:** Combine layers for final display
+
+Reflow and repaint are **important for web performance**. If triggered too often, they can block the main thread and make the UI feel slow or unresponsive.
 
 ---
 
 ## 🔁 Reflow (Layout)
-**Definition:**  
-A *reflow* (also known as a *layout*) happens when the browser must **recalculate positions and dimensions** of elements in the render tree.
+**What is it?**  
+Reflow (layout) is when the browser recalculates the position and size of elements in the document.
 
-**Example causes:**
-- Adding or removing elements from the DOM.
-- Changing element size, margin, padding, border, width, height, font-size.
-- Changing the window size (resizing or orientation change).
-- Reading layout properties that require up-to-date layout info (e.g., `offsetHeight`, `scrollTop`).
-- Changing the DOM structure or applying classes that affect layout.
+**Common triggers:**
+- Adding or removing elements from the DOM
+- Changing element size, margin, padding, border, font-size, etc.
+- Resizing the window or changing device orientation
+- Accessing layout properties like `offsetHeight`, `scrollTop`
+- Modifying the DOM structure or updating classes that affect layout
 
-**Impact:**  
-Reflow is *expensive* because it can cascade through the DOM — if a top-level container changes, all its children may need recalculation.
+**Why care?**  
+Reflow is computationally expensive and can affect many elements, especially if changes are deep in the DOM tree.
 
 ---
 
 ## 🎨 Repaint
-**Definition:**  
-A *repaint* occurs when an element’s **appearance changes** but its **geometry does not** (no layout recalculation needed).
+**What is it?**  
+Repaint redraws the visual appearance of elements without affecting their layout.
 
-**Example causes:**
-- Changing background-color, color, visibility, or text decoration.
-- Updating an element’s outline or shadow.
-- Triggered CSS animations that only affect paint properties.
+**Common triggers:**
+- Changing colors, backgrounds, visibility, or text decoration
+- Updating outline or box-shadow
+- CSS animations that only affect paint properties
 
-**Impact:**  
-Repaints are cheaper than reflows, but still consume CPU/GPU resources.
-
----
-
-## ⚠️ Why It’s Important
-
-Frequent or unnecessary reflows/repaints:
-- Slow down rendering, especially on lower-end devices.
-- Cause **“layout thrashing”** — when JavaScript alternates between DOM reads and writes, forcing repeated reflows.
-- Hurt **FPS** and **input responsiveness**, leading to janky scrolling or sluggish UI.
+**Why care?**  
+Repaints are less expensive than reflows but still consume CPU/GPU resources.
 
 ---
 
-## 🧠 Common Triggers to Avoid
+## ⚠️ Why It Matters
 
-| ❌ Inefficient Action | 💡 Better Practice |
-|----------------------|-------------------|
-| Setting styles one by one (`el.style.width = ...; el.style.height = ...`) | Batch DOM updates (modify class or use `requestAnimationFrame`) |
-| Reading layout (`offsetHeight`) right after writing styles | Separate read and write operations |
-| Manipulating DOM in loops | Use `DocumentFragment` or perform updates off-DOM, then reattach |
-| Forcing layout synchronously in JS | Debounce resize/scroll handlers |
-| Animating layout-affecting properties (width, height, top, left) | Animate **transform** or **opacity** instead (these don’t trigger reflow) |
+Frequent reflows and repaints:
+- Slow down rendering, especially on less powerful devices
+- Cause **layout thrashing** (rapid alternation between DOM reads and writes)
+- Lower frame rates and responsiveness, resulting in a janky user experience
 
 ---
 
-## 🧰 How to Detect Them
+## 🧠 How to Avoid Performance Issues
 
-- **Chrome DevTools → Performance tab**  
-  → Record and check for “Layout” and “Paint” events in the main thread timeline.
-- **Lighthouse / Web Vitals**  
-  → Check metrics like INP (Interaction to Next Paint) and CLS (Cumulative Layout Shift).
-- **Tools:** `getBoundingClientRect()`, `PerformanceObserver` API.
-
----
-
-## 🚀 Summary
-
-| Concept | What It Does | Cost | Triggered By |
-|----------|---------------|------|---------------|
-| **Reflow (Layout)** | Recalculates element geometry | 🔴 High | DOM or CSS changes affecting layout |
-| **Repaint (Paint)** | Redraws visual styles | 🟠 Medium | Visual (non-layout) changes |
-| **Composite** | Combines painted layers | 🟢 Low | GPU compositing operations |
+| ❌ Inefficient | 💡 Better Practice |
+|---------------|-------------------|
+| Setting styles one by one | Batch DOM updates (use classes, `requestAnimationFrame`) |
+| Reading layout after changing styles | Separate read and write operations |
+| Manipulating the DOM inside loops | Use `DocumentFragment` or update off-DOM |
+| Forcing layout in JavaScript | Debounce resize/scroll event handlers |
+| Animating layout properties | Animate `transform` or `opacity` instead |
 
 ---
 
-### ✅ Optimization Mindset
-> Every reflow or repaint costs main thread time.  
-> Minimize layout changes, batch DOM operations, and prefer GPU-friendly CSS properties.
+## 🧰 How to Detect
+
+- **Chrome DevTools → Performance tab:** Record and inspect “Layout” and “Paint” events
+- **Lighthouse / Web Vitals:** Check INP and CLS metrics
+- **APIs:** `getBoundingClientRect()`, `PerformanceObserver`
+
+---
+
+## 🚀 Summary Table
+
+| Concept            | What It Does                | Cost      | Triggered By                       |
+|--------------------|----------------------------|-----------|------------------------------------|
+| **Reflow (Layout)**| Recalculates geometry      | 🔴 High   | DOM/CSS changes affecting layout   |
+| **Repaint (Paint)**| Redraws visual styles      | 🟠 Medium | Visual (non-layout) changes        |
+| **Composite**      | Merges painted layers      | 🟢 Low    | GPU compositing                    |
+
+---
+
+### ✅ Optimization Tips
+> Minimize layout changes, batch DOM updates, and use GPU-friendly CSS properties.
 
 **In short:**  
 > 💡 *Reflow rearranges pixels; repaint recolors them.*  
-> Both slow rendering if abused — understand and minimize them for a smooth, performant UI.
+> Both can slow rendering if overused—optimize for smooth UI.
+

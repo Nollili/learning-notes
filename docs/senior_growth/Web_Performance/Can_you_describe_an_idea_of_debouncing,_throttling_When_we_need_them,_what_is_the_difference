@@ -1,6 +1,6 @@
-### Can you describe an idea of debouncing / throttling? When we need them, what is the difference?
+# Can you describe an idea of debouncing / throttling? When we need them, what is the difference?
 
-# Debouncing vs Throttling — Concepts, Use Cases, and Differences
+## Debouncing vs Throttling — Concepts, Use Cases, and Differences
 
 Both **debouncing** and **throttling** are techniques to **control how often a function executes** — especially useful for optimizing **high-frequency events** (like scroll, resize, keypress, or input).
 

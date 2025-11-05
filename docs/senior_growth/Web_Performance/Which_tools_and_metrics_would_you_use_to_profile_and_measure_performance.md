@@ -1,7 +1,5 @@
 ### Which tools and metrics would you use to profile and measure performance?
 
-### Which tools and metrics would you use to profile and measure performance?
-
 When profiling and measuring performance as a **senior frontend developer**, you should be able to identify, analyze, and improve **rendering efficiency**, **bundle size**, **load time**, and **runtime performance**. Below are the **core tools**, **metrics**, and **best practices** to cover.
 
 ---
@@ -91,3 +89,4 @@ When profiling and measuring performance as a **senior frontend developer**, you
 ✅ **Summary:**
 > Combine *profiling tools* (React DevTools, Chrome Performance), *monitoring platforms* (Sentry, Datadog), and *Web Vitals* to build a quantifiable performance culture.  
 > A senior developer should not only fix issues but also **set up automated performance budgets and observability** for continuous improvement.
+

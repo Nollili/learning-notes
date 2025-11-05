@@ -1,6 +1,6 @@
-### Do you know some ways to measure and improve initial load?
+# Do you know some ways to measure and improve initial load?
 
-# Measuring and Improving Initial Load Performance
+## Measuring and Improving Initial Load Performance
 
 Optimizing **initial load performance** is about reducing the time it takes for users to see and interact with your app after visiting your page for the first time.  
 

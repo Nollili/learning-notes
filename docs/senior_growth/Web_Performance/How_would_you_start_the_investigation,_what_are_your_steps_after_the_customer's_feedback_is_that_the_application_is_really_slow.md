@@ -1,4 +1,4 @@
-### How would you start the investigation, what are your steps after the customer's feedback is that the application is really slow?
+# How would you start the investigation, what are your steps after the customer's feedback is that the application is really slow?
 
 When users report that the app is slow, a senior developer must **approach the issue systematically** to identify whether the problem is **frontend, backend, or network-related**. Below is a structured investigation process and reasoning for each step.
 

@@ -1,6 +1,6 @@
-### Can you describe the process from time you type appliaction url, to it finished state on your screen?
+# Can you describe the process from time you type appliaction url, to it finished state on your screen?
 
-# What Happens From Typing a URL to Fully Loaded Page
+## What Happens From Typing a URL to Fully Loaded Page
 
 Understanding this process shows **how browsers render a web application**, and helps identify **performance bottlenecks** at every stage.
 
