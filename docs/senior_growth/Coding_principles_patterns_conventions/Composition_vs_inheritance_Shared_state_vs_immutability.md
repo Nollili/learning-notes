@@ -1,6 +1,5 @@
 # Composition vs inheritance? Shared state vs immutability?
 
-````markdown
 # 🆚 Composition vs Inheritance & Shared State vs Immutability
 
 These are core concepts in **JavaScript/React** and modern software architecture, often appearing in **senior-level discussions**.
@@ -158,5 +157,3 @@ console.log(newState.count); // 1
 3. **Performance:** With immutability, you can leverage **pure components, memoization, and change detection** efficiently.
 4. **Scalability:** Composition + immutability → easier to maintain large apps, fewer bugs from shared mutable state.
 
-```
-```

@@ -1,6 +1,5 @@
 # Why should we invest in automated testing?
 
-```markdown
 # 💡 Why Invest in Automated Testing
 
 Automated testing is a **critical practice** for modern software development, especially in medium-to-large projects where reliability, speed, and maintainability matter.
@@ -65,4 +64,3 @@ Investing in automated testing:
 
 > 💡 Senior Tip:  
 > Treat tests as **first-class citizens**. They are not overhead—they are insurance and documentation rolled into one.
-```

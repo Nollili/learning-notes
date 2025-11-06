@@ -1,6 +1,5 @@
 # What do you know about Decorator design pattern? Where in React.js it's used?
 
-````markdown
 # 🎨 Decorator Design Pattern in JavaScript and React
 
 ---
@@ -115,6 +114,3 @@ const EnhancedButton = withLogger(MyButton);
 * **In React:** Implemented via **Higher-Order Components (HOCs)** or class decorators (legacy syntax).
 * Promotes **code reuse, separation of concerns, and adherence to SOLID principles**.
 * Hooks can replace many HOC/decorator scenarios in modern React.
-
-```
-```

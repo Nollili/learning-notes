@@ -1,6 +1,5 @@
 # What do you think, who is responsible for write unit tests?
 
-```markdown
 # 🧪 Responsibility for Writing Unit Tests
 
 **Unit tests** are a fundamental part of software quality, and **responsibility should be shared across the team**, but primarily it falls on **developers writing the code**.
@@ -58,4 +57,3 @@
 
 > 💡 Senior Tip:  
 > Unit tests are **part of the definition of done (DoD)** for a feature. No code should be merged without meaningful tests.
-```

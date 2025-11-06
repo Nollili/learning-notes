@@ -1,6 +1,5 @@
 # What is snapshot testing? When should we avoid using it?
 
-````markdown
 # 📸 Snapshot Testing in JavaScript / React (Complete Overview)
 
 **Snapshot testing** captures the **output of a component or function** and compares it against a stored snapshot to detect unexpected changes.
@@ -80,6 +79,3 @@ jest -u
 
 > 💡 Senior Tip:
 > Think of snapshots as **visual contracts** for components — not a replacement for behavior testing.
-
-```
-```

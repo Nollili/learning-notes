@@ -114,12 +114,11 @@ Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Strict
 > **Tip for Frontend Developers:**
 > Even though most headers are configured on the backend, you must **understand their purpose**, test their effect in DevTools, and ensure your app is compatible with strict policies (like CSP or HSTS).
 
-```markdown
 ### 🔒 Web Security Headers — How They Protect Your App (Diagram)
 
 Here’s a simplified diagram showing **how key security headers protect the browser and frontend app**:
 
-```
+```md
 User Browser
 |
 |  HTTPS Request
@@ -132,36 +131,36 @@ Server Response:
 • Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Strict
 |
 v
-Browser Processes Headers:
+```
+**Browser Processes Headers:**
 
-1️⃣ HTTPS & HSTS
+1️⃣ **HTTPS & HSTS**
 
 * Forces encrypted connection
 * Prevents MITM / SSL stripping
 
-2️⃣ CSP
+2️⃣ **CSP**
 
 * Only allows scripts/styles/images from trusted sources
 * Prevents XSS & malicious content injection
 
-3️⃣ X-Frame-Options
+3️⃣ **X-Frame-Options**
 
 * Blocks framing of site
 * Prevents clickjacking
 
-4️⃣ X-Content-Type-Options
+4️⃣ **X-Content-Type-Options**
 
 * Stops MIME sniffing
 * Prevents browser from executing untrusted content
 
-5️⃣ HttpOnly + Secure + SameSite Cookies
+5️⃣ **HttpOnly + Secure + SameSite Cookies**
 
 * HttpOnly: JS cannot access tokens → protects from XSS
 * Secure: sent only over HTTPS
 * SameSite: reduces CSRF attacks
 
-Result: ✅ Browser renders page safely
-```
+**Result:** ✅ Browser renders page safely
 
 **Summary:**  
 - Each header layer protects against a specific threat (XSS, CSRF, clickjacking, MITM, MIME attacks).  

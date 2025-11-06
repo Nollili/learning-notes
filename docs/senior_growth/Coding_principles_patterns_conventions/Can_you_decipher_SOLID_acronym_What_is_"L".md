@@ -1,6 +1,5 @@
 # Can you decipher SOLID acronym? What is "L"?
 
-````markdown
 # 🏗️ SOLID Principles in OOP
 
 **SOLID** is an acronym describing **five principles for writing maintainable, scalable, and robust object-oriented code**.  
@@ -84,5 +83,78 @@ birds.forEach(bird => {
 > When designing class hierarchies, always ask:
 > *“If I replace the parent class with this subclass, will existing code still work correctly?”*
 
-```
-```
+
+
+## 1️⃣ S – Single Responsibility Principle (SRP)
+
+- **Definition:** A class or module should have **only one reason to change**, meaning it should have **only one responsibility**.
+- **Why important:** Reduces complexity, improves maintainability, and makes code easier to test.
+- **Example:**
+```ts
+  // Bad: Handles both data storage and email notification
+  class UserManager {
+    saveUser(user) { /* ... */ }
+    sendWelcomeEmail(user) { /* ... */ }
+  }
+
+  // Good: Separate responsibilities
+  class UserRepository {
+    save(user) { /* ... */ }
+  }
+  class EmailService {
+    sendWelcomeEmail(user) { /* ... */ }
+  }
+````
+
+---
+
+## 2️⃣ O – Open/Closed Principle (OCP)
+
+* **Definition:** Software entities (classes, modules, functions) should be **open for extension but closed for modification**.
+* **Why important:** Allows adding new functionality without changing existing code, reducing risk of bugs.
+* **Example:**
+
+  ```ts
+  interface Shape { area(): number; }
+
+  class Rectangle implements Shape { /* ... */ }
+  class Circle implements Shape { /* ... */ }
+
+  function calculateArea(shapes: Shape[]) {
+    return shapes.reduce((sum, shape) => sum + shape.area(), 0);
+  }
+  ```
+
+---
+
+## 4️⃣ I – Interface Segregation Principle (ISP)
+
+* **Definition:** Clients should not be forced to depend on interfaces they **do not use**. Use multiple, small, specific interfaces instead of one large one.
+* **Why important:** Reduces coupling and improves maintainability.
+* **Example:**
+
+  ```ts
+  interface Printer { print(): void; }
+  interface Scanner { scan(): void; }
+
+  class MultiFunctionDevice implements Printer, Scanner { /* ... */ }
+  ```
+
+---
+
+## 5️⃣ D – Dependency Inversion Principle (DIP)
+
+* **Definition:** High-level modules should **not depend on low-level modules**; both should depend on **abstractions**. Abstractions should not depend on details; **details should depend on abstractions**.
+* **Why important:** Promotes decoupling and easier testing (e.g., via dependency injection).
+* **Example:**
+
+  ```ts
+  interface MessageService { send(msg: string): void; }
+
+  class EmailService implements MessageService { send(msg: string) { /* ... */ } }
+
+  class Notification {
+    constructor(private service: MessageService) {}
+    notify(msg: string) { this.service.send(msg); }
+  }
+  ```

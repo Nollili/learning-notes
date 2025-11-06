@@ -1,6 +1,5 @@
 # TDD - pros and cons(red, green, refactor?)?
 
-````markdown
 # 🧪 Test-Driven Development (TDD) in JavaScript/Frontend
 
 **Test-Driven Development (TDD)** is a development approach where **tests are written before the code**. The workflow follows the **Red → Green → Refactor** cycle.
@@ -12,19 +11,19 @@
 1. **Red** – Write a failing test
    - Define the **expected behavior** before implementing functionality
    - Test should fail initially because the feature doesn’t exist yet
-   ```js
-   test('sum adds two numbers', () => {
-     expect(sum(2, 3)).toBe(5);
-   });
-````
+```js
+test('sum adds two numbers', () => {
+   expect(sum(2, 3)).toBe(5);
+});
+```
 
 * At this point, `sum` is not implemented → test fails
 
 2. **Green** – Implement the minimal code to pass
 
-   ```js
-   function sum(a, b) { return a + b; }
-   ```
+```js
+function sum(a, b) { return a + b; }
+```
 
    * Run test → **test passes**
 
@@ -33,9 +32,9 @@
    * Improve **readability, maintainability, or performance**
    * Ensure **tests still pass** after refactoring
 
-   ```js
-   const sum = (a, b) => a + b; // cleaner syntax
-   ```
+```js
+const sum = (a, b) => a + b; // cleaner syntax
+```
 
 > 🔹 Repeat this cycle for every new feature or function.
 
@@ -94,6 +93,3 @@
 
 > 💡 Senior Tip:
 > Even if TDD is not strictly followed, **thinking in tests first** improves design and leads to **more maintainable, reliable code**.
-
-```
-```

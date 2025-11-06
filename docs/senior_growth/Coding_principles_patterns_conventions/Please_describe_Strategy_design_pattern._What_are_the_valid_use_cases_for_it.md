@@ -1,6 +1,5 @@
 # Please describe Strategy design pattern. What are the valid use cases for it?
 
-````markdown
 # 🎯 Strategy Design Pattern in JavaScript
 
 ---
@@ -139,6 +138,3 @@ function calculate(a, b, type) {
 
 > 💡 Senior Tip:
 > Whenever you see a **switch/if-else block controlling behavior**, consider refactoring it to **Strategy pattern** for cleaner, more maintainable code.
-
-```
-```

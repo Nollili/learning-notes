@@ -1,6 +1,5 @@
 # What kind of creational design patterns do you know?
 
-````markdown
 # 🏗️ Creational Design Patterns in JavaScript
 
 **Creational design patterns** deal with **object creation mechanisms**. They **abstract the instantiation process**, making code more flexible and reusable.
@@ -158,5 +157,3 @@ console.log(clone); // { name: 'Bob', age: 25 }
 4. Prototype pattern is memory-efficient for heavy objects but beware of shared mutable state.
 5. Creational patterns improve **code maintainability, scalability, and flexibility**.
 
-```
-```

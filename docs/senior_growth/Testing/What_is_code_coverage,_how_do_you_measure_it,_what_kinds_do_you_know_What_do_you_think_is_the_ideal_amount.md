@@ -1,6 +1,5 @@
 # What is code coverage, how do you measure it, what kinds do you know? What do you think is the ideal amount?
 
-````markdown
 # 📝 Code Coverage in Software Testing
 
 **Code coverage** is a metric that shows **how much of your code is exercised by automated tests**. It helps identify **untested areas** and improve test quality.
@@ -77,5 +76,3 @@ Generates a report showing coverage % for **lines, functions, branches, statemen
 > 💡 Senior Tip:
 > Always combine **high coverage with well-thought-out test cases**, focusing on **behavior and edge cases** rather than just percentage numbers.
 
-```
-```

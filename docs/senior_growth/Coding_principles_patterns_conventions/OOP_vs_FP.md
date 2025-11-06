@@ -1,4 +1,3 @@
-````markdown
 # OOP vs FP — Object-Oriented vs Functional Programming in JavaScript
 
 JavaScript supports **both paradigms**, and understanding their differences is crucial for writing **clean, maintainable, and scalable code**.
@@ -127,5 +126,3 @@ console.log(adultNames); // ["Alice", "Bob"]
 2. **FP:** Better for **stateless transformations**, predictable code, and **avoiding side effects**.
 3. **In JS:** Use **FP for data manipulation** and **OOP for structural organization**.
 4. **Senior tip:** Understanding both paradigms allows you to **choose the best approach per problem** and write maintainable, performant applications.
-```
-```

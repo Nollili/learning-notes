@@ -1,6 +1,5 @@
 # FIRST principles - how a good unit test looks like?
 
-````markdown
 # 🧪 FIRST Principles for Unit Tests
 
 **Unit tests** verify the behavior of **small, isolated units of code** (functions, methods, or components). Writing **good unit tests** is critical for maintainable, reliable software. The **FIRST principles** provide a guideline.
@@ -91,5 +90,3 @@ test('renders button with label', () => {
 > 💡 Senior Tip:
 > Strive for a **suite of FIRST unit tests** covering all **critical business logic**, then complement with **integration and E2E tests** for full coverage.
 
-```
-```

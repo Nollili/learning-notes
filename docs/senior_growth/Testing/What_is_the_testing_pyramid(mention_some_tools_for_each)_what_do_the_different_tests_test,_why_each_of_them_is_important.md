@@ -1,6 +1,5 @@
 # What is the testing pyramid(mention some tools for each) what do the different tests test, why each of them is important?
 
-```markdown
 # 🧪 The Testing Pyramid in Frontend/Fullstack Development
 
 The **testing pyramid** is a concept describing **how much and what kind of tests** should be written in a software project. It emphasizes **more low-level tests, fewer high-level tests**, balancing **confidence, speed, and cost**.
@@ -9,7 +8,6 @@ The **testing pyramid** is a concept describing **how much and what kind of test
 
 ## 1️⃣ Overview of the Pyramid
 
-```
 
 ```
     ┌─────────────────────┐
@@ -21,7 +19,6 @@ The **testing pyramid** is a concept describing **how much and what kind of test
     └─────────────────────┘
 ```
 
-````
 
 - **Base:** Unit tests (most numerous, fast)
 - **Middle:** Integration tests (moderate number, moderate speed)
@@ -39,12 +36,12 @@ The **testing pyramid** is a concept describing **how much and what kind of test
   - **Frontend:** Jest, Vitest, Mocha
   - **React:** React Testing Library, Enzyme
 - **Example:**  
-  ```js
-  function sum(a, b) { return a + b; }
-  test('sum adds numbers correctly', () => {
-    expect(sum(2, 3)).toBe(5);
-  });
-````
+```js
+function sum(a, b) { return a + b; }
+test('sum adds numbers correctly', () => {
+  expect(sum(2, 3)).toBe(5);
+});
+```
 
 ✅ **Pros:** Fast, easy to maintain, isolated
 ❌ **Cons:** Doesn’t cover interactions with external systems
@@ -109,5 +106,3 @@ The **testing pyramid** is a concept describing **how much and what kind of test
 > 💡 Senior Tip:
 > Start with **unit tests for core logic**, then **integration for critical modules**, and **E2E only for essential user journeys**.
 
-```
-```

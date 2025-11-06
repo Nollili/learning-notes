@@ -1,13 +1,11 @@
 # Please describe what is KISS, DRY, YAGNI
 
-````markdown
 # 📝 Key Software Development Principles: KISS, DRY, YAGNI
 
 These are **foundational principles** for writing **clean, maintainable, and efficient code**, often referenced in **senior-level discussions**.
 
 ---
 
-```markdown
 Here’s a breakdown of the acronyms:
 
 1. **KISS** — **Keep It Simple, Stupid**  
@@ -18,7 +16,6 @@ Here’s a breakdown of the acronyms:
 
 3. **YAGNI** — **You Aren’t Gonna Need It**  
    - Warns against **prematurely building features** that aren’t currently required.  
-```
 
 ---
 
@@ -149,6 +146,3 @@ function fetchData() {
 4. Together, these principles promote **clean, maintainable, and pragmatic software design**.
 
 > 💡 Remember: Following these principles reduces complexity while keeping code flexible for future changes.
-
-```
-```

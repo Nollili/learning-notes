@@ -8,5 +8,6 @@
 - [EngX_Quality](./EngX_Quality/)
 - [General_ES6](./General_ES6/)
 - [React](./React/)
+- [State_management_and_Redux](./State_management_and_Redux/)
 - [Testing](./Testing/)
 - [Web_Performance](./Web_Performance/)

@@ -64,45 +64,20 @@ It ensures secure communication over the web.
 ### 💡 **Best Practice**
 Always use HTTPS — the minor cost of setup and overhead is far outweighed by the security, trust, and compatibility benefits.
 
-```markdown
 ### 🔐 HTTPS Handshake — Simplified Diagram
 
-Below is a simplified overview of how HTTPS establishes a **secure connection** before data exchange.
+### 🔐 HTTPS Handshake — Simplified Table
 
-```
-Client (Browser)                         Server
-|                                      |
-|  1️⃣  ClientHello                    |
-|------------------------------------->|
-|   • Supported TLS versions           |
-|   • Cipher suites                    |
-|   • Random number                    |
-|                                      |
-|  2️⃣  ServerHello                    |
-|   + Certificate (Public Key)         |
-|   + Server random                    |
-|<-------------------------------------|
-|                                      |
-|  3️⃣  Certificate Verification       |
-|   • Browser checks certificate chain |
-|   • Verifies domain + validity       |
-|                                      |
-|  4️⃣  Key Exchange                   |
-|   • Client creates session key       |
-|   • Encrypts with server’s public key|
-|------------------------------------->|
-|                                      |
-|  5️⃣  Server decrypts session key    |
-|   • Using its private key            |
-|   • Now both sides share secret key  |
-|                                      |
-|  6️⃣  Secure Channel Established     |
-|<------------------------------------>|
-|   • Data encrypted symmetrically     |
-|                                      |
-▼                                      ▼
-✅ Encrypted communication begins
-```
+| Step | Client (Browser) Action                       | Server Action                        | Details                                      |
+|------|-----------------------------------------------|--------------------------------------|----------------------------------------------|
+| 1️⃣   | Sends `ClientHello`                          |                                      | Supported TLS versions, cipher suites, random |
+| 2️⃣   |                                               | Sends `ServerHello` + Certificate    | Server random, public key                    |
+| 3️⃣   | Verifies certificate chain, domain, validity |                                      | Certificate verification                     |
+| 4️⃣   | Creates session key, encrypts with public key|                                      | Key exchange                                 |
+| 5️⃣   |                                               | Decrypts session key with private key| Both share secret key                        |
+| 6️⃣   |                                               |                                      | Secure channel established, symmetric encryption |
+
+✅ **Encrypted communication begins**
 
 ---
 
@@ -136,5 +111,4 @@ HTTP Request sent securely
 Server Response (HTML, JS, CSS)
 ↓
 Browser renders page
-```
 ```
