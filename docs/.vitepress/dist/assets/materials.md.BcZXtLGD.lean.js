@@ -1,1 +1,0 @@
-import{_ as a,c as r,o as t,af as o}from"./chunks/framework.C3eVOF8n.js";const h=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"materials.md","filePath":"materials.md"}'),l={name:"materials.md"};function n(i,e,s,c,p,m){return t(),r("div",null,[...e[0]||(e[0]=[o("",36)])])}const b=a(l,[["render",n]]);export{h as __pageData,b as default};
