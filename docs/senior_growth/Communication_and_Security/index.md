@@ -9,7 +9,7 @@
 - [🔐 Important Web Security Headers](./Do_you_remember_any_security_headers.md)
 - [HTTPS — Advantages and Disadvantages](./HTTPS._Could_you_please_describe_advantages_and_disadvantages_of_this_protocol.md)
 - [RESTful API(HTTP) and WebSockets - why and when we need them. Limitations?](./RESTful_API_HTTP__and_WebSockets_-_why_and_when_we_need_them._Limitations.md)
-- [🔐 Authentication and Authorization Mechanisms in Modern Web Apps](./What%20authentication%20authorization%20mechanisms%20do%20you%20use%20on%20your%20project%20Please%20describe%20how%20they%20work.md)
+- [🔐 Authentication and Authorization Mechanisms in Modern Web Apps](./What_authentication_authorization_mechanisms_do_you_use_on_your_project_Please_describe_how_they_work.md)
 - [🌐 CORS and CSRF — Understanding the Difference and Mitigation](./What_is_CORS__Can_proper_CORS_configuration_protect_against_CSRF_attacks__What_other_measures_can_be_taken_to_mitigate_CSRF_attacks.md)
 - [🌐 REST — Representational State Transfer](./What_is_REST.md)
 - [🔄 Polling vs WebSockets — Real-Time Communication](./What_is_polling_and_what_is_websocket_websockets_vs_polling.md)
