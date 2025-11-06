@@ -1,0 +1,1 @@
+import{_ as a,c as s,o as t,af as r}from"./chunks/framework.C3eVOF8n.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"assessment.md","filePath":"assessment.md"}'),n={name:"assessment.md"};function o(i,e,l,f,c,m){return t(),s("div",null,[...e[0]||(e[0]=[r("",4)])])}const _=a(n,[["render",o]]);export{d as __pageData,_ as default};
