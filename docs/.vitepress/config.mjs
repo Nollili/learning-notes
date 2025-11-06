@@ -44,6 +44,12 @@ export default defineConfig({
       ]
     },
     sidebar: {
+      '/': [
+        { text: 'Materials', link: '/materials' },
+        { text: 'Technical Checks', link: '/knowledge_testing' },
+        { text: 'Assessment', link: '/assessment' },
+        { text: 'ASMT materials', link: '/senior_growth' },
+      ],
       '/senior_growth/': generateSidebar('senior_growth', '/senior_growth/')
     }
   }
