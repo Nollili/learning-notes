@@ -39,7 +39,7 @@ const milkCoffee = new MilkDecorator(plainCoffee);
 
 console.log(plainCoffee.cost()); // 5
 console.log(milkCoffee.cost());  // 7
-````
+```
 
 * Original `Coffee` object remains unchanged.
 * `MilkDecorator` **extends behavior dynamically**.
@@ -55,32 +55,11 @@ In React, decorators are commonly used for **enhancing components**, often calle
 * Function that **takes a component and returns an enhanced component**.
 * Allows code reuse, logic separation, and behavior injection.
 
-**Example:**
+**Worked React example:** use the [typed event-only ActionButton adapter](../React/Composition_and_Higher-Order_Components_%28HOCs%29_in.md#typed-prop-and-ref-transparency-in-react19). It forwards props/ref, preserves caller event order, supports preventDefault, handles synchronous telemetry failure and creates the enhanced component type outside rendering.
 
-```js
-// HOC to log props
-function withLogger(WrappedComponent) {
-  return function(props) {
-    console.log('Props:', props);
-    return <WrappedComponent {...props} />;
-  };
-}
+The former withLogger sketch logged all props during render. That could expose credentials/private records and repeat side effects during interrupted/StrictMode rendering. Do not log complete props or make an analytics call just because a component function ran. Record a deliberately allowlisted event in its actual event owner and give asynchronous telemetry a bounded/error-handled policy.
 
-function MyButton(props) {
-  return <button>{props.label}</button>;
-}
-
-const EnhancedButton = withLogger(MyButton);
-
-// Usage
-<EnhancedButton label="Click me" />
-```
-
-**Explanation:**
-
-* `withLogger` is a **decorator**.
-* `MyButton` is the **original component**.
-* `EnhancedButton` is the **decorated component** with additional logging behavior.
+An HOC is a function-to-component adapter that can resemble object decoration; it is not the same as JavaScript/TypeScript @decorator syntax. TypeScript's standard decorators and legacy experimentalDecorators have different contracts. This learning path needs the pattern and typed component adapter, not mastery of both syntax systems.
 
 ---
 
@@ -91,7 +70,7 @@ const EnhancedButton = withLogger(MyButton);
    * Logging, analytics, error handling
 2. **Authorization / Permissions**
 
-   * Wrap components to show/hide based on user roles
+   * Wrap components for visibility/navigation only; the server must authorize every protected operation
 3. **Styling / Theming**
 
    * Add additional styling logic dynamically
@@ -111,6 +90,15 @@ const EnhancedButton = withLogger(MyButton);
 ### ✅ Key Takeaways
 
 * **Decorator Pattern:** Dynamically extend object behavior.
-* **In React:** Implemented via **Higher-Order Components (HOCs)** or class decorators (legacy syntax).
+* **In React:** Component adapters can use HOCs; do not conflate that pattern with @decorator syntax.
 * Promotes **code reuse, separation of concerns, and adherence to SOLID principles**.
 * Hooks can replace many HOC/decorator scenarios in modern React.
+
+
+## Ordering and interface limits
+
+The coffee wrapper preserves cost() but is not automatically every method/identity of Coffee. Nesting decorators composes behavior in order; real wrappers that add fees, discounts or resource handling may not commute. Define disposal, exceptions and exposed interface explicitly instead of promising all wrapped state/statics/ref behavior is transparent.
+
+**Acceptance:** execute plain/wrapped/nested cost examples without mutating the original, explain the maintained interface, and run the shared ActionButton ref/prop/pending/handler-order/telemetry-failure checks. Prove rendering alone does not record an action and private props are not captured. Document missing static/generic/ref contracts rather than assume they are forwarded. Learner integration remains required.
+
+Official references checked 2026-10-22: [React render purity](https://react.dev/reference/rules/components-and-hooks-must-be-pure), [TypeScript decorator contracts](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators).

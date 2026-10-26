@@ -2,7 +2,7 @@
 
 ### **Prototype Chaining in JavaScript**
 
-In JavaScript, all objects are linked to a **prototype**. A prototype is another object that serves as a blueprint or template for the object, containing properties and methods. This allows objects to **inherit properties and methods** from their prototypes, enabling a chain of inheritance.
+An ordinary JavaScript object has an internal prototype link whose value is another object or null. A prototype is another object that serves as a blueprint or template for the object, containing properties and methods. This allows objects to **inherit properties and methods** from their prototypes, enabling a chain of inheritance.
 
 This concept is called **prototype chaining**, and it is fundamental to how inheritance works in JavaScript.
 
@@ -14,7 +14,7 @@ https://www.youtube.com/watch?v=evACeKnMCrU&ab_channel=LinkedInLearning
 
 ### **How Prototype Chaining Works**
 
-When you try to access a property or method on an object, JavaScript first checks if the object has the property. If it doesn't, JavaScript looks up the **prototype** of that object. If the prototype also doesn't have the property, it continues looking at the **prototype of the prototype**, and so on, up the prototype chain. This continues until it reaches `Object.prototype`, which is at the top of the prototype chain.
+When you try to access a property or method on an object, JavaScript first checks if the object has the property. If it doesn't, JavaScript looks up the **prototype** of that object. If the prototype also doesn't have the property, it continues looking at the **prototype of the prototype**, and so on, up the prototype chain. Lookup ends when a property is found or the prototype link becomes null. Many ordinary objects pass through Object.prototype, but Object.create(null) does not.
 
 - If the property is not found at any level in the prototype chain, it returns `undefined`.
 
@@ -53,20 +53,20 @@ This is **prototype chaining** in action: `dog` has a direct reference to `anima
 
 The prototype chain forms a hierarchy that typically looks like this:
 
-```jsx
-dog -> animal -> Object.prototype
+```text
+dog -> animal -> Object.prototype -> null
 ```
 
 - **dog** is the object we created.
 - **animal** is the prototype of `dog`.
-- **Object.prototype** is the top-level prototype that is shared by all objects in JavaScript.
+- Object.prototype participates in many ordinary chains; its own prototype is null. Null-prototype objects are a counterexample to “all objects inherit Object.prototype”.
 
-You can access an object's prototype with the `__proto__` property (or `Object.getPrototypeOf()` method).
+Prefer Object.getPrototypeOf for inspection; __proto__ is a legacy accessor and can be shadowed or absent.
 
 ```jsx
-console.log(dog.__proto__);  // Outputs the `animal` object (prototype of `dog`)
-console.log(dog.__proto__ === animal);  // Output: true
-console.log(animal.__proto__);  // Outputs Object.prototype
+console.log(Object.getPrototypeOf(dog));  // Outputs the `animal` object (prototype of `dog`)
+console.log(Object.getPrototypeOf(dog) === animal);  // Output: true
+console.log(Object.getPrototypeOf(animal));  // Outputs Object.prototype
 ```
 
 ---
@@ -127,7 +127,7 @@ class Dog extends Animal {
 
 const myDog = new Dog("Buddy", "Golden Retriever");
 myDog.speak();  // Output: Buddy says woof!
-console.log(myDog.species);  // Output: Dog (inherited from `Animal` class)
+console.log(myDog.species);  // Dog: own property initialized by super(), not a prototype field.
 console.log(myDog.breed);    // Output: Golden Retriever
 ```
 
@@ -154,7 +154,7 @@ console.log(Dog.prototype.constructor);  // Shows the constructor (Dog function 
 
 - **Prototypes**:
     - Prototypes are the traditional way of defining inheritance in JavaScript.
-    - All objects in JavaScript are linked to a prototype object.
+    - Prototype links can be objects or null; Object.create(null) has no inherited methods.
     - You can define methods directly on an object or its prototype.
     - It is more flexible but requires more manual setup and can be harder to understand for beginners.
 - **Classes**:
@@ -171,7 +171,31 @@ console.log(Dog.prototype.constructor);  // Shows the constructor (Dog function 
 
 ### **Summary**
 
-- **Prototype Chaining**: In JavaScript, objects inherit properties and methods from their prototypes. If a property is not found on an object, JavaScript looks up the prototype chain until it finds the property or reaches `Object.prototype`.
+- **Prototype Chaining**: In JavaScript, objects inherit properties and methods from their prototypes. If a property is not found on an object, JavaScript looks up the prototype chain until it finds the property or reaches a null prototype link.
 - **Classes**: Classes in JavaScript are a syntactic sugar over prototype-based inheritance, providing a more familiar and structured way to define objects, constructors, and inheritance.
 
 JavaScript’s class system makes working with inheritance easier, but under the hood, it still relies on prototypes. Classes are just a more readable and modern way to interact with the same prototype-based mechanism that has always existed in JavaScript.
+## Ownership, shadowing and composition
+
+```js
+const prototype = { tags: [], greet() { return this.name; } };
+const one = Object.create(prototype);
+const two = Object.create(prototype);
+one.name = 'Ada';
+one.tags.push('shared'); // Mutates the inherited array shared by both objects.
+console.log(two.tags); // ['shared']
+one.tags = []; // Creates an own property that shadows the inherited array.
+console.log(Object.hasOwn(one, 'tags'), Object.hasOwn(two, 'tags')); // true false
+const dictionary = Object.create(null);
+console.log(Object.getPrototypeOf(dictionary)); // null
+```
+
+Object.create delegates lookups; it does not copy prototype data. Assignment often creates an own property, but inherited setters/nonwritable descriptors can affect the result; inspect descriptors when debugging. Object.keys enumerates enumerable own string properties, whereas for-in also visits enumerable inherited strings. Use Object.hasOwn for an ownership decision rather than trusting a user-provided hasOwnProperty method.
+
+Prototype pollution arises when attacker-controlled keys alter shared prototype behavior or unsafe merge paths. Parse/allowlist input fields, avoid merging arbitrary objects into shared configuration and use explicit DTO projection; a null-prototype dictionary is one useful tool, not a complete security policy. Avoid changing prototypes of hot objects during normal execution.
+
+For a real domain, prefer composing a notification service from a message formatter and send adapter when channels vary independently. Inheriting Email/SMS/Push variants can couple transport, formatting and retry behavior. A base class is appropriate when subtypes must preserve a stable behavioral contract; test that substituting one keeps preconditions/results/errors compatible.
+
+**Exercise:** reproduce the shared-tag mutation, repair per-instance ownership, then build a notification function with an injected send adapter. Acceptance: no cross-user mutable data; correct own/inherited checks; null-chain termination explained; failed send propagates; changing transport does not require rewriting formatting. Compare composition and inheritance against actual change scenarios rather than assuming either is always superior.
+
+Official references: [ordinary object internals](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html), [Object operations](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-objects). Checked2026-10-20; Node24 baseline.

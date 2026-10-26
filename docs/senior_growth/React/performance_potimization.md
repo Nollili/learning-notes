@@ -25,7 +25,7 @@ const addNewUser = () => {
     { userName: "robin", email: "robin@email.com" },
   ]);
 };
-````
+```
 
 Here, the `users` state is updated immutably using the spread operator.
 
@@ -49,7 +49,7 @@ const UserProfile = React.memo(({ user }) => {
 });
 ```
 
-UserProfile only re-renders if the `user` prop reference changes.
+An unchanged user reference can skip parent-driven work; state/context changes can still render UserProfile. Do not mutate user behind a stable reference.
 
 ### When to Use
 
@@ -66,11 +66,13 @@ UserProfile only re-renders if the `user` prop reference changes.
 ```javascript
 const UserProfile = React.memo(
   ({ user }) => <div>{user.name}</div>,
-  (prevProps, nextProps) => prevProps.user.id === nextProps.user.id
+  (prevProps, nextProps) =>
+    prevProps.user.id === nextProps.user.id &&
+    prevProps.user.name === nextProps.user.name
 );
 ```
 
-This ensures re-render only occurs when `user.id` changes.
+The old id-only comparator hid same-id name edits. This example compares every field the component uses; adding behavior/fields requires updating the contract. Default per-prop comparison with primitive props is often simpler.
 
 ---
 
@@ -121,18 +123,25 @@ Defining functions inside JSX can lead to performance costs:
 ### Optimized Approach
 
 ```javascript
-const handleCommentClick = useCallback((commentId) => {
-  setSelectedCommentId(commentId);
-}, []);
-
-<Comment
-  key={comment.id}
-  comment={comment}
-  onClick={() => handleCommentClick(comment.commentId)} 
-/>
+import { memo, useCallback, useState } from 'react';
+const Comment = memo(function Comment({ comment, selected, onSelect }) {
+  return <li><button aria-pressed={selected} onClick={() => onSelect(comment.id)}>
+    {comment.text}
+  </button></li>;
+});
+export function CommentList({ comments }) {
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const handleCommentClick = useCallback(id => setSelectedCommentId(id), []);
+  return <ul>{comments.map(comment => <Comment
+    key={comment.id}
+    comment={comment}
+    selected={comment.id === selectedCommentId}
+    onSelect={handleCommentClick}
+  />)}</ul>;
+}
 ```
 
-`useCallback` ensures stable function references between renders.
+Pass the cached function itself across the boundary. Passing `onClick={() => handleCommentClick(id)}` from the parent would create a fresh prop every render. The original example did exactly that and did not implement its claimed optimization.
 
 ---
 
@@ -186,7 +195,7 @@ const handleSearch = useMemo(
 **Best Practices:**
 
 * Prefer libraries like **lodash**.
-* Always clean up event listeners in `useEffect`.
+* Always remove event listeners and call cancel on pending debounced/throttled functions in Effect cleanup; include reactive callback dependencies.
 * Memoize throttled/debounced functions with `useMemo`.
 
 ---
@@ -208,7 +217,7 @@ Avoid using array index as a key:
 ### Best Practices
 
 * **Use unique identifiers:** `key={comment.id}`
-* **Generate unique keys if necessary:** `uuidv4()`
+* **Generate IDs when records are created:** persist the ID with data; never call uuid/random during each render.
 * **Static/immutable lists:** Only then using index is acceptable
 
 ---
@@ -224,7 +233,7 @@ const CommentsText = (props) => <div {...props}>{props.text}</div>;
 Better:
 
 ```javascript
-const CommentsText = (props) => <div specificAttr={props.specificAttr}>{props.text}</div>;
+const CommentsText = ({ text, className, id }) => <div id={id} className={className}>{text}</div>;
 ```
 
 ---
@@ -247,7 +256,7 @@ const CommentsText = (props) => <div specificAttr={props.specificAttr}>{props.te
 
 ## Server-side Rendering (SSR)
 
-SSR delivers content faster and improves SEO.
+SSR can improve early content availability and crawlability, depending on server latency, caching and content. It does not guarantee faster interactivity, rankings or security.
 
 ### Client-side Rendering (CSR) Flow:
 
@@ -257,10 +266,33 @@ SSR delivers content faster and improves SEO.
 ### SSR Flow:
 
 1. Browser requests page → server renders HTML + sends to browser
-2. Content is visible immediately
+2. Browser still loads styles/assets, lays out and paints; interactive behavior may require hydration
 
 ### Popular SSR Solutions
 
 * **Next.js**
 * **Gatsby**
 
+
+## Cleanup and optimization acceptance
+
+The throttle/debounce snippets above are fragments, not complete component lifecycles. Create the wrapper once per relevant dependency set, install the listener in an Effect and cancel pending work in cleanup. A complete integration pattern is in [Common Performance Issues](./Common_Performance_Issues_in_React.md). If fetchMoreData is asynchronous, also prevent overlap and stale-response commits; throttling alone does not bound active requests.
+
+```jsx
+import { useEffect, useMemo } from 'react';
+import { debounce } from 'lodash';
+export function SearchInput({ query, onSearch }) {
+  const schedule = useMemo(() => debounce(onSearch, 300), [onSearch]);
+  useEffect(() => {
+    schedule(query);
+    return () => schedule.cancel();
+  }, [query, schedule]);
+  return null; // Companion scheduling component, not an unlabeled visible input.
+}
+```
+
+An inline function is an allocation, not an unintended side effect by itself. It matters when an identity-sensitive child/Effect/subscription observes it and meaningful work follows. useMemo does not stop its component rendering; immutability does not prevent request races. Prop spreading into a DOM element should be an intentional public API with valid attributes, not a blanket ban; filter internal/sensitive props and preserve required ARIA/data/event contracts.
+
+**Exercise:** update a same-id user's name and a selected comment's callback, then unmount a pending search. Acceptance: new name appears; newest callback runs; parent passes the cached function directly; old search timer is cancelled; data key remains stable through reorder. Use an honest repeated Profiler/browser comparison before claiming speed gains; test keyboard/focus behavior as well as render output.
+
+Official references: [memo](https://react.dev/reference/react/memo), [useMemo](https://react.dev/reference/react/useMemo), [useCallback](https://react.dev/reference/react/useCallback), [Effect cleanup](https://react.dev/reference/react/useEffect), [lodash debounce/cancel](https://lodash.com/docs/#debounce). React19 baseline; checked2026-10-20.

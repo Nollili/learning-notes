@@ -13,13 +13,13 @@
 ### **How to Handle Critical Bugs or Failures in Production**
 
 1. **Immediate Response**:
-    - **Diagnose the issue**: Identify the root cause quickly. Look at logs, error reports, and monitor system health to find the failing component.
-    - **Revert if Necessary**: If a deployment is suspected to be the cause of the issue, perform a rollback to the last stable state. Having clear deployment procedures and version control makes this process smoother.
+    - **Triage and mitigate**: Assess user impact, stop harmful work and stabilize service using the runbook. Gather enough evidence to choose a mitigation; exhaustive root-cause analysis follows stabilization.
+    - **Revert if Necessary**: If a deployment is suspected to be the cause of the issue, roll back application traffic only to an artifact compatible with the current data/schema. A destructive migration or external side effect may require a forward fix or controlled recovery, not a blind reverse deployment.
     - **Communicate with stakeholders**: Notify your team, stakeholders, and customers (if necessary) that you're aware of the issue and working to resolve it.
     - **Fix and test**: Once the root cause is found, fix the issue, and test the fix in a staging environment to ensure it resolves the issue without introducing new problems.
 2. **Patch or Hotfix**:
     - **Release a patch or hotfix** to address the issue as quickly as possible. Ensure that the patch has undergone rapid testing before deployment, even if it's minimal (e.g., unit tests, smoke tests).
-    - **Deploy in smaller chunks**: Gradually roll out the patch to a small percentage of users (e.g., blue-green deployment, canary release) to monitor if the issue persists before a full-scale deployment.
+    - **Deploy in smaller chunks**: Use a canary for a measured subset, or blue-green for a switch between prepared environments. They can be combined, but blue-green alone does not imply a small user cohort.
 3. **Post-Incident Analysis (Postmortem)**:
     - After the issue is resolved, conduct a **postmortem** analysis to understand what went wrong and why the bug was not detected earlier.
     - **Root cause analysis (RCA)** helps identify gaps in processes, tools, or testing that allowed the issue to slip through.
@@ -36,7 +36,7 @@
     - **Load Testing**: Verify how the application behaves under heavy usage or traffic, especially for APIs or microservices that may handle high concurrency.
 2. **Continuous Integration / Continuous Deployment (CI/CD)**:
     - Implement CI/CD pipelines that automatically run tests and deploy the application in stages to production.
-    - Use **automated rollback mechanisms** if the build fails at any stage of the deployment process, allowing you to revert back to a stable version with minimal downtime.
+    - A failed predeployment build stops promotion. For a deployed failure, gate any automatic traffic rollback on a known-compatible artifact/schema contract and explicit health criteria.
 3. **Feature Flags**:
     - Use **feature flags** to release new functionality incrementally. This allows you to turn off specific features in production if they cause issues, without needing a full rollback.
     - Feature flags also make it easier to test in production and gradually roll out changes.
@@ -47,8 +47,8 @@
     - Centralize logs from various services and applications using tools like **ELK Stack (Elasticsearch, Logstash, Kibana)**, **Splunk**, or **LogRocket**.
     - Analyze logs to identify patterns or potential issues before they escalate into critical bugs.
 6. **Versioning and Rollback Procedures**:
-    - Always maintain **version control** for both your code and database schema. In case of an issue, you can easily revert to a previous state.
-    - Implement **blue-green deployment** or **canary deployments**, where only a subset of users sees the new version of the application. This allows you to catch issues with a smaller group before a full rollout.
+    - Version code and migration history, but distinguish application rollback from data recovery. Dropped values and already committed side effects are not recreated by version control or a down migration.
+    - A canary exposes a selected subset; blue-green switches traffic between environments. Both still need schema compatibility, monitoring and a tested mitigation plan.
 7. **Chaos Engineering**:
     - Conduct **chaos engineering** experiments (e.g., using tools like **Gremlin** or **Chaos Monkey**) to intentionally introduce failures into your system in a controlled manner. This helps test the resilience of your system and how it handles unexpected situations.
 8. **Clear Documentation and Runbooks**:
@@ -67,3 +67,13 @@
 - A proactive approach to system stability, including chaos engineering and periodic load testing, can significantly reduce the likelihood of production failures.
 
 By adopting these practices, you can not only minimize the risk of failures but also respond quickly when they do occur, ensuring that your applications remain reliable and resilient.
+
+## A concrete incident decision
+
+If a renamed database column breaks an old replica, first stop the unsafe rollout/affected intake and assess whether a compatibility view/additive column or a forward fix restores service safely. Do not drop the new column to make an old binary start when new writes already depend on it. If data was deleted, preserve evidence, isolate ongoing damage and follow a tested restore/PITR plan on a separate target with a declared recovery point and reconciliation. A backup existing is not proof it can restore within the required time or preserve later valid writes.
+
+Assign an incident lead, one operational change owner and a communication cadence. Record timestamps/observations/actions without credentials or personal payloads. Use reversible mitigation where feasible and verify the user-facing invariant, not only process liveness. Postmortem actions need owners and verification criteria; avoid inventing personal incident experience from this template.
+
+**Exercise acceptance:** run a tabletop for a failed application deploy, a schema-incompatible old artifact and an accidental data deletion. For each choose stop/disable/compatible rollback/forward fix/restore, explain data-loss risk, identify the decision owner and define success/abort criteria. Pair it with the [release compatibility lab](../CD_CI/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md) and the existing PostgreSQL recovery material. Retain a timeline, communications draft and corrective-action test. A tabletop is distinct from an actual recovery drill; both learner activities remain required.
+
+Reference checked2026-10-22: [Google SRE canary release safeguards](https://sre.google/workbook/canarying-releases/). Do not run chaos experiments against production merely because a study checklist mentions them; use an owned isolated lab.

@@ -10,24 +10,24 @@ When profiling and measuring performance as a **senior frontend developer**, you
 - **Performance tab** → Record CPU, memory usage, and rendering time (JS execution, layout, paint).
 - **Network tab** → Check resource loading, waterfall view, caching, and blocking requests.
 - **Lighthouse** → Audits performance, accessibility, SEO, and best practices.
-- **Coverage tab** → Shows unused JS and CSS to optimize bundle size.
-- **Memory tab** → Detects memory leaks (heap snapshots, allocation sampling).
+- **Coverage tab** → Shows code unused during the recorded scenario; another route/state may require it.
+- **Memory tab** → Helps investigate retaining paths/bloat/allocation churn; a heap snapshot or rising chart alone does not prove a leak.
 
 ### 2. **React Developer Tools**
-- **Profiler** tab: 
-  - Visualizes component render trees.
+- **Profiler** tab:
+  - Visualizes recorded React commits and component work.
   - Highlights wasted renders or expensive re-renders.
-  - Measures render duration and commit phases.
+  - Profiles React render/commit work; browser layout/paint and network need browser traces. Standard production React builds disable profiling unless a suitable profiling build is selected.
   - Helps detect unnecessary state or prop changes.
 
-### 3. **Web Vitals Extension**
-- Measures **Core Web Vitals** directly (LCP, CLS, FID).
-- Helps monitor user-centric performance on production builds.
+### 3. **Field and local Web Vitals**
+- Current Core Web Vitals are LCP, INP and CLS; FID is historical.
+- Use maintained Web Vitals instrumentation for RUM, CrUX/PageSpeed field data where available, and the current DevTools Performance panel for local diagnosis. Pin versions; do not depend on a discontinued extension.
 
 ### 4. **Performance Monitoring Services**
-- **Google Analytics / GA4** – Track performance metrics across user sessions.
+- A configured RUM collection pipeline can retain appropriate custom metrics; an analytics product name does not mean Core Web Vitals are automatically collected.
 - **Sentry / Datadog / New Relic / LogRocket** – Monitor performance issues, slow transactions, and long tasks in production.
-- **WebPageTest / GTmetrix** – External, real-world performance analysis.
+- **WebPageTest / GTmetrix** – Synthetic lab analysis; distinguish these runs from field/RUM data.
 
 ### 5. **Build and Bundle Analyzers**
 - **Webpack Bundle Analyzer / Vite Bundle Visualizer** → Inspect bundle composition, spot large dependencies.
@@ -38,39 +38,35 @@ When profiling and measuring performance as a **senior frontend developer**, you
 
 ## 📏 Key Metrics to Measure
 
-### 🕒 **Loading Performance**
-| Metric | Description | Good Threshold |
-|--------|--------------|----------------|
-| **TTFB (Time to First Byte)** | Time until server starts responding. | < 200ms |
-| **FCP (First Contentful Paint)** | First text/image rendered. | < 1.8s |
-| **LCP (Largest Contentful Paint)** | When main content appears. | < 2.5s |
-| **Speed Index** | How quickly content is visually displayed. | < 3s |
-| **TTI (Time to Interactive)** | When app becomes fully usable. | < 5s |
+### Outcomes and diagnostics
 
-### ⚡ **Runtime Performance**
-| Metric | Description | Target |
-|--------|--------------|--------|
-| **FPS (Frames per second)** | Animation/render smoothness. | ~60fps |
-| **Main thread blocking time** | Long JavaScript tasks blocking UI. | < 50ms per task |
-| **Re-render count** | Number of unnecessary renders (React Profiler). | As low as possible |
-| **Memory usage** | Avoid leaks and bloating. | Stable trend over time |
+| Metric | Meaning and interpretation |
+|---|---|
+| LCP | Largest eligible content paint; good field p75 at most2.5s |
+| INP | Visit interaction responsiveness; good field p75 at most200ms |
+| CLS | Largest qualifying shift burst; good field p75 at most0.1 |
+| FCP | First eligible content paint; diagnostic distinct from LCP |
+| TTFB | Navigation timing through first response byte; includes network/connection/redirect/server work depending on definition, not only backend compute |
+| TBT | Lab sum of blocking portions beyond50ms in the specified load window; diagnostic, not INP |
+| Speed Index | Lab visual-progress measure under the selected test setup |
+| TTI/FID | Retired Lighthouse metric/historical Core Web Vital respectively; do not treat as current readiness/interaction guarantees |
 
-### 🧩 **Network & Bundle Efficiency**
-| Metric | Description | Target |
-|--------|--------------|--------|
-| **Bundle size (JS/CSS)** | Main + vendor chunk sizes. | < 250KB gzipped for main |
-| **Requests count** | Number of assets loaded. | < 50 critical |
-| **Caching efficiency** | Use of HTTP caching headers, immutable assets. | Optimized per asset type |
+Report field75th-percentile outcomes across mobile/desktop and relevant route cohorts. A lab score is not a field percentile; empty/unsupported measurement is not a pass. CrUX populations/aggregation and custom RUM populations differ. Never average route percentiles to fabricate a population percentile.
 
-### 💡 **User-Centric Web Vitals**
-| Metric | Description | Good Threshold |
-|--------|--------------|----------------|
-| **LCP (Largest Contentful Paint)** | Load performance. | < 2.5s |
-| **FID (First Input Delay)** | Input responsiveness. | < 100ms |
-| **CLS (Cumulative Layout Shift)** | Visual stability. | < 0.1 |
-| **INP (Interaction to Next Paint)** | Replaces FID for real input latency. | < 200ms |
+Frame budget depends on refresh rate and all rendering work, not a universal60fps target. A49ms task is below the long-task definition but can still miss frames. React rerenders are not inherently waste; optimize measured expensive work while preserving correctness. Memory should be evaluated after repeated completed cycles and comparable collection points, not from one rising chart.
 
----
+Bundle/request budgets are **project decisions**, not universal250KB/50-request rules. Define route, transferred/compressed versus uncompressed bytes, cache state, device class and critical-path cost. One large script can be worse than multiple small requests; many requests can still introduce dependency/queue costs. Set an initial measured budget and justify changes against user outcomes.
+
+### Reproducible measurement and regression contract
+
+1. Select a meaningful journey: cold load, warm navigation, filter input, modal open or large-table scroll. Fix data, production artifact and browser/tool versions.
+2. Record viewport, device, refresh rate, network/CPU policy, cache/service-worker state, authentication and third-party variants. Repeat runs; retain raw artifacts and distribution/variance rather than cherry-picking the best score.
+3. Form a hypothesis from waterfall/main-thread/React/paint evidence. Change one causal factor; compare identical scenarios and functional/accessibility behavior.
+4. Add a CI lab budget with tolerances and reviewed baseline updates. Deploy gradually and watch field cohorts, sufficient sample sizes and regressions. Rollback behavior must be explicit.
+
+**Example budget contract:** product-search route, fixed1,000-item fixture, mobile test profile, cold-cache production build; track compressed first-route script bytes and repeated load LCP/TBT plus a scripted interaction trace. Choose numeric limits only after baseline measurement; document owner, tolerance, tool version and exception expiry. This is a template, not a claimed passing result.
+
+**Exercise:** instrument a representative route and produce a baseline/change report with raw traces, scenario/config, at least several repeated lab runs, variance, causal finding and regression guard. Acceptance: correctly distinguish lab versus field, INP versus TBT, transfer size versus parsed bytes, React render versus browser paint; no invented p75 or readiness conclusion. Record missing API support and telemetry privacy constraints. Learner measurement remains required.
 
 ## 🧠 Best Practices for Senior-Level Understanding
 
@@ -78,7 +74,7 @@ When profiling and measuring performance as a **senior frontend developer**, you
 - Always **measure before optimizing** — use baselines.
 - **Automate performance checks** in CI (Lighthouse CI, Web Vitals tracking).
 - Identify **slow components** (React Profiler flame graph, memoization).
-- Use **code splitting**, **lazy loading**, and **suspense** to reduce TTI.
+- Use **code splitting**, **lazy loading**, and **suspense** to reduce relevant loading/client work, then measure.
 - Avoid **re-renders** using `React.memo`, `useMemo`, and `useCallback` strategically.
 - Keep **third-party libraries** minimal and tree-shakable.
 - Optimize **images** (next-gen formats, responsive sizes).
@@ -90,3 +86,12 @@ When profiling and measuring performance as a **senior frontend developer**, you
 > Combine *profiling tools* (React DevTools, Chrome Performance), *monitoring platforms* (Sentry, Datadog), and *Web Vitals* to build a quantifiable performance culture.  
 > A senior developer should not only fix issues but also **set up automated performance budgets and observability** for continuous improvement.
 
+
+Official references checked2026-10-20: [Core Web Vitals](https://web.dev/articles/vitals), [INP](https://web.dev/articles/inp), [DevTools Performance](https://developer.chrome.com/docs/devtools/performance/overview), [Lighthouse TTI retirement](https://developer.chrome.com/blog/lighthouse-10-0). Dashboard values and tool UI evolve; record installed versions.
+
+
+## Apply the metric contract to a causal decision
+
+Use the [investigation ledger](./How_would_you_start_the_investigation,_what_are_your_steps_after_the_customer%27s_feedback_is_that_the_application_is_really_slow.md#an-evidence-ledger-for-one-reported-task) and [read/write layout fixture](./What_is_reflow_and_repaint,_what_causes_those_events,_why_is_it_important_to_have_them_in_mind.md#worked-read-write-ordering-with-explicit-ownership). A renderer label, one render count, unused-code percentage or bundle-size change cannot substitute for a task outcome and causal trace. The same request may look fast in a warm lab run while field input waits behind unrelated main-thread work.
+
+**Acceptance:** select the relevant outcome/diagnostic and explain its scope, units and missing-data behavior; retain baseline/change traces and the artifact/environment/cohort contract above. Show how the same code-level read/write ordering could have negligible or material impact depending on dirty state, DOM complexity and device. Native/field measurements remain explicitly unperformed until collected. Do not declare a renderer/library universally faster from these study examples.

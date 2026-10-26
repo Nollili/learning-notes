@@ -36,7 +36,7 @@ const Greeting = ({ name }) => <h1>Hello, {name}!</h1>;
 
 A functional component becomes **impure** if:
 
-1. It performs side effects (e.g., making an API call, modifying state, logging to the console).
+1. It performs externally observable work during render (for example a request or mutation of an external object). Event-handler updates and Effect synchronization are outside render.
 2. It produces different outputs for the same inputs, due to reliance on external factors like global variables or untracked state.
 
 ### **Example of an Impure Functional Component**:
@@ -69,10 +69,10 @@ const Counter = () => {
 
 In React, **pure components** are those that:
 
-- Render the same output given the same props and state.
+- Render the same output given the same props, state and context snapshots.
 - Do not rely on external variables or cause unintended side effects.
 
-React provides tools like **React.memo** to optimize functional components and treat them as "pure" from a performance standpoint.
+`React.memo` may skip work when props compare equal; it cannot make impure render logic correct. Local state/context changes can still render a memoized component.
 
 ### **Using React.memo**:
 
@@ -80,31 +80,53 @@ React provides tools like **React.memo** to optimize functional components and t
 const PureGreeting = React.memo(({ name }) => <h1>Hello, {name}!</h1>);
 ```
 
-- `React.memo` prevents unnecessary re-renders if the `name` prop hasn't changed.
+- `React.memo` can reuse the render result for equal props; it is a performance optimization, not a guarantee that the function is never invoked.
 
 ---
 
 ### **Side Effects with Hooks**
 
-Functional components often perform side effects using hooks like `useEffect`, `useState`, or `useReducer`. These components are not strictly pure, but the side effects are managed in a controlled way, which aligns with React's principles.
+A component may use state, a pure reducer and an Effect while keeping render pure. Rendering registers Effect synchronization; the Effect body runs outside render. Put user-triggered writes in event handlers, pure derived calculations in render, and external synchronization in Effects.
 
 ### **Example**:
 
 ```jsx
-const FetchData = ({ userId }) => {
-  const [data, setData] = useState(null);
+import { useEffect, useState } from 'react';
 
+export function FetchData({ userId }) {
+  const [result, setResult] = useState({ id: null, status: 'loading' });
   useEffect(() => {
-    fetch(`/api/user/${userId}`)
-      .then((response) => response.json())
-      .then((data) => setData(data));
-  }, [userId]); // Side effect (API call) managed using useEffect.
-
-  return data ? <div>{data.name}</div> : <div>Loading...</div>;
-};
+    const controller = new AbortController();
+    let current = true;
+    setResult({ id: userId, status: 'loading' });
+    async function load() {
+      try {
+        const response = await fetch(`/api/user/${encodeURIComponent(userId)}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          await response.body?.cancel();
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        if (typeof data !== 'object' || data === null || typeof data.name !== 'string') {
+          throw new Error('Invalid user response');
+        }
+        if (current) setResult({ id: userId, status: 'success', name: data.name });
+      } catch (error) {
+        if (current) setResult({ id: userId, status: 'error', message: 'User unavailable' });
+      }
+    }
+    void load(); // load handles its rejection; cleanup owns cancellation.
+    return () => { current = false; controller.abort(); };
+  }, [userId]);
+  if (result.id !== userId || result.status === 'loading') return <p role="status">Loading user…</p>;
+  if (result.status === 'error') return <p role="alert">{result.message}</p>;
+  return <p>{result.name}</p>;
+}
 ```
 
-- This is not a pure function because of the side effect (`fetch`), but it adheres to React's functional paradigm.
+- The request is owned by an Effect; render remains a calculation from snapshots. Cleanup both aborts cooperative work and invalidates its result. The result identity guard prevents an old user from flashing while the next Effect starts. A query library can own caching, retries and request deduplication for a larger application.
 
 ---
 
@@ -118,4 +140,13 @@ const FetchData = ({ userId }) => {
 
 ### **Conclusion**
 
-Not all functional components are pure, and they don’t need to be. While React encourages writing predictable, declarative components, it's common and acceptable to introduce side effects (e.g., fetching data or updating state) using hooks. Strive to make components as pure as possible, while handling side effects in a controlled and predictable manner.
+Function syntax alone does not establish purity. React requires render logic to be idempotent and free of nonlocal side effects; updates and synchronization belong in event handlers/Effects with explicit ownership. Memoization is an optimization applied after correctness.
+## Why replay-safe render matters (React19 baseline)
+
+React may restart or abandon render work; development Strict Mode intentionally probes purity and Effect cleanup. A render-time increment, random ID, Date.now value or push into a prop array can change behavior when render is repeated. Generate stable data IDs when data is created; use React's useId for accessibility relationships, not list keys. Local mutation of a fresh array that does not escape until returned can be pure; mutating an existing prop cannot.
+
+An Effect fetching data can run a setup/cleanup/setup sequence in development. The first request must be aborted/ignored, and subscription cleanup must exactly undo setup. The example's cancellation is not an error announcement after unmount. Add a product-specific retry button/server error distinction for production UX rather than retrying indefinitely.
+
+**Exercise:** compare a render-time global counter with state updated by an event handler. Then rapidly switch FetchData user IDs using delayed responses. Acceptance: render has no external mutation; no stale user's name is displayed; HTTP/invalid JSON/invalid shape failures have UI; cleanup prevents late state use; Strict Mode replay leaves no duplicate subscription. A network call during development replay is not by itself evidence of a production double-write.
+
+Official references: [React render purity](https://react.dev/reference/rules/components-and-hooks-must-be-pure), [Effect synchronization](https://react.dev/learn/synchronizing-with-effects), [avoiding unnecessary Effects](https://react.dev/learn/you-might-not-need-an-effect). Checked2026-10-20. Browser interaction tests remain required learner evidence.

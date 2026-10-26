@@ -29,7 +29,7 @@ type GreetingProps = {
 const Greeting: React.FC<GreetingProps> = ({ name, age }) => (
   <div>
     <h1>Hello, {name}!</h1>
-    {age && <p>Age: {age}</p>}
+    {age !== undefined && <p>Age: {age}</p>}
   </div>
 );
 ```
@@ -72,7 +72,7 @@ const InputFocus: React.FC = () => {
 
   return (
     <div>
-      <input ref={inputRef} type="text" />
+      <label>Name <input ref={inputRef} type="text" /></label>
       <button onClick={focusInput}>Focus Input</button>
     </div>
   );
@@ -125,7 +125,7 @@ const InputChangeHandler: React.FC = () => {
     console.log(event.target.value);
   };
 
-  return <input type="text" onChange={handleChange} />;
+  return <label>Name <input type="text" onChange={handleChange} /></label>;
 };
 ```
 
@@ -160,7 +160,7 @@ const InputChangeHandler: React.FC = () => {
     ```
     
 2. **Use Default Props or Initializers**:
-Combine TypeScript’s optional types with default props for better usability.
+Use default parameters for function components (React19 no longer applies function defaultProps). Explicit null does not trigger a default.
     
     **Example**:
     
@@ -185,3 +185,111 @@ Add `"strict": true` in `tsconfig.json` to catch more type errors.
 ### **Conclusion**
 
 React and TypeScript work together to make applications more robust, maintainable, and developer-friendly. While it introduces some complexity, the benefits far outweigh the costs in most projects. If you're considering adopting TypeScript with React, start small and incrementally type your components and states.
+## Generic controlled contracts (React19 / TypeScript5.9+)
+
+An optional numeric prop is not a boolean condition: age0 is a real value. `age && ...` produces the number0 rather than the intended paragraph. Distinguish undefined/null/empty/zero by the domain instead of truthiness.
+
+```tsx
+import { useId } from 'react';
+import type { ReactNode } from 'react';
+type PickerProps<T> = {
+  label: string;
+  items: readonly T[];
+  getKey: (item: T) => string;
+  renderLabel: (item: T) => ReactNode;
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+};
+export function Picker<T>({ label, items, getKey, renderLabel, selectedId, onSelect }: PickerProps<T>) {
+  const groupName = useId();
+  const keys = items.map(getKey);
+  if (new Set(keys).size !== keys.length) throw new Error('Picker keys must be unique');
+  const missing = selectedId !== null && !keys.includes(selectedId);
+  return <fieldset><legend>{label}</legend>
+    {items.map(item => {
+      const id = getKey(item);
+      return <label key={id}>
+        <input type="radio" name={groupName} value={id} checked={selectedId === id} onChange={() => onSelect(id)} />
+        {renderLabel(item)}
+      </label>;
+    })}
+    {missing && <p role="status">The selected option is no longer available. Choose another.</p>}
+  </fieldset>;
+}
+```
+
+The single-selection example uses native radios and a unique group name per instance. Selecting a radio does not toggle it off; provide a separate Clear action when the domain permits deselection. The generic preserves each item's shape through callbacks. selectedId is always controlled (null means no selection), not sometimes undefined. Keys must be stable/unique. For a reusable picker, declare whether disabled items, empty lists and changed/deleted selected records are supported. Typechecking cannot prove key uniqueness or data freshness.
+
+```tsx
+import type { ReactNode } from 'react';
+type ActionProps = { children: ReactNode } & (
+  | { as: 'link'; href: string; onClick?: never }
+  | { as: 'button'; onClick: () => void; href?: never }
+);
+export function Action(props: ActionProps) {
+  return props.as === 'link'
+    ? <a href={props.href}>{props.children}</a>
+    : <button type="button" onClick={props.onClick}>{props.children}</button>;
+}
+```
+
+A bounded discriminated API prevents invalid button/link combinations while keeping native semantics; a fully arbitrary as-prop API is more complex to type/ref-forward/test. Choose that complexity only when consumers need it. For loading/error/success props use a discriminated union, as in the TypeScript never lesson, rather than contradictory optional fields.
+
+## Narrow imperative ref facade
+
+```tsx
+import { useImperativeHandle, useRef } from 'react';
+import type { Ref } from 'react';
+type FocusHandle = { focus: () => void };
+export function FocusInput({ ref }: { ref?: Ref<FocusHandle> }) {
+  const input = useRef<HTMLInputElement>(null);
+  useImperativeHandle(ref, () => ({ focus: () => input.current?.focus() }), []);
+  return <label>Display name <input ref={input} /></label>;
+}
+```
+
+React19 permits ref as a prop; React18 uses forwardRef for this pattern. Expose the smallest imperative interface instead of letting parents mutate arbitrary DOM internals. Rendering cannot assume a ref already points to a mounted element. Event currentTarget is the typed element handling the event; target may be a descendant in bubbling interactions.
+
+**Exercise:** finish the radio-group Picker API and use Action/FocusInput in a form. Acceptance: age0 renders the paragraph; invalid Action combinations fail with @ts-expect-error; one controlled selection per uniquely named group; labels/keyboard behavior work; deleted selection has an explicit policy; ref.focus works only after mount and does not expose extra methods. Parse network data before passing typed items. Retain typecheck and browser behavior evidence separately.
+
+Official references: [React with TypeScript](https://react.dev/learn/typescript), [useImperativeHandle](https://react.dev/reference/react/useImperativeHandle), [React19 ref prop](https://react.dev/blog/2024/12/05/react-19#ref-as-a-prop). Checked2026-10-20; examples target React19/TS5.9+, not React18 unchanged.
+
+
+## Exhaustive UI states and explicit ownership
+
+Separate initial, pending, failed and ready data with a discriminant. Contradictory flags such as loading:true plus an unrelated error/data pair make rendering policy unclear. This simple contract drops old data while loading; a stale-while-refresh design needs a separate explicit state with its own data/error rules. Keep safe user-facing error codes here, and diagnostic details in the appropriate protected telemetry boundary.
+
+```tsx
+// load-view.tsx
+import type { ReactNode } from 'react';
+export type LoadState<T> =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'failed'; code: 'unavailable' | 'forbidden' }
+  | { kind: 'ready'; data: T };
+function unreachable(value: never): never {
+  throw new Error('Unhandled UI state');
+}
+export function LoadView<T>({ state, renderData }: {
+  state: LoadState<T>; renderData: (data: T) => ReactNode;
+}) {
+  switch (state.kind) {
+    case 'idle': return <p>Choose a record.</p>;
+    case 'loading': return <p role="status">Loading…</p>;
+    case 'failed': return <p role="alert">{state.code === 'forbidden'
+      ? 'You do not have access.' : 'Unable to load. Try again later.'}</p>;
+    case 'ready': return <section aria-label="Result">{renderData(state.data)}</section>;
+    default: return unreachable(state);
+  }
+}
+```
+
+The never check makes a newly added variant a compiler error until rendering handles it. It does not validate unknown JSON or stop stale responses: parse external data and give the request owner cancellation/request-identity rules. A successful empty collection is ready with an empty array, not a transport failure. Design empty-state wording in renderData for that domain.
+
+Picker remains controlled: the parent owns selectedId and updates it after onSelect. It accepts no defaultValue or internal selection fallback. Duplicate keys are a programmer contract error; removing the selected item shows a status and leaves all radios unchecked until the parent chooses/clears an ID. Reordering preserves identity. Stable IDs, pure getKey and accessible text labels remain caller obligations. Separate instances get separate native radio names through useId. If disabled items become necessary, add that contract explicitly and test focus/selection policy.
+
+For Action, the bounded link/button union is deliberate polymorphism: a button requires its action; a link requires href; mixed props fail. Arbitrary as types/ref forwarding require more complex native-attribute and ref contracts. Do not cast a universal component to any to advertise unsupported combinations. Native anchor navigation and keyboard behavior still require browser evidence.
+
+**Acceptance drill:** typecheck Picker inference with an object item and reject a nonexistent callback field; reject missing/contradictory Action props and a ready state without data. Add a new LoadState variant and observe the exhaustive switch diagnostic. In RTL, rerender a controlled Picker after a click, verify parent-owned selection, reorder/remove the chosen record, and render two instances with different group names. Test all LoadView states, including empty ready data, and show a new state cannot accidentally display stale success. React19.3.0/@types/react19 and TypeScript5.9.3 are the validated baseline. Simulated-DOM checks do not establish actual browser focus, screen-reader output or learner completion.
+
+Official references checked2026-10-22: [React TypeScript unions and hooks](https://react.dev/learn/typescript), [controlled inputs](https://react.dev/reference/react-dom/components/input), [TypeScript narrowing/exhaustiveness](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking).

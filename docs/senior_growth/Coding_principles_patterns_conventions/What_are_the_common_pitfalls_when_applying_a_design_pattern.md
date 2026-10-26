@@ -40,7 +40,15 @@ Design patterns are powerful tools, but **misusing them can introduce complexity
 - Excessive nesting of HOCs can lead to:
   - “Wrapper hell”
   - Hard-to-debug component trees
-- Example: `<withAuth(withLogger(withTheme(MyComponent))) />`
+- Invalid JSX illustration replaced with a valid two-step composition (the HOCs and component must be defined/imported):
+
+```jsx
+const Enhanced = withAuth(withLogger(withTheme(MyComponent)));
+// Inside a parent render:
+<Enhanced />;
+```
+
+Create the enhanced component at module scope when appropriate; recreating a component type during each render can reset subtree state.
 
 **Tip:**  
 > Use **hooks** and composition to simplify behavior reuse instead of deep HOC chains.
@@ -119,4 +127,10 @@ Design patterns are powerful tools, but **misusing them can introduce complexity
 
 > 💡 Senior Tip:  
 > A true sign of mastery is knowing **when NOT to use a pattern**.
-```
+
+
+## Refactor from a concrete change
+
+Use [shipping-rule Strategy](./Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md#worked-change-inject-a-shipping-quote-rule) when algorithms change independently, [creation/ownership checks](./What_kind_of_creational_design_patterns_do_you_know.md#ownership-and-creation-checks) when construction leaks mutable state, and [DRY's domain-rule distinction](./Please_describe_what_is_KISS,_DRY,_YAGNI.md#decide-what-must-change-together) to avoid extracting coincidental syntax. A pattern is justified by clearer ownership or a required variation point, not by the count of patterns in a module.
+
+**Exercise acceptance:** state a failing behavior or actual change request, capture tests, compare a direct solution with one pattern, and retain the smaller design that meets the requirement. Explain error/cleanup behavior and one rejected alternative. For an HOC, pass a typed prop through both wrappers and check rendering/state retention; the syntax sketch above is not a complete authentication implementation. Learner practice remains required. [Official React element guidance](https://react.dev/reference/react/createElement) explains valid component types and capitalized JSX names.

@@ -2,7 +2,7 @@
 
 ### 1. **What is Asynchronousity?**
 
-- In JavaScript, asynchronousity allows you to execute tasks without blocking the main thread.
+- In JavaScript, asynchronous APIs let your program continue while supported operations wait. Their JavaScript callbacks and CPU work can still block the event-loop thread.
 - This means your code can do multiple things at the same time, like fetching data from the internet or waiting for a timer, while still being able to handle other tasks.
 
 Think of it like a restaurant:
@@ -14,7 +14,7 @@ Think of it like a restaurant:
 
 ### 2. **The Event Loop: The Heart of Async in JS**
 
-JavaScript has a single-threaded runtime, meaning it can only do one thing at a time. So how does it handle asynchronous tasks? Enter the **event loop**.
+An ordinary JavaScript agent executes its jobs serially; the host and other workers can do other work concurrently. So how does it handle asynchronous tasks? Enter the **event loop**.
 
 ### Here’s how it works:
 
@@ -29,7 +29,7 @@ JavaScript has a single-threaded runtime, meaning it can only do one thing at a 
     - But it doesn’t run immediately—JavaScript first finishes everything in the **call stack**.
 4. **Event Loop**:
     - The event loop keeps checking: “Is the call stack empty?”
-    - If yes, it picks the first task from the queue and puts it on the stack to be executed.
+    - It selects a runnable task according to host rules. Browser event loops have multiple task sources and microtask checkpoints; there is not one universal FIFO for every kind of callback.
 
 ---
 
@@ -52,11 +52,11 @@ console.log("End");
 1. `"Start"` is logged immediately (call stack).
 2. `setTimeout` is handed to the Web API to wait for 2 seconds.
 3. `"End"` is logged (call stack is empty).
-4. After 2 seconds, the callback from `setTimeout` (`console.log("Async Task Finished!")`) moves to the queue and then to the stack, where it executes.
+4. After the delay becomes eligible, the callback can run when scheduling permits. Busy JavaScript, throttling and other work can delay it beyond2seconds; it is not an exact appointment.
 
 **Output:**
 
-```sql
+```text
 Start
 End
 Async Task Finished!
@@ -68,3 +68,24 @@ Async Task Finished!
 
 - **Responsiveness**: The page stays responsive even if you’re waiting for data.
 - **Scalability**: Helps you handle many tasks (like user interactions and network requests) efficiently.
+
+## One small ordering and cancellation fixture
+
+```js
+function asyncLesson(log) {
+  log('start');
+  let cancelled = false;
+  const timer = setTimeout(() => { if (!cancelled) log('timer'); }, 0);
+  Promise.resolve().then(() => { if (!cancelled) log('promise'); });
+  log('end');
+  return () => { cancelled = true; clearTimeout(timer); };
+}
+```
+
+Without cancellation this fixture records start,end,promise,timer in the browser and tested Node24 runtime. A settled Promise schedules its reaction as a microtask; it does not run the reaction inline. Browser microtasks drain at checkpoints before the next task/render opportunity, and microtasks can enqueue more microtasks. An unbounded chain can delay both timers and rendering. Rendering is an opportunity subject to host/display rules, not guaranteed after every task. Node has its own phases/nextTick behavior, so do not generalize this small fixture into a complete cross-host queue ordering table.
+
+The disposer clears a pending timer and guards the Promise reaction, because this Promise itself is not cancellable. Fetch cancellation uses AbortSignal plus stale-result ownership, not clearTimeout alone. Neither promises nor async/await automatically run expensive computation on another core. Use the advanced lifecycle/debounce lessons for request identity, replacement and unmount; keep this newcomer example small.
+
+**Exercise acceptance:** verify the normal order and immediate disposal producing only start/end; repeat disposal safely. Delay the event loop and explain why timer eligibility is a minimum rather than exact timing. In an actual browser observe responsiveness/render timing separately; Node output is not evidence of painted frames. Retain learner implementation/evidence separately.
+
+References checked2026-10-22: [HTML tasks and microtasks](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops), [Node timers](https://nodejs.org/api/timers.html). The restaurant analogy illustrates overlapping waits, not literal simultaneous execution of one chef's JavaScript instructions.

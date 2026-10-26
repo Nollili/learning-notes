@@ -29,7 +29,7 @@ However, its usage has evolved:
 - Class names clearly indicate the **hierarchy and relationships**.
 ```css
 .card__header--highlighted { ... }
-````
+```
 
 ### 2.2 Avoids CSS Conflicts
 
@@ -37,7 +37,7 @@ However, its usage has evolved:
 
 ### 2.3 Reusability & Modularity
 
-* Blocks are **independent and self-contained**, making components easier to **reuse**.
+* A block is intended as an independently reusable unit; naming alone does not enforce that dependency boundary.
 
 ### 2.4 Predictable & Scalable
 
@@ -64,7 +64,7 @@ import styles from './Button.module.css';
   Utility classes replace semantic naming; BEM can become redundant.
 
 * **With CSS-in-JS:**
-  Components encapsulate styles; naming conventions are often unnecessary.
+  Generated component names can reduce class collisions; inheritance, global selectors, portals and stylesheet order still need an explicit policy.
 
 ---
 
@@ -93,3 +93,40 @@ import styles from './Button.module.css';
 
 > 💡 Senior Tip:
 > Even if using modern tools, understanding BEM is valuable—it teaches **modular thinking and naming discipline**, which improves maintainable code.
+
+## A collision that names cannot prevent
+
+A global `.legacy button { color:red }` can affect a BEM button because it still matches the element. Two independently shipped stylesheets can also define the same `.lesson-card` name. BEM is a naming convention, not Shadow DOM, a CSS cascade boundary or a security mechanism. CSS Modules reduce local class-name collisions but do not stop inherited properties or a global tag selector. Compare actual computed styles before attributing isolation to a tool.
+
+For a public global component library, choose a product prefix/ownership registry and a small documented modifier API. For locally owned components, CSS Modules may remove the need for a long global prefix. Reuse the [runtime tokens and architecture trade-offs](./CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md#runtime-theme-versus-build-time-generation) rather than inventing parallel Sass/theme conventions.
+
+### Executable naming policy
+
+Use Stylelint17.16.0 in a separate learner fixture. This deliberately small policy accepts kebab-case blocks, one optional element and one optional modifier. It is a chosen subset, not the only valid BEM dialect or a complete stylesheet quality configuration.
+
+```js
+// stylelint.config.mjs
+export default {
+  rules: {
+    'selector-class-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z][a-z0-9]*(?:-[a-z0-9]+)*)?(?:--[a-z][a-z0-9]*(?:-[a-z0-9]+)*)?$',
+    'selector-max-specificity': '0,2,0',
+    'declaration-no-important': true,
+  },
+};
+```
+
+```css
+/* lesson-card.css */
+.lesson-card { color: var(--text, #17202a); padding: 1rem; }
+.lesson-card__title { margin-block: 0 0.5rem; }
+.lesson-card--compact { padding: 0.5rem; }
+.lesson-card__link:focus-visible { outline: 2px solid currentColor; }
+```
+
+In the fixture, run `stylelint lesson-card.css --config stylelint.config.mjs`; valid selectors pass. Add `.BadName` and confirm the naming rule fails, add `#app .lesson-card` to fail specificity, and add `!important` to fail the declaration policy. Existing projects need a scoped migration/allowlist for legitimate legacy/global/third-party selectors rather than a repository-wide regex imposed without review. CSS Modules generated output is not the authored source to lint with this naming rule.
+
+A selector such as `.legacy .lesson-card` can pass this policy while changing appearance. Linting cannot prove that modifier classes have a base class in HTML, prevent every collision, establish token contrast or validate screenshots. Keep visual and behavior evidence separate.
+
+**Migration exercise acceptance:** inventory one component's global selectors and consumers; add the new class to markup, move only its owned rules, retain a documented temporary alias where needed, test normal/compact/focus/error states and remove the alias after consumers migrate. Demonstrate the three lint failures and one collision the linter does not detect. Check computed styles, keyboard focus, zoom and reviewed browser images in an allowed environment. Record before/after evidence; no migration or native browser result has been performed merely by supplying this fixture.
+
+Official rule references checked2026-10-22: [class pattern](https://stylelint.io/user-guide/rules/selector-class-pattern/), [specificity budget](https://stylelint.io/user-guide/rules/selector-max-specificity/), [important declarations](https://stylelint.io/user-guide/rules/declaration-no-important/).

@@ -104,9 +104,9 @@ console.log(adultNames); // ["Alice", "Bob"]
 | Feature           | OOP                                                 | FP                                                    |
 | ----------------- | --------------------------------------------------- | ----------------------------------------------------- |
 | Main Focus        | Objects & state                                     | Functions & transformations                           |
-| State             | Mutable                                             | Immutable                                             |
+| State             | Often encapsulated; can be mutable or immutable      | Usually transformed immutably; effects still need boundaries |
 | Side Effects      | Allowed                                             | Avoided                                               |
-| Composition       | Inheritance, Polymorphism                           | Function composition                                  |
+| Composition       | Object composition, delegation and polymorphism; inheritance optional | Function composition and data transformations |
 | Scalability       | Good for stateful apps                              | Good for data-heavy, stateless apps                   |
 | Example Use Cases | UI components with state, games, class-based models | Data pipelines, array transformations, Redux reducers |
 
@@ -115,7 +115,7 @@ console.log(adultNames); // ["Alice", "Bob"]
 ## 4️⃣ Practical Use in JS Projects
 
 * **OOP:** React class components, Angular services, complex models
-* **FP:** React hooks (useReducer, map/filter), RxJS streams, Redux reducers
+* **FP:** pure reducers and map/filter transformations. Hooks and streams can also own effects or mutable resources; using one does not automatically make code pure.
 * **Hybrid:** Most modern JS apps mix OOP (for components/services) and FP (for state transformations).
 
 ---
@@ -126,3 +126,31 @@ console.log(adultNames); // ["Alice", "Bob"]
 2. **FP:** Better for **stateless transformations**, predictable code, and **avoiding side effects**.
 3. **In JS:** Use **FP for data manipulation** and **OOP for structural organization**.
 4. **Senior tip:** Understanding both paradigms allows you to **choose the best approach per problem** and write maintainable, performant applications.
+
+
+## Both styles can preserve immutable values
+
+The table describes common styles, not restrictions of JavaScript. OOP can use composition and immutable objects; FP still needs explicit boundaries for network, storage and logging effects. Inheritance is not required for object-oriented design. Choose a representation based on invariants, ownership and how requirements change, rather than labeling every class mutable or every function pure.
+
+```js
+import assert from 'node:assert/strict';
+class Quantity {
+  #value;
+  constructor(value) {
+    if (!Number.isSafeInteger(value) || value < 0) throw new RangeError('Invalid quantity');
+    this.#value = value;
+  }
+  get value() { return this.#value; }
+  add(other) { return new Quantity(this.#value + other.value); }
+}
+const first = new Quantity(2), result = first.add(new Quantity(3));
+assert.equal(first.value, 2);
+assert.equal(result.value, 5);
+assert.notEqual(first, result);
+assert.throws(() => new Quantity(-1), RangeError);
+assert.throws(() => new Quantity(Number.MAX_SAFE_INTEGER).add(new Quantity(1)), RangeError);
+```
+
+This class has no mutation method; addition validates the resulting invariant and returns a new value. A pure function over a validated data structure is a simpler alternative if encapsulation adds no useful guarantee. Both can call the same injected pure shipping strategy; neither requires subclassing. See [contract/substitution checks](./Can_you_decipher_SOLID_acronym_What_is_"L".md#behavioral-contracts-and-dependency-substitution) and [the async ownership race](./Composition_vs_inheritance_Shared_state_vs_immutability.md#deterministic-async-lost-update).
+
+**Validation:** exact Node24.18.0 block passed five assertions, including invalid input and overflow. **Exercise acceptance:** implement the same small invariant using a class and a function-based representation; prove original values remain unchanged, invalid transitions are rejected and effects are injected at the boundary. Compare readability and ownership instead of declaring a universal winner. Advanced paradigm specialization is optional; learner practice remains required. [Official JavaScript class-field semantics](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions) and [Node assertions](https://nodejs.org/docs/latest-v24.x/api/assert.html) support the language/check details.

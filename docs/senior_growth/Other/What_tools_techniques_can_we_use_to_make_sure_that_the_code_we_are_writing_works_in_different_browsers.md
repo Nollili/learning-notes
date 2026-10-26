@@ -11,7 +11,7 @@ When developing web applications, it’s important to make sure that your code w
 ### 1.1 Use Standardized, Modern Web APIs
 - Prefer **well-supported HTML, CSS, and JS features**.
 - Check **browser support** on [MDN Web Docs](https://developer.mozilla.org/).
-- Avoid deprecated or experimental features unless **polyfilled**.
+- Check target support and semantics. Some features cannot be usefully polyfilled; choose a working fallback or explicit unsupported outcome instead of assuming a shim recreates browser authority/layout.
 
 ---
 
@@ -25,7 +25,7 @@ if (Modernizr.flexbox) {
 } else {
   console.log("Fallback styling applied");
 }
-````
+```
 
 * **Benefit:** Code adapts to capabilities rather than relying on specific browsers.
 
@@ -36,7 +36,7 @@ if (Modernizr.flexbox) {
 * **Polyfills**: Add missing functionality to older browsers (e.g., `fetch`, `Promise`).
 * **Transpilers**:
 
-  * **Babel** → convert modern JS (ES6+) to ES5 for older browsers.
+  * **Babel/selected build tool** → transform configured syntax for the agreed runtime targets. Do not default every project to ES3/ES5 or assume a transform supplies missing runtime APIs.
   * **PostCSS / Autoprefixer** → add vendor prefixes to CSS properties.
 
 ---
@@ -58,7 +58,7 @@ if (Modernizr.flexbox) {
 
   * **Selenium WebDriver** → automates browser interactions.
   * **Cypress** → modern testing framework supporting Chrome and Firefox.
-  * **Playwright / Puppeteer** → run headless or real browsers, automated cross-browser tests.
+  * **Playwright** → primary multi-engine worked test runner here; Puppeteer has a different supported-browser contract. Use one coherent runner rather than requiring every listed tool.
 
 ---
 
@@ -97,4 +97,9 @@ if (Modernizr.flexbox) {
 * **Best Practices:** Write standard, maintainable, responsive code.
 
 > 💡 Senior Tip:
-> Focus on **modern browsers with progressive enhancement**. For legacy support, combine **Babel + polyfills + automated cross-browser tests** to maintain reliability without sacrificing modern code practices.
+> Define the actual browser/OS/input/assistive-technology support policy and test it. Syntax transforms, API shims, feature detection and progressive enhancement address different failure modes; none proves compatibility alone.
+
+
+## A complete study workflow
+
+Use the [HTML-first search and compatibility lab](./Cross_Browser_Progressive_Enhancement.md): an actual server-rendered GET form, an optional owned enhancement, multi-engine Playwright configuration, no-JavaScript/failure/keyboard/reflow checks and a manual browser/assistive-technology evidence matrix. The fixtures are testable learning material; unrun native/browser/screen-reader cases are explicitly marked as learner work. No feature-detection branch can rescue syntax the browser cannot parse, and no screenshot/DOM mock proves assistive-technology behavior.

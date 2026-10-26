@@ -11,7 +11,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 1. Your **website assets** are hosted on **origin servers**.
 2. CDN **replicates and caches** these assets across multiple **edge servers** worldwide.
 3. When a user requests content:
-   - The request is routed to the **nearest edge server**.
+   - The provider routes to an available edge according to its network/routing policy; this is not necessarily the geographically nearest point.
    - This reduces **latency** and **load on the origin server**.
 4. CDN may also provide:
    - **Compression** (gzip, Brotli)
@@ -40,7 +40,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 - Supports **HTTPS / TLS** and **Web Application Firewalls (WAF)**.
 
 ### 2.5 SEO & User Experience
-- Faster page loads improve **SEO rankings**.
+- Faster measured delivery can improve user experience; a CDN does not guarantee a search-ranking outcome.
 - Enhances **user experience** on slow or mobile networks.
 
 ---
@@ -58,12 +58,12 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 ---
 
-## 4️⃣ Example Usage
+## 4️⃣ Historical syntax examples (not current library recommendations)
 
 **Using jQuery from a CDN**
 ```html
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-````
+```
 
 **Custom assets with CDN**
 
@@ -89,3 +89,54 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 > 💡 Senior Tip:
 > Use CDNs **for libraries, static assets, images, and videos**. Combine with **caching headers** to maximize performance and reduce server load.
+
+
+## Worked cache identity and private-data exclusion
+
+Choose self-hosted, versioned public assets as the primary example; a CDN can serve them behind the application's asset origin. Cache only declared public bytes. Authenticated APIs, account HTML, responses setting cookies and requests varying by private context need a deliberate private policy. `private` forbids shared caching; `no-store` forbids storing the response. `no-cache` instead permits storage but requires revalidation before reuse. Neither a purge request nor a header change erases every copy already delivered to a user.
+
+This conservative application policy computes an immutable asset path and SHA384 integrity metadata from **exact** synthetic source bytes. It does not configure a provider or deploy the file; the build/deployment must write those same bytes and map the headers/key into the actual edge behavior.
+
+```js
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+const source = 'console.log("public demo");\n';
+const digest = createHash('sha256').update(source).digest('hex');
+const assetPath = `/assets/demo.${digest}.js`;
+const integrity = `sha384-${createHash('sha384').update(source).digest('base64')}`;
+function cachePolicy(url, method = 'GET', requestHeaders = {}, responseHeaders = {}) {
+  const request = new Headers(requestHeaders), response = new Headers(responseHeaders);
+  const target = new URL(url, 'https://owned.invalid');
+  if (method !== 'GET' || target.origin !== 'https://owned.invalid' || target.pathname !== assetPath || target.search ||
+      request.has('authorization') || request.has('cookie') || response.has('set-cookie')) {
+    return {cacheControl: 'private, no-store', sharedKey: null};
+  }
+  return {cacheControl: 'public, max-age=31536000, immutable', sharedKey: `asset-v1|${target.origin}|${assetPath}`};
+}
+assert.equal(cachePolicy(assetPath).cacheControl, 'public, max-age=31536000, immutable');
+assert.equal(cachePolicy('/api/me').sharedKey, null);
+assert.equal(cachePolicy(assetPath, 'GET', {Authorization: 'synthetic'}).sharedKey, null);
+assert.equal(cachePolicy(assetPath, 'GET', {Cookie: 'synthetic'}).sharedKey, null);
+assert.equal(cachePolicy(assetPath, 'GET', {}, {'Set-Cookie': 'synthetic'}).sharedKey, null);
+assert.equal(cachePolicy(assetPath + '?variant=private').sharedKey, null);
+assert.equal(cachePolicy(assetPath, 'POST').sharedKey, null);
+assert.equal(cachePolicy('https://other.invalid' + assetPath).sharedKey, null);
+assert.notEqual(createHash('sha384').update(source + ' ').digest('base64'), integrity.slice(7));
+console.log(JSON.stringify({assetPath, integrity, checks: 'nine cache/projection/integrity assertions passed; not a CDN/browser test'}));
+```
+
+Nine Node24.18 assertions passed: declared asset caching, private API/auth/cookie/set-cookie/query/method/origin exclusion and a one-byte integrity mismatch. This local function does not prove a CDN honors that cache key or that a browser enforces SRI/CSP. All query-bearing requests bypass shared caching here; another public endpoint needing locale/filter variants must include those validated dimensions in its actual key and any required `Vary` behavior. Never drop authorization/tenant context from a shared cache key and then store a personalized response.
+
+An emitted manifest could reference the exact computed file with the computed integrity string. Use actual build output instead of an invented digest. For cross-origin SRI-protected scripts/styles, the serving origin must provide the required CORS response and the element uses the matching anonymous fetch policy. Integrity pins bytes, not the trustworthiness of those bytes. A compromised build or an intentionally malicious pinned script still executes; audit dependencies and keep CSP as another boundary.
+
+A restrictive illustrative response policy for a self-hosted script-only page is:
+
+```text
+Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
+```
+
+Adapt and test this header to the actual app; it intentionally blocks inline scripts/styles and any undeclared remote host. Do not add unsafe-inline merely to silence a violation. A third-party CDN host would need an explicit reviewed source policy and availability/privacy decision. Minification is not secret protection; never ship credentials or private source maps as public assets.
+
+For releases, upload new content-addressed assets before updating referencing HTML, retain previous assets for the supported rollback/client window and give HTML an appropriate revalidation/freshness policy. Purge mutable paths carefully and observe stale/error behavior; do not promise instant global invalidation or that stale cached private data is safe. CDN failover/security features are configuration-dependent and do not replace a healthy origin or authorization.
+
+**Exercise acceptance:** serve two distinct asset versions in an owned environment, verify exact bytes/hash/header/key behavior, tamper with one and observe actual browser SRI rejection. Test CSP violations without broadening trust, cache miss/revalidation, query variants, auth/cookie/private responses and rollback with an old open client. Record actual provider/browser results separately from the local policy assertions. Learner practice remains required. References: [HTTP caching RFC9111](https://httpwg.org/specs/rfc9111.html), [Subresource Integrity Recommendation](https://www.w3.org/TR/2016/REC-SRI-20160623/), [CSP specification](https://www.w3.org/TR/CSP3/).

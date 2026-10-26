@@ -4,7 +4,7 @@ As a **senior front-end developer**, it’s critical to understand **web securit
 
 ---
 
-## 🔟 OWASP Top 10 (2021 Edition)
+## Historical OWASP Top 10 (2021 Edition)
 
 | # | Category | Description |
 |---|-----------|-------------|
@@ -21,6 +21,10 @@ As a **senior front-end developer**, it’s critical to understand **web securit
 
 ---
 
+## Current awareness baseline: OWASP Top 10:2025
+
+The 2021 table is retained for historical mapping. The 2025 edition lists A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging and Alerting Failures, and A10 Mishandling of Exceptional Conditions. IDs change between editions; record the edition rather than silently relabel old findings. This is an awareness list, not a complete control or verification standard. [Official2025 release](https://top10.owasp.org/2025/), checked 2026-10-22.
+
 ## ⚔️ Common Web Security Attacks & Prevention
 
 ### 1. **Cross-Site Scripting (XSS)**
@@ -30,9 +34,9 @@ An attacker injects malicious JavaScript into a trusted site (e.g., through user
 Steal cookies, tokens, or perform actions as the user.
 
 **Prevention:**
-- Escape user input before rendering (`innerText`, not `innerHTML`).
+- Put plain text through a safe text sink such as textContent or ordinary JSX string children; encode other contexts deliberately.
 - Use Content Security Policy (CSP) headers.
-- Sanitize input on backend and frontend.
+- Validate domain values; use a maintained sanitizer with a defined policy only when intentionally supporting HTML.
 - React automatically escapes JSX → XSS harder but still possible via `dangerouslySetInnerHTML`.
 
 ```jsx
@@ -55,7 +59,7 @@ An attacker tricks a logged-in user into sending a forged request (e.g., through
 * Use **CSRF tokens** in POST requests.
 * Use **SameSite cookies** (`SameSite=Lax` or `Strict`).
 * Validate origin and referrer headers on backend.
-* Prefer `fetch` with explicit credentials handling.
+* Explicit fetch credentials do not supply CSRF protection. Validate the selected CSRF contract on the server for state-changing requests.
 
 ---
 
@@ -69,7 +73,7 @@ Malicious input manipulates a database query.
 
 **Prevention:**
 
-* Always use **parameterized queries** or ORM libraries.
+* Bind data values with parameterized queries; an ORM can still expose unsafe raw/interpolated SQL. Allowlist dynamic identifiers/order choices separately.
 * Validate and sanitize user inputs.
 * Never concatenate user input directly in queries.
 
@@ -117,7 +121,7 @@ Untrusted serialized data causes remote code execution when deserialized on back
 **Prevention:**
 
 * Validate input before deserialization.
-* Avoid using unsafe deserialization in frontend storage (e.g., `eval` or parsing user-controlled strings).
+* Never use eval to parse data. JSON.parse alone does not execute embedded JavaScript, but syntax/size/schema errors, subsequent unsafe sinks and prototype-polluting merges still need handling. Project allowed fields rather than blindly merging parsed objects.
 
 ---
 
@@ -203,3 +207,52 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 
 > 🧩 Security = Prevention (architecture) + Detection (monitoring) + Reaction (logging & updates)
 
+
+
+## Worked threat model: private note title
+
+**Scope:** an authenticated owner renames one private note in one tenant. The server's verified principal/current membership is trusted input to the use case; browser state, URL IDs, request bodies and stored strings are untrusted. Assets are note confidentiality, title integrity, session credentials and availability. The browser→HTTP boundary and application→database boundary must each enforce their contract. A compromised same-origin script can issue authenticated actions, so an HttpOnly cookie is not an XSS cure.
+
+| Abuse case | Required control and negative evidence |
+|---|---|
+| Alter URL/body tenant or owner | Derive both from verified identity; scope the actual conditional write by ID+tenant+owner |
+| Replay stale edit | Include expected version in that same write; no matching row must not overwrite newer data |
+| SQL-shaped title | Bind as a value, never splice into SQL; schema bounds do not replace parameterization |
+| Extra isAdmin/owner fields | Reject unrecognized command fields; do not bind them to authorization |
+| Cross-site mutation | Enforce the deployed session/CSRF policy before invoking the use case |
+| Injected markup | Render returned title as text; no HTML interpretation, including after storage restoration |
+| Storage/log leak | Persist only justified public drafts; omit private contents/credentials from telemetry |
+| Denial/timeout/exception | Bound body/work, preserve safe error behavior and avoid an ambiguous automatic write retry |
+
+### Deterministic query-plan boundary
+
+This isolated TypeScript5.9.3 helper builds a fixed PostgreSQL query; it is not a complete HTTP endpoint. Principal comes from verified server authentication, never req.body or the UI gate. The caller must enforce body limits and the session/CSRF policy first.
+
+```ts
+// rename-plan.ts
+export type Principal = Readonly<{ userId: string; tenantId: string }>;
+export class RenameRejected extends Error {
+  constructor(readonly code: 'unauthenticated' | 'invalid') { super(code); }
+}
+export function planRename(actor: Principal | null, input: unknown) {
+  if (!actor) throw new RenameRejected('unauthenticated');
+  if (!input || typeof input !== 'object' || Array.isArray(input)
+    || Object.keys(input).length !== 3 || Object.keys(input).some(key => !['id', 'title', 'version'].includes(key))
+    || !('id' in input) || typeof input.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(input.id)
+    || !('title' in input) || typeof input.title !== 'string' || !input.title.trim() || input.title.length > 80
+    || !('version' in input) || typeof input.version !== 'number' || !Number.isSafeInteger(input.version)
+    || input.version < 1 || input.version >= Number.MAX_SAFE_INTEGER) throw new RenameRejected('invalid');
+  return {
+    text: `UPDATE notes SET title = $1, version = version + 1
+           WHERE id = $2 AND tenant_id = $3 AND owner_id = $4 AND version = $5
+           RETURNING id, title, version`,
+    values: [input.title.trim(), input.id, actor.tenantId, actor.userId, input.version] as const,
+  };
+}
+```
+
+Execute through a maintained PostgreSQL adapter with values passed separately. Use the [primary server conditional-write example](../../node-js/module-09-authentication-authorization.md#ownership-and-attribute-based-access-control) for integration; MikroORM uses its own parameter placeholder conventions. A plan assertion proves fixed query text and parameter order, not live row isolation, deployed sessions or CSRF. The notes table/schema/version policy and zero-row conflict/not-found response must be implemented consistently. Avoid a second unscoped write after checking a row; map inaccessible objects consistently without revealing their contents.
+
+**Acceptance:** verify missing principal/malformed/extra-field commands produce no plan, SQL-shaped title remains solely in the values array, and caller owner/tenant fields cannot alter predicates. Then execute actual database/API tests for owner success, cross-user/cross-tenant denial, stale-version rejection, unchanged forbidden rows, missing CSRF and expired identity. Check safe rendering separately. The local plan/UI/codec checks do not establish the unperformed deployed database/browser/security properties; learner practice remains required.
+
+References checked 2026-10-22: [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [parameterized SQL](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html), [DOM XSS](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html), [CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).

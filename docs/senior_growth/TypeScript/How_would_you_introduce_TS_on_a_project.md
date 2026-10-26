@@ -18,7 +18,7 @@ Introducing TypeScript into a JavaScript project should be **gradual and strateg
 
 ```bash
 npm install --save-dev typescript @types/node @types/react
-````
+```
 
 * Install type definitions for **React, Node, and any libraries** you use.
 
@@ -32,11 +32,12 @@ npx tsc --init
 
 Key `tsconfig.json` settings:
 
-```json
+```jsonc
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2022",
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "strict": true,              // enable all strict checks
     "allowJs": true,             // allow gradual migration
@@ -72,13 +73,13 @@ npm install --save-dev @types/lodash
 ### 4.3 Add Type Annotations Gradually
 
 * Start with **key modules** or **shared components**.
-* Use `any` temporarily if migration is blocking, then **refactor to strict types**.
+* Prefer unknown plus narrowing at external boundaries. Track any unavoidable temporary any with an owner and removal criterion; it disables checks rather than proving a contract.
 
 ---
 
 ## 5️⃣ Integrate into Build and Tooling
 
-* **Webpack/Vite**: Ensure `.ts` and `.tsx` are handled by `ts-loader` or `esbuild`.
+* **Webpack/Vite**: Use the project's supported TypeScript transformation. Vite8 uses Rolldown/Oxc; older Vite versions used esbuild. Transformation is separate from typechecking: run tsc --noEmit in CI. A Node-executed package instead needs a matching NodeNext module/resolution configuration.
 * **ESLint**: Add `@typescript-eslint/parser` for linting.
 * **Prettier**: Ensure consistent code formatting with TS support.
 * **Jest / Vitest**: Add TypeScript support for tests using `ts-jest` or native Vitest TS support.
@@ -106,3 +107,57 @@ npm install --save-dev @types/lodash
 
 > 💡 Senior Tip:
 > TypeScript adoption is **incremental**. Start with **shared logic and key components**, then expand gradually. Avoid “big bang” migration, which is risky and slows development.
+
+
+## A declaration must match the actual JavaScript
+
+Prefer the package's bundled declarations, then a compatible maintained @types package. A local declaration is a maintained compatibility promise, not a runtime implementation. Check the installed package version, actual named/default exports, ESM/CommonJS entry points and null/error behavior. Do not silence an untyped dependency with a blanket declare module: that turns its API into any. Module augmentation adds to an existing module; it cannot invent an implementation that the runtime lacks.
+
+This small vendor stand-in lets you inspect both sides. In a standalone package with type:module, put these files beside each other. The .js import resolves to the adjacent .d.ts for TypeScript and the real .js for Node. An explicitly .mjs runtime instead uses .d.mts; CommonJS .cjs uses .d.cts. Respect a real package's exports/types conditions instead of assuming every deep import is public.
+
+```js
+// legacy-label.js
+export function parseLabel(input) {
+  if (typeof input !== 'string') return null;
+  const value = input.trim();
+  return value.length >= 1 && value.length <= 40 ? { value } : null;
+}
+```
+
+```ts
+// legacy-label.d.ts
+export type Label = { value: string };
+export function parseLabel(input: unknown): Label | null;
+```
+
+```ts
+// declaration-contract.ts
+import { parseLabel } from './legacy-label.js';
+import type { Label } from './legacy-label.js';
+const result: Label | null = parseLabel('  Study  ');
+if (result !== null) result.value.toUpperCase();
+// @ts-expect-error The result can be null.
+const guaranteed: Label = parseLabel('');
+// @ts-expect-error value is a string, not a number.
+const wrong: number = parseLabel('Study')!.value;
+// @ts-expect-error No such runtime export exists.
+import { formatLabel } from './legacy-label.js';
+```
+
+```js
+// declaration-runtime.mjs
+import assert from 'node:assert/strict';
+import * as vendor from './legacy-label.js';
+assert.deepEqual(Object.keys(vendor), ['parseLabel']);
+assert.deepEqual(vendor.parseLabel('  Study  '), { value: 'Study' });
+for (const input of ['', '   ', 'x'.repeat(41), null, 4, {}]) {
+  assert.equal(vendor.parseLabel(input), null);
+}
+assert.deepEqual(vendor.parseLabel('x'.repeat(40)), { value: 'x'.repeat(40) });
+```
+
+Validated with Node24.18.0 and TypeScript5.9.3. Run tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext declaration-contract.ts (without skipLibCheck for this declaration lab), then node declaration-runtime.mjs. Never execute the negative type fixture as application code. The compiler trusts the declaration; it does not establish that the JavaScript returns the promised value. Runtime checks expose that separate boundary. A dependency upgrade can keep typechecking while changing behavior, so rerun both checks and inspect release notes.
+
+**Exercise acceptance:** remove each @ts-expect-error and confirm its diagnostic; deliberately change the runtime export or null behavior and confirm the runtime check fails. Restore consistency, add a Unicode length boundary test and state that this example's limit counts JavaScript UTF-16 code units, not user-perceived characters. For an actual vendor package record its installed version, export mode and the subset you verified. Prefer a narrow adapter with unknown input/runtime parsing when trusting the vendor's output is inappropriate. Existing Autocode task configuration and src/tests must remain unchanged; use a separate lab.
+
+Official references checked2026-10-22: [module declarations](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html), [extension substitution and module resolution](https://www.typescriptlang.org/docs/handbook/modules/reference), [Vite TypeScript transformation](https://vite.dev/guide/features.html#typescript). Learner practice remains required.

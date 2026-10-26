@@ -2,6 +2,8 @@
 
 ## 🔹 Git Hooks
 
+This is an example policy, not evidence of installed hooks in this repository. Local hooks provide feedback; required CI/protected-branch/server policy must independently enforce acceptance. No push is permitted here.
+
 **Git hooks** are scripts that Git executes **automatically at specific points** in the Git workflow, such as before committing, pushing, or receiving changes. They allow you to **enforce rules, automate tasks, and improve code quality**.
 
 ---
@@ -18,7 +20,7 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 | **Server-side** | `pre-receive`                          | Validate commits before accepting push on server |
 |                 | `post-receive`                         | Trigger deployments or notifications          |
 
-> Git hooks are located in `.git/hooks` folder (e.g., `.git/hooks/pre-commit`). They are usually **executable scripts** in bash, Node.js, or other languages.
+> Git normally looks in its hooks directory, configurable through core.hooksPath. A linked worktree can have a .git file, so do not assume .git/hooks is a normal directory in every checkout. Hook files need a valid interpreter/shebang and executable permission on applicable systems. Versioned hook sources are not automatically installed by cloning.
 
 ---
 
@@ -28,19 +30,21 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 1. **pre-commit**
    - Purpose: Run **linting, formatting, or unit tests** before committing.
-   - Example: Ensure all JavaScript/TypeScript files follow ESLint rules.
+   - Minimal example: check whitespace in the staged diff without rewriting the worktree. This does not lint JavaScript or prove tests pass.
    ```bash
-   # .git/hooks/pre-commit
-   npx eslint . --fix
-````
+   #!/bin/sh
+   set -eu
+   git diff --cached --check
+   ```
 
 2. **commit-msg**
 
    * Purpose: Enforce **commit message conventions** (e.g., Conventional Commits).
 
    ```bash
-   # .git/hooks/commit-msg
-   npx commitlint --edit $1
+   #!/bin/sh
+   set -eu
+   exec ./node_modules/.bin/commitlint --edit "$1"
    ```
 
 3. **pre-push**
@@ -48,8 +52,10 @@ Git hooks are divided into **client-side** and **server-side** hooks:
    * Purpose: Run **unit tests or build checks** before pushing.
 
    ```bash
-   # .git/hooks/pre-push
-   npm test
+   #!/bin/sh
+   set -eu
+   npm run build
+   npm run test
    ```
 
 ---
@@ -65,7 +71,7 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 ---
 
-## 3️⃣ Hooks in Our Project
+## 3️⃣ Example hook policy
 
 * **pre-commit:** Runs **ESLint, Prettier, and format checks** to ensure clean code before commit.
 * **commit-msg:** Enforces **Conventional Commit messages** to maintain clear changelog.
@@ -90,3 +96,22 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 > 💡 Senior Tip:
 > Combine **linting, formatting, testing, and commit conventions** in Git hooks for **clean, reliable, and maintainable code** across the team.
+
+## Install deliberately and check staged content
+
+The commit-msg example requires an already installed/configured local commitlint; the build/test hook requires those actual template scripts. Do not introduce dependencies or overwrite an existing core.hooksPath merely by copying this page. Inspect the existing manager (for example a configured Husky installation) and integrate through its reviewed mechanism. For the minimal fresh disposable fixture only, put the pre-commit script above in .githooks/pre-commit, then:
+
+```sh
+chmod +x .githooks/pre-commit
+git config --local core.hooksPath .githooks
+```
+
+A whole-tree formatter with --fix can change unrelated unstaged edits and produce a commit different from what was reviewed. Prefer check-only staged-aware tooling with bounded explicit paths. Be careful with partially staged files: checking the working file can inspect different bytes from the index. A full build/test may use the worktree, so CI must check a clean candidate checkout. If using a temporary index/tree or a maintained staged runner, test preservation/restoration of partial changes and failure handling; never assume a script can safely auto-stage every rewrite.
+
+pre-commit/commit-msg can be bypassed by supported Git options and users can change local configuration. Hooks are not a security boundary against a contributor controlling their own machine. Enforce required checks/review on the server/CI and protect privileged CI credentials from untrusted branches. Client hooks should report failure and terminate, not loop or silently swallow an error. Server deployment triggers also need their own controlled release policy.
+
+**Actual validation2026-10-25:** the executable shebang/set-eu/staged-whitespace hook was installed in a disposable Git2.54 repo. Bad staged whitespace with a clean-looking unstaged replacement blocked commit; HEAD/index/worktree bytes were preserved. Staging the correction allowed commit. Conversely a clean staged file with bad unstaged whitespace committed only the clean index bytes and left the worktree untouched. No whole-tree auto-fix ran. The commitlint/full-build hook examples were not installed/executed; hosted enforcement was not tested.
+
+**Exercise acceptance:** install the minimal hook in a disposable repo, prove executable/interpreter behavior, nonzero rejection and preservation of partial staging. Add a reviewed staged lint/test policy and compare it with CI on the candidate commit. Explain bypass and why server enforcement remains necessary. Keep Autocode configuration/src/tests intact and never push as part of this exercise. Learner practice remains required.
+
+Official references checked2026-10-25: [hook execution/bypass](https://git-scm.com/docs/githooks), [core.hooksPath](https://git-scm.com/docs/git-config), [staged diff checks](https://git-scm.com/docs/git-diff).

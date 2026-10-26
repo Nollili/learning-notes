@@ -8,7 +8,7 @@ For a **huge frontend project**, organizing CSS well is crucial to maintainabili
 
 If your project uses **React / Vue / Angular**, organize CSS **per component** whenever possible.
 
-* **CSS Modules or SASS Modules**: Each component gets its own `.module.css` or `.module.scss`.
+* **CSS Modules**: a bundler maps local class names from `.module.css`/`.module.scss`. Sass `@use`/`@forward` modules organize compile-time symbols; they do not hash or isolate emitted selectors by themselves.
 * Co-locate styles with components:
 
   ```plaintext
@@ -19,7 +19,7 @@ If your project uses **React / Vue / Angular**, organize CSS **per component** w
 
 **Benefits:**
 
-* Styles are scoped to the component → no collisions.
+* Local class-name mapping reduces accidental collisions. Global selectors, inheritance, custom properties and cascade order still cross component boundaries.
 * Easier to refactor or move components.
 
 ---
@@ -28,7 +28,7 @@ If your project uses **React / Vue / Angular**, organize CSS **per component** w
 
 Some things are **global** and should be centralized:
 
-* **CSS Variables (Custom Properties)** for colors, spacing, fonts, breakpoints.
+* **CSS Variables (Custom Properties)** for runtime colors, spacing and typography. A var() custom property cannot substitute into an ordinary media-query condition; use a reviewed literal or compile-time Sass breakpoint there.
 * **Reset / Normalize CSS** (like `normalize.css`).
 * **Global utility classes** (e.g., `.hidden`, `.sr-only`).
 
@@ -51,7 +51,7 @@ Example:
 Structured naming helps avoid conflicts:
 
 * **BEM (Block-Element-Modifier)** → classic, works well with vanilla CSS/SASS.
-* **SMACSS / ITCSS** → scale better for huge projects with layered architecture.
+* **SMACSS / ITCSS** → alternative organization conventions; team discipline and actual dependencies determine their value.
 
 **Example BEM:**
 
@@ -65,7 +65,7 @@ Structured naming helps avoid conflicts:
 
 ## **4️⃣ Preprocessor / PostCSS**
 
-* Use **SASS / SCSS** for nesting, variables, and mixins.
+* Native CSS already supplies custom properties and nesting on supporting browsers; Sass remains useful for compile-time variables, mixins/functions and modules. Check the target browser/build support matrix instead of calling every such capability Sass-only. Use current Dart Sass @use/@forward rather than deprecated Sass @import.
 * Optionally use **PostCSS** for autoprefixing, minification, and modern CSS features.
 
 ---
@@ -130,7 +130,7 @@ Structured naming helps avoid conflicts:
 
 * Keep selectors **shallow**, avoid deep nesting.
 * Prefer **composition over inheritance**.
-* Use **CSS Modules or Styled Components** to prevent leakage.
+* Use CSS Modules as the primary scoped-class mechanism; runtime CSS-in-JS is an alternative with its own SSR/extraction/ordering costs, not a second required stack.
 * **Audit unused CSS** periodically (DevTools coverage).
 * Document design tokens (colors, spacing, typography).
 
@@ -215,7 +215,7 @@ graph TD
 
 1. **Local + Global balance** → component isolation + reusable themes.
 2. **Scalable folder structure** → easy to navigate and maintain.
-3. **Future-proof** → adding new components or features doesn’t pollute global CSS.
+3. **Controlled growth** → review new selectors, tokens and global effects; a folder structure cannot guarantee isolation.
 
 ---
 
@@ -284,7 +284,7 @@ graph TD
 2. **CSS Modules**
 
    * Component-scoped styles (`.module.scss`).
-   * Keeps styles isolated and prevents conflicts.
+   * Localizes class names; cascade, global rules and inheritance still need review.
 
 3. **Styled Components**
 
@@ -300,6 +300,53 @@ graph TD
 ✅ **Benefits of this structure**
 
 * **Isolation + Scalability**: Components can use CSS Modules or Styled Components while global styles provide shared resources.
-* **Maintainable**: Easy to add/remove components or pages without breaking unrelated styles.
+* **Maintainable**: Clear ownership helps assess which unrelated consumers might be affected by a change.
 * **Flexible**: Mix of CSS Modules + Styled Components works well in large teams.
 
+
+
+## Token API and component contract
+
+Treat semantic tokens as a versioned public API: `--surface`, `--text`, `--action-bg` express roles, while raw palette values remain implementation details. A component consumes documented semantic roles and exposes deliberate variants, states, focus behavior and disabled semantics. CSS cannot make a clickable div equivalent to a native button. Document which component-level overrides are supported instead of asking consumers to target undocumented descendants or increase specificity.
+
+When renaming `--brand` to `--action-bg`, keep a temporary fallback for old consumers, migrate one component/route, then remove the compatibility alias in an explicit breaking token release after checking every supported theme. The alias direction matters: define the new token from the old value during migration so changing the old theme token still affects new consumers. A var() alias resolves where it is declared: a nested theme changing --brand must redeclare --action-bg there rather than inherit an already-computed parent value. The dark scope below does so. Never create cyclic var() aliases. Invalid custom-property values can fail at computed-value time; a fallback does not type-check an arbitrary supplied token value.
+
+```scss
+// _tokens.scss: compile-time module, runtime declarations emitted separately.
+$wide: 48rem;
+@mixin theme {
+  :root { --brand: #174ea6; --action-bg: var(--brand); --action-text: #fff; --focus: #111; }
+  [data-theme="dark"] { --brand: #9bbcff; --action-bg: var(--brand); --action-text: #101820; --focus: #fff; }
+}
+```
+
+```scss
+// component.scss: Sass alone does not turn .button into a hashed CSS Module.
+@use "tokens";
+@layer reset, base, components, utilities;
+@layer base { @include tokens.theme; }
+@layer components {
+  .button {
+    color: var(--action-text);
+    background: var(--action-bg, var(--brand));
+    padding: .5rem 1rem;
+  }
+  .button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .button:disabled { opacity: .6; cursor: not-allowed; }
+  @media (min-width: tokens.$wide) { .button { padding-inline: 1.5rem; } }
+}
+```
+
+The Sass breakpoint emits a literal48rem; do not write `@media(min-width:var(--wide))`. `@layer` establishes cascade order for participating rules, not a sandbox. Normal unlayered author CSS outranks normal layered author CSS; important declarations reverse layer ordering. Audit existing unlayered vendor/global styles before assuming layers reduce priority conflicts. CSS Modules localizes class names but does not stop an inherited color or global `button` rule from affecting a component. Sass compilation proves syntax/emitted values, not contrast, focus visibility or computed cascade in a browser.
+
+## SSR, style cost and migration evidence
+
+Server/static-extracted CSS Modules can avoid runtime style generation, but still deliver CSS bytes and require correct route discovery/order. Runtime CSS-in-JS can offer prop-driven APIs while adding generation/insertion, bundle and cache/SSR setup costs. Some tools extract styles at build time; do not assign identical costs to every “CSS-in-JS” library. A server registry/cache must be isolated per request or use a deliberately safe immutable cache; a mutable module-global registry can mix concurrent users' output. Ensure server/client class IDs and initial theme agree to avoid hydration mismatches or flashes; a browser-only localStorage preference cannot be read by the server without an explicit transport/default strategy.
+
+Load critical route styles with the route's initial HTML; a late dynamic import can cause an unstyled flash. Lazy route CSS reduces initial bytes only if required styles remain discoverable and retained correctly on navigation. Inline critical CSS trades repeat HTML bytes/cacheability and CSP handling against discovery. Measure transferred/unused CSS, style recalculation, interaction layout, runtime JS and server rendering under a fixed scenario; counting classes or rerenders alone is not a cost comparison.
+
+**Worked migration record:** a legacy global `.button` styles every route. Add a versioned semantic-token layer and one `Button.module.scss` consumer using the same documented variants. Check default/dark/high-contrast/disabled/focus and narrow/wide layouts; migrate call sites for that route, then remove its legacy dependency. Keep old/new outputs comparable and rollback to the old route stylesheet if the migration fails. Record selectors/tokens removed, remaining legacy consumers and actual CSS/runtime size changes. Do not run an unused-CSS purge on one route's coverage and delete classes used by another route or dynamically chosen state.
+
+**Exercise acceptance:** compile the exact two Sass files with current Dart Sass; verify48rem output, semantic token fallback and one theme emission. Build a native button component contract and migrate one legacy route with unchanged behavior. Retain computed-style/focus/contrast/theme and SSR/hydration evidence, source-map/bundle sizes and rollback decision. Demonstrate an unlayered override and fix it deliberately; confirm remaining routes still load their required styles. Introductory migration criteria and code are learning material; actual route migration/browser/SSR performance and learner practice remain required.
+
+References checked2026-10-22: [Sass modules](https://sass-lang.com/documentation/at-rules/use/), [forwarding module APIs](https://sass-lang.com/documentation/at-rules/forward/), [CSS custom-property semantics](https://www.w3.org/TR/css-variables/), [cascade layers](https://www.w3.org/TR/css-cascade-5/). Dart Sass1.106.1 is used for the isolated compiler check; deployment browser support must be verified separately.

@@ -12,6 +12,7 @@
 
 
 ## Node.js Global Mentoring Program
+- [Node.js: Zero to Strong Medior notes](/node-js/)
 - [NodeJS - The Complete Guide (MVC, REST APIs, GraphQL, Deno) - udemy](https://www.udemy.com/course/nodejs-the-complete-guide/?couponCode=MT251103G1)
 - [Content of course](https://learn.epam.com/content/path?rootId=5231411&mode=preview)
 - [Node.js (LevelUP)](https://kb.epam.com/pages/viewpage.action?pageId=1456526283)

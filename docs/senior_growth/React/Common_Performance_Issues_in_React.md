@@ -63,7 +63,7 @@ React applications can encounter performance issues if not optimized properly, e
 
 ### **2. Use `useCallback` and `useMemo`**
 
-- Prevent unnecessary creation of function and object instances.
+- Reuse function/value identities when dependencies are equal. useCallback does not prevent creation of its function argument; measure whether identity matters at a memo/subscription boundary.
     
     ```jsx
     const handleClick = useCallback(() => {
@@ -74,16 +74,16 @@ React applications can encounter performance issues if not optimized properly, e
     ```
     
 
-### **3. Avoid Inline Functions and Object Literals**
+### **3. Choose stable boundaries where measured**
 
 - Inline functions and objects create new instances on every render.
     
     ```jsx
-    // Bad
+    // Simple and often sufficient; allocation alone is not a performance defect.
     <ChildComponent onClick={() => doSomething()} />
     
-    // Good
-    const handleClick = useCallback(() => doSomething(), []);
+    // When a measured memo boundary benefits, include the reactive dependency.
+    const handleClick = useCallback(() => doSomething(), [doSomething]);
     <ChildComponent onClick={handleClick} />
     ```
     
@@ -135,6 +135,8 @@ React applications can encounter performance issues if not optimized properly, e
 - https://www.youtube.com/watch?v=1JoEuJQIJbs&ab_channel=CoderOne
     
     ```jsx
+    // react-window1.x API; pin that major for this historical example.
+    // Newer majors have different contracts; consult their official docs.
     import { FixedSizeList } from 'react-window';
     
     const MyList = ({ items }) => (
@@ -157,12 +159,18 @@ React applications can encounter performance issues if not optimized properly, e
 - https://medium.com/@shubham3480/debouncing-and-throttling-in-react-e71c711fc6c5
     
     ```jsx
-    const handleScroll = useCallback(
-      debounce(() => {
-        console.log("Scroll event handled");
-      }, 200),
-      []
+    // Fragment inside a component; debounce is the chosen library's cancellable helper.
+    const handleScroll = useMemo(
+      () => debounce(() => onScrollSettled(), 200),
+      [onScrollSettled]
     );
+    useEffect(() => {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        handleScroll.cancel();
+      };
+    }, [handleScroll]);
     ```
     
 
@@ -201,3 +209,14 @@ https://medium.com/@balaji59321/maximizing-efficiency-with-tree-shaking-in-react
 ### **Conclusion**
 
 Performance issues in React often stem from inefficient rendering, excessive state updates, or large component trees. By understanding and addressing these bottlenecks with tools like `React.memo`, `useCallback`, and virtualized lists, you can ensure your React application remains performant even as it scales.
+## A controlled performance experiment
+
+Define the user problem (for example typing becomes delayed with5,000rows), reproduce with representative data/device, and record a baseline browser trace. Classify network, JavaScript/React render, layout/paint and memory before selecting a technique. Deep trees or inline functions are not inherently slow; frequent updates are not necessarily DOM mutations. Virtualization reduces mounted DOM while data/cache retention can still grow.
+
+Use React DevTools Profiler to inspect why a subtree rendered and its durations; use a browser trace for event latency/layout/paint. Console logs are rough diagnostics and development Strict Mode changes call counts. Standard production React disables Profiler timing by default; use an appropriate profiling build when collecting production-style React timings, then measure user performance with normal production output too. Keep data/browser/hardware/settings comparable and repeat runs.
+
+**Trade-offs:** memo comparisons cost CPU and retain values; virtualization can complicate keyboard focus/measurement; splitting chunks can add waterfalls; a debounce adds latency and can lose a final event if cancelled rather than flushed. Choose cancel versus flush by domain: do not flush an autosave after its entity/user scope has changed. Server writes still need authorization/idempotency; client timing is not duplicate prevention.
+
+**Exercise:** profile one slow management-screen interaction, change exactly one hypothesis-driven bottleneck, then repeat. Acceptance: attach trace/config/data/version and a before/after table; verify behavior/a11y unchanged; record regressions and uncertainty; remove a memo that costs more than it saves. Include same-id field changes, stale callback behavior and unmount-time timer cancellation in correctness tests. Material does not supply measured results.
+
+Official references: [memo](https://react.dev/reference/react/memo), [useCallback](https://react.dev/reference/react/useCallback), [Profiler](https://react.dev/reference/react/Profiler), [react-window](https://github.com/bvaughn/react-window). React19 baseline; checked2026-10-20. Historical react-window1.x snippet is explicitly versioned; no need to master multiple virtualization libraries.

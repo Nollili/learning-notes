@@ -16,7 +16,7 @@ In an opinionated framework, many choices (like how the file system is structure
 
 A **non-opinionated framework** (also called "unopinionated") is more flexible and gives developers the freedom to structure and organize the application as they see fit. These frameworks provide fewer built-in conventions or rules and leave more choices up to the developer. The focus is on giving flexibility rather than imposing a prescribed way of working.
 
-In a non-opinionated framework, the developer has full control over how to set up routing, state management, and other critical application aspects, which might require integrating third-party libraries or implementing custom solutions.
+In a non-opinionated framework, the developer has more control over how to set up routing, state management, and other critical application aspects, which might require integrating third-party libraries or implementing custom solutions.
 
 ### **Examples of Non-Opinionated Frameworks:**
 
@@ -66,7 +66,7 @@ In a non-opinionated framework, the developer has full control over how to set u
 
 1. **Full Flexibility**: Developers have full control over the structure, technologies, and architectural decisions, allowing the application to be built exactly the way they envision.
 2. **Customization**: You can pick and choose tools, libraries, and approaches that best fit the specific needs of your project.
-3. **No Lock-in**: Since there are fewer enforced conventions, it’s easier to switch to another framework or architecture if necessary.
+3. **Different migration costs**: Fewer prescribed conventions can reduce some coupling, but routing, middleware, state libraries, build tools and deployment contracts still create dependencies. Migration is not free.
 4. **Potential for Optimization**: Developers can optimize every part of the application, using the best-suited technologies and tools for each requirement.
 
 ### **Cons:**
@@ -98,3 +98,11 @@ In a non-opinionated framework, the developer has full control over how to set u
 - **Non-opinionated frameworks** are suitable for developers who need flexibility, customization, and control over every aspect of the application. They are best for unique or complex applications that require custom solutions or where freedom is a priority.
 
 Choosing between the two largely depends on the specific requirements of your project and the development team’s preferences.
+
+### Decision exercise: evaluate a vertical slice
+
+“Opinionated” is a spectrum: a framework can prescribe routing but leave persistence open. Conventions can reduce choices while imposing upgrade constraints. Learning curve, speed and maintenance rankings above are tendencies to verify for the team's existing skills and requirements, not inherent guarantees. Security and accessibility still require application work under either style.
+
+For the primary learning route, keep React/TypeScript plus Node/Express/PostgreSQL. Compare a more prescribed framework conceptually instead of requiring mastery of every option. Separate a domain rule (for example a shipping quote function) from route/request objects; inject storage behind a documented port and map HTTP errors at the boundary. This makes particular dependencies visible without pretending to eliminate migration cost. See the [tested strategy change](../Coding_principles_patterns_conventions/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md#worked-change-inject-a-shipping-quote-rule) and [substitution contract](../Coding_principles_patterns_conventions/Can_you_decipher_SOLID_acronym_What_is_"L".md#behavioral-contracts-and-dependency-substitution).
+
+**Acceptance:** list three required capabilities, compare two candidate approaches against them, implement or trace one small request→validation→domain→storage slice in the primary stack, and write an ADR with convention benefits, escape hatches, upgrade/deployment coupling and a realistic migration cost. Keep business assertions unchanged when replacing a local adapter; test framework-specific error/lifecycle behavior separately. Learner practice remains required. Official references: [Express middleware model](https://expressjs.com/en/guide/using-middleware.html), [React framework/project choices](https://react.dev/learn/creating-a-react-app). Use documentation for the exact installed versions before selecting APIs.

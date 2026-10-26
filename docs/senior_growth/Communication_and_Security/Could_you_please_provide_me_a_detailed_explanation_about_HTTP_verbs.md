@@ -7,9 +7,9 @@ HTTP verbs (also called **methods**) define the **action** the client wants to p
 ## 1️⃣ **GET**
 
 - **Purpose:** Retrieve data from the server.
-- **Idempotent:** ✅ (multiple identical requests produce same result)
-- **Safe:** ✅ (does not modify resources)
-- **Request Body:** Usually none (ignored by most servers)
+- **Idempotent:** ✅ (same intended server effect; response representations may differ)
+- **Safe:** ✅ (client does not request a state-changing effect; incidental logging is possible)
+- **Request Body:** No generally defined GET content semantics; avoid relying on a GET body without explicit interoperable agreement
 - **Caching:** Responses can be cached.
 - **Use Case:** Fetching user data, page content, or images.
 
@@ -34,7 +34,7 @@ Host: api.example.com
 * **Purpose:** Create a new resource or trigger an action.
 * **Idempotent:** ❌ (multiple requests can create duplicates)
 * **Safe:** ❌ (modifies server state)
-* **Request Body:** Required (e.g., JSON, form data)
+* **Request Body:** API-defined; POST does not universally require content
 * **Caching:** Responses are **not cached** by default.
 * **Use Case:** Create user, submit form, trigger workflow.
 
@@ -56,7 +56,7 @@ Content-Type: application/json
 ## 3️⃣ **PUT**
 
 * **Purpose:** Replace an existing resource (or create if missing)
-* **Idempotent:** ✅ (multiple identical requests → same result)
+* **Idempotent:** ✅ (same intended replacement effect; not necessarily identical response)
 * **Safe:** ❌ (modifies server state)
 * **Request Body:** Required
 * **Caching:** Usually not cached
@@ -80,7 +80,7 @@ Content-Type: application/json
 ## 4️⃣ **PATCH**
 
 * **Purpose:** Update **part** of a resource.
-* **Idempotent:** ✅ (if applied repeatedly, same result)
+* **Idempotent:** Not inherently; depends on the patch document/operation
 * **Safe:** ❌ (modifies server state)
 * **Request Body:** Partial data describing changes
 * **Use Case:** Update a single field (e.g., email)
@@ -172,7 +172,7 @@ Allow: GET, POST, PUT, DELETE, OPTIONS
 | GET     | ✅    | ✅          | Read/fetch resource        |
 | POST    | ❌    | ❌          | Create resource / action   |
 | PUT     | ❌    | ✅          | Replace resource           |
-| PATCH   | ❌    | ✅          | Partial update             |
+| PATCH   | ❌    | Depends on operation | Partial update             |
 | DELETE  | ❌    | ✅          | Delete resource            |
 | HEAD    | ✅    | ✅          | Fetch headers only         |
 | OPTIONS | ✅    | ✅          | Discover supported methods |
@@ -187,3 +187,24 @@ Allow: GET, POST, PUT, DELETE, OPTIONS
 * **DELETE** → remove resources
 * **HEAD/OPTIONS** → meta operations, CORS, or preflight checks
 * Always respect **idempotency** and **safety** for proper REST design
+
+
+## Idempotency, concurrency and safe retries
+
+Idempotency concerns the **intended effect** of repeating an identical request. DELETE can return204 first and404 later while leaving the resource absent both times. Safe methods can still have incidental access logs, but a GET endpoint must not be designed to transfer money or unsubscribe a user. POST can define an application idempotency-key contract; the method itself does not guarantee one. PATCH can be idempotent when setting email to a fixed value, and non-idempotent when appending/incrementing.
+
+```js
+// patch-semantics.mjs
+export function setEmail(user, email) { return { ...user, email }; }
+export function incrementVisits(user) { return { ...user, visits: user.visits + 1 }; }
+const before = { email: 'old@example.test', visits: 0 };
+const once = setEmail(before, 'new@example.test');
+const twice = setEmail(once, 'new@example.test'); // Same intended state as once.
+const addedTwice = incrementVisits(incrementVisits(before)); // visits2, not visits1.
+```
+
+A retry that repeats the same intended assignment can still overwrite somebody else's concurrent update. Use a version/strong ETag with If-Match for a conditional update; the server must check the condition and perform the write atomically. A stale precondition receives412 rather than silently overwriting newer state. After an uncertain network result, fetch/reconcile the current version; do not automatically replace the precondition with the newest ETag and retry an old edit. PATCH media type defines patch semantics (for example JSON Patch or JSON Merge Patch); application/json alone in the introductory example is a custom API contract, not a standard generic patch format.
+
+**Exercise acceptance:** assert repeated setEmail produces the same state while incrementVisits changes it twice, with the original object preserved. Design one endpoint's media type, validation, authorization, expected status codes and conditional update rule. In an API integration lab, send two writes with the same version and verify only one succeeds; then simulate a lost response and explain reconciliation/retry behavior. A pure function demonstration does not prove HTTP atomicity, idempotency-key persistence or learner practice.
+
+References checked2026-10-22: [HTTP safety/idempotency](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2), [PATCH semantics/preconditions](https://www.rfc-editor.org/rfc/rfc5789.html). The networking/authentication modules provide the fuller server-side boundary; these rules apply across HTTP versions.

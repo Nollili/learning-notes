@@ -10,29 +10,29 @@ Both **Server-Side Rendering (SSR)** and **Client-Side Rendering (CSR)** are str
 
 ### **Definition**
 
-In SSR, the server generates the HTML for a page and sends it to the browser. When the browser receives the HTML, the page is fully rendered and displayed to the user. Examples include traditional server-rendered frameworks like Ruby on Rails and modern SSR-capable frameworks like Next.js.
+In SSR, the server generates the HTML for a page and sends it to the browser. The browser still parses HTML, loads applicable resources, computes styles/layout and paints; interactive React boundaries may also need hydration. Examples include traditional server-rendered frameworks like Ruby on Rails and modern SSR-capable frameworks like Next.js.
 
 ### **Pros**
 
-1. **Faster Initial Load**:
-    - HTML content is pre-rendered, so users see a fully-rendered page faster.
+1. **Earlier Content Opportunity**:
+    - Useful HTML can appear before client code builds it, but server/data/transfer delays can offset that gain. Measure the actual critical path.
 2. **SEO-Friendly**:
     - Search engines can crawl the content directly without relying on JavaScript execution.
-3. **Universal Compatibility**:
-    - Works well on devices with low computational power since rendering happens on the server.
-4. **Consistent Performance**:
-    - Does not depend on client-side resources for initial rendering.
-5. **Enhanced Security**:
-    - No exposure of sensitive business logic or data transformations to the client.
+3. **Potential Client Computation Benefit**:
+    - Moving initial component computation to the server can help, while DOM/style/layout/paint and hydration still consume client resources.
+4. **Explicit Client Resource Budget**:
+    - CSS, fonts, images, client CPU and hydration still influence visible/interactive results; SSR is not device-independent.
+5. **Server-only Implementation Boundary**:
+    - Server-only implementation can remain off the client, but HTML/serialized props are public to the recipient. Never serialize secrets; enforce authorization/cache isolation on the server.
 
 ### **Cons**
 
 1. **Higher Server Load**:
-    - Each user request triggers server processing to generate HTML.
+    - Uncached dynamic requests require rendering work; cache/static/streaming choices alter load and freshness.
 2. **Latency for Interactions**:
-    - After the initial load, dynamic interactions may require frequent server requests.
+    - Interactions can be native, client-local or server-dependent; SSR does not inherently require a round trip per interaction.
 3. **Slower Subsequent Navigation**:
-    - If not optimized (e.g., caching), moving between pages may cause full page reloads.
+    - If not optimized (e.g., caching), a traditional document navigation may reload; hybrid frameworks can use client transitions/prefetching.
 4. **Complexity in State Management**:
     - Managing application state across client and server can be challenging.
 
@@ -51,18 +51,18 @@ In CSR, the server sends a minimal HTML page and a JavaScript bundle to the clie
 2. **Reduced Server Load**:
     - The server serves static assets (HTML, JS, CSS), offloading rendering to the client.
 3. **Efficient Subsequent Navigation**:
-    - After the initial load, navigating between pages is faster as it doesn’t require full page reloads.
+    - Client routing can avoid a full document reload, but code/data/cache misses and rendering determine whether navigation is fast.
 4. **Offline Capabilities**:
     - Can leverage Service Workers to provide offline functionality.
 5. **Scalability**:
-    - Handles traffic spikes better since rendering is done on the client.
+    - Static assets can be CDN-served, while APIs/authentication/data workloads still need capacity and failure handling.
 
 ### **Cons**
 
 1. **Slower Initial Load**:
     - Users may see a blank screen or loading spinner while JavaScript is being downloaded and executed.
 2. **SEO Challenges**:
-    - Search engines may struggle to crawl JavaScript-rendered content unless pre-rendering or dynamic rendering is implemented.
+    - Crawler support, delayed JS/data execution, metadata/status and content discoverability affect indexing; neither rendering strategy guarantees search rankings.
 3. **Device Performance Dependency**:
     - Rendering depends on the client’s device capabilities, leading to poor performance on low-end devices.
 4. **Complex Build Process**:
@@ -74,16 +74,14 @@ In CSR, the server sends a minimal HTML page and a JavaScript bundle to the clie
 
 | **Aspect** | **Server-Side Rendering (SSR)** | **Client-Side Rendering (CSR)** |
 | --- | --- | --- |
-| **Rendering Location** | Server | Client (Browser) |
-| **Initial Load Time** | Faster (HTML pre-rendered) | Slower (JS execution required) |
-| **SEO** | Excellent (content readily available) | Challenging (requires pre-rendering) |
-| **Interactivity** | Slower dynamic updates | Faster, app-like interactivity |
-| **Server Load** | Higher | Lower |
-| **Subsequent Navigation** | Slower | Faster |
-| **Device Dependency** | Low | High (performance varies by device) |
-| **Caching** | Simple (cache HTML responses) | Requires advanced strategies (e.g., service workers) |
-| **Offline Support** | Minimal | Excellent with proper setup |
-| **Complexity** | Moderate | Higher |
+| **Initial computation** | Server generates initial HTML; browser still renders pixels | Browser code creates much of the content; static shell/resources may appear first |
+| **Initial latency** | Server/data/transfer/resource/hydration dependent | Bundle/data/discovery/client work dependent |
+| **Interactivity/navigation** | Native or hydrated/client transitions depending architecture | Client transitions/local interactions still depend on loaded code/data |
+| **SEO/metadata** | Crawlable HTML/status/metadata can help; no ranking guarantee | Must verify crawler-visible content/status/metadata; not universally unindexable |
+| **Caching/privacy** | Public HTML can cache; private variants need correct keys/scope | Static assets cache; query/private data still need isolation/invalidation |
+| **Offline** | A compatible service-worker/data policy can add it | Also requires explicit install/cache/update/offline mutation policy |
+| **Security** | Server-only code can stay private; serialized output must be safe | Browser code is visible; API authority always stays server-side |
+| **Operational cost** | Rendering, cache and deployment/runtime constraints | Static delivery plus client cost and backend/API operations |
 
 ---
 
@@ -103,9 +101,19 @@ In CSR, the server sends a minimal HTML page and a JavaScript bundle to the clie
 
 ---
 
-### **Hybrid Approach: Best of Both Worlds**
+### **Hybrid Approach: Explicit Boundaries and Costs**
 
 Modern frameworks like **Next.js** or **Nuxt.js** support combining SSR and CSR.
 
 - Use SSR for pages where SEO and fast initial rendering are critical.
 - Use CSR for dynamic or interactive parts of the app where performance and rich experiences matter.
+
+## Apply the primary App Router example
+
+Use the [worked Next16 App Router article page](../Web_Performance/Can_SSR_improve_first_render.md#worked-boundary-decision-primary-nextjs-app-router-stack) for a concrete Server Component boundary. The linked note distinguishes Pages Router, Server Components, streaming and Client Components and lists its missing production transport/app checks explicitly. The [form/cache hydration section](../React/complex-forms-and-data.md#ssr-and-hydration-a-cache-scope-is-a-privacy-boundary) covers request-scoped query clients and private cache ownership. Do not duplicate remote records in a second global store merely to make a client route render.
+
+A useful decision compares the same page/data/device/network across alternatives. For a stable public article, SSG/cache may avoid per-request rendering. For an authenticated editor, a server shell can coexist with client draft ownership and a private query cache. A slow server dependency can dominate TTFB in either an SSR route or a CSR API; moving its call does not remove the work. Rendering location does not determine whether a user is authorized or whether a mutation is recoverable.
+
+**Acceptance:** implement one narrow client interaction inside the server page; keep initial server/client values deterministic and verify no private HTML/serialized prop/cache leak between two sessions. Measure useful content discovery/LCP, server time, client JS/hydration and an actual interaction on cold/warm paths. Test failed/slow data, no-JS native behavior and a deliberate hydration mismatch; retain evidence and fix the cause rather than suppress all warnings. Typechecking/static HTML generation is not a Next deployment or browser performance result. Learner app/measurement practice remains required.
+
+Applicable baseline Next16.4.2 App Router/React19.3 (official docs rechecked2026-10-22): [server/client boundaries](https://nextjs.org/docs/app/getting-started/server-and-client-components), [React hydration contract](https://react.dev/reference/react-dom/client/hydrateRoot). Framework version/configuration must accompany caching/deployment conclusions.

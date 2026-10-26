@@ -1,0 +1,10 @@
+[project]
+name = "learning-notes-mcp-b175"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "anyio==4.15.1",
+    "httpx2==2.16.0",
+    "mcp==2.3.0",
+    "pydantic==2.14.1",
+]

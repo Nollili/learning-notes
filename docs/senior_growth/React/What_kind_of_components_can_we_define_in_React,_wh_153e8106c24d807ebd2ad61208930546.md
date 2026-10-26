@@ -74,7 +74,7 @@ class Counter extends Component {
 ### **When to Use**:
 
 - In legacy React applications or when maintaining older codebases.
-- For complex use cases that existed before hooks.
+- For a custom error boundary using the supported class API; a maintained boundary library can expose a convenient function-oriented usage API.
 
 ---
 
@@ -84,12 +84,12 @@ class Counter extends Component {
 
 ### **Definition**:
 
-A special type of class component that implements a shallow comparison in `shouldComponentUpdate`. It helps optimize performance by re-rendering only when necessary.
+A special type of class component that implements a shallow comparison in `shouldComponentUpdate`. It can skip rendering when shallowly compared props/state are unchanged; own context and React lifecycle behavior still matter.
 
 ### **Characteristics**:
 
 - Similar to regular class components but optimized.
-- Automatically prevents unnecessary renders for performance.
+- Shallow comparison is an optimization; mutable nested props can hide required changes.
 
 ### **Example**:
 
@@ -126,6 +126,8 @@ A Higher-Order Component is a function that takes a component as input and retur
 ### **Example**:
 
 ```jsx
+import { useEffect } from 'react';
+
 const withLogging = (WrappedComponent) => {
   return (props) => {
     useEffect(() => {
@@ -151,12 +153,12 @@ const HelloWithLogging = withLogging(Hello);
 
 ### **Definition**:
 
-A performance optimization technique for functional components using `React.memo`. It prevents re-renders if props haven’t changed.
+A performance optimization technique for functional components using `React.memo`. It can skip parent-driven rendering when props compare equal; it is not a rendering guarantee.
 
 ### **Characteristics**:
 
 - Similar to `PureComponent` but for functional components.
-- Uses shallow comparison for props.
+- Compares each prop with Object.is by default; state/context updates can still render.
 
 ### **Example**:
 
@@ -184,11 +186,13 @@ const Greeting = React.memo(({ name }) => {
 - Example:
     
     ```jsx
+    import { useState } from 'react';
+
     const ControlledInput = () => {
       const [value, setValue] = useState("");
     
       return (
-        <input value={value} onChange={(e) => setValue(e.target.value)} />
+        <label>Name <input value={value} onChange={(e) => setValue(e.target.value)} /></label>
       );
     };
     ```
@@ -200,17 +204,21 @@ const Greeting = React.memo(({ name }) => {
 - Example:
     
     ```jsx
+    import { useRef, useState } from 'react';
+
     const UncontrolledInput = () => {
-      const inputRef = useRef();
+      const inputRef = useRef(null);
+      const [submitted, setSubmitted] = useState('');
     
       const handleSubmit = () => {
-        console.log(inputRef.current.value);
+        setSubmitted(inputRef.current?.value ?? '');
       };
     
       return (
         <div>
-          <input ref={inputRef} />
-          <button onClick={handleSubmit}>Submit</button>
+          <label>Name <input ref={inputRef} /></label>
+          <button type="button" onClick={handleSubmit}>Submit</button>
+          <output>{submitted}</output>
         </div>
       );
     };
@@ -234,6 +242,36 @@ const Greeting = React.memo(({ name }) => {
 ### **Conclusion**
 
 - **Use Functional Components**: They are the modern and preferred way to build React applications.
-- **Avoid Class Components**: Use only for legacy codebases or if required by older libraries.
+- **Class components remain supported**: prefer functions for new ordinary components; a custom error boundary is a current class-API use case.
 - **Optimize with Hooks and Memoization**: Combine `useMemo`, `useCallback`, and `React.memo` for performance-critical apps.
 - **Encapsulate Logic**: Use HOCs or custom hooks to abstract shared functionality.
+
+## A current class use case: a contained render failure
+
+Function components cannot implement getDerivedStateFromError/componentDidCatch as hooks. A custom boundary uses the supported class API, or choose a maintained error-boundary integration. A try/catch around creating a JSX element does not catch a later descendant render failure.
+
+```tsx
+// panel-boundary.tsx
+import { Component } from 'react';
+import type { ReactNode } from 'react';
+type Props = { children: ReactNode; reportFailure?: (code: 'PANEL_RENDER_FAILED') => void };
+type State = { failed: boolean };
+export class PanelBoundary extends Component<Props, State> {
+  state: State = { failed: false };
+  static getDerivedStateFromError(): State { return { failed: true }; }
+  componentDidCatch(): void { this.props.reportFailure?.('PANEL_RENDER_FAILED'); }
+  render() {
+    return this.state.failed ? <p role="alert">This panel is unavailable.</p> : this.props.children;
+  }
+}
+```
+
+The fallback hides raw exception messages/stacks and replaces only this subtree. The optional reportFailure callback belongs to a safe bounded telemetry adapter and must not throw; the example sends a fixed category, not props/PII/error payloads. Boundary errors themselves need an outer fallback. Typical event-handler/timer/unawaited-promise failures need their own handling; this boundary is not an HTTP error handler or a server-rendering recovery guarantee. React has specific transition/error integration behavior; use the installed version's documented contract rather than assuming every asynchronous exception is caught.
+
+Changing only children after a caught failure keeps this boundary in its failed state. A deliberate parent-owned key such as recordId/attempt can remount it when navigation or an explicit recovery action justifies a new attempt. Resetting blindly while the same child still throws creates a repeated failure, not recovery. Keyed remount also discards local subtree state and affects focus; preserve unrelated user drafts elsewhere. Do not retry a committed server mutation just because a UI boundary reset.
+
+**Acceptance drill:** render a throwing child with an unaffected sibling outside the boundary; require a safe alert, intact sibling and fixed telemetry code without the private exception string. Rerender a healthy child with the same key and verify fallback persists; change the recovery key and verify the healthy child appears. Confirm a still-throwing child remains a failure after remount. Typecheck the exact boundary and keep render recovery evidence separate from browser focus/AT, server errors and learner practice.
+
+Validated baseline React19.3.0/@types/react19/TypeScript5.9.3. Official reference checked2026-10-22: [Component and error boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary). Hooks and performance wrappers are separate from this error-containment capability.
+
+For working reducer/ref contracts, continue with the [pure reducer and scoped Context examples](./What_Are_React_Hooks_Good_For_Rules_of_Hooks.md#refs-pure-reducers-scoped-context-and-custom-hooks) and [typed imperative ref facade](./Have_you_used_React_with_TypeScript.md#narrow-imperative-ref-facade). These are implementations with ownership/validation exercises, not merely hook names.

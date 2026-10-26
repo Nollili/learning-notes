@@ -2,7 +2,7 @@
 
 ### **1. React.memo**
 
-* **Purpose:** `React.memo` is a **Higher-Order Component (HOC)** used to **memoize functional components**. It prevents unnecessary re-renders when props **haven’t changed**.
+* **Purpose:** `React.memo` is a **Higher-Order Component (HOC)** used to **memoize functional components**. It can skip parent-driven work when props compare equal; state/context updates can still render it. This is an optimization, not a correctness guarantee.
 * **How it works:**
 
   ```jsx
@@ -13,12 +13,14 @@
 
   * React does a **shallow comparison of props** by default.
   * If props are the same as the previous render, React **skips rendering** this component.
-* **Custom comparison:** You can provide your own function if you need **deep comparison** or special logic:
+* **Custom comparison:** return true only when output and behavior are equivalent. Include every used field/function; prefer default comparison or simpler primitive props over expensive deep comparison:
 
   ```jsx
   const MyComponent = React.memo(
     ({ data }) => <div>{data.value}</div>,
-    (prevProps, nextProps) => prevProps.data.id === nextProps.data.id
+    (prevProps, nextProps) =>
+       prevProps.data.id === nextProps.data.id &&
+       Object.is(prevProps.data.value, nextProps.data.value)
   );
   ```
 
@@ -103,3 +105,20 @@ You can structure this part around **common causes of slowness** and **tools/tec
  Beyond `React.memo`, performance optimization includes: proper **state placement** to avoid unnecessary parent re-renders, **memoizing functions and computed values** with `useCallback` and `useMemo`, **list virtualization** for long lists, and **code-splitting** with `React.lazy` and `Suspense`.
 
  Profiling with **React DevTools** is essential to find the real bottlenecks, because often what seems slow isn’t the actual problem. Overall, optimization is about balancing **render cost** against **memoization overhead**, and targeting the real performance hotspots rather than premature optimization.”
+
+## Correctness before comparison cost
+
+The old id-only comparator was incorrect: same-id/value-change updates left the screen stale. If a component also receives onSelect, the comparator must account for that function; otherwise it can retain a callback closing over old state. Mutable nested data can destroy the previous snapshot so even a custom comparator cannot recover what changed. Immutable ownership is a correctness prerequisite, not just a speed trick.
+
+```jsx
+import { memo } from 'react';
+export const ValueCell = memo(function ValueCell({ id, value, onSelect }) {
+  return <button onClick={() => onSelect(id)}>{value}</button>;
+}); // Default per-prop Object.is; every output/behavior input is visible.
+```
+
+The arrow inside ValueCell is created when that component renders; it does not undermine its own memo boundary. A fresh wrapper created by the parent and passed as onSelect can defeat a boundary. Do not omit a dependency or callback comparison merely to suppress rendering.
+
+**Exercise:** change data.value while retaining id, change callback behavior without changing visible text, then update local state/context. Acceptance: every change behaves correctly; unchanged primitive props can skip parent-driven work; a stale comparator test fails before the fix. Profile comparison versus render cost under representative rows. No speed improvement is claimed until measured.
+
+Official references: [memo/custom comparator pitfalls](https://react.dev/reference/react/memo), [Profiler](https://react.dev/reference/react/Profiler). React19 baseline; checked2026-10-20. React Compiler can apply automatic memoization when enabled; these manual examples teach identity/contracts and should not be layered on blindly.

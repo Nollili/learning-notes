@@ -58,11 +58,11 @@ observable.subscribe({
 | **Aspect** | **Observable** | **Promise** |
 | --- | --- | --- |
 | **Emissions** | Emits multiple values over time | Resolves to a single value |
-| **Cancelation** | Can be unsubscribed | Cannot be canceled after initiation |
-| **Lazy/Eager** | Lazy: Executes only upon subscription | Eager: Executes immediately upon creation |
-| **Type** | Reactive (push-based) | Imperative (pull-based) |
+| **Cancellation** | Unsubscribe stops notifications; underlying work stops only through implemented teardown | No built-in cancellation; the operation can support a separate AbortSignal |
+| **Lazy/Eager** | A cold producer can start per subscription; hot/shared sources may already be running | new Promise executor runs immediately; a function may defer creating the operation |
+| **Delivery** | Push notifications; not automatically demand/backpressure aware | One eventual settlement observed through scheduled reactions; not a pull-stream protocol |
 | **Methods** | Rich operators (e.g., map, filter, merge) | Limited chaining methods (`then`, `catch`) |
-| **Control** | Observer can control via subscription | Promise resolves once, uncontrollable |
+| **Control** | Subscription/teardown and operator policy; producer may still ignore cancellation | Operation lifecycle is separate from promise settlement |
 | **Error Handling** | Errors can be handled in streams | Handled via `catch` or `try-catch` |
 
 ---
@@ -73,13 +73,13 @@ observable.subscribe({
 
 1. **Multiple Emissions**: For data streams or event-based systems (e.g., user input, WebSocket messages).
 2. **Real-time Data**: For continuous updates, like live stock prices or chat applications.
-3. **Cancelation**: When you need to cancel ongoing operations easily (e.g., aborting an API call when a component unmounts).
+3. **Cancelation**: When an owned producer/adapter implements teardown that aborts the underlying operation.
 4. **Complex Data Pipelines**: When you need to process data streams with operators (e.g., combining or filtering streams).
 
 ### **Use Promise When**:
 
 1. **Single Value**: For one-time operations (e.g., an HTTP request or file read).
-2. **Immediate Execution**: When you need to resolve or reject a task immediately.
+2. **Simple ownership**: One bounded async operation is enough; defer its creation in a function when needed.
 3. **Simple Error Handling**: When handling errors in a straightforward manner suffices.
 4. **Browser API Integration**: Many modern browser APIs (e.g., `fetch`, `async/await`) use Promises natively.
 
@@ -103,15 +103,9 @@ stockPrices.subscribe({
 
 ```
 
-### **Promise Example: Fetching API Data**
+### **Promise example: owned HTTP data**
 
-```jsx
-fetch('https://api.example.com/data')
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error('Error:', error));
-
-```
+Use the [bounded HTTP adapter](../State_management_and_Redux/What_are_middlewares,_how_to_handle_asynchronous_actions.md#primary-http-flow-bounded-adapter-plus-request-owner) with an explicit AbortSignal, checked status/media/schema, size cap and safe errors. A successful fetch promise alone does not imply HTTP200 or valid JSON. Observe the returned promise and handle failure/cancellation at the caller.
 
 ---
 
@@ -119,4 +113,55 @@ fetch('https://api.example.com/data')
 
 In some scenarios, Promises and Observables can complement each other:
 
-- Use Promises for one-time async operations and convert them into Observables if needed using RxJS's `from` or `toPromise` functions.
+- from(promise) observes an already-created promise; it does not restart/cancel its underlying work. A factory/defer can create work per subscription. RxJS7.8.2 deprecates toPromise: use firstValueFrom or lastValueFrom with an explicit completion/timeout policy.
+
+## Bounded conversion and owned teardown
+
+```ts
+// bounded-observable-promises.ts
+import { firstValueFrom, lastValueFrom, take, timeout, type Observable } from 'rxjs';
+function checkedWait(waitMs: number): void {
+  if (!Number.isSafeInteger(waitMs) || waitMs < 1 || waitMs > 5000) throw new Error('Invalid wait budget');
+}
+export function firstNumber(source: Observable<number>, waitMs = 1000): Promise<number> {
+  checkedWait(waitMs);
+  return firstValueFrom(source.pipe(timeout({ first: waitMs })));
+}
+export function lastOfThree(source: Observable<number>, waitMs = 1000): Promise<number> {
+  checkedWait(waitMs);
+  return lastValueFrom(source.pipe(take(3), timeout({ first: waitMs, each: waitMs })));
+}
+```
+
+firstValueFrom unsubscribes after the first value, including0; lastValueFrom waits for completion. take(3) caps emissions but alone does not terminate a silent source, so the timeout matters. Empty completion rejects with EmptyError unless an explicitly meaningful defaultValue is supplied. A source error rejects the promise; callers must catch it. These timer budgets cannot preempt a synchronous producer blocking the JavaScript event loop. Cancellation of an external await still needs an operation/subscription owner, not an assumption that promises can be cancelled.
+
+```ts
+// owned-observable.ts
+import { Observable } from 'rxjs';
+export function eventValues(target: EventTarget, type: string): Observable<Event> {
+  return new Observable(subscriber => {
+    const listener = (event: Event) => subscriber.next(event);
+    target.addEventListener(type, listener);
+    return () => target.removeEventListener(type, listener);
+  });
+}
+export function fromAbortable<T>(work: (signal: AbortSignal) => Promise<T>): Observable<T> {
+  return new Observable(subscriber => {
+    const controller = new AbortController();
+    try {
+      void work(controller.signal).then(value => {
+        if (!subscriber.closed) { subscriber.next(value); subscriber.complete(); }
+      }, () => { if (!subscriber.closed) subscriber.error(new Error('Resource unavailable')); });
+    } catch {
+      subscriber.error(new Error('Resource unavailable'));
+    }
+    return () => controller.abort();
+  });
+}
+```
+
+These are cold wrappers: each subscription owns one registration/controller and teardown. A Subject is hot: next can happen with no subscribers and is not replayed to late subscribers unless a replaying abstraction is chosen. Sharing/replay operators change ownership: one consumer leaving must not unexpectedly stop another's work. A controller abort request does not force an ignoring library/promise to stop or undo a committed write; this wrapper also prevents late notifications after unsubscribe. RxJS subscription disposal is not automatic stream backpressure.
+
+**Acceptance:** verify no registration/work before subscription, separate work for two cold subscriptions, exact listener removal/abort on unsubscribe, late success/rejection not delivered, and no unhandled rejection. Test first0, finite last, empty/error/silent source timeout and invalid wait budgets. Contrast a hot Subject emission before subscription with a cold source; document the owner and disposal of shared work. Advanced RxJS orchestration is optional for this learning path; primary one-shot async remains Promises/async-await, and learner introductory practice is still separate from supplied material.
+
+Validated baseline RxJS7.8.2/TypeScript5.9.3/Node24.18.0. Official references checked2026-10-22: [RxJS Observable guide](https://rxjs.dev/guide/observable), [promise conversion deprecation](https://rxjs.dev/deprecations/to-promise), [firstValueFrom official source](https://github.com/ReactiveX/rxjs/blob/7.8.2/src/internal/firstValueFrom.ts). The installed7.8.2 package source/declarations were inspected because the documentation site's text requires JavaScript.

@@ -2,7 +2,7 @@
 
 ## What is React Router?
 
-React Router is a library designed to manage navigation in Single Page Applications (SPAs). It allows users to change the browser's URL and navigate through different views within the application without refreshing the page. React Router operates entirely on the client-side, which means users experience seamless transitions between different pages without making additional requests to the server.
+React Router is a library designed to manage navigation in Single Page Applications (SPAs). It allows users to change the browser's URL and navigate through different views within the application without refreshing the page. Declarative client navigation can avoid a full document reload, while loaders/API calls may still make server requests. Data and framework modes add data loading, actions and rendering integrations; React Router as a whole is not exclusively client-rendered.
 
 **Core components of React Router:**
 
@@ -12,18 +12,20 @@ React Router is a library designed to manage navigation in Single Page Applicati
 
 ---
 
+Version baseline for the preserved component-routing examples: React Router7.18.4 compatibility exports from react-router-dom, React19. Current docs also show8.5.0; that major is an upgrade alternative, not assumed API compatibility. Full-stack framework labs use Next; this is the client-router branch of the study stack. Checked2026-10-21.
+
 ## Installing React Router
 
 Install React Router by running:
 
 ```bash
-npm install react-router-dom
+npm install react-router-dom@7.18.4
 ```
 
-To install a specific version:
+For an explicitly historical v6 project:
 
 ```bash
-npm install react-router-dom@6
+npm install react-router-dom@6.30.6 # Historical v6 compatibility lab, not an additional requirement
 ```
 
 ---
@@ -75,7 +77,7 @@ export default App;
 
 **Important Points:**
 
-- **Routes:** Wraps all `Route` components, ensuring only one route is rendered at a time.
+- **Routes:** Wraps all `Route` components, selecting a matching route branch, which can render parent layouts and nested children.
 - **Route:** Maps a URL path to a component.
 - **element:** Specifies which component to render when the path is matched.
 
@@ -114,7 +116,7 @@ function App() {
 
 ---
 
-## Programmatic Navigation with Link Component
+## Declarative Navigation with Link
 
 The `Link` component creates navigational links without reloading the page:
 
@@ -174,7 +176,7 @@ function Movie() {
 For multiple parameters:
 
 ```jsx
-<Route path="/movies/:movieId" element={<Movie />} />
+<Route path="/users/:userId/movies/:movieId" element={<Movie />} />
 
 import { useParams } from "react-router-dom";
 
@@ -400,9 +402,11 @@ Protect routes based on authentication or roles.
 import { Navigate } from "react-router-dom";
 
 function PrivateRoute({ children }) {
-    const isAuthenticated = useAuth();
+    const { status } = useAuth();
+    if (status === "loading") return <p role="status">Checking session…</p>;
+    const isAuthenticated = status === "authenticated";
 
-    return isAuthenticated ? children : <Navigate to="/login" />;
+    return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 ```
 
@@ -412,10 +416,12 @@ function PrivateRoute({ children }) {
 import { Navigate } from "react-router-dom";
 
 function RoleBasedRoute({ children, requiredRole }) {
-    const { isAuthenticated, userRole } = useAuth();
+    const { status, userRole } = useAuth();
+    if (status === "loading") return <p role="status">Checking session…</p>;
+    const isAuthenticated = status === "authenticated";
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" />;
+        return <Navigate to="/login" replace />;
     }
 
     if (userRole !== requiredRole) {
@@ -428,9 +434,9 @@ function RoleBasedRoute({ children, requiredRole }) {
 
 ---
 
-### Using createBrowserRouter (Router 6.26.0)
+### Using createBrowserRouter (data-router API introduced in v6.4; compatible example for pinned v7)
 
-Create a router instance with a declarative approach:
+Create a data-router instance outside rendering; do not wrap RouterProvider in an additional BrowserRouter:
 
 ```jsx
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -456,3 +462,54 @@ export default App;
 ## Conclusion
 
 Advanced routing topics like code splitting, nested routes, and private routes are essential for building large-scale, performant React applications. By utilizing these features, developers can create highly optimized SPAs with improved performance, security, and scalability.
+## Route contracts, failures and navigation ownership
+
+The guard snippets assume an application-owned useAuth hook returning `{ status: 'loading' | 'anonymous' | 'authenticated', userRole?: string }`. They are UI decisions only. Authentication/authorization must also happen on every protected backend read/write; directly requesting an endpoint bypasses client routing. A fake navigate-to-dashboard click does not implement login. Sanitize any returnTo to an allowed internal path; never navigate to an arbitrary user-provided absolute URL after authentication.
+
+A missing route and a missing entity are separate states; showing a useful not-found view usually helps more than silently redirecting every typo home. BrowserRouter deployments need a deliberate document/deep-link fallback at the host while API/assets retain correct404 behavior. HashRouter avoids some host rewrites but changes URLs and is an alternative, not a universal fix. Nested paths inherit parent params; a userId cannot appear merely because a component destructures it. Treat params/query values as untrusted strings and define parsing/default/bounds policies.
+
+```jsx
+// v7 data-router module: a worked loader boundary; API/auth server supplied by exercise.
+import { createBrowserRouter, useLoaderData, useRouteError, isRouteErrorResponse, useRevalidator } from 'react-router-dom';
+export async function movieLoader({ params, request }) {
+  const id = params.movieId;
+  if (!id || !/^[a-z0-9-]{1,80}$/i.test(id)) throw new Response('Not found', { status: 404 });
+  const response = await fetch(`/api/movies/${encodeURIComponent(id)}`, { signal: request.signal });
+  if (!response.ok) {
+    await response.body?.cancel();
+    throw new Response('Movie unavailable', { status: response.status });
+  }
+  const value = await response.json();
+  if (!value || typeof value !== 'object' || typeof value.id !== 'string' || typeof value.title !== 'string') {
+    throw new Error('Invalid movie response');
+  }
+  return { id: value.id, title: value.title };
+}
+function MovieDetails() {
+  const movie = useLoaderData();
+  return <main><h1>{movie.title}</h1></main>;
+}
+function MovieFailure() {
+  const error = useRouteError();
+  const revalidator = useRevalidator();
+  const missing = isRouteErrorResponse(error) && error.status === 404;
+  return <main><h1>{missing ? 'Movie not found' : 'Movie could not load'}</h1>
+    {!missing && <button type="button" disabled={revalidator.state !== 'idle'}
+      onClick={() => revalidator.revalidate()}>Retry</button>}
+  </main>;
+}
+export const movieRouter = createBrowserRouter([
+  { path: '/movies/:movieId', loader: movieLoader, element: <MovieDetails />, errorElement: <MovieFailure /> },
+  { path: '*', element: <main><h1>Page not found</h1></main> }
+]);
+```
+
+This uses navigation cancellation via request.signal; add an owned total deadline/body byte bound for production. A Response-based route error is UI control flow, not a substitute for the real API's status/authentication policy. Do not display raw exception/response text containing private details. Initial pending, navigation pending, empty list, entity absence, recoverable failure and stale data need different UI; data mode useNavigation helps represent transitions. Route loaders and a query cache can integrate, but avoid two independent owners making duplicate fetches for the same data.
+
+The earlier ScrollToTop is a simple example, not complete restoration: back/forward often should restore prior position, hash navigation needs its target, and reduced-motion preferences/focus need consideration. Change document title and focus intentionally for page-like navigation; don't steal focus on every query-string update. setSearchParams replaces the query unless preserving other keys explicitly; history state is not a durable shareable URL contract. navigate(-1) may leave the app or lack an intended prior entry; provide a known fallback when appropriate.
+
+Unsaved drafts need a data-mode blocker plus an accessible confirm/discard flow, and a separate browser-unload policy where applicable. useBlocker covers supported SPA navigation, not every document/external exit; beforeunload is limited/unreliable on some mobile paths and cannot guarantee data retention. Persist drafts with version/user/expiry rules when justified. Do not invent a synchronous browser-confirm workflow as complete accessibility. See the subsequent complex-form lesson for draft state ownership.
+
+**Exercise:** build nested user/movie routes, a search query and edit draft using the pinned router. Acceptance: direct links/refresh/back/forward work; both declared params are validated; invalid/missing/401/403/500/slow/cancelled cases show correct safe states; rapid navigation cannot render stale movie data; loading auth does not flash a login redirect; server rejects unauthorized direct calls; draft stay/discard and external-exit limitations are tested; title/focus/scroll and keyboard announcements remain usable. Retain real browser/router tests and distinguish a loader contract check from full navigation behavior. Router/React packages are not installed or executed in this notes repository.
+
+Official references checked2026-10-21: [v7.18.4 modes](https://reactrouter.com/7.18.4/start/modes), [data loading](https://reactrouter.com/7.18.4/start/data/data-loading), [useBlocker](https://reactrouter.com/7.18.4/api/hooks/useBlocker), [React client root](https://react.dev/reference/react-dom/client/createRoot).

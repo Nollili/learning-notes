@@ -28,9 +28,7 @@ The useContext hook allows a component to read the current value of a context. I
   const value = useContext(MyContext);
   ```
 
-- **useReducer:** Represents the possibility to deal with complex state management inside the component. Typically, should be avoided in favor of useState. One of the core benefits is the ability to run multiple setters during one rendering cycle.
-
-MUST NOT be confused with Redux and other approaches created for a state management. Should be used only for updates on a component level.
+- **useReducer:** Groups related transitions into a pure reducer when named actions/invariants are clearer than separate setters. It is not generally discouraged. State still belongs to the component invoking the hook, and a provider can share that state/dispatch through Context. It does not supply Redux's store/selectors/middleware automatically. See the [scoped reducer lesson](../React/What_Are_React_Hooks_Good_For_Rules_of_Hooks.md#refs-pure-reducers-scoped-context-and-custom-hooks).
   ```js
   const [state, dispatch] = useReducer(reducer, initialState);
   ```
@@ -78,7 +76,7 @@ Custom hooks are one of the most powerful concepts in React, enabling developers
 - They allow developers to encapsulate any logic, making applications more modular and maintainable.
 - With custom hooks, you can significantly enhance your development process, making code cleaner, reusable, and more efficient.
 
-In modern JavaScript/TypeScript projects, enforcing code quality is **automated using various tools**, often integrated with **pre-commit hooks, CI/CD pipelines, and IDEs**. This ensures code quality is maintained **before code reaches the repository**.
+In modern JavaScript/TypeScript projects, enforcing code quality is **automated using various tools**, often integrated with **pre-commit hooks, CI/CD pipelines, and IDEs**. These tools provide feedback on configured checks; they cannot establish overall correctness. React hooks above and Git lifecycle hooks below are different concepts.
 
 ---
 
@@ -98,25 +96,19 @@ In modern JavaScript/TypeScript projects, enforcing code quality is **automated 
 
 ## 2️⃣ Integration with Hooks
 
-**Pre-commit hooks** ensure code meets quality standards **before it is committed**:
+**Pre-commit hooks** run local feedback checks before a normal commit; they can be bypassed:
 
-**Example with Husky + lint-staged:**
-```json
-{
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": ["eslint --fix", "prettier --write"],
-    "*.tsx": ["eslint --fix", "prettier --write"]
-  }
-}
+**Current Husky setup in an independent practice repository:** install a compatible pinned Husky release as a dev dependency, then run npx husky init. Review the generated prepare script and .husky/pre-commit. Keep existing lifecycle scripts when integrating; do not overwrite a submission template. The old package.json husky.hooks object is a legacy configuration and is not the current setup.
+
+```sh
+# .husky/pre-commit — after the installed Husky version initializes its hook runner
+npm run lint
 ```
 
+A lint-staged alternative installs/configures that tool explicitly and invokes its local binary from the hook; commands receive staged filenames. Avoid hand-built shell filename splitting. Fixers can change partially staged working files, so test the selected tool's staging behavior. This primary example uses the full small lint target, not a pretend staged-only command.
+
 * **Behavior:**
-  * When committing code, `lint-staged` runs ESLint and Prettier **only on staged files**.
+  * When committing code, The hook above runs the configured full lint target; lint-staged is a separately configured alternative.
   * Failing linting prevents the commit.
 
 **Optional:** Pre-push hooks can also run:
@@ -129,7 +121,7 @@ In modern JavaScript/TypeScript projects, enforcing code quality is **automated 
 
 ## 3️⃣ CI/CD Enforcement
 
-Even with hooks, **CI/CD pipelines** provide a **secondary enforcement layer**:
+Even with hooks, **CI/CD pipelines** rerun checks independently of local hooks:
 
 - Runs full linting, formatting, unit tests, coverage, and security checks
 - Prevents merging code that passes local hooks but fails global rules
@@ -150,8 +142,17 @@ Even with hooks, **CI/CD pipelines** provide a **secondary enforcement layer**:
 
 - Tools like **ESLint, Prettier, Stylelint, Jest, SonarQube** are essential for code quality.
 - **Hooks (pre-commit, pre-push)** enforce standards **locally before code leaves the developer’s machine**.
-- Combined with **CI/CD pipelines**, this ensures **high-quality, consistent, and maintainable code** across the team.
+- Combined with required CI checks, this improves feedback and enforces the selected rules; review and behavior testing remain necessary.
 
 > 💡 Senior Tip:  
-> Always use **hooks for developer productivity** and **CI/CD for enforcement at the team level**. Local hooks catch issues early, CI ensures nothing slips through.
+> Always use **hooks for developer productivity** and **CI/CD for enforcement at the team level**. Local hooks catch issues early, protected CI checks enforce configured gates; untested behavior and misconfiguration can still slip through.
 
+
+
+## Verify enforcement without touching the submission template
+
+Use the [minimal lint/type/test/build lab](./What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). Test a passing source, an ESLint violation and a type error; the gate must stop with a nonzero exit. A hook is developer convenience, not a security boundary: HUSKY=0 or Git options can bypass it. Required CI/status checks and repository policy are separate administrative configuration, not implemented by this document. No push is part of this exercise; only the user may push.
+
+**Acceptance:** explain React versus Git hooks, reducer/Context ownership, initialized .husky files and bypass behavior. In an isolated Git practice checkout, install the pinned compatible hook release, inspect the generated runner and demonstrate both an allowed and blocked local commit without changing src/tests. Hook installation/commit behavior itself remains learner practice here; the gate commands are checked separately.
+
+References checked2026-10-24: [Husky current initialization](https://typicode.github.io/husky/get-started.html), [React useReducer](https://react.dev/reference/react/useReducer), [React reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context).

@@ -57,7 +57,7 @@ A **release strategy** defines **how and when new versions of software are deliv
 
 **Pros:**  
 - Near-zero downtime.
-- Easy rollback.
+- Fast traffic rollback only when the old application remains compatible with current data/configuration and side effects.
 
 **Cons:**  
 - More infrastructure needed.
@@ -93,14 +93,14 @@ A **release strategy** defines **how and when new versions of software are deliv
 
 ---
 
-## 2️⃣ Release Strategy on Our Project
+## 2️⃣ Example Release Strategy (adapt to an actual project)
 
 - **Versioning:** Semantic Versioning (`MAJOR.MINOR.PATCH`)  
 - **CI/CD Pipeline:**  
   - CI ensures code passes tests.  
   - CD deploys to **staging automatically**.  
   - Production deployment requires **manual approval** (Continuous Delivery).  
-- **Branching:** Git Flow  
+- **Branching:** One possible policy is Git Flow; a short-lived branch/trunk policy may fit a continuous delivery project better.  
 - **Quality Checks:** Linting, unit tests, SonarQube, automated build.  
 - **Deployment Monitoring:** Rollback if issues are detected.  
 
@@ -123,9 +123,8 @@ Open source projects have additional considerations: **community usage, backward
    - PATCH: bug fixes
 
 2. **Git Branching**
-   - `main` → stable releases  
-   - `develop` → ongoing development  
-   - `feature/*` → experimental contributions
+   - Choose a documented policy appropriate to maintainers/release lines.
+   - A main branch with short-lived reviewed feature branches is sufficient for many projects; develop is not mandatory.
 
 3. **Automated CI**
    - Run tests for **pull requests**.
@@ -153,3 +152,58 @@ Open source projects have additional considerations: **community usage, backward
 
 > 💡 Senior Tip:  
 > Open source projects benefit from **automated release pipelines** with **pre-release tags**, allowing contributors to test before a stable release. This minimizes disruptions for end users.
+
+
+## Backward compatibility includes writers and data
+
+Application rollback changes an artifact/traffic route; it does not reverse committed database transformations, messages, payments or user edits. A down migration can recreate a dropped column's shape while losing its values. A snapshot/PITR restore has a recovery point and may omit legitimate later writes; test on an isolated target and reconcile before cutover. See the [database migration lab](../../node-js/module-08-postgresql-mikroorm.md#production-migration-design) for the primary PostgreSQL/MikroORM path.
+
+For a name→display_name rename, keep one canonical field during each phase. A naive new-reader fallback to display_name can return stale data when old writers update only name. This compatibility sequence makes that failure explicit:
+
+| Phase | Readers / writers | Canonical source | Rollback boundary |
+|---|---|---|---|
+| Old schema | V1 uses name | name | V1 |
+| Expand nullable display_name | V1 and bridge V2; V2 writes both atomically, reads name | name | V1/V2 compatible; shadow may lag after V1 writes |
+| Drain/block old-only writers, final guarded backfill | Bridge V2 only | name until verified cutover | Roll back to V2, not arbitrary V1 writers |
+| New reads, dual writes | V3 reads display_name and writes both | display_name | V2 remains compatible while dual writes preserve name |
+| Final artifact then contract | V4 reads/writes display_name only; remove all old readers/writers before dropping name | display_name | Once V4-only writes start, old readers can be stale; after drop V1/V2/V3 also lack required columns |
+
+Close the old-reader rollback window **before V4-only writes begin**, even if the old column has not yet been dropped: name can become stale immediately. Restoring old-reader compatibility requires a separately guarded resynchronization, not simply retaining the old column.
+
+Backfill in bounded resumable batches with a concurrency/version guard or a database-specific ownership protocol, then verify nulls, equality and invariants under real concurrent writes. A read of name followed later by an unguarded write to display_name can overwrite newer data. Do not switch canonical reads until old-only writers are prevented from returning and the final reconciliation succeeds. Review background jobs, consumers and scripts as writers too.
+
+```js
+// release-compatibility.mjs — a model of column contracts, not a database driver
+function required(row, field) {
+  if (!Object.hasOwn(row, field)) throw new Error(`Missing column: ${field}`);
+  return row[field];
+}
+export function readLabel(version, row) {
+  return required(row, version <= 2 ? 'name' : 'display_name');
+}
+export function writeLabel(version, row, value) {
+  const fields = version === 1 ? ['name'] : version === 4 ? ['display_name'] : ['name', 'display_name'];
+  for (const field of fields) required(row, field);
+  const result = { ...row };
+  for (const field of fields) result[field] = value;
+  return result;
+}
+export function backfillWithoutConcurrentWriters(row) {
+  return { ...row, display_name: required(row, 'name') };
+}
+export function contract(row) {
+  required(row, 'display_name');
+  const { name, ...remaining } = row;
+  return remaining;
+}
+```
+
+This pure model intentionally does not implement migrations, atomic dual writes, locking, background jobs or deployment infrastructure. Its backfill is safe only under the stated no-concurrent-writers condition; the real migration needs the database-specific guard. Versions1–4 are the fixed lab fixtures, not user-provided API values. Show the compatibility matrix before running a rollback command, and enforce a tested allowlist of rollback artifacts in a real pipeline.
+
+**Exercise acceptance:** show a V1 write leaves the expanded shadow stale, V2 still reads the correct canonical value, final backfill plus V3 dual write preserves V2 rollback, a V4-only write makes V2 stale even before contract, and V4 survives contract while V1/V2 reads and V3 writes fail. Then run the corresponding primary PostgreSQL migrations/old-new artifacts in an isolated integration lab, including a concurrent writer and a failed/restarted backfill. Require zero lost updates, verified constraints, bounded lock/statement time and an explicit point after which forward repair replaces old-artifact rollback. Keep the immutable build artifact/version, migration state, smoke results and recovery limits. The JavaScript model proves none of the database/deployment properties by itself; learner integration/recovery practice remains required.
+
+References checked2026-10-22: [PostgreSQL16 isolation](https://www.postgresql.org/docs/16/transaction-iso.html), [SRE canary analysis](https://sre.google/workbook/canarying-releases/). Primary lab uses PostgreSQL16.13/MikroORM7.2.5; do not assume a generic down method is data-safe.
+
+## Packaged-artifact and real database checkpoint
+
+Continue with the [artifact/schema compatibility lab](../../node-js/release-artifact-compatibility.md). It packages four actual Node storage contracts and tests the matrix against PostgreSQL16, including old-role write rejection, stale-backfill protection and the point where V4-only writes make an old reader stale. The local experiment complements the pure model above; no hosted pipeline/traffic deployment or backup restore is claimed. Complete the integration exercise before claiming rollback capability.

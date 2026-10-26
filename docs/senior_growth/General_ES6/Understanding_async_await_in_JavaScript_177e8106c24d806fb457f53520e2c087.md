@@ -13,7 +13,7 @@
 
 ### **What is `await`?**
 
-- The `await` keyword is used inside `async` functions to pause the execution of the function until a Promise resolves.
+- await suspends an async function until the awaited value settles; rejection throws at that expression. It also works at the top level of an ES module (ES2022), but not an ordinary classic script/CJS top level.
 - It makes your code easier to read by avoiding `.then` chains.
 
 ---
@@ -26,11 +26,12 @@ Here’s a simple example:
 async function fetchData() {
   console.log("Fetching data...");
   const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+  if (!response.ok) { await response.body?.cancel(); throw new Error(`HTTP ${response.status}`); }
   const data = await response.json();
   console.log("Data fetched:", data);
 }
 
-fetchData();
+fetchData().catch(console.error);
 ```
 
 ### **What Happens Here**:
@@ -51,10 +52,11 @@ When using `async/await`, you can handle errors with a `try...catch` block:
 async function fetchDataWithErrorHandling() {
   try {
     const response = await fetch("https://nonexistenturl.com");
-    const data = await response.json();
+    if (!response.ok) { await response.body?.cancel(); throw new Error(`HTTP ${response.status}`); }
+  const data = await response.json();
     console.log("Data fetched:", data);
   } catch (error) {
-    console.error("An error occurred:", error.message);
+    console.error("An error occurred:", error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -80,13 +82,17 @@ async function fetchMultiple() {
       fetch("https://jsonplaceholder.typicode.com/posts?userId=1"),
     ]);
 
+    if (!userResponse.ok || !postsResponse.ok) {
+      await Promise.allSettled([userResponse.body?.cancel(), postsResponse.body?.cancel()]);
+      throw new Error("One resource returned an HTTP failure");
+    }
     const user = await userResponse.json();
     const posts = await postsResponse.json();
 
     console.log("User:", user);
     console.log("Posts:", posts);
   } catch (error) {
-    console.error("Error fetching data:", error.message);
+    console.error("Error fetching data:", error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -113,8 +119,8 @@ fetchMultiple();
     example().then(console.log); // Logs: "Hello!"
     ```
     
-2. **Await Only Works Inside Async Functions**:
-    - If you try to use `await` outside an `async` function, it will throw a syntax error.
+2. **Await context matters**:
+    - Use it inside async functions or at ES-module top level. A non-async nested function does not inherit permission to await. Module top-level await delays dependent module evaluation; avoid accidental startup cycles.
 3. **Blocking Behavior**:
     - `await` pauses the execution of the current function but doesn’t block the entire program.
 
@@ -126,7 +132,10 @@ fetchMultiple();
 
 ```jsx
 fetch("https://jsonplaceholder.typicode.com/posts/1")
-  .then((response) => response.json())
+  .then(async response => {
+    if (!response.ok) { await response.body?.cancel(); throw new Error(`HTTP ${response.status}`); }
+    return response.json();
+  })
   .then((data) => console.log(data))
   .catch((error) => console.error(error));
 ```
@@ -137,14 +146,15 @@ fetch("https://jsonplaceholder.typicode.com/posts/1")
 async function fetchData() {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
-    const data = await response.json();
+    if (!response.ok) { await response.body?.cancel(); throw new Error(`HTTP ${response.status}`); }
+  const data = await response.json();
     console.log(data);
   } catch (error) {
     console.error(error);
   }
 }
 
-fetchData();
+fetchData().catch(console.error);
 ```
 
 - **`async/await` is cleaner and easier to read**, especially when handling multiple asynchronous steps.
@@ -155,3 +165,37 @@ fetchData();
 
 - Use `async/await` when you want more readable and maintainable code for asynchronous operations.
 - It’s particularly useful when you need to process a sequence of asynchronous steps that depend on each other.
+## Total lifetimes and failure-aware concurrent work
+
+The short examples above explain syntax and HTTP status; a complete caller also needs deadlines/body-size limits, parsed output and cancellation. Fetch fulfills on headers even if the body is still pending. HTTP404/500 does not reject fetch by itself. Independent work can overlap, but Promise.all rejection alone leaves other work running.
+
+```js
+async function loadJsonPair(urls, parentSignal) {
+  if (urls.length !== 2) throw new RangeError('Exactly two URLs required');
+  const controller = new AbortController();
+  const signal = AbortSignal.any([
+    controller.signal, AbortSignal.timeout(5_000),
+    ...(parentSignal ? [parentSignal] : []),
+  ]);
+  const jobs = urls.map(async url => {
+    const response = await fetch(url, { signal });
+    if (!response.ok) {
+      await response.body?.cancel();
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return await response.json(); // Deadline remains active through body consumption.
+  });
+  try { return await Promise.all(jobs); }
+  catch (error) {
+    controller.abort(error);
+    await Promise.allSettled(jobs); // Drain before handing resource ownership back.
+    throw error;
+  } finally { controller.abort(); }
+}
+```
+
+This Node22.7+/24-compatible example uses AbortSignal.any/timeout; check browser API support separately. It is intentionally bounded to two requests; a large collection needs the foundations limiter/producer queue. JSON parsing remains synchronous once bytes are assembled and must not accept arbitrarily large bodies. If dependencies ignore cancellation, they need their own finite driver deadlines. User cancellation is not a reason to retry a write; a timed-out remote write can already have completed.
+
+**Exercise:** use controlled fetch doubles/local responses for success, HTTP error, invalid JSON, delayed body and pre-aborted parent. Acceptance: both independent jobs start before either is awaited; first failure aborts/drains its peer; no stale result is committed; errors reach the caller; ESM top-level await works and classic-script top-level await fails parsing. Record runtime and cleanup evidence; syntax alone does not prove these cases.
+
+Official references: [Node ESM top-level await](https://nodejs.org/api/esm.html#top-level-await), [Node AbortSignal](https://nodejs.org/api/globals.html#class-abortsignal), [ECMAScript async functions](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-asyncfunction-objects). Checked2026-10-20. The bounded limiter and total-body budget lesson is in [Node foundations](../../node-js/module-01-nodejs-foundations.md).

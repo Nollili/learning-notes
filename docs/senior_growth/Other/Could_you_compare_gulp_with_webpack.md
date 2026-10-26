@@ -34,7 +34,7 @@ gulp.task('scripts', () => {
 });
 
 gulp.task('default', gulp.parallel('styles', 'scripts'));
-````
+```
 
 ### Pros
 
@@ -64,7 +64,7 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 ### Example
 
 ```javascript
-// webpack.config.js
+// webpack.config.cjs (CommonJS config, including inside a type:module project)
 const path = require('path');
 
 module.exports = {
@@ -108,7 +108,7 @@ module.exports = {
 | Code Splitting           | Not native                | Built-in                          |
 | Configuration Complexity | Moderate                  | Can be high                       |
 | Ecosystem                | Plugins for various tasks | Loaders and plugins for assets    |
-| Performance Optimization | Manual                    | Automatic (tree shaking, caching) |
+| Performance Optimization | Task/plugin dependent      | Configuration/module-format/side-effect dependent |
 
 ---
 
@@ -132,8 +132,19 @@ module.exports = {
 ### ✅ Summary
 
 * **Gulp** → Task runner, flexible, good for automation.
-* **Webpack** → Module bundler, optimized builds, essential for modern SPAs.
+* **Webpack** → Module bundler, dependency-graph builds; one option alongside the primary Vite route, not essential for every SPA.
 * Often, teams use **both together**: Webpack for bundling + Gulp for auxiliary tasks (like copying assets).
 
 > 💡 Senior Tip:
 > For **modern React/Angular/Vue projects**, **Webpack (or Vite/Rollup)** is usually preferred. Use **Gulp only for additional automation** if needed.
+
+
+## Optimization and debugging contracts
+
+The snippets above illustrate Gulp task/stream and webpack5 configuration shapes; they require declared compatible plugins/loaders and their actual configuration. They are not evidence that a fresh Gulp/webpack application was installed here. Keep the primary Vite/TypeScript route and learn these alternatives' responsibilities without mastering every build tool.
+
+Tree shaking depends on statically analyzable module exports/imports (commonly ESM), side-effect information and production optimization/minification. It does not follow merely from “Webpack is installed.” Marking an entire package `sideEffects:false` when CSS registration or initialization has effects can remove required behavior. Preserve actual effectful files, for example an illustrative `sideEffects: ["**/*.css", "./src/register.js"]`, and test the application. Transpiling syntax is also distinct from supplying missing runtime APIs/polyfills.
+
+Use the existing [host-resolution/source-map workbench](../React/build_tools.md#worked-lab-typechecking-host-resolution-and-private-source-maps). Its retained B31 checks actually typecheck browser aliases, execute NodeNext output, map a minified external-map failure to the exact source line and verify private map staging. They do not claim a webpack runtime or deployed browser error-service integration. TypeScript `paths` guides checking, while the bundler/test/runtime must resolve the corresponding specifier; one succeeding tool does not prove the others agree.
+
+**Exercise acceptance:** create a small ESM fixture with one unused export and one effectful registration/CSS file; compare the emitted graph/size and observable behavior under correct/incorrect side-effect metadata. Capture a generated stack, map it using the exact matching release map and reject a mismatched map. Reproduce an alias that typechecks but fails bundling, then fix the actual host configuration. Retain versions/commands/diff and measure rather than asserting automatic speed gains. Learner practice remains required. References: [webpack tree shaking/sideEffects](https://webpack.js.org/guides/tree-shaking/), [webpack source-map choices](https://webpack.js.org/configuration/devtool/), [Vite build options](https://vite.dev/config/build-options).

@@ -36,7 +36,7 @@ A web app that loads a single HTML page and dynamically updates content as the u
 
 ### **Definition**
 
-A traditional web app structure where each interaction or request loads a new page from the server, with separate HTML files for each page.
+An application whose page navigations generally retrieve a new HTML document per URL. Forms and widgets may still use JavaScript; templates can be shared and HTML need not be separate static source files.
 
 ### **Pros**
 
@@ -62,7 +62,7 @@ A traditional web app structure where each interaction or request loads a new pa
 
 ### **Definition**
 
-A hybrid of web and mobile apps that uses modern web capabilities to deliver an app-like experience. PWAs are installable, work offline, and leverage browser features like service workers.
+A web application using progressive browser capabilities such as installation and designed offline behavior where supported. These capabilities can be added to SPA, MPA, SSR or SSG architectures; a PWA label does not guarantee every capability on every browser.
 
 ### **Pros**
 
@@ -75,7 +75,7 @@ A hybrid of web and mobile apps that uses modern web capabilities to deliver an 
 
 - **Limited Device Access**: Does not have access to all device APIs (e.g., Bluetooth, advanced hardware features).
 - **Browser Support**: While support is widespread, some features may not work in certain browsers.
-- **SEO Considerations**: Like SPAs, may require additional work for optimal SEO.
+- **SEO Considerations**: Depend on rendered content, URLs/metadata/status and crawlability; PWA capabilities themselves do not determine SEO.
 
 ### **Use Cases**
 
@@ -90,15 +90,15 @@ A hybrid of web and mobile apps that uses modern web capabilities to deliver an 
 ### **Server-Side Rendered Apps (SSR)**
 
 - **Definition**: The server generates and sends fully rendered HTML pages to the browser on request.
-- **Pros**: SEO-friendly, fast initial load time.
+- **Pros**: Can provide useful initial HTML and crawlable content; actual load speed depends on server work, caching, transfer and client hydration.
 - **Cons**: Higher server load, slower client-side interactivity.
 - **Use Cases**: News portals, SEO-critical apps.
 
 ### **Static Site Generators (SSG)**
 
 - **Definition**: Pre-builds HTML pages during build time and serves them as static files.
-- **Pros**: Ultra-fast load times, highly SEO-friendly, minimal server requirements.
-- **Cons**: Content updates require a rebuild and deployment process.
+- **Pros**: Cacheable prebuilt HTML and low request-time rendering work; actual user latency still depends on bytes, network and client processing.
+- **Cons**: Prebuilt content needs an explicit freshness/rebuild/incremental-generation policy; private or rapidly changing data requires a separate authorized strategy.
 - **Use Cases**: Blogs, documentation websites (e.g., using Gatsby, Hugo, or Next.js).
 
 ### **Hybrid Apps**
@@ -112,10 +112,14 @@ A hybrid of web and mobile apps that uses modern web capabilities to deliver an 
 
 ## **When to Choose Each App Type**
 
-| **Criteria** | **SPA** | **MPA** | **PWA** | **SSR** | **SSG** |
-| --- | --- | --- | --- | --- | --- |
-| SEO Importance | Moderate (with SSR/SSG) | High | Moderate | High | Very High |
-| Interactivity | High | Low | High | Moderate | Moderate |
-| Performance (Initial Load) | Moderate | Low | High (with proper caching) | High | Very High |
-| Offline Capability | No | No | Yes | No | Limited |
-| Development Complexity | High | Low | Moderate | Moderate | High |
+The earlier pros/cons are tendencies, not rankings. An MPA can be highly interactive; an SPA can be server-rendered; either can implement offline capabilities. Performance, SEO and maintenance depend on the implementation and workload.
+
+| Decision axis | Questions to answer |
+|---|---|
+| Navigation | Full document routes, client transitions, or a measured hybrid? |
+| HTML generation | Request-time SSR, build-time SSG, client rendering, or per-route mix? |
+| Capability | Which installation/offline/device features are supported and actually implemented? |
+| Data/security | Which content is public/cacheable, how fresh, and which actions require current server authorization? |
+| Verification | What are the device/network/browser, accessibility, latency and failure acceptance criteria? |
+
+Continue with [rendering and capability workflows](./Rendering_and_Capability_Workflows.md): an operable HTML baseline, explicit public-only service-worker policy, update/security trade-offs and native-browser practice criteria. Its local policy checks do not establish deployed offline support. Learner practice remains required.

@@ -12,7 +12,7 @@ The concept of **Micro Frontends** extends the principles of **Microservices** (
 2. **Independent Deployments**: Micro frontends are deployed independently, allowing each team to release updates without having to wait for other parts of the system to be updated.
 3. **Technology Agnostic**: Teams can choose their preferred tools, frameworks, or libraries for their micro frontend. For instance, one part of the UI could be built with **React**, while another might be built with **Vue.js** or **Angular**.
 4. **Encapsulation**: Each micro frontend is responsible for its own functionality, state, and UI, and communicates with other parts of the application through defined interfaces or APIs.
-5. **Single Page Application (SPA)**: The end product still feels like a single-page application (SPA) for the user, but it is composed of multiple smaller frontends working together.
+5. **Composition choice**: Microfrontends may form SPA transitions, separate document routes or server-composed pages. Independent domain/team ownership does not require a SPA or multiple frameworks.
 
 ---
 
@@ -30,9 +30,9 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 1. **Scalability**:
     - Teams can work on different features or sections of the application in parallel, improving scalability.
-    - Different teams can independently deploy, test, and release their parts of the application without affecting others.
+    - Different teams can independently deploy, test, and release their parts of the application within documented compatibility boundaries; shared contracts can still affect other parts.
 2. **Technology Flexibility**:
-    - Micro frontends allow teams to use different technologies that suit the feature requirements or team expertise. One team could use React, while another could use Vue or Angular, without causing conflicts.
+    - Micro frontends allow teams to use different technologies that suit the feature requirements or team expertise. One team could use React, while another could use Vue or Angular, while managing shared dependency, styling, routing and runtime contracts; conflicts do not disappear automatically.
 3. **Independent Deployment**:
     - Each micro frontend can be deployed independently, which reduces the coordination overhead that comes with deploying monolithic applications. If one part of the application needs a new feature or fix, it can be updated independently of others.
 4. **Easier Maintenance**:
@@ -92,10 +92,16 @@ Micro frontends are particularly useful in the following scenarios:
 3. **Multiple Frameworks or Technologies**:
     - When different parts of the application require different technologies or frameworks (e.g., one feature might be better suited for **React**, while another is suited for **Angular** or **Vue**), micro frontends allow flexibility in choosing the best tool for each job.
 4. **Need for Independent Deployment**:
-    - If your organization needs the flexibility to release features or updates independently, micro frontends make it possible to deploy parts of the app without affecting others.
+    - If your organization needs the flexibility to release features or updates independently, micro frontends make it possible to deploy parts of the app within documented compatibility boundaries; shared contracts can still affect other parts.
 
 ---
 
 ### **Conclusion**
 
 Micro frontends are an architectural pattern that allows you to split a complex front-end application into smaller, independent modules, making it easier to manage, scale, and develop. They promote flexibility, faster development cycles, and independent deployment. However, they also introduce challenges like performance overhead, consistency, and integration complexity. Micro frontends work best for large-scale applications with multiple domains, teams, and frequent releases, but require careful planning to implement effectively.
+
+### Worked introductory contract and failure boundary
+
+Use [the versioned custom-element example](./Rendering_and_Capability_Workflows.md#optional-microfrontend-contract-one-versioned-custom-element) for a real event payload/version/allowlist/lifecycle contract. Its JSDOM check covers safe text, rejected versions/extra fields/IDs and disconnect/reconnect cleanup. The host keeps ordinary links on module-load failure and still relies on server authorization. Same-page custom elements/Shadow DOM do not sandbox a malicious remote module; independent releases need compatibility and rollback evidence.
+
+Practice: reproduce the event checks, define shell/child ownership and a contract-version policy, fail module loading and preserve core navigation, then compare integration cost with one modular React app. This is introductory coverage; an advanced independently deployed microfrontend system is optional. Native browser/a11y/deployment and learner evidence remain required. [HTML custom-element specification](https://html.spec.whatwg.org/multipage/custom-elements.html) defines the lifecycle used here.

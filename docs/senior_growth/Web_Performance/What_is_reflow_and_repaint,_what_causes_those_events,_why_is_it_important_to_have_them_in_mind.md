@@ -24,7 +24,7 @@ Reflow (layout) is when the browser recalculates the position and size of elemen
 - Adding or removing elements from the DOM
 - Changing element size, margin, padding, border, font-size, etc.
 - Resizing the window or changing device orientation
-- Accessing layout properties like `offsetHeight`, `scrollTop`
+- Reading geometry such as offsetHeight/getBoundingClientRect can force a synchronous style/layout flush when needed after invalidating changes; not every read always performs layout.
 - Modifying the DOM structure or updating classes that affect layout
 
 **Why care?**  
@@ -42,7 +42,7 @@ Repaint redraws the visual appearance of elements without affecting their layout
 - CSS animations that only affect paint properties
 
 **Why care?**  
-Repaints are less expensive than reflows but still consume CPU/GPU resources.
+Paint and layout costs depend on affected content, rasterization, invalidation and device; an expensive paint can dominate a small layout.
 
 ---
 
@@ -59,10 +59,10 @@ Frequent reflows and repaints:
 
 | ❌ Inefficient | 💡 Better Practice |
 |---------------|-------------------|
-| Setting styles one by one | Batch DOM updates (use classes, `requestAnimationFrame`) |
+| Repeated dirty read/write cycles | Measure needed geometry together, then apply owned writes |
 | Reading layout after changing styles | Separate read and write operations |
-| Manipulating the DOM inside loops | Use `DocumentFragment` or update off-DOM |
-| Forcing layout in JavaScript | Debounce resize/scroll event handlers |
+| Interleaved geometry reads and writes in loops | Separate phases; a DocumentFragment is not a guaranteed faster path |
+| Expensive repeated geometry/layout work | Reduce scope/work and choose a deliberate event scheduling policy |
 | Animating layout properties | Animate `transform` or `opacity` instead |
 
 ---
@@ -79,9 +79,9 @@ Frequent reflows and repaints:
 
 | Concept            | What It Does                | Cost      | Triggered By                       |
 |--------------------|----------------------------|-----------|------------------------------------|
-| **Reflow (Layout)**| Recalculates geometry      | 🔴 High   | DOM/CSS changes affecting layout   |
-| **Repaint (Paint)**| Redraws visual styles      | 🟠 Medium | Visual (non-layout) changes        |
-| **Composite**      | Merges painted layers      | 🟢 Low    | GPU compositing                    |
+| **Reflow (Layout)**| Recalculates geometry      | Workload-dependent   | DOM/CSS changes affecting layout   |
+| **Repaint (Paint)**| Redraws visual styles      | Workload-dependent | Visual (non-layout) changes        |
+| **Composite**      | Merges painted layers      | Workload/layer-dependent    | GPU compositing                    |
 
 ---
 
@@ -92,3 +92,34 @@ Frequent reflows and repaints:
 > 💡 *Reflow rearranges pixels; repaint recolors them.*  
 > Both can slow rendering if overused—optimize for smooth UI.
 
+
+
+## Worked read/write ordering, with explicit ownership
+
+```js
+function lockMeasuredWidths(boxes) {
+  const elements = Array.from(boxes);
+  const previous = elements.map(box => ({ width: box.style.width, boxSizing: box.style.boxSizing }));
+  const widths = elements.map(box => box.offsetWidth); // Physical border-box integer width; read phase.
+  elements.forEach((box, index) => {
+    box.style.boxSizing = 'border-box';
+    box.style.width = widths[index] + 'px';
+  });
+  let disposed = false;
+  return () => {
+    if (disposed) return; disposed = true;
+    elements.forEach((box, index) => {
+      box.style.width = previous[index].width;
+      box.style.boxSizing = previous[index].boxSizing;
+    });
+  };
+}
+```
+
+This intentionally locks physical widths until teardown; it is not a general responsive-layout recommendation. offsetWidth includes border/padding and ignores transforms, with integer rounding; setting border-box width preserves that particular measurement approximately. Hidden elements can measure0. The function assumes one owner of these inline properties and stable supplied elements; another owner's later writes would be overwritten on restore. Prefer CSS layout when no measurement is needed.
+
+A first geometry read can flush already dirty layout; subsequent reads without intervening invalidation may reuse it. The code's read-before-write order removes its own per-item alternation, not every possible layout in a browser frame. requestAnimationFrame schedules a callback before a rendering opportunity; reads after writes inside it can still force layout, and expensive work still blocks the main thread. DocumentFragment batches insertion semantics but does not make eventual style/layout free or guarantee fewer/faster flushes. Transform/opacity can avoid layout in suitable animations, while layer promotion/raster/memory remain costs; will-change is not a universal acceleration switch.
+
+**Acceptance:** assert all geometry reads precede the owned writes and teardown restores the original properties once. Then compare a deliberately interleaved variant and this variant in an allowed native browser using the same DOM/data/viewport and trace. Inspect actual layout call stacks, preserved dimensions, hidden/zoomed content and subsequent responsiveness. A DOM simulation/order test cannot measure native layout cost; native trace and learner results remain unperformed.
+
+Official guidance checked2026-10-22: [layout/forced-read diagnosis](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing), [React render versus commit](https://react.dev/learn/render-and-commit).

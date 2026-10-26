@@ -57,24 +57,24 @@ One of the biggest differences between arrow functions and traditional functions
 ```jsx
 function Counter() {
   this.count = 0;
-  setInterval(function() {
-    this.count++;  // `this` refers to the global object or window, not Counter
+  this.timer = setInterval(function() {
+    this.count++;  // Host timer receiver, not the Counter instance (Window in browser; Timeout in Node).
     console.log(this.count);
   }, 1000);
 }
 
 const counter = new Counter();
-// Here `this.count` would be undefined because `this` is referring to the global object
+// The instance count stays0; the timer callback mutates its host receiver, often producing NaN.
 ```
 
-In this example, the `this.count++` line doesn’t work as expected because the traditional function inside `setInterval` gets its own `this` (the global object, or `window` in browsers), not the `Counter` instance.
+In this example, the `this.count++` line doesn’t work as expected because the host invokes the regular callback with a receiver (Window for browser timers, Timeout for Node timers), not the Counter instance.
 
 ### **Arrow Function Example (Using `this`)**:
 
 ```jsx
 function Counter() {
   this.count = 0;
-  setInterval(() => {
+  this.timer = setInterval(() => {
     this.count++;  // `this` refers to the Counter instance due to lexical scoping
     console.log(this.count);
   }, 1000);
@@ -117,8 +117,9 @@ const button = document.querySelector('button');
 const counter = {
   count: 0,
   increment: function() {
-    setInterval(function() {
-      this.count++;  // `this` is undefined or refers to global object, not `counter`
+    if (this.timer !== undefined) return; // Do not overwrite a live timer handle.
+    this.timer = setInterval(function() {
+      this.count++;  // Host timer receiver, not counter; do not predict one universal output.
       console.log(this.count);
     }, 1000);
   }
@@ -129,7 +130,7 @@ button.addEventListener('click', function() {
 });
 ```
 
-- The `setInterval` function creates a new function execution context, so the `this` inside it refers to the **global object** (in browsers, it's `window`), not the `counter` object as you might expect.
+- The timer host chooses the regular callback receiver; in browsers it is Window, while Node timers use a Timeout object. The source method receiver is not automatically retained.
 - As a result, `this.count++` doesn’t work as intended, because `this` does not refer to the `counter` object.
 
 ### **How Arrow Functions Fix the Issue:**
@@ -141,7 +142,8 @@ const button = document.querySelector('button');
 const counter = {
   count: 0,
   increment: function() {
-    setInterval(() => {
+    if (this.timer !== undefined) return; // Do not overwrite a live timer handle.
+    this.timer = setInterval(() => {
       this.count++;  // `this` refers to the `counter` object because of lexical scoping
       console.log(this.count);
     }, 1000);
@@ -185,8 +187,9 @@ const button = document.querySelector('button');
 const counter = {
   count: 0,
   increment: function() {
-    setInterval(function() {
-      this.count++;  // `this` will refer to the global object (or `window` in browsers)
+    if (this.timer !== undefined) return; // Do not overwrite a live timer handle.
+    this.timer = setInterval(function() {
+      this.count++;  // Host timer receiver: browser Window or Node Timeout, not counter.
       console.log(this.count);
     }, 1000);
   }
@@ -200,7 +203,7 @@ button.addEventListener('click', function() {
 ### **Why the Problem Happens:**
 
 - The function inside `setInterval` is a **regular function**. In JavaScript, regular functions define their own `this` based on how they are called.
-- In this case, when the `setInterval` callback function is executed, `this` refers to the **global object** (`window` in browsers), not the `counter` object.
+- Timer receiver behavior is host-defined: browser Window versus Node Timeout. Neither is the source counter merely because the callback was written inside its method.
 
 ### **How Arrow Functions Fix This:**
 
@@ -211,7 +214,8 @@ const button = document.querySelector('button');
 const counter = {
   count: 0,
   increment: function() {
-    setInterval(() => {
+    if (this.timer !== undefined) return; // Do not overwrite a live timer handle.
+    this.timer = setInterval(() => {
       this.count++;  // `this` refers to the `counter` object due to lexical scoping
       console.log(this.count);
     }, 1000);
@@ -242,13 +246,13 @@ Imagine you have a class method that uses a callback, but the callback loses `th
 function MyObject() {
   this.value = 10;
   setTimeout(function() {
-    this.value++;  // `this` will not refer to `MyObject`, but to the global object
+    this.value++;  // Host timer receiver, not the MyObject instance.
     console.log(this.value);
   }, 1000);
 }
 
 const obj = new MyObject();
-// `this.value` will throw an error or be undefined because `this` inside the callback is not the object
+// Instance value remains10; a missing host-receiver value becomes NaN when incremented.
 ```
 
 ### **Arrow Function (Fixes `this` in Callback):**
@@ -296,7 +300,7 @@ const person = {
 };
 
 person.greet();
-// Output: `undefined says hello!` three times because `this` refers to the global object
+// Output depends on the host receiver's name; it is not person.name.
 ```
 
 ### **How Arrow Functions Fix the Problem:**
@@ -328,7 +332,7 @@ person.greet();
 
 ## **4. Arrow Functions with Methods (Caution)**
 
-While arrow functions are great for event handlers and callbacks, they **should not be used as object methods** because they do not have their own `this` (they inherit `this` from the surrounding context). This can cause issues when trying to access `this` inside a method of an object.
+While arrow functions are great for event handlers and callbacks, they should not be used when an object property function needs a dynamic receiver, because they do not have their own `this` (they inherit `this` from the surrounding context). This can cause issues when trying to access `this` inside a method of an object.
 
 ### **Example with Arrow Function (Problem):**
 
@@ -336,18 +340,18 @@ While arrow functions are great for event handlers and callbacks, they **should 
 const obj = {
   value: 10,
   increment: () => {
-    this.value++;  // `this` does not refer to `obj`, it refers to the global context
+    this.value++;  // Captures the enclosing this, not obj; top-level ESM this is undefined.
     console.log(this.value);
   }
 };
 
-obj.increment();  // Output: `undefined` because `this` refers to the global object, not `obj`
+obj.increment(); // Classic browser script: often NaN; ESM top level: TypeError (this is undefined).
 ```
 
 ### **Why This Doesn’t Work:**
 
 - Arrow functions **inherit `this`** from their surrounding context, and in this case, the `increment` method is defined as an arrow function in the object, so `this` does not refer to the object itself (`obj`).
-- Instead, `this` refers to the **global context**, which may lead to unexpected results.
+- Instead, `this` comes from the enclosing environment: undefined at top-level ESM, module.exports in a Node CJS file, or the browser global in a classic script.
 
 ### **Correct Approach (Using Regular Functions):**
 
@@ -379,6 +383,79 @@ obj.increment();  // Output: 11
 
 ### **Limitations:**
 
-- Arrow functions **should not be used as methods** of objects, as they don’t have their own `this`.
+- Arrow properties can be suitable when lexical this is intended; use regular methods for dynamic receivers. Class field arrows intentionally capture the instance but allocate a function per instance.
 - They **cannot be used as constructors** (with the `new` keyword).
 - Arrow functions are not suitable for **every situation**; there are cases where the flexibility of regular functions is necessary.
+## A call-site decision table
+
+| Call/context | Receiver |
+|---|---|
+| `object.method()` (regular function) | object |
+| Detached `const f=object.method; f()` | undefined in strict code; global substitution in sloppy plain calls |
+| `f.call(x)`, `f.apply(x,args)`, `f.bind(x)` | Explicit/bound receiver for regular functions; arrows keep lexical this |
+| `new Constructor()` | Newly constructed receiver, with constructor return rules |
+| Top-level arrow in ESM / CJS file / classic browser script | Captures undefined / module.exports / browser global respectively |
+| Native DOM listener regular function | Usually event.currentTarget during dispatch; use the event explicitly for clarity |
+| Timer regular function | Host-supplied receiver; do not infer from the enclosing method |
+
+Object literal braces do not establish a this binding. Arrows also have no own arguments, super or new.target binding: references resolve through enclosing suitable environments. They are not constructors and have no constructor prototype property. call/apply/bind can supply arguments but cannot replace an arrow's this; bind still creates a wrapper and changes identity.
+
+```js
+function makeReader(prefix) {
+  const read = (...parts) => `${prefix}:${this.name}:${parts.join(',')}`;
+  return read;
+}
+const read = makeReader.call({ name: 'Ada' }, 'user');
+console.log(read.call({ name: 'Grace' }, 'x')); // user:Ada:x
+function outer() { return () => arguments[0]; }
+console.log(outer('captured')('ignored')); // captured
+```
+
+## Owned callbacks instead of unbounded click-started timers
+
+The earlier interval snippets demonstrate receiver behavior only. Retain each returned handle, clear it when its owner stops, and do not start another interval on every click. A complete synchronous ticker can make this contract explicit:
+
+```js
+class Ticker {
+  count = 0;
+  timer = undefined;
+  constructor(clock = globalThis) { this.clock = clock; }
+  start() {
+    if (this.timer !== undefined) return;
+    this.timer = this.clock.setInterval(() => { this.count += 1; }, 1_000);
+  }
+  stop() {
+    if (this.timer !== undefined) {
+      this.clock.clearInterval(this.timer);
+      this.timer = undefined;
+    }
+  }
+}
+// const ticker = new Ticker(); ticker.start(); ... owner cleanup: ticker.stop();
+```
+
+For DOM binding, retain the exact callback reference and return a disposer that removes it and stops the ticker. An anonymous new arrow passed to removeEventListener is a different function and will not remove the original listener. Async polling needs a different completion-driven loop: setInterval does not wait for async work and can overlap requests.
+
+**Exercise:** inject a fake clock into Ticker, test duplicate starts/stop/restart, then bind start to a real button with a disposer. Acceptance: one active timer maximum, expected count increments, no callbacks after stop, listener removed by exact identity; compare a method call, detached method and lexical arrow under CJS/ESM/browser contexts. Explain why passing a fresh wrapper to a memoized React child changes prop identity even if its body calls a cached function.
+
+Official references: [ECMA functions/arrows/classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html), [Node timers](https://nodejs.org/api/timers.html), [WHATWG timers](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers). Checked2026-10-20; runtime/fake-clock examples use Node24.18.0. Browser/native listener behavior remains a separate practice check.
+
+## Strictness placement and constructor calls
+
+A directive must be in a script/function directive prologue, not arbitrarily after executable statements. ESM and class bodies are strict automatically. A function with default/rest/destructured parameters cannot contain its own `"use strict"` directive: that is a syntax error. Use an enclosing strict script/module rather than insert an invalid directive inside such a function. See the [strict-mode lesson](./What_is_the_significance%2C_and_what_are_the_benefit_177e8106c24d80e4ad82da2f259c18c5.md).
+
+```js
+// Run as ESM (strict automatically).
+function Label(name) { this.name = name; }
+const receiver = { name: 'original' };
+const BoundLabel = Label.bind(receiver, 'fixed');
+const label = new BoundLabel();
+console.log(label.name, receiver.name, label instanceof Label); // fixed original true
+// new ignores the bound receiver; leading bound arguments still apply.
+const arrow = () => ({ name: 'result' });
+// new arrow(); // TypeError: arrow has no [[Construct]].
+function ReplacesInstance() { this.name = 'instance'; return { name: 'replacement' }; }
+console.log(new ReplacesInstance().name); // replacement: explicit object return wins.
+```
+
+A regular constructor returning a primitive normally keeps its created receiver; an explicit object return can replace it. Derived class constructors have additional super/return constraints. Do not infer constructor capability merely from typeof value being function: arrows and methods can be callable without being constructible. **Acceptance:** run the new/bind examples, verify new-arrow and detached strict-call errors, and demonstrate valid/invalid directive placement in separate parsed fixtures. Browser receiver observations remain separate learner practice.

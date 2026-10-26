@@ -40,7 +40,7 @@ export default ParentComponent;
 
 **How It Works**:
 
-- The `ChildComponent` only re-renders if the `data` prop changes.
+- Equal data props can skip parent-driven renders; local state/context can still update the child.
 - Prevents unnecessary rendering when the `ParentComponent` updates for reasons unrelated to `ChildComponent`.
 
 **Tradeoff**:
@@ -57,35 +57,31 @@ export default ParentComponent;
 **Usage**:
 
 ```jsx
-import React, { useState, useMemo } from 'react';
-
-const ExpensiveCalculation = ({ num }) => {
-  const calculateFactorial = (n) => {
-    console.log('Calculating factorial');
-    return n <= 1 ? 1 : n * calculateFactorial(n - 1);
-  };
-
-  const factorial = useMemo(() => calculateFactorial(num), [num]);
-
-  return <div>Factorial of {num}: {factorial}</div>;
-};
-
-const ParentComponent = () => {
-  const [count, setCount] = useState(1);
-  return (
-    <div>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-      <ExpensiveCalculation num={count} />
-    </div>
-  );
-};
-
-export default ParentComponent;
+import { useState, useMemo } from 'react';
+function factorial(n) {
+  if (!Number.isInteger(n) || n < 0 || n > 18) throw new RangeError('Use integer0–18');
+  let result = 1;
+  for (let i = 2; i <= n; i++) result *= i;
+  return result;
+}
+function Calculation({ num }) {
+  const result = useMemo(() => factorial(num), [num]);
+  return <p>{num}! = {result}</p>;
+}
+export default function MemoLab() {
+  const [num, setNum] = useState(1);
+  const [unrelated, setUnrelated] = useState(0);
+  return <>
+    <button onClick={() => setNum(n => Math.min(18, n + 1))}>Change calculation input</button>
+    <button onClick={() => setUnrelated(n => n + 1)}>Unrelated update {unrelated}</button>
+    <Calculation num={num} />
+  </>;
+}
 ```
 
 **How It Works**:
 
-- The `factorial` is only recalculated when `num` changes, reducing redundant calculations.
+- The unrelated parent update renders Calculation but can reuse its cached factorial value. Changing num invalidates that value. This bounded factorial is cheap; it demonstrates behavior, not a justified production optimization or measured benefit.
 
 **Tradeoff**:
 
@@ -96,7 +92,7 @@ export default ParentComponent;
 ### 3. **useCallback**
 
 - Memoizes a callback function.
-- Prevents the recreation of functions during renders, which is useful for passing callbacks to memoized or child components.
+- Returns a cached function identity when dependencies are equal. The argument function expression is still created/evaluated on each render; the hook does not prevent that allocation.
 
 **Usage**:
 
@@ -166,3 +162,24 @@ export default ParentComponent;
     - Check performance metrics for overall app optimization.
 
 ---
+## Cache lifetime, stale closures and measurement
+
+useMemo caches a calculation result, not the whole component render. useCallback caches a function identity, not its return value or all function allocation. Both compare dependencies by Object.is and must include every reactive input they read. Their caches may be discarded; do not rely on them for business correctness, persistent storage or a once-only side effect. Use state/ref or an external owner when durable identity/data is part of the contract.
+
+```jsx
+import { useCallback, useState } from 'react';
+export function CounterButton({ report }) {
+  const [count, setCount] = useState(0);
+  const increment = useCallback(() => {
+    setCount(previous => previous + 1); // Does not read the render's count snapshot.
+    report('increment');
+  }, [report]); // report is reactive; [] would retain an old report function.
+  return <button onClick={increment}>{count}</button>;
+}
+```
+
+A functional update can remove a dependency only when the callback no longer reads that value. Refs can hold the latest imperative value, but hiding dependencies in a ref without a clear synchronization contract can create different bugs. Prefer simpler state ownership and fewer Effect dependencies before adding caches. React Compiler, when enabled, can remove the need for much manual memoization; preserve behavior rather than coding to render counts.
+
+**Exercise:** use the MemoLab unrelated update, change input and replace CounterButton.report. Acceptance: cached calculation can be reused without skipping Calculation's render; input change recomputes; newest report handler executes; no missing-dependency suppression. Record before/after Profiler traces and memory/complexity trade-offs using a realistic expensive computation before claiming a gain. Development Strict Mode may invoke pure calculations more than once.
+
+Official references: [useMemo](https://react.dev/reference/react/useMemo), [useCallback](https://react.dev/reference/react/useCallback), [Profiler](https://react.dev/reference/react/Profiler). React19 baseline; checked2026-10-20.

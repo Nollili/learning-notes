@@ -31,7 +31,7 @@ Render-blocking resources (CSS, JS) delay rendering and increase blank screen ti
 - Identify blocking scripts and long tasks.
 
 **Lighthouse / PageSpeed Insights:**
-- Get CRP summary and metrics (FCP, LCP, TTI).
+- Inspect current load diagnostics such as FCP/LCP/TBT; TTI was removed from Lighthouse10.
 - See render-blocking resources.
 
 **WebPageTest:**
@@ -39,11 +39,30 @@ Render-blocking resources (CSS, JS) delay rendering and increase blank screen ti
 
 **Performance API:**
 ```js
-new PerformanceObserver((entryList) => {
-  entryList.getEntriesByType('paint').forEach(entry =>
-    console.log(entry.name, entry.startTime)
-  );
-}).observe({ entryTypes: ['paint'] });
+function observePaints(report, Observer = globalThis.PerformanceObserver) {
+  if (!Observer?.supportedEntryTypes?.includes('paint')) return () => {};
+  let stopped = false;
+  let count = 0;
+  const observer = new Observer(list => {
+    if (stopped) return;
+    for (const entry of list.getEntries()) {
+      if (count >= 2) break;
+      if ((entry.name === 'first-paint' || entry.name === 'first-contentful-paint')
+        && Number.isFinite(entry.startTime) && entry.startTime >= 0) {
+        count++;
+        report({ name: entry.name, startTime: entry.startTime });
+      }
+    }
+  });
+  observer.observe({ type: 'paint', buffered: true });
+  return () => {
+    if (stopped) return;
+    stopped = true;
+    observer.disconnect();
+  };
+}
+// const dispose = observePaints(sample => diagnostics.record(sample));
+// The diagnostics owner calls dispose() after its bounded observation window.
 ```
 
 ---
@@ -62,14 +81,16 @@ new PerformanceObserver((entryList) => {
 
 3. **Optimize CSS Delivery**
    ```html
-   <link rel="stylesheet" href="print.css" media="print" onload="this.media='all'">
+   <link rel="stylesheet" href="/main.css">
+   <link rel="stylesheet" href="/print.css" media="print">
    ```
-   - Avoid `@import` in CSS.
+   - Keep critical styles discoverable in HTML; CSS @import can add a discovery dependency. Print-only CSS should remain print-only.
 
 4. **Reduce Render-Blocking Resources**
    ```html
    <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preload" href="/main.css" as="style">
+   <link rel="stylesheet" href="/main.css">
+   <!-- Preload fetches only; a matching stylesheet still applies CSS. -->
    ```
    - Compress and cache assets.
 
@@ -80,13 +101,13 @@ new PerformanceObserver((entryList) => {
 
 6. **Lazy Load Non-Essential Assets**
    ```html
-   <img src="hero.jpg" loading="lazy">
+   <img src="below-fold.jpg" loading="lazy" width="640" height="360" alt="Supplementary diagram">
    ```
-   - Use dynamic imports for JS.
+   - Do not lazy-load the likely LCP hero by default; use initial HTML discovery and measured priority. Use dynamic imports for genuinely deferrable JS.
 
 7. **Font Optimization**
-   - Use `font-display: swap`.
-   - Preload fonts.
+   - Choose font-display and matched fallback metrics deliberately; swap can still shift layout.
+   - Preload only measured critical fonts with matching URL/type/CORS.
 
 8. **Efficient CSS and DOM**
    - Avoid deep nesting and layout thrashing.
@@ -100,12 +121,11 @@ new PerformanceObserver((entryList) => {
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <style>
       body { font-family: sans-serif; margin: 0; }
       .hero { height: 100vh; background: #eee; }
     </style>
-    <link rel="preload" href="/styles.css" as="style" onload="this.rel='stylesheet'">
+    <link rel="stylesheet" href="/styles.css">
     <script src="/main.js" defer></script>
   </head>
   <body>
@@ -114,10 +134,10 @@ new PerformanceObserver((entryList) => {
 </html>
 ```
 
-- DOM loads immediately.
+- DOM parsing begins as HTML arrives after network/server delay.
 - Critical CSS is inline.
-- Non-blocking CSS and JS load in parallel.
-- Above-the-fold content is painted ASAP.
+- CSS and deferred JS can fetch in parallel; matching CSS still deliberately blocks unstyled rendering.
+- Verify when useful content paints; the example is not a measured optimum.
 
 ---
 
@@ -128,7 +148,7 @@ new PerformanceObserver((entryList) => {
 | Reduce CRP length     | Fewer blocking requests  | Inline/defer assets        |
 | Shorten critical bytes| Smaller payloads         | Minify & compress          |
 | Reduce blocking time  | Faster parsing           | Async/defer JS             |
-| Prioritize content    | Faster perceived load    | Critical CSS, lazy load    |
+| Prioritize content    | Faster perceived load    | Critical content discovery; lazy below-fold assets    |
 | Measure continuously  | Track improvements       | Lighthouse, DevTools       |
 
 ---
@@ -136,3 +156,14 @@ new PerformanceObserver((entryList) => {
 **Senior-level takeaway:**  
 Optimizing the Critical Rendering Path improves perceived performance. Focus on reducing render-blocking resources, prioritizing above-the-fold content, and leveraging browser hints for efficient loading.
 
+
+## Debugging and exercise acceptance
+
+Treat this path as a dependency graph, not a rigid sequence: parsing, preload scanning, fetching, scripting and rendering overlap and repeat. A small resource discovered late can dominate LCP more than an earlier large transfer. Deferred/async scripts can still create long tasks; style/layout work can dominate after bytes arrive. Inline critical CSS trades discovery against HTML size, duplication/cacheability and CSP handling; avoid copying an entire stylesheet into every page.
+
+**Exercise:** deliberately delay a CSS-imported font or JS-discovered hero, inspect initiators/waterfall and identify resource load delay, transfer and render delay. Compare one targeted discovery change. Acceptance: critical styles remain applied with JavaScript disabled/CSP enforced; no lazy LCP hero; no duplicate mismatched preload fetch; meaningful HTML/alt/dimensions survive failure; repeated same-condition traces substantiate the chosen trade-off. Record browser/tool versions and actual results; no measurement is supplied here. See the initial-load note for the typography/hero fixture.
+
+Official references checked2026-10-20: [HTML preload/stylesheet semantics](https://html.spec.whatwg.org/multipage/links.html), [loading performance](https://web.dev/learn/performance), [Lighthouse10](https://developer.chrome.com/blog/lighthouse-10-0).
+
+
+The paint observer deliberately records at most two FP/FCP samples and does not log arbitrary resource URLs. Its report callback is an application-owned nonthrowing sink. `buffered:true` requests retained entries emitted before observer installation; it does not observe LCP/INP or create historical entries a browser never collected. Dispose on navigation/unmount and test unsupported surfaces. The observer's JavaScript fixture can validate lifecycle/options; real browser traces are needed to validate actual paint behavior. Async/defer changes fetch/parser scheduling, not the main-thread cost of executing a script. Preloading CSS fetches bytes but never applies a stylesheet by itself.

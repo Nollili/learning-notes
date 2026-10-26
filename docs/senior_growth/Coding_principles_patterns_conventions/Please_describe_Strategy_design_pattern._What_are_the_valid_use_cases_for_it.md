@@ -23,7 +23,7 @@ The **Strategy pattern** is a **behavioral design pattern** that allows you to *
 ```js
 // Strategy Interface: all strategies must implement `execute`
 class Strategy {
-  execute(a, b) { throw 'Not implemented'; }
+  execute(a, b) { throw new Error('Not implemented'); }
 }
 
 // Concrete Strategies
@@ -54,7 +54,7 @@ console.log(calc.calculate(2, 3)); // 5
 
 calc.setStrategy(new MultiplyStrategy());
 console.log(calc.calculate(2, 3)); // 6
-````
+```
 
 **Explanation:**
 
@@ -115,7 +115,7 @@ function calculate(a, b, type) {
 **Problems:**
 
 * Hard to scale with new behaviors
-* Violates **Open/Closed Principle**
+* Adding a behavior changes this dispatch point; that is acceptable for a small stable set.
 * Logic is tightly coupled to context
 
 **With Strategy:**
@@ -137,4 +137,30 @@ function calculate(a, b, type) {
   * UI rendering logic based on state or props
 
 > 💡 Senior Tip:
-> Whenever you see a **switch/if-else block controlling behavior**, consider refactoring it to **Strategy pattern** for cleaner, more maintainable code.
+> Extract strategies when independently changing algorithms share a useful contract. A short, exhaustive switch can be the clearest design for a fixed set; adding classes alone does not improve it.
+
+
+## Worked change: inject a shipping quote rule
+
+Requirement: standard delivery costs 5, express costs 12, and orders of at least 100 receive free **standard** delivery. Rules change independently from checkout rendering. Values below are integer units in one illustrative currency; production money needs an explicit minor-unit/rounding contract.
+
+```js
+import assert from 'node:assert/strict';
+const standard = subtotal => subtotal >= 100 ? 0 : 5;
+const express = _subtotal => 12;
+function quote(subtotal, rule) {
+  if (!Number.isSafeInteger(subtotal) || subtotal < 0) throw new RangeError('Invalid subtotal');
+  const fee = rule(subtotal);
+  if (!Number.isSafeInteger(fee) || fee < 0) throw new RangeError('Invalid fee');
+  return fee;
+}
+assert.equal(quote(99, standard), 5);
+assert.equal(quote(100, standard), 0);
+assert.equal(quote(100, express), 12);
+assert.throws(() => quote(-1, standard), RangeError);
+assert.throws(() => quote(100, () => NaN), RangeError);
+```
+
+This is Strategy through functions: checkout owns the calculation boundary and injects one pure algorithm. A map or switch still selects the rule at the application boundary; the pattern does not remove all decisions. Keep a switch if only two stable cases exist and no independent evolution or injection is needed. Do not catch payment failures and silently substitute another gateway: async strategies also need common timeout, cancellation, idempotency and error semantics.
+
+**Validation:** exact example executed with Node24.18.0, all five assertions passed. **Exercise acceptance:** add a pickup rule without editing `quote`, verify boundary/negative/output contracts for every rule, and write a short decision explaining why functions, a switch or classes best fit the actual change. Learner practice remains required. [Official Node assertion API](https://nodejs.org/docs/latest-v24.x/api/assert.html) documents the check primitives.

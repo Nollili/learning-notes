@@ -2,36 +2,36 @@
 
 # ⚡ TypeScript and Older Browser Support
 
-Yes! **TypeScript can be used to write code that runs on older browsers**, because it **compiles down to plain JavaScript** compatible with the targeted environment.
+Yes! **TypeScript can be used to write code that runs on older browsers**, but compatibility must cover emitted syntax, module loading, runtime APIs, dependencies and browser behavior. TypeScript output alone is insufficient.
 
 ---
 
 ## 1️⃣ How It Works
 
 - TypeScript is a **superset of JavaScript**.  
-- The TypeScript compiler (`tsc`) transpiles TS code into **ES3, ES5, or ES6 JavaScript** depending on the `target` configuration.
+- ES3 targeting was disabled in TypeScript 5.5. TypeScript 6.0 deprecates ES5 targeting; use a supported modern target and a separate legacy transform when required. The ES5 example below is explicitly a TypeScript 5.9 compatibility demonstration.
 
 ### Example `tsconfig.json`:
 
-```json
+```jsonc
 {
   "compilerOptions": {
-    "target": "ES5",          // Output JS compatible with older browsers
+    "target": "ES5",          // TS 5.9 legacy syntax demonstration only
     "module": "ESNext",
     "strict": true,
     "lib": ["DOM", "ES2015"]
   }
 }
-````
+```
 
-* `target: "ES5"` ensures features like `let/const`, arrow functions, and classes are transpiled to **older syntax** understood by IE11 or other legacy browsers.
+* In TypeScript 5.9, this lowers many syntax forms, but `module: "ESNext"` retains ESM imports. IE11 cannot load them; a separate bundler/module transform is needed. `lib` supplies declarations, not installed APIs.
 
 ---
 
 ## 2️⃣ Polyfills for Modern Features
 
 * TypeScript only **transpiles syntax**, it does **not automatically polyfill APIs** (e.g., `Promise`, `fetch`, `Array.includes`).
-* For older browsers, you may need to include **polyfills**:
+* Select only the runtime features/targets that need an implementation. The broad imports below illustrate a legacy setup; they are not a universal requirement to install both packages or ship every polyfill:
 
 ```bash
 npm install core-js regenerator-runtime
@@ -51,9 +51,9 @@ import 'regenerator-runtime/runtime';
 * TypeScript works well with **Webpack, Vite, or Rollup**.
 * Bundlers + TS can:
 
-  * Transpile to older JS (`ES5`)
-  * Include polyfills for missing APIs
-  * Produce optimized, backward-compatible bundles
+  * Apply supported syntax transforms or a separately configured legacy compiler
+  * Include explicitly configured polyfills for APIs that can be polyfilled
+  * Produce bundles that still require validation against the exact support matrix
 
 ---
 
@@ -63,7 +63,10 @@ import 'regenerator-runtime/runtime';
 // TypeScript code
 const greet = (name: string) => `Hello, ${name}!`;
 
-// Compiled ES5 output
+```
+
+```js
+// Compiled ES5 output (separate output file, not another declaration in the TS input)
 "use strict";
 var greet = function (name) { return "Hello, " + name + "!"; };
 ```
@@ -76,8 +79,41 @@ var greet = function (name) { return "Hello, " + name + "!"; };
 
 * TypeScript **supports older browsers** through transpilation (`target` option).
 * Always check **modern APIs**; polyfills may be required.
-* Combine with **bundlers** (Webpack/Vite) to produce fully compatible builds.
+* Configure the complete toolchain and verify built dependencies too; a bundler name is not a compatibility guarantee.
 * Using TS does **not block legacy support**; it enhances maintainability and type safety.
 
 > 💡 Senior Tip:
-> For modern projects, targeting `ES5` + polyfills is a reliable strategy to support older browsers **without sacrificing TypeScript benefits**.
+> Choose a measured browser support policy. New evergreen-browser applications normally use modern output; legacy support needs an explicit budget and maintained transform/polyfill strategy.
+
+## Compatibility workflow and debugging
+
+1. Define exact browser/device versions and critical flows from the product's needs.
+2. Keep typechecking (`tsc --noEmit`) separate from output transformation. Choose `moduleResolution: "bundler"` for a matching bundler project, or NodeNext for direct Node execution.
+3. Inspect production output: an unexpected import, optional chain or dependency syntax can fail before application error handling starts.
+4. Check runtime APIs independently. `core-js` does not provide every Web API; fetch requires an appropriate implementation, and some platform features cannot be faithfully polyfilled.
+5. Exercise the production build in the actual supported browsers, including keyboard, storage limits and network failures. A successful typecheck does not test layout or runtime support.
+
+**Trade-offs:** a legacy bundle and broad polyfills increase bytes and maintenance; progressive enhancement can preserve basic HTML functionality without shipping every advanced feature to every browser. Dropping a browser needs a product decision, not an accidental compiler upgrade.
+
+**Exercise:** build a small page using an import, async function, fetch and an array API. Acceptance: record compiler/bundler versions, list syntax/API/module requirements, inspect the generated bundle, demonstrate one failure caused by a missing API, then verify the corrected page in each declared browser. Advanced legacy-device testing requires access to those devices; do not claim it from a local modern-browser run.
+
+Official references: [TS5.5 removed settings](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html#disabling-features-deprecated-in-typescript-50), [TS6 migration](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html), [target](https://www.typescriptlang.org/tsconfig/target.html), [module resolution](https://www.typescriptlang.org/tsconfig/moduleResolution.html). Verified 2026-10-20; executable type examples use installed TypeScript 5.9.3.
+
+### Observe three independent output contracts
+
+In an isolated compiler5.9.3 fixture, create these two modules and emit with target ES5, module ESNext and lib ES2015. This intentionally historical output experiment is separate from the modern primary application path.
+
+```ts
+// message.ts
+import { prefix } from './prefix.js';
+export const message = (name: string) => Promise.resolve(prefix + name);
+```
+
+```ts
+// prefix.ts
+export const prefix = 'Hello, ';
+```
+
+The arrow/const syntax lowers, but the import/export module syntax remains and Promise is still a required runtime value. Running the emitted file with Promise absent fails; adding a declaration to lib never creates the API. CommonJS output would instead require a CommonJS loader/bundler and is not itself a browser script solution. TypeScript6 deprecates ES5 targeting; do not silently rely on this5.9 demonstration after a compiler upgrade.
+
+Use the [HTML-first compatibility workflow](../Other/Cross_Browser_Progressive_Enhancement.md) to preserve essential tasks while declaring an actual support policy. **Acceptance:** retain emitted code showing all three boundaries, demonstrate missing Promise separately from unsupported module loading, then build/test the chosen production bundle in the declared browsers. The fixture proves compiler output and a controlled missing-global case, not IE11/native compatibility. Never bypass an environment's browser restrictions to obtain that evidence.

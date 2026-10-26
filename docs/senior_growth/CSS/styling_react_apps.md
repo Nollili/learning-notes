@@ -1,6 +1,6 @@
-Perfect — styling in React is a **very common senior interview topic**, and a great way to show that you understand both *legacy* and *modern* approaches, as well as *trade-offs* between them.
+# Styling React applications
 
-Here’s exactly how to talk about it 👇
+Choose an approach from component ownership, runtime/SSR requirements and the existing build. The comparisons below are options, not an instruction to adopt every tool.
 
 ---
 
@@ -90,12 +90,12 @@ function Button() {
 
 * Automatic local scoping (no collisions)
 * Works with SCSS
-* Easy to integrate with Vite, CRA, or Next.js
+* Supported by common Vite and Next.js tooling; verify the project configuration
 
 ❌ **Cons:**
 
 * Class name composition can get verbose
-* No dynamic styles without helpers
+* Runtime values can use inherited custom properties or inline custom properties
 
 🧠 **Good for:** mid/large-scale projects that need maintainable, isolated styles.
 
@@ -146,7 +146,7 @@ function Button() {
 ✅ **Pros:**
 
 * Fast to develop
-* No CSS files needed
+* Utilities reduce authored CSS; a generated stylesheet is still delivered
 * Consistent design and responsive utilities built-in
 
 ❌ **Cons:**
@@ -157,7 +157,7 @@ function Button() {
 🧠 **Good for:** modern React + Vite setups, quick iteration, consistent UI across teams.
 
 ---
-Sure — here’s a **short, interview-ready explanation** 👇
+### CSS-in-JS terminology
 
 ---
 
@@ -167,11 +167,11 @@ Sure — here’s a **short, interview-ready explanation** 👇
 >
 > Common libraries are **styled-components**, **Emotion**, and newer **zero-runtime** ones like **vanilla-extract**.
 >
-> It’s great for design systems or component libraries, though many teams now prefer **Tailwind + CSS Modules** for performance and simplicity.
+> It’s great for design systems or component libraries, while native CSS Modules/custom properties are the primary path in these notes; performance depends on the actual product.
 
 ---
 
-Absolutely — here’s a concise **pros and cons list** for **CSS-in-JS**, perfect for interview use 👇
+### CSS-in-JS trade-offs
 
 ---
 
@@ -220,38 +220,11 @@ Absolutely — here’s a concise **pros and cons list** for **CSS-in-JS**, perf
 ---
 
 
-## 🧭 **Modern Best Practice (2025)**
+## Choosing a primary approach
 
-### ✅ **Preferred approach:**
+For these notes, use React with CSS Modules and a small global semantic-token layer. Sass is optional build-time tooling; Tailwind, runtime CSS-in-JS and extracted CSS-in-JS are alternatives. No combination is universally best. Choose based on existing ownership, SSR/streaming integration, bundle/runtime cost, team familiarity and migration constraints; verify the installed library version. A component library still requires interaction/accessibility testing.
 
-> **Use a utility-first CSS framework like Tailwind CSS for layout + structure**,
-> and **component-scoped styling via CSS Modules or a lightweight CSS-in-JS library** (e.g., Emotion, styled-components, or vanilla-extract) for custom UI logic.
-
----
-
-### 💡 Why this combo is “best practice” now:
-
-1. **Performance & simplicity**
-
-   * Tailwind compiles to minimal static CSS (no runtime overhead).
-   * CSS Modules or CSS-in-JS (with zero-runtime versions) provide scoping and reusability.
-
-2. **Scalability**
-
-   * Utility classes keep global CSS small and consistent.
-   * Scoped styles prevent naming conflicts in big projects.
-
-3. **Maintainability**
-
-   * No CSS leaks or global overrides.
-   * Design tokens + theming supported easily (via Tailwind config or ThemeProvider).
-
-4. **DX (Developer Experience)**
-
-   * Hot reloading, type-safe props, and instant visual feedback.
-   * Works seamlessly with **Vite**, **Next.js**, or **React 19** setups.
-
----
+The following hybrid example illustrates an alternative; it is not an additional mastery requirement.
 
 ### 🧩 Typical modern setup (React + Vite)
 
@@ -260,30 +233,105 @@ Absolutely — here’s a concise **pros and cons list** for **CSS-in-JS**, perf
 * **Radix UI / Headless UI** → for accessible base components (modals, dropdowns)
 * **Framer Motion** → for animations
 
-Example:
+The primary worked Card uses CSS Modules alone; the alternative stack above is not needed to run it.
 
 ```tsx
-import styles from './Card.module.scss';
-
-export function Card({ title, children }) {
-  return (
-    <div className={`${styles.card} bg-white shadow-md p-4 rounded-xl`}>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      {children}
-    </div>
-  );
+// Card.tsx
+import { useId, type ReactNode } from 'react';
+import styles from './Card.module.css';
+export type CardProps = Readonly<{ title: string; children: ReactNode }>;
+export function Card({ title, children }: CardProps) {
+  const heading = useId();
+  return <section className={styles.card} aria-labelledby={heading}>
+    <h2 id={heading}>{title}</h2>{children}
+  </section>;
 }
 ```
 
-Here:
+```css
+/* Card.module.css */
+.card { background: var(--surface); color: var(--text); padding: 1rem; border-radius: .75rem; }
+.card > h2 { margin-block-start: 0; }
+```
 
-* Layout (padding, rounded corners, colors) → Tailwind
-* Scoped style (e.g., hover effects, theme vars) → `Card.module.scss`
+The build must provide CSS Modules and matching declarations/class maps. This isolated compiler fixture uses the actual class key and allowArbitraryExtensions; generated per-file declarations are preferable to silently accepting every misspelled class. Deliver the emitted stylesheet too—an imported mapping alone does not paint a styled component.
+
+```ts
+// Card.module.d.css.ts — paired with Card.module.css in this type fixture
+declare const styles: { readonly card: string };
+export default styles;
+```
+
+A Vite application can use its configured CSS declaration mechanism; do not replace working template configuration with this standalone fixture by default.
 
 ---
 
-### 🗣️ **Senior-level interview answer (30 seconds)**
+## Semantic tokens and runtime theme ownership
 
-> “The modern best practice is to combine a utility-first framework like Tailwind for layout and spacing with component-scoped styles using CSS Modules or zero-runtime CSS-in-JS.
-> This gives you the performance of static CSS, no naming collisions, and excellent maintainability.
-> Most modern React setups — especially with Vite or Next.js — follow this hybrid approach.”
+Primitive tokens name raw choices; semantic tokens name purpose; component tokens expose a deliberately limited extension point. Avoid scattering raw brand colors through components. A global theme owner defines shared purpose values; components consume them rather than redefining application policy.
+
+```css
+/* global tokens.css */
+:root {
+  color-scheme: light;
+  --color-ink-900: #17212f;
+  --surface: #ffffff;
+  --text: var(--color-ink-900);
+  --action-bg: #173d70;
+  --action-text: #ffffff;
+  --focus-ring: #a83500;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #17212f;
+  --text: #f5f7fa;
+  --action-bg: #b7d3ff;
+  --action-text: #102442;
+  --focus-ring: #ffca80;
+}
+body { background: var(--surface); color: var(--text); }
+/* Button.module.css */
+.button {
+  background: var(--button-bg, var(--action-bg));
+  color: var(--action-text);
+  border: 2px solid transparent;
+}
+.button:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+@media (forced-colors: active) {
+  .button { border-color: ButtonText; }
+  .button:focus-visible { outline-color: Highlight; }
+}
+```
+
+Unregistered custom properties inherit and participate in the runtime cascade; Sass variables are substituted during compilation. Theme attributes therefore affect descendants without generating new CSS. Define semantic aliases at the scope where their primitive values are chosen: a root alias resolves there, so overriding only a primitive on a descendant need not recompute an inherited alias. Override the semantic token at that scope when required.
+
+`var(--x, fallback)` handles an absent/invalid custom-property value, not arbitrary type errors after substitution. With `--x:20px; color:var(--x, red)`, the defined token is substituted and the color becomes invalid at computed-value time; red is not selected. The property falls back according to invalid-computed-value rules, often inheritance/initial, rather than reviving a prior declaration. Cycles are invalid. `@property` can add syntax/initial/inheritance constraints where supported; weigh that contract against simpler unregistered tokens.
+
+Theme policy has three preferences: explicit light, explicit dark and system. A small client owner can map system preference to the same root attribute, listen for system changes only while in system mode and remove listeners on disposal. If persisting preference, validate the stored allowlisted value and handle unavailable storage. For SSR, choose a compatible initial server/client policy and deliberate early-theme strategy to avoid a flash or hydration mismatch; do not read window during server render. A theme switch must have an accessible name and communicate its state. React Context is useful for application preference state, but CSS inheritance handles the colors themselves.
+
+**Trade-offs:** global semantic tokens make themes cheap and consistent but form an API requiring ownership/versioning. Component overrides enable embedding but can break paired foreground/background contrast; expose pairs or constrain overrides. CSS Modules scope class names, not inheritance or all selectors. Static extraction reduces runtime style generation; runtime CSS-in-JS can offer dynamic composition with additional integration and performance obligations. Measure the actual product.
+
+**Exercise:** build one theme owner and a reusable Button/Card pair using the primary CSS Modules stack. Acceptance: light/dark/system changes affect all intended roots; nested scopes override semantic tokens correctly; missing-token and wrong-type cases are explained with computed styles; normal/hover/pressed/focus/error colors are measured; text meets applicable4.5:1 (3:1 for qualifying large text) and required UI indicators3:1; meaning is not color alone; forced colors and keyboard focus remain usable. Inactive controls have WCAG contrast exceptions, but usability still matters. Test SSR first paint if SSR is in scope; record browser/version and evidence rather than asserting compliance from palette values.
+
+Official references checked2026-10-20: [custom properties](https://www.w3.org/TR/css-variables-1/), [color adjustment](https://www.w3.org/TR/css-color-adjust-1/), [WCAG2.2](https://www.w3.org/TR/WCAG22/). No theme/contrast browser run has been performed for this material.
+
+
+## Server and first client theme agreement
+
+Use a server-known allowlisted initial theme, independent of whether preference later follows the system. This small helper defaults unknown/system values to light for the first render; a later system-preference owner may update it deliberately.
+
+```ts
+// initial-theme.ts
+export type InitialTheme = 'light' | 'dark';
+export function initialTheme(value: unknown): InitialTheme {
+  return value === 'dark' ? 'dark' : 'light';
+}
+```
+
+The server renders Card with a known root html data-theme attribute and serializes the same light/dark value into a nonsecret data-initial-theme attribute on its application host. The client validates that attribute with initialTheme and applies the same root theme before hydrateRoot. Keep Card props, useId identifierPrefix, emitted CSS-module mapping and asset revision identical between server and first client render. Do not guess theme from window/matchMedia during server rendering or use suppressHydrationWarning to hide an avoidable data mismatch. A nonce/hash-based early-theme script, if chosen, must satisfy the deployed CSP; adding unsafe-inline to silence a violation is not the design goal.
+
+**Worked check:** render the exact Card to HTML with its title/child content, install that markup in a host, hydrate the same tree and record recoverable errors. It should retain the section/heading identity and usable content. This checks a controlled hydration contract; it does not prove the production stylesheet is loaded before first paint or that theme contrast/flash is acceptable. Unknown preference fallback and post-hydration system changes need a product policy.
+
+**Acceptance:** strict-typecheck required title/children, render escaped title text and matching IDs, hydrate without recoverable mismatch using one matching artifact and initial theme. Then verify actual CSS delivery, nested themes, system changes, CSP and first paint/contrast/focus in a native browser. The DOM/SSR fixture and Sass/CSS compilation are separate from those unperformed browser/deployment results. Learner implementation remains required.
+
+Official reference checked 2026-10-22: [hydrateRoot matching output and identifierPrefix](https://react.dev/reference/react-dom/client/hydrateRoot), [CSS Modules class contract](https://github.com/css-modules/css-modules).

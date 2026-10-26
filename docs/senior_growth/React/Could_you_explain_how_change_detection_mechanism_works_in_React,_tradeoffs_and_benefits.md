@@ -12,15 +12,15 @@ Instead of directly manipulating the real DOM, React maintains an in-memory repr
    - This tree is compared (diffed) against the previous VDOM snapshot.
 
 2. **Diffing Algorithm**
-   - React performs a **shallow comparison** of elements and their children.
+   - React reconciles the element tree using type/key/position and recursively processes children; this is distinct from memo's per-prop comparison.
    - It assumes:
      - Different types (e.g., `<div>` vs `<span>`) → re-render subtree.
      - Same types → compare props and recursively diff children.
    - Keys are used to optimize list rendering and avoid unnecessary re-renders.
 
 3. **Commit Phase**
-   - After computing the minimal set of differences, React updates only the affected parts of the real DOM.
-   - This ensures high performance and predictable rendering.
+   - After computing host changes for the chosen result, React commits DOM mutations. The heuristic does not promise a globally minimal edit set.
+   - The browser then performs its own rendering work; performance depends on the workload and must be measured.
 
 4. **Fiber Architecture (React 16+)**
    - The VDOM diffing is implemented with the **Fiber reconciler**, which splits rendering work into units.
@@ -31,10 +31,10 @@ Instead of directly manipulating the real DOM, React maintains an in-memory repr
 #### 🔹 Benefits
 
 - **Performance efficiency:**  
-  Only minimal DOM operations are performed, avoiding costly full DOM re-renders.
+  Declarative reconciliation can avoid replacing unchanged host nodes; render calculations, layout and paint still have costs.
 
 - **Predictability:**  
-  UI is a pure function of state — React handles updates deterministically.
+  Render calculates UI from props/state/context snapshots; async ordering and side-effect ownership remain application responsibilities.
 
 - **Abstraction:**  
   Developers don’t need to manually manage DOM updates.
@@ -63,3 +63,30 @@ React’s change detection = **Virtual DOM + Diffing + Fiber Reconciliation**
 It favors **predictability and simplicity** over the finest-grained reactivity.  
 The mechanism trades a bit of computational overhead for a clean declarative model — a design that scales well for large applications.
 
+
+## Identity is a correctness contract
+
+```jsx
+import { useState } from 'react';
+function DraftRow({ item }) {
+  const [draft, setDraft] = useState(item.name);
+  return <label>{item.name}
+    <input value={draft} onChange={event => setDraft(event.target.value)} />
+  </label>;
+}
+export function EditableList({ items }) {
+  return <ul>{items.map(item =>
+    <li key={item.id}><DraftRow item={item} /></li>
+  )}</ul>;
+}
+```
+
+A stable item.id belongs to the data, created when the record is created. Index keys can attach the edited input state to another record after sorting/insertion. Math.random keys remount every item and destroy drafts/focus. Keys are local to siblings and are not passed as ordinary component props. Changing a form key deliberately resets its subtree; keep state above the keyed boundary when drafts must survive.
+
+This row initializes a draft once. If item.name later changes remotely, decide whether the draft should remain dirty, reset on entity identity, or merge after conflict detection. Blindly copying every prop change into state can erase an in-progress edit. Defining a component function inside its parent creates a different component type on each parent render and can reset state unexpectedly.
+
+**Trade-off:** preserving host/state identity improves user continuity but can preserve stale local state if the domain identity is wrong. Memoization cannot repair a bad key. For large lists, measure rendering, windowing/focus behavior and data retention separately.
+
+**Exercise:** edit row B, reverse the list, insert at the beginning and switch an editor entity key. Acceptance: the draft stays with B; stable focus follows the intended record; a deliberate key reset clears only the chosen form; demonstrate the index/random-key failure before repairing it. Record user-visible behavior, not only component call counts.
+
+See [the detailed render/queue lesson](./Change_Detection_in_React.md). Official: [preserving/resetting state](https://react.dev/learn/preserving-and-resetting-state), [list keys](https://react.dev/learn/rendering-lists). React19 baseline; checked2026-10-20.

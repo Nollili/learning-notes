@@ -22,13 +22,13 @@ function App() {
     />
   );
 }
-````
+```
 
 ### Pros
 
 * **Predictable data flow** → easier to debug and reason about.
 * Easier to implement **state management** with tools like Redux or Zustand.
-* Better **performance**, as updates are more controlled.
+* Explicit update ownership can help debugging; performance depends on actual rendering, subscriptions and workload.
 * Works well for **large, complex applications**.
 
 ### Cons
@@ -70,17 +70,28 @@ function App() {
 | Data Flow      | Model → View (explicit for view → model) | Model ↔ View (automatic)              |
 | Predictability | High                                     | Lower in complex apps                 |
 | Debugging      | Easier                                   | Harder in large apps                  |
-| Performance    | Better (controlled updates)              | Can degrade with many bindings        |
+| Performance    | Measure update/render cost under the workload | Also workload/implementation-dependent; syntax alone does not predict speed |
 | Boilerplate    | More code for syncing view → model       | Less code                             |
-| Use Cases      | Large-scale apps, React, Redux           | Small apps, forms, Angular prototypes |
+| Use Cases      | Explicit state ownership, including React apps | Bound form controls, including large applications with clear ownership |
 
 ---
 
 ### ✅ Key Takeaways
 
-* **One-way binding**: preferred for **maintainability, debugging, and performance**, especially in large or complex applications.
-* **Two-way binding**: convenient for **simple forms and rapid development**, but can cause **uncontrolled state changes** in bigger apps.
+* **One-way binding** makes view-to-state updates explicit; ownership and event tracing can aid debugging. It does not guarantee speed or correctness.
+* **Two-way binding** is convenient syntax for coordinated input/output updates; clear ownership, validation and lifecycle still matter at any application size.
 * **Modern frameworks** often combine approaches: e.g., **React** encourages one-way binding with explicit handlers; **Angular** supports two-way binding via `[(ngModel)]`.
 
 > 💡 Senior Tip:
-> Favor **one-way binding** in production apps for clarity, reliability, and predictable state management. Use **two-way binding sparingly** in simple, controlled components.
+> Use the primary framework's state model consistently. Diagnose loops, stale values and excessive renders from actual data flow; there is no universal binding-style performance ranking.
+
+
+## Worked React ownership: draft versus accepted results
+
+In React, a controlled input's `value` comes from state and `onChange` explicitly updates that state. It is still one-way rendering with an explicit event, even though the UI and state stay synchronized. Keep the value a string from the first render; switching between undefined and a string changes controlled/uncontrolled ownership. Preserve the user's draft while typing and validate/normalize at the appropriate submission boundary; rewriting input on every keystroke can disturb editing/caret behavior.
+
+The [executed pagination workflow](../EngX_Quality/Large_Data_Workflow.md) separates draft filter state, applied request and accepted result. Editing a field does not relabel old results as though they already match. Applying resets selection/cursors; late old requests cannot overwrite newer state. The React19.3 fixture's six tests cover those query/selection/scope/storage lifetimes, not native caret behavior or a universal performance comparison.
+
+Angular's `[(ngModel)]` is an alternative template binding example and requires the relevant forms setup; it is not a runnable standalone Angular application. No need to learn another framework to perform this exercise.
+
+**Exercise acceptance:** build one labeled controlled field, show draft versus applied value and a server validation error without losing the draft. Test empty input, async out-of-order responses, reset, account change and unmount. Inspect a render profile only if performance is a concern, retaining workload/device evidence. Explain state ownership and avoid deriving professional readiness from generated tests. Learner practice remains required. Official references: [React controlled inputs](https://react.dev/reference/react-dom/components/input), [Angular two-way binding](https://angular.dev/guide/templates/two-way-binding).

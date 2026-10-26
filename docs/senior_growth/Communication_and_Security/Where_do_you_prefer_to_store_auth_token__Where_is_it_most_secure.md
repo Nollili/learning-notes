@@ -12,8 +12,8 @@ Choosing **where to store auth tokens** (like JWTs or session tokens) is critica
 |----------------------------|------------|------|--------------|
 | **LocalStorage**           | Browser key-value store | Easy to use, persists across tabs | Vulnerable to **XSS** (attacker can read/write token) |
 | **SessionStorage**         | Browser key-value store per tab | Easy to use, cleared on tab close | Vulnerable to **XSS**, not shared across tabs |
-| **Cookies (HttpOnly, Secure)** | Sent automatically with requests | Protected from **XSS** if `HttpOnly`; works with backend session auth | Vulnerable to **CSRF** unless `SameSite` used; size limits (~4KB) |
-| **In-memory (JS variable / Redux store)** | Stored only in runtime memory | Not persisted, immune to CSRF, fast access | Lost on page reload / tab close; vulnerable if XSS can access memory |
+| **Cookies (HttpOnly, Secure)** | Sent automatically with requests | Cookie value is unreadable to JS; works with backend sessions, but XSS can still act as the user | Cookie-authenticated writes need a CSRF policy; SameSite is defense in depth, with cookie size/scope limits |
+| **In-memory (JS variable / Redux store)** | Stored only in runtime memory | Not persisted; explicit Bearer transport avoids automatic cookie attachment, but storage alone does not determine CSRF exposure | Lost on page reload / tab close; vulnerable if XSS can access memory |
 
 ---
 
@@ -22,11 +22,11 @@ Choosing **where to store auth tokens** (like JWTs or session tokens) is critica
 ### 1. XSS (Cross-Site Scripting)
 - If token is accessible via JS (`localStorage`, `sessionStorage`, in-memory), malicious scripts can steal it.
 - Mitigation:
-    - Store token in **HttpOnly cookie**.
-    - Sanitize and escape all user input.
+    - HttpOnly prevents JavaScript cookie reads; it does not prevent injected code from issuing authenticated requests.
+    - Use contextual output encoding, safe DOM APIs and appropriate rich-content sanitization; validate inputs and apply a tested CSP as defense in depth.
 
 ### 2. CSRF (Cross-Site Request Forgery)
-- If using cookies, requests are automatically sent → attacker can trigger actions.
+- Eligible cookies can accompany attacker-triggered requests; scope, SameSite, credentials mode and browser policy determine sending.
 - Mitigation:
     - Use `SameSite=Lax` or `Strict` on cookies.
     - Use CSRF tokens for state-changing requests.
@@ -44,24 +44,24 @@ Choosing **where to store auth tokens** (like JWTs or session tokens) is critica
 
 ## 🔧 Recommended Approaches
 
-### **A. Most Secure (Resistant to XSS)**
-- **Store access token in HttpOnly, Secure cookie**.
-- Optional: Store refresh token in HttpOnly cookie as well.
+### **A. Primary same-origin browser design: cookie session**
+- Keep an opaque session identifier in a host-scoped HttpOnly, Secure cookie; resolve authorization on the server.
+- If federation needs provider refresh tokens, a backend session design can keep them server-side.
 - Set `SameSite` to `Strict` or `Lax`.
 
 ```http
-Set-Cookie: accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict; Path=/
+Set-Cookie: __Host-session=<opaque-random-session-id>; HttpOnly; Secure; SameSite=Lax; Path=/
 ```
 
-* API calls automatically include the cookie.
-* Protects against **XSS**, but requires CSRF mitigation.
+* This placeholder represents a cryptographically random server-issued session ID. Omit Domain for the __Host- prefix; cookie sending still follows scope/credentials/SameSite/browser rules.
+* Hides the cookie value from JavaScript, while XSS can still make authenticated calls. Protect writes against CSRF and prevent XSS independently.
 
 ---
 
 ### **B. For Single-Page Apps with APIs**
 
 * **Access token in memory** (JS variable) — lost on refresh, reduces XSS exposure.
-* **Refresh token in HttpOnly cookie** to get a new access token.
+* A refresh endpoint may use a separate protected cookie/session policy; that endpoint itself needs CSRF/provenance, rotation/reuse handling and bounded concurrency. Reauthentication is an alternative.
 * Combine with HTTPS → prevents MITM attacks.
 
 ---
@@ -69,7 +69,7 @@ Set-Cookie: accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict; Path=/
 ### **C. Avoid**
 
 * Storing tokens in localStorage if sensitive actions are protected only via token.
-* Storing long-lived tokens in JS memory without refresh logic.
+* Treating memory as an XSS boundary, or adding refresh merely to avoid a deliberate reauthentication policy.
 
 ---
 
@@ -77,18 +77,38 @@ Set-Cookie: accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict; Path=/
 
 | Storage         | XSS Risk | CSRF Risk | Persistence     | Best Use Case                        |
 | --------------- | -------- | --------- | --------------- | ------------------------------------ |
-| LocalStorage    | High     | Low       | Persistent      | Non-critical tokens, SPA convenience |
-| SessionStorage  | High     | Low       | Tab-lifetime    | Temporary data, single-tab apps      |
-| HttpOnly Cookie | Low      | Medium    | Persistent      | Access & refresh tokens, secure APIs |
-| In-memory       | Low      | Low       | Lost on refresh | SPA tokens for short sessions        |
+| LocalStorage | JS-readable/exfiltratable | Determined by transport, not storage | Persistent | Prefer for nonsensitive app preferences, not session identifiers |
+| SessionStorage | JS-readable/exfiltratable | Determined by transport | Tab scoped (restore behavior varies) | Temporary nonsensitive data |
+| HttpOnly Cookie | Value hidden; XSS actions remain | Automatic eligible-cookie transport needs CSRF defenses | Session/expiry policy | Opaque server session |
+| In-memory | XSS can use/exfiltrate accessible tokens | Explicit Bearer differs from automatic cookies | Lost on reload | Short-lived API-token alternative |
 
 ---
 
-### 🧠 Senior Dev Rule of Thumb:
+## Storage is not transport or authorization
 
-> * **HttpOnly cookies** for sensitive tokens (most secure against XSS).
-> * **Short-lived access tokens + refresh tokens** for long-lived sessions.
-> * **Always use HTTPS**.
-> * **Implement CSRF mitigation** if using cookies.
+No location makes an application immune to XSS. Keep token values out of Redux/devtools persistence, URLs, analytics and error logs. A cookie-session boundary reduces JavaScript token exposure but requires session/CSRF lifecycle management. A memory Bearer design avoids persisting the token across reloads but still trusts executing origin scripts. Choose one documented primary flow instead of copying pieces from both.
 
-I can also provide a **diagram showing token flow with HttpOnly cookies vs localStorage** if you want. Do you want me to do that?
+```js
+// cookie-profile.mjs
+export async function updateDisplayName({ displayName, csrfToken, signal }, send = fetch) {
+  if (typeof displayName !== 'string' || displayName.trim().length < 1 || displayName.length > 80
+    || typeof csrfToken !== 'string' || csrfToken.length < 1 || csrfToken.length > 512) {
+    throw new TypeError('Invalid profile command');
+  }
+  const response = await send('/api/profile', {
+    method: 'PATCH', credentials: 'same-origin', redirect: 'error', cache: 'no-store', signal,
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+    body: JSON.stringify({ displayName }),
+  });
+  await response.body?.cancel(); // This endpoint contract returns204, no representation.
+  if (response.status !== 204) throw new Error('Profile update failed');
+}
+```
+
+The session cookie is attached by the browser; this function neither reads document.cookie nor creates an Authorization header. Obtain the session-bound CSRF token through the application's trusted bootstrap/framework flow and keep it out of logs/URLs. The request owner supplies an AbortSignal/deadline and handles errors; canceling a request does not undo a server write. A204 is the expected endpoint contract, not proof from client code that authorization/CSRF checks happened. The server must enforce every rule independently. Do not automatically retry after a timeout or401 without reconciling the mutation/session state.
+
+For a separately designed cross-origin API, credentials:include alone is insufficient: eligible cookie attributes, exact credentialed CORS policy and browser third-party-cookie restrictions also apply. SameSite=None requires Secure in modern browsers, but does not override browser blocking/partitioning. A same-origin backend-for-frontend can avoid some cross-site cookie dependencies, at the cost of owning session storage/proxy security. Memory tokens and refresh cookies still create two distinct transport/lifecycle boundaries.
+
+**Exercise acceptance:** inspect the helper's outgoing method/path/body/credentials/CSRF header/signal and confirm no Bearer/Cookie token is synthesized by JavaScript. Mock204/failure/abort without raw diagnostic leakage. In an HTTPS browser/server lab confirm the HttpOnly cookie is absent from document.cookie yet accompanies an eligible request; then prove an invalid CSRF token/cross-tenant body fails with no mutation. Test logout/server invalidation, reload, cookie scope and cross-origin settings separately. A mock RequestInit check does not prove browser cookie sending or a secure server; learner practice remains required.
+
+References checked2026-10-22: [OWASP browser storage](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html), [session lifecycle/cookies](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [Fetch credentials/CORS](https://fetch.spec.whatwg.org/#http-cors-protocol). Applicable browser versions/policies must be included in the hands-on evidence.

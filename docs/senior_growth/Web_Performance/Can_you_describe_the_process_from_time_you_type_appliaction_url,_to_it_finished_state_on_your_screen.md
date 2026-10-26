@@ -17,13 +17,13 @@ Understanding this process shows **how browsers render a web application**, and 
   - DNS resolver (ISP or configured server like Google DNS)
 - If not cached, a **DNS query** is sent to get the IP (A or AAAA record).
 
-🕑 *Typical latency: 20–120 ms*
+Measure resolver/network/cache conditions; there is no universal DNS latency.
 
 ---
 
-## 2. TCP Handshake
+## 2. Transport Connection: TCP or QUIC
 
-- Browser opens a **TCP connection** to the server’s IP on port `80` (HTTP) or `443` (HTTPS).
+- When a new HTTP/1.1 or HTTP/2 connection is needed, TCP is commonly used (HTTPS typically443). HTTP/3 uses QUIC over UDP with integrated TLS; it does not perform a TCP handshake. Existing connections, caches or a service worker may avoid a new network setup entirely.
 - TCP 3-way handshake:
   1. SYN → from browser
   2. SYN-ACK → from server
@@ -33,15 +33,15 @@ Understanding this process shows **how browsers render a web application**, and 
 
 ---
 
-## 3. TLS/SSL Handshake (HTTPS Only)
+## 3. TLS Handshake (HTTPS)
 
 - Establishes an **encrypted session**.
 - Browser and server:
-  - Exchange certificates.
+  - Authenticate the server certificate/hostname/chain; client certificates are optional in relevant deployments.
   - Negotiate encryption algorithms.
   - Derive shared keys.
 
-🕑 *Usually adds another 1–2 round trips.*
+TLS version, resumption, transport and network conditions determine setup. TLS1.3 differs from1.2; QUIC integrates TLS. Do not charge DNS/TCP/TLS separately for each reused request.
 
 ---
 
@@ -67,7 +67,7 @@ Understanding this process shows **how browsers render a web application**, and 
 
 ## 6. Browser Receives HTML Response
 
-- Browser starts **streaming HTML**.
+- Browser consumes the response body incrementally as bytes become available.
 - It immediately starts **parsing** and building the **DOM tree**.
 - When it encounters:
   - `<link>` → CSS, starts fetching.
@@ -82,7 +82,7 @@ Understanding this process shows **how browsers render a web application**, and 
 2. **CSSOM Tree** from CSS.
 3. Combine both → **Render Tree** (visual structure).
 
-🧠 *Blocking: CSS is render-blocking until fully loaded and parsed.*
+Matching critical stylesheets can delay rendering; media conditions, discovery and script/style dependencies affect the exact behavior. The preload scanner can discover resources ahead of the main parser.
 
 ---
 
@@ -101,14 +101,14 @@ Understanding this process shows **how browsers render a web application**, and 
 
 ## 10. Compositing
 
-- The **GPU** (or compositor thread) combines layers and draws them on screen.
-- This forms the first visible frame — your **First Contentful Paint (FCP)**.
+- The rendering/compositing pipeline produces frames using browser/platform resources; GPU use is implementation-dependent.
+- A first frame is not necessarily FCP: FCP requires eligible content. LCP is a separate later/largest eligible content milestone.
 
 ---
 
-## 11. JavaScript Execution
+## 11. JavaScript Execution Overlaps Earlier Stages
 
-- Browser downloads and executes JS bundles:
+- JavaScript may execute while parsing, after parsing, or later; it is not a stage that always waits until after the first composite:
   - Can manipulate DOM → triggers **reflows/repaints**.
   - Can request data → **network fetches**, **XHRs**, **GraphQL**, etc.
   - JS can block main thread if not optimized.
@@ -125,18 +125,15 @@ Understanding this process shows **how browsers render a web application**, and 
 
 ---
 
-## 13. Interactivity Ready (TTI / TTFI)
+## 13. Interaction and Ongoing Updates
 
-- Once JS is executed and event listeners are attached → page becomes **interactive**.
-- Metrics:
-  - **TTI (Time To Interactive)**
-  - **TTFI (Time To First Interaction)**
+Native links/forms can work before hydration; client controls become available according to code/data/boundary readiness. A load event or attached handler does not prove responsiveness or correctness. Use actual interaction traces and field INP; TTI is a retired Lighthouse metric and TTFI is informal terminology.
 
 ---
 
 ## 14. Idle State
 
-- Page fully loaded, all critical assets cached.
+- The load event does not mean every future resource is loaded/cached or that the application is permanently idle.
 - Background tasks or workers may continue (analytics, prefetching, hydration).
 
 ---
@@ -160,8 +157,30 @@ Understanding this process shows **how browsers render a web application**, and 
 
 URL → DNS Lookup → TCP/TLS Handshake → HTTP Request
 → Server Response → Parse HTML → Build DOM & CSSOM
-→ Render Tree → Layout → Paint → Composite → Interact
+→ Render/Update opportunities: Style → Layout → Paint → Composite
+
+Network, parsing, script execution and rendering overlap/repeat; interaction may start before all resources finish.
 
 Each stage offers **profiling and optimization opportunities**, crucial for a senior front-end developer.
 
 ---
+## Debug the actual critical path
+
+```js
+const navigation = performance.getEntriesByType('navigation')[0];
+if (navigation) {
+  console.table({
+    dns: navigation.domainLookupEnd - navigation.domainLookupStart,
+    connection: navigation.connectEnd - navigation.connectStart,
+    requestToFirstByte: navigation.responseStart - navigation.requestStart,
+    responseTransfer: navigation.responseEnd - navigation.responseStart,
+    protocol: navigation.nextHopProtocol
+  });
+}
+```
+
+Zero intervals can mean cache/reuse/restricted timing, not an infinitely fast network. requestToFirstByte includes network/server work, not just server CPU. TLS timing can overlap the connection interval; do not add overlapping spans twice. Resource Timing cross-origin detail needs appropriate Timing-Allow-Origin permission. Capture timing after the event/window of interest and distinguish document navigation from SPA transitions or back-forward-cache restoration.
+
+**Exercise:** draw the dependency graph for an HTML→CSS/font and HTML→script→API→image scenario. Acceptance: record initiators/protocol/connection IDs where available; compare cold/warm/reused/cache/service-worker cases; identify which late discovery delays LCP; explain parser-blocking classic scripts versus defer/async/module behavior. Add native interaction and hydration observations without calling load a readiness guarantee. Retain actual waterfall and trace; no browser capture is supplied by this note.
+
+References checked2026-10-20: [HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html), [HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html), [Navigation Timing2](https://www.w3.org/TR/navigation-timing-2/), [Network tooling](https://developer.chrome.com/docs/devtools/network/reference).

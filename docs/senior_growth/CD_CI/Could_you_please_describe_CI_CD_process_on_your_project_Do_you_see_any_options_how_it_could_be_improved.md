@@ -1,7 +1,7 @@
 # Could you please describe CI/CD process on your project? Do you see any options how it could be improved?
-## 🚀 CI/CD Process Overview on Our Project
+## 🚀 Example CI/CD Process to Adapt to a Real Project
 
-Our CI/CD process ensures that **code changes are automatically tested, built, and deployed**, minimizing errors and improving delivery speed.
+This illustrative CI/CD process checks that **code changes are automatically tested, built, and deployed**, minimizing errors and improving delivery speed.
 
 ---
 
@@ -71,7 +71,7 @@ Our CI/CD process ensures that **code changes are automatically tested, built, a
    - Run lint, build, and tests in **parallel** to reduce pipeline time.
 
 2. **Incremental Builds / Caching**
-   - Cache `node_modules` or build artifacts to **speed up repeated builds**.
+   - Cache compatible package downloads to speed installs. Required build output travels as an explicit artifact; isolated jobs still install/restore their own dependencies.
 
 3. **E2E Testing Integration**
    - Add **Playwright or Cypress** to run automated browser tests before staging deployment.
@@ -92,8 +92,19 @@ Our CI/CD process ensures that **code changes are automatically tested, built, a
 
 ### ✅ Summary
 
-- **CI/CD ensures code is tested, verified, and deployed automatically**, reducing human error.
-- Current pipeline is solid, but improvements like **parallelization, E2E testing, feature flags, and monitoring** can increase **speed, reliability, and observability**.
+- **Configured CI/CD automates selected checks and release steps**; protection rules and operational gates determine what can merge/deploy.
+- Evaluate the real pipeline before claiming its results; improvements like **parallelization, E2E testing, feature flags, and monitoring** can increase **speed, reliability, and observability**.
 
 > 💡 Senior Tip:  
 > Always **measure CI/CD metrics**: pipeline duration, test coverage, deployment frequency, and rollback rate. These metrics guide where improvements are most valuable.
+
+Use the [worked job isolation and artifact handoff example](./Do_you_run_tests_within_CICD.md) to make this overview concrete. Describe only tools and measured results actually used on your project; this template is not evidence of personal deployment experience.
+
+
+## Primary worked path and actual evidence
+
+Use the [artifact/database compatibility lab](../../node-js/release-artifact-compatibility.md) for build once→verify identity→separate consumer directories→migration/rollback gates. Use the [container lab](../../node-js/container-deployment-lab.md) for an actual pinned image, non-root runtime, isolated PostgreSQL, readiness/liveness separation, graceful shutdown and persistence. These local executions make the Docker references concrete; a Kubernetes cluster, hosted CI runner, external notification and production rollout were not performed. Kubernetes remains an alternative, not another mandatory primary stack.
+
+A release check record should include source revision, lockfile/runtime, artifact hash/digest, checks and database state, deployment target, injected configuration identity without secret values, health/smoke outcome, rollback compatibility window and owner. The artifact and its evidence must refer to the same bytes. Build/test caches can speed jobs but are not the release identity. Manual approval is a decision; deployment itself should stay reproducible and automated.
+
+**Exercise acceptance:** configure the real project scripts in an owned pipeline, promote the exact verified artifact, demonstrate a failed gate blocks promotion and execute the safe/unsafe rollback drill. Retain hosted-run evidence separately from the local fixtures; do not invent personal pipeline usage, credentials or measured production benefits. Only the user may push. Learner practice remains required. References: [GitLab artifacts](https://docs.gitlab.com/ci/jobs/job_artifacts/), [Docker build practices](https://docs.docker.com/build/building/best-practices/).

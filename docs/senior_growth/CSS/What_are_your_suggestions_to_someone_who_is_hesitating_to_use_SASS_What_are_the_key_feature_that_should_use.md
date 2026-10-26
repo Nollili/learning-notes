@@ -12,12 +12,12 @@ If someone is hesitating to use SASS, here’s how to approach it.
 
 ### 1.1 Better Organization
 
-- **Partials & Imports**: Split styles into multiple files.
+- **Partials & Modules**: split styles with `@use` / `@forward`. Sass `@import` is deprecated since Dart Sass1.80.0; plain CSS `@import` is a separate mechanism.
 ```scss
-@import 'variables';
-@import 'buttons';
-@import 'header';
-````
+@use 'variables' as tokens;
+@use 'buttons';
+@use 'header';
+```
 
 ### 1.2 Variables
 
@@ -81,7 +81,7 @@ body {
 
 ### 1.6 Mathematical Operations & Logic
 
-* Compute sizes, spacing, or colors dynamically.
+* Compute values at build time; use CSS custom properties for runtime changes.
 
 ```scss
 $spacing: 8px;
@@ -95,7 +95,7 @@ $spacing: 8px;
 ## 2️⃣ Key Features You Should Use
 
 1. **Variables** → centralize design tokens (colors, fonts, spacing).
-2. **Partials & Imports** → modularize styles for maintainability.
+2. **Partials & Modules (`@use`/`@forward`)** → modularize styles for maintainability.
 3. **Nesting** → group related selectors, but keep it **shallow to avoid specificity issues**.
 4. **Mixins & Functions** → reusable, dynamic styles.
 5. **Inheritance / Extends** → avoid repetition for common patterns.
@@ -130,3 +130,45 @@ $spacing: 8px;
 * Hesitation usually comes from **learning overhead**—once core features are understood, SASS **boosts productivity** in medium-to-large projects.
 
 > 💡 Tip: Think of SASS as **structured CSS with programming power**—it’s especially useful for **large codebases or design systems**.
+
+## Namespaced module example (Dart Sass1.80+)
+
+```scss
+// tokens/_spacing.scss
+$unit: 0.5rem !default;
+@mixin inset($steps: 1) { padding: $unit * $steps; }
+```
+
+```scss
+// tokens/_index.scss — deliberate public API
+@forward 'spacing';
+```
+
+```scss
+// app.scss — configure before the module is loaded elsewhere
+@use 'tokens' with ($unit: 0.75rem);
+.card { @include tokens.inset(2); }
+```
+
+Expected emitted `.card` padding is1.5rem. `@use` loads a module once and namespaces its members; `@forward` exposes selected members to consumers without importing them into the forwarding file's local scope. `!default` permits configuration. Place module directives before ordinary style rules. Do not replace global imports mechanically: private/public names, load order and configuration may need redesign.
+
+**Trade-offs/failures:** mixins can repeat declarations; `@extend` can expand selector combinations and couple distant rules. Compare the emitted selectors and compressed size before adopting either. Native nesting/custom properties may remove the need for a preprocessor; Sass remains useful for build-time generation and modules. Nesting-depth limits are team heuristics, not a browser correctness rule.
+
+**Exercise:** compile the three files, then migrate one old import-based theme. Acceptance: output contains1.5rem padding and no Sass import deprecation warning; two consumers do not duplicate module CSS; configuration is explicit; emitted selectors do not grow unexpectedly. Pin Sass in the scratch project's lockfile. The compilation and visual regression audit are learner practice until evidence is recorded.
+
+Official references: [import deprecation](https://sass-lang.com/documentation/breaking-changes/import/), [use](https://sass-lang.com/documentation/at-rules/use/), [forward](https://sass-lang.com/documentation/at-rules/forward/), [extend](https://sass-lang.com/documentation/at-rules/extend/). Verified2026-10-20.
+
+
+### Inspect selector expansion, not only declaration reuse
+
+```scss
+// extend-scope.scss
+@mixin notice-base { padding: 0.5rem; }
+.notice { @include notice-base; }
+.notice .label { font-weight: bold; }
+.warning { @extend .notice; }
+```
+
+The emitted selector lists include .notice,.warning for padding **and** .notice .label,.warning .label for font weight. Extending the class affects its use inside other selectors, not only the declaration block next to it. Replacing the extend with an explicit @include notice-base copies the padding into .warning but does not add .warning .label to that other rule. Choose extend when that shared semantic selector relationship is intended; choose mixins/composition when explicit declaration reuse is easier to reason about. Neither guarantees smaller compressed output or lower specificity.
+
+**Additional acceptance:** compile both versions, inspect the exact selector lists/declaration duplication and compressed sizes, and test the real DOM states separately. Reuse the namespaced three-file module fixture above; no new framework is needed. A compiler pass cannot prove CSS cascade/visual correctness. References rechecked2026-10-22 against the official use/forward/extend documentation above; learner visual practice remains required.

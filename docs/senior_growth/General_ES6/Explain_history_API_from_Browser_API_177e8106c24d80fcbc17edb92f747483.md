@@ -4,7 +4,7 @@ The **History API** in JavaScript is part of the **Browser APIs** that allows yo
 
 ### **Key Features of the History API:**
 
-1. **Manipulate the browser’s history stack**: Allows you to add, remove, or modify history entries.
+1. **Manipulate the browser’s history stack**: Allows you to append/replace the current entry and traverse; it does not let an application arbitrarily delete or inspect the full history.
 2. **Change the URL** without reloading the page: You can update the browser’s address bar to reflect the current state of the application.
 3. **Track user navigation**: You can listen to changes in the browser’s history to respond to forward/backward navigation.
 
@@ -24,9 +24,9 @@ This method allows you to add a new entry to the browser’s history stack. It d
 history.pushState(state, title, url);
 ```
 
-- `state`: The state object that will be associated with the new history entry (can be any object).
+- state must be serializable by the history structured-serialization rules; functions/DOM nodes are unsuitable and can throw DataCloneError. Keep it small and nonsecret.
 - `title`: A string containing the title of the page (though it’s mostly ignored by browsers).
-- `url`: The new URL to appear in the browser's address bar.
+- url must be permitted for this document (normally same-origin); parse with URL and allowlist application routes.
 
 **Example:**
 
@@ -129,41 +129,44 @@ In Single Page Applications (SPAs), the History API is used to change the URL an
 Imagine a simple SPA with different "pages" (views) such as Home and About, and you want to manipulate the browser history to reflect the user’s navigation:
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>SPA Example</title>
-  </head>
-  <body>
-    <nav>
-      <a href="#" id="home">Home</a>
-      <a href="#" id="about">About</a>
-    </nav>
-
-    <div id="content">Welcome to the homepage!</div>
-
-    <script>
-      document.getElementById('home').addEventListener('click', function () {
-        document.getElementById('content').innerHTML = 'Welcome to the homepage!';
-        history.pushState({ page: 'home' }, 'Home', '/home');
-      });
-
-      document.getElementById('about').addEventListener('click', function () {
-        document.getElementById('content').innerHTML = 'This is the About page.';
-        history.pushState({ page: 'about' }, 'About', '/about');
-      });
-
-      // Listen to popstate event to detect back/forward navigation
-      window.addEventListener('popstate', function (event) {
-        const state = event.state;
-        if (state && state.page === 'home') {
-          document.getElementById('content').innerHTML = 'Welcome to the homepage!';
-        } else if (state && state.page === 'about') {
-          document.getElementById('content').innerHTML = 'This is the About page.';
-        }
-      });
-    </script>
-  </body>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Home — History lab</title></head>
+<body>
+<nav aria-label="Main"><a href="/home">Home</a> <a href="/about">About</a></nav>
+<main><h1 id="page-heading" tabindex="-1">Home</h1><p id="content">Welcome home.</p></main>
+<script type="module">
+  const pages = {
+    '/home': { title: 'Home', text: 'Welcome home.' },
+    '/about': { title: 'About', text: 'About this application.' },
+  };
+  const heading = document.querySelector('#page-heading');
+  const content = document.querySelector('#content');
+  function render({ moveFocus = false } = {}) {
+    const page = Object.hasOwn(pages, location.pathname) ? pages[location.pathname] : null;
+    heading.textContent = page?.title ?? 'Page not found';
+    content.textContent = page?.text ?? 'Choose a supported page.';
+    document.title = `${heading.textContent} — History lab`;
+    if (moveFocus) heading.focus();
+  }
+  // This standalone router owns the history state. Do not overwrite another router's state.
+  history.replaceState({ version: 1, path: location.pathname }, '', location.href);
+  render();
+  document.querySelector('nav').addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+    if (!link || link.target || link.hasAttribute('download')) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || !Object.hasOwn(pages, url.pathname) || url.hash) return;
+    event.preventDefault();
+    try {
+      history.pushState({ version: 1, path: url.pathname }, '', url.href);
+      render({ moveFocus: true }); // pushState does not emit popstate.
+    } catch { location.assign(url.href); } // Preserve ordinary navigation fallback.
+  });
+  window.addEventListener('popstate', () => render({ moveFocus: true }));
+</script>
+</body>
 </html>
 ```
 
@@ -176,7 +179,7 @@ Imagine a simple SPA with different "pages" (views) such as Home and About, and 
 
 ### **Popstate Event:**
 
-The `popstate` event is triggered whenever the active history entry changes. This is essential for tracking changes made by `pushState()` and `replaceState()`, or when the user navigates through history.
+popstate observes applicable history traversal, such as Back/Forward. Calling pushState or replaceState does not itself emit it; render explicitly after those calls. A traversal may arrive with null state, so derive/validate the route from the URL rather than assuming event.state is complete. Browser interaction policies can affect event delivery; test actual navigation.
 
 **Example:**
 
@@ -209,3 +212,14 @@ window.addEventListener('popstate', function(event) {
 ### **Conclusion**
 
 The **History API** allows you to control the browser's history and URL without reloading the page, which is particularly useful in SPAs and dynamic web applications. It allows for seamless navigation while updating the URL, making your application feel more like a multi-page app, even if it's just a single page under the hood.
+## URL/state invariants and navigation trade-offs
+
+The unused second argument is conventionally an empty string; update document.title separately. The URL is the shareable source of truth for route/filter state; history.state is a small navigation hint, not a server-authorization boundary or durable database. Do not store tokens, private documents or large result payloads there. Structured cloning differs from JSON: do not use JSON.stringify success as proof that all history values are accepted.
+
+For search/filter URLs, construct new URL(location.href), update searchParams and choose push for a user-meaningful history step versus replace for correction/debounced transient state. Preserve unrelated parameters and encode with URLSearchParams, not manual string concatenation. Avoid pushing a new entry for every keystroke unless Back is intended to step through each key. Same-origin validation must compare origin (scheme/host/port), not a string prefix.
+
+Deep-link reload must be supported by the server with the correct HTML/not-found behavior. Client-side routing does not remove data requests, SSR or loader behavior. Modified clicks/new tabs/downloads/external links should retain native behavior; the example intercepts only its known same-origin routes. A router also needs a documented focus/scroll restoration and unsaved-change policy; Back is not a synchronous function returning a new page. The example keeps browser scroll restoration rather than implementing its own scheme.
+
+**Exercise:** serve this fixture through a local development server and navigate Home→About→Back→Forward→reload. Acceptance: one history entry per intended navigation; initial entry renders on Back even with missing/old state; no hash '#' entry is accidentally added; title/content/focus match route; modified/external clicks retain browser semantics; invalid/cross-origin URLs are rejected or left to native navigation; direct /about reload works server-side. Record browser versions and the actual interaction trace. Learner execution remains required; no local-browser pass is claimed here.
+
+Official references: [WHATWG History](https://html.spec.whatwg.org/multipage/nav-history-apis.html#the-history-interface), [URL Standard](https://url.spec.whatwg.org/). Checked2026-10-20.

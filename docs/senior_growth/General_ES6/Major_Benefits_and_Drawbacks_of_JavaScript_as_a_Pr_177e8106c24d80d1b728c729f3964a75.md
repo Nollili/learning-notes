@@ -10,7 +10,7 @@
     - **Mobile Apps** (e.g., React Native, Ionic).
     - **Desktop Apps** (e.g., Electron).
     - **IoT** and **Serverless** applications.
-- **Cross-Platform**: Write code once, and it works across multiple environments.
+- **Cross-Platform**: Pure language/domain code can be portable, but host APIs, module resolution, package exports, permissions and supported language versions differ. Browser DOM code does not run in Node merely because both use JavaScript.
 
 ---
 
@@ -26,16 +26,16 @@
 ### **3. Vibrant Ecosystem**
 
 - **Libraries and Frameworks**: Rich ecosystem with popular frameworks like React, Vue, Angular, and more.
-- **NPM**: The largest package manager in the world, with millions of reusable libraries.
+- **NPM**: A large package ecosystem; evaluate maintenance, licensing, dependency/security and actual integration costs rather than size alone.
 - **Community Support**: Strong developer community with extensive documentation, tutorials, and open-source contributions.
 
 ---
 
 ### **4. High Performance**
 
-- **Event Loop & Async**: The non-blocking, event-driven nature of JavaScript (via the event loop) allows it to handle many tasks efficiently.
-- **Just-In-Time Compilation**: Modern JavaScript engines like V8 compile JavaScript into machine code at runtime, making it fast.
-- **Single-Threaded but Scalable**: Node.js allows JavaScript to handle thousands of concurrent connections using asynchronous I/O.
+- **Event Loop & Async**: The non-blocking, event-driven nature of JavaScript (via the event loop) can overlap waiting for supported I/O. Synchronous callbacks and CPU work still block their JavaScript event-loop thread.
+- **Just-In-Time Compilation**: Modern JavaScript engines like V8 compile JavaScript into machine code at runtime, which can improve measured workloads; optimization/warmup/deoptimization and allocation costs still matter.
+- **Single-Threaded but Scalable**: Node.js can overlap asynchronous I/O; actual capacity depends on per-request work, downstream pools, memory, limits and hardware. Workers can execute other JavaScript in parallel.
 
 ---
 
@@ -155,4 +155,20 @@
 
 **When to Be Cautious?**
 
-- For projects requiring high performance or strict typing, consider alternatives like TypeScript (a superset of JavaScript) or another language entirely.
+- TypeScript adds static checking and emits JavaScript; type annotations are erased and do not inherently accelerate runtime execution. Performance needs a measured algorithm/runtime/workload decision. Static types also do not validate external JSON automatically.
+
+## Portability exercise: separate language from host
+
+```js
+function total(values) { return values.reduce((sum, value) => sum + value, 0); }
+function capabilities(host) {
+  return { dom: typeof host.document?.querySelector === 'function',
+    filesystem: typeof host.process?.versions?.node === 'string' };
+}
+```
+
+`total` is portable domain code for a specified numeric input contract. Capability detection above is only a diagnostic hint; a Node version string does not grant filesystem permissions and an object could fake those properties. Real adapters should import/check required APIs and fail explicitly under the selected host. A browser sandbox, Node permission settings, ESM/CJS resolution and an edge runtime can change what is actually available. Transpilation rewrites supported syntax, polyfills supply some missing APIs, and neither can generally reproduce every host capability or security boundary.
+
+**Acceptance:** run the same numeric fixture in the agreed runtimes, keep DOM/filesystem code behind separate adapters, and explain one unavailable API and one syntax-vs-polyfill difference. Compile a small typed arithmetic function and inspect its emitted JavaScript; types add checks before execution, not an automatic speed optimization. Compare runtime behavior/validation separately. Browser/edge execution and learner practice remain required; a Node or VM diagnostic is not cross-runtime compatibility proof.
+
+References checked2026-10-22: [TypeScript type erasure](https://www.typescriptlang.org/docs/handbook/2/basic-types.html), [Node globals and host APIs](https://nodejs.org/api/globals.html). No universal connection count or language speed ranking is asserted.

@@ -6,7 +6,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 - **Relational Databases (RDBMS)**:
     - **Structured Data**: Data is stored in tables with predefined schemas consisting of rows and columns.
-    - **Schema-based**: Requires a fixed schema that defines the types and structure of data. Tables are linked with foreign keys.
+    - **Schema-based**: Uses declared types/constraints that can evolve through migrations. Foreign keys can enforce relationships; JSON columns can hold semistructured data.
     - **Examples**: MySQL, PostgreSQL, Oracle, Microsoft SQL Server.
 - **Non-relational Databases (NoSQL)**:
     - **Flexible Schema**: Can handle unstructured, semi-structured, or structured data. Some NoSQL databases are schema-less or allow dynamic schema.
@@ -33,11 +33,11 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 ### **3. Scalability**
 
 - **Relational Databases (RDBMS)**:
-    - **Vertical Scaling**: RDBMS typically scale vertically by adding more power to the server (CPU, RAM, etc.).
-    - **Challenges with Scaling**: As the data grows, scaling RDBMS can become expensive and less efficient due to the need for powerful hardware and more complex database administration.
+    - **Scaling options**: Vertical resources, indexes/query design, replicas, partitioning and, for suitable products/designs, sharding/distributed SQL.
+    - **Trade-offs**: Cross-partition joins/transactions, replication lag, hotspots and operational cost depend on product/topology/workload.
 - **Non-relational Databases (NoSQL)**:
-    - **Horizontal Scaling**: NoSQL databases are designed to scale horizontally by adding more servers (nodes) to distribute the load, making them more efficient for large-scale, distributed applications.
-    - **Better for Big Data**: NoSQL databases are better suited for high-volume, low-latency applications, and can handle large amounts of unstructured data.
+    - **Horizontal scaling**: Some products support native distribution; partition-key design, hotspots and coordination still constrain throughput.
+    - **Workload fit**: Document/key-value/graph access patterns may fit a given workload; category labels do not establish lower latency or cost.
 
 ---
 
@@ -45,12 +45,12 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 - **Relational Databases (RDBMS)**:
     - **ACID Compliance**: RDBMS follow **ACID** (Atomicity, Consistency, Isolation, Durability) principles to ensure reliable transactions.
-    - **Strong Consistency**: Ensures that transactions are consistent, reliable, and follow strict rules.
+    - **Isolation/replication**: Guarantees depend on the isolation level and read path; a lagging replica or Read Committed transaction is not universally linearizable/serializable.
     - **Transactions**: Supports complex transactions with multiple operations that can be rolled back if needed.
 - **Non-relational Databases (NoSQL)**:
-    - **Eventual Consistency**: Many NoSQL databases adopt **eventual consistency** rather than strict ACID properties, especially in distributed systems. This means data may not be immediately consistent across all nodes.
-    - **CAP Theorem**: NoSQL databases often follow the **CAP Theorem** (Consistency, Availability, Partition tolerance), which means they prioritize availability and partition tolerance over strict consistency in distributed systems.
-    - **Limited Transactions**: Some NoSQL databases support transactions at the document or collection level, but they do not offer the same level of transactional consistency as RDBMS.
+    - **Configurable guarantees**: Products differ. MongoDB exposes read/write concerns and distributed transactions; some deployments/read choices allow stale or rollback-prone observations.
+    - **CAP**: During network partitions, a system cannot guarantee both linearizable reads/writes and successful service of every request at nonfailing nodes. This applies to distributed SQL and NoSQL; it does not label all NoSQL as AP.
+    - **Transactions**: MongoDB supports multi-document transactions across collections/shards under supported deployment/settings; Neo4j provides ACID transactions. Check actual scope/isolation/durability rather than assuming no comparable transactions.
 
 ---
 
@@ -59,11 +59,11 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 - **Relational Databases (RDBMS)**:
     - **SQL**: Uses **Structured Query Language (SQL)** for querying, which is powerful and standardized across relational systems.
     - **Complex Queries**: RDBMS are ideal for complex queries with multiple joins, subqueries, and aggregations.
-    - **Fixed Schema**: Data must fit into a fixed schema, which can limit flexibility when data changes frequently.
+    - **Declared schema**: Migrations/constraints make structure explicit; model evolution and JSON support remain available.
 - **Non-relational Databases (NoSQL)**:
     - **Varied Query Languages**: NoSQL databases have different query languages and methods depending on the database type (e.g., MongoDB uses a query language that operates on documents, while Redis uses simple key-based queries).
     - **Schema-less**: NoSQL allows for flexible data models that can evolve over time, which is useful for applications with rapidly changing data.
-    - **Scalability vs. Complexity**: While NoSQL is more flexible, it can be harder to perform complex queries involving joins or aggregations.
+    - **Query fit**: Join/aggregation/traversal capabilities vary; graph traversal may be more natural in a graph store, while document embedding changes update/query trade-offs.
 
 ---
 
@@ -85,8 +85,8 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
     - **Optimized for Transactional Workloads**: RDBMS are optimized for transactional workloads where data integrity is critical.
     - **Complex Queries**: RDBMS tend to perform well for complex queries, aggregations, and data analysis.
 - **Non-relational Databases (NoSQL)**:
-    - **Optimized for Horizontal Scaling**: NoSQL databases can handle huge amounts of data and scale easily, making them better for high-volume, low-latency applications.
-    - **Fast Writes**: NoSQL databases are generally optimized for fast writes, making them suitable for real-time data processing and logging.
+    - **Distribution costs**: A partitionable workload can scale on a suitable product, but balancing, coordination and failure recovery must be designed/tested.
+    - **Write behavior**: Indexes, acknowledgment/durability settings, contention and replication determine latency/throughput; measure against the required guarantees.
 
 ---
 
@@ -109,17 +109,24 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 | **Aspect** | **Relational Databases (RDBMS)** | **Non-relational Databases (NoSQL)** |
 | --- | --- | --- |
 | **Data Structure** | Tables, rows, columns | Flexible structures (documents, key-value, graphs, wide-column) |
-| **Schema** | Fixed schema, rigid | Dynamic or schema-less |
+| **Schema** | Declared/evolvable; JSON possible | Product-specific validation/evolution |
 | **Query Language** | SQL | Varies (depends on DB type) |
-| **Scalability** | Vertical scaling (difficult) | Horizontal scaling (easy) |
-| **Consistency** | ACID compliant (strong) | Eventual consistency (CAP Theorem) |
-| **Transactions** | Full ACID transactions | Limited or no ACID support |
+| **Scalability** | Product/topology/partition/query dependent | Product/topology/partition/query dependent |
+| **Consistency** | Isolation/read-replica choices matter | Read/write concerns and topology matter |
+| **Transactions** | Usually multi-row/table transactions; check isolation | Some support ACID multi-record transactions; check scope/settings |
 | **Best Use Case** | Structured, transactional data | Large-scale, unstructured data |
 | **Examples** | MySQL, PostgreSQL, Oracle | MongoDB, Cassandra, Redis, Neo4j |
 
 ---
 
-### **Conclusion**
+## Choose guarantees for a concrete workload
 
-- **Relational Databases (RDBMS)** are best suited for applications with structured data, complex relationships, and strong transactional requirements. They excel in scenarios where data integrity, consistency, and complex queries are crucial.
-- **Non-relational Databases (NoSQL)** are better for handling large volumes of unstructured or semi-structured data, real-time analytics, or applications that need horizontal scalability. They are more flexible in terms of schema and can handle distributed, high-availability use cases.
+ACID consistency means preserving declared invariants through valid transactions; it is not CAP's linearizability. Availability in the CAP model is not the same as a monthly uptime SLO or returning an error response. A deployment can deliberately reject an isolated partition's writes to protect its consistency contract. Eventual convergence requires its own conflict/repair assumptions and does not mean every database operation is equally stale.
+
+For the primary inventory learning app, PostgreSQL16 is a coherent default: explicit product/tenant/SKU constraints, atomic stock changes and transactional use cases. MongoDB remains a substantive alternative exercise when the document aggregate/access pattern is appropriate; Neo4j is an introduction to graph-oriented trade-offs, not an additional required production stack. NoSQL still needs schema validation, indexes, migration/backfill strategy and tested backups.
+
+**Worked decision:** stock for a tenant/SKU must never become negative and duplicate SKUs must be rejected. Write the invariant, choose a unique tenant/SKU constraint and an atomic conditional update inside the required transaction boundary, then verify two simultaneous decrements. A product catalog page may tolerate a deliberately stale read/cache; checkout cannot silently reuse that weaker contract. A different data model does not remove either invariant or its concurrency test.
+
+**Exercise acceptance:** compare PostgreSQL and one documented MongoDB deployment using the same invariants, failure cases and access pattern. Record isolation/read/write concerns, primary-versus-replica path, transaction scope, retry policy and measured latency; distinguish a duplicate-write conflict from an outage. Predict behavior during an unavailable primary/network partition without calling a single-process test a partition simulation. Use the existing [PostgreSQL lab](../../node-js/module-08-postgresql-mikroorm.md) and [MongoDB chapter](../../node-js/module-07-mongodb-mongoose.md); advanced multi-node fault injection remains separate practice. No database benchmark/partition or learner evidence is claimed here.
+
+References checked2026-10-22: [MongoDB transactions](https://www.mongodb.com/docs/manual/core/transactions/), [MongoDB read concern](https://www.mongodb.com/docs/manual/reference/read-concern/), [Neo4j transactions](https://neo4j.com/docs/operations-manual/current/database-internals/transaction-management/), [PostgreSQL16 isolation](https://www.postgresql.org/docs/16/transaction-iso.html), [Gilbert/Lynch CAP model](https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer6.pdf).

@@ -4,7 +4,14 @@ layout: home
 
 hero:
   name: "My notes for bench learning"
+  text: "Practical learning paths from foundations to production engineering"
   actions:
+    - theme: brand
+      text: Node.js Learning Path
+      link: /node-js/
+    - theme: alt
+      text: Python for AI
+      link: /python-for-ai/
     - theme: alt
       text: Materials
       link: /materials

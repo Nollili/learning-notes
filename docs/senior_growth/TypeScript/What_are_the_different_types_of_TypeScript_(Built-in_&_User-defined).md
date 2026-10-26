@@ -32,7 +32,7 @@ TypeScript provides a **rich type system** that helps developers write safe and 
 | `never`      | Represents **values that never occur**, e.g., functions that throw or infinite loops. |
 | `object`     | Any non-primitive object. |
 | `Array<T>` / `T[]` | Typed arrays. Example: `let numbers: number[] = [1, 2, 3];` |
-| `Tuple`      | Fixed-length arrays with specific types per index. Example: `[string, number]` |
+| `Tuple`      | Position-specific array types; can include optional/rest elements. Example: `[string, number]` |
 | `Enum`       | Named constants. Example: `enum Color { Red, Green, Blue }` |
 
 ---
@@ -51,7 +51,7 @@ TypeScript provides a **rich type system** that helps developers write safe and 
 ```ts
 type Person = { name: string; age: number };
 type PartialPerson = Partial<Person>; // { name?: string; age?: number }
-````
+```
 
 ---
 
@@ -123,6 +123,7 @@ function identity<T>(value: T): T {
 ```ts
 let direction: "up" | "down" | "left" | "right";
 direction = "up"; // ✅
+// @ts-expect-error Only the declared direction literals are allowed.
 direction = "forward"; // ❌
 ```
 
@@ -141,7 +142,7 @@ type D = A | B; // Union: can be A or B
 ```
 
 - **Union (`|`)** → Value can be one of multiple types.
-- **Intersection (`&`)** → Combines multiple types into one.
+- **Intersection (`&`)** → Must satisfy every constituent; incompatible property requirements can produce never rather than a useful merged type.
 
 ---
 
@@ -155,3 +156,91 @@ TypeScript types can be grouped as:
 
 > 💡 Senior Tip:
 > Combining built-in and user-defined types effectively allows **safe, scalable, and self-documenting code**, which is critical in large applications.
+
+## Structural assignment, inference and fresh literals
+
+Examples below use TypeScript5.9.3 with strict, noUncheckedIndexedAccess and exactOptionalPropertyTypes enabled. Interfaces and aliases both describe structural contracts; interfaces can merge declarations, while aliases can express unions and type transformations. Neither validates runtime input.
+
+```ts
+export {};
+interface Identified { id: string }
+const stored = { id: 'p1', secret: 'internal' };
+const allowed: Identified = stored; // Structural compatibility permits extra fields.
+// @ts-expect-error Fresh literal excess-property check catches likely mistakes.
+const fresh: Identified = { id: 'p1', secret: 'internal' };
+function publicDto(value: Identified): Identified { return { id: value.id }; }
+console.log(publicDto(stored)); // Only id; annotation alone would not remove secret.
+
+let mutableMode = 'light'; // string: it can change later
+const literalMode = 'light'; // literal 'light'
+const options = { mode: 'light' } satisfies { mode: 'light' | 'dark' };
+// @ts-expect-error options.mode retained the literal 'light'.
+options.mode = 'dark';
+```
+
+Excess-property checks help catch typos in fresh literals; they are not exact-object security. `satisfies` checks compatibility while preserving useful inferred information; `as` can override the checker. A union accepts a value matching a member, but only common safe operations are available until narrowing. An intersection of `{id:string}` and `{id:number}` requires an impossible id. Prefer a tagged union for alternatives rather than piling optional fields into one interface.
+
+## Unknown boundaries and honest guards
+
+```ts
+export {};
+function hasErrorCode(error: unknown): error is Error & { code: string } {
+  return error instanceof Error && 'code' in error && typeof error.code === 'string';
+}
+function classify(error: unknown): string {
+  if (hasErrorCode(error)) return error.code;
+  return 'UNEXPECTED';
+}
+```
+
+Proving instanceof Error does not prove Node errno fields such as code/path/syscall. Read additional properties only after checking them. Across realms or plain error payloads, instanceof may not match; validate the actual transport schema separately. `any` propagates unchecked access through return values; prefer unknown at boundaries and narrow locally. Never write a broad isUser predicate that tests only one field and promises the whole model.
+
+## Readonly is shallow; aliases still matter
+
+```ts
+export {};
+const source = { settings: { theme: 'light' }, name: 'Ada' };
+const view: Readonly<typeof source> = source;
+// @ts-expect-error Shallow readonly prevents this assignment through view.
+view.name = 'Grace';
+view.settings.theme = 'dark'; // Nested object remains mutable.
+source.name = 'Grace'; // A mutable alias still changes the same object.
+const modes = ['light', 'dark'] as const; // readonly literal tuple in the type system
+```
+
+`Object.freeze` provides shallow runtime freezing; `as const` changes inference without freezing the object. Deep readonly types and deep freezing have different runtime/compatibility costs; retain ownership boundaries rather than assuming a mapped type prevents all mutation. Project DTOs deliberately to avoid leaking storage-only fields.
+
+**Exercise:** design a user DTO, unknown-input parser and readonly view. Acceptance: fresh literal typo rejected; variable with extra properties is structurally compatible but DTO projection removes them; unknown cannot be used before parsing; Error-only guard cannot authorize errno access; demonstrate nested and aliased mutation; retain positive and @ts-expect-error negative type cases. Use discriminated states from the never lesson for loading/error/success UI.
+
+Official references: [object types](https://www.typescriptlang.org/docs/handbook/2/objects.html), [narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html), [satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). Checked2026-10-20.
+
+### Runtime ownership drill
+
+```ts
+export {};
+const owned = { nested: { count: 1 } };
+const frozen = Object.freeze(owned);
+frozen.nested.count = 2; // Both runtime freeze and inferred readonly are shallow.
+const inferred = { nested: { count: 1 } } as const;
+// Type-only counterexample: do not run this rejected assignment as normal code.
+if (false) {
+  // @ts-expect-error as const makes this nested literal property readonly to the checker.
+  inferred.nested.count = 2;
+}
+const mutableAlias = { count: 1 };
+const readonlyAlias: Readonly<typeof mutableAlias> = mutableAlias;
+mutableAlias.count = 3;
+console.log(readonlyAlias.count); // 3: readonly access does not confer ownership.
+```
+
+A recursive DeepReadonly type is a compile-time view, not a runtime traversal; a recursive freeze utility needs policies for cycles, getters, class instances, Maps/Sets and performance. Object.freeze on a Map does not disable its set method. Prefer a narrowly owned immutable value graph or projected/copied DTO for a boundary; do not promise all arbitrary JavaScript objects become immutable from one mapped type. A structured clone is a separate data-copy operation with its own supported types; it neither validates domain constraints nor automatically freezes output.
+
+**Acceptance:** execute the shallow/alias cases and inspect Object.isFrozen on the outer and nested objects; show that as const does not call Object.freeze. Explain which references a shallow spread shares. For an actual state update, create a new outer and changed nested object while preserving untouched references, then verify both old data and equality behavior. Record typecheck and runtime evidence separately; learner practice remains required.
+
+References checked2026-10-21: [TypeScript readonly properties](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties), [ECMAScript Object.freeze](https://tc39.es/ecma262/#sec-object.freeze).
+
+## From an inventory to derived contracts
+
+Continue with the [worked generic transformations](./Generics.md#mapped-and-utility-types). The dependent getter explains why keyof selects keys and T[K] retains the selected property's value type. The mapped examples add/remove readonly and optional modifiers; the allowlisted CoursePatch derives only editable fields, with Parameters/ReturnType following the helper signature. Conditional infer extracts an array element type, and the distribution example distinguishes string[] | number[] from (string | number)[]. These operations transform static contracts; they do not create a parser or remove fields from a runtime object.
+
+**Acceptance:** typecheck those exact positive/negative cases with strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes. Show that an invalid key and explicit undefined patch fail, a false patch value is preserved, an untouched input remains unchanged and unrelated runtime fields are omitted from output. Explain one conditional-distribution choice and prefer the simplest readable public API. This is the advanced follow-through for the utility-type list above; learner implementation remains required.

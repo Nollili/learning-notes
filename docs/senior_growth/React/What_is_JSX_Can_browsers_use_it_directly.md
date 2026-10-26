@@ -62,7 +62,7 @@ To use JSX, you typically:
 }
 ```
 
-Once transpiled, the output JavaScript can be run directly in browsers.
+The transformed output still needs the correct runtime dependency, module loading/bundling and supported JavaScript APIs.
 
 ---
 
@@ -90,3 +90,31 @@ Once transpiled, the output JavaScript can be run directly in browsers.
 ### **Conclusion**
 
 JSX is a powerful feature of React that simplifies UI development by allowing you to write HTML-like syntax in JavaScript. However, because browsers cannot natively interpret JSX, it must be transpiled into plain JavaScript before being executed. Tools like Babel and Webpack handle this process, enabling JSX to work seamlessly in modern development workflows.
+## Primary automatic runtime and resolution debugging
+
+The createElement example above shows the classic transform concept. React19 expects the modern JSX transform for its supported new-code path. For these examples use TypeScript5.9.3, React19.3.0/types19, jsx=react-jsx and a matching ESM bundler or NodeNext lab. A Babel-based alternative uses its React preset with runtime=automatic; do not configure two independent JSX passes accidentally.
+
+```tsx
+// greeting.tsx
+export type GreetingProps = Readonly<{ name: string }>;
+export function Greeting({ name }: GreetingProps) {
+  return <h1>Hello, {name}!</h1>;
+}
+```
+
+With target ES2022, module ESNext and jsx react-jsx, the generated module imports a helper from react/jsx-runtime and calls it to construct an element. Multiple children may use jsxs; development mode uses jsxDEV from react/jsx-dev-runtime and adds development metadata. Neither output creates browser DOM by itself; React DOM renders/commits elements later. Inspect actual output rather than depend on helper alias spelling.
+
+| Symptom | Investigate at the right boundary |
+|---|---|
+| Unexpected token `<` | JSX transform absent or JSX left preserved in a file sent as ordinary JavaScript; inspect response Content-Type and actual source |
+| React is not defined | Classic transform emitted a React reference without its import/binding; align runtime/config rather than add random globals |
+| Cannot resolve react/jsx-runtime | React dependency/export resolution or bundler conditions/version mismatch; inspect resolved package/lockfile |
+| Browser rejects bare react/jsx-runtime import | Module output was not bundled or mapped for that browser; TS path aliases alone do not install browser import maps |
+| Type errors invisible during dev server | Fast transformation is not a full typecheck; run tsc --noEmit separately |
+| Works in dev, fails in published build | Compare production transformation, base paths, chunks, source maps and dependency resolution using the deployed-equivalent artifact |
+
+Keep .tsx extensions and React type declarations aligned with the checker configuration. A component library should publish the intended module formats/declarations and peer dependency contract; packaging one React copy per component can create invalid-hook/context identity problems. Avoid “fixing” resolution by disabling checks without finding which file/package is actually loaded.
+
+**Exercise acceptance:** transform the exact source with react-jsx and react modes and compare helper import versus createElement reference; preserve mode must retain JSX and is not browser-ready JavaScript. Typecheck the primary automatic path, render the valid component to static HTML and inspect escaping; then diagnose a missing runtime/bare browser import from the generated artifact. Production/native-browser packaging checks remain learner practice; compiler/SSR checks do not prove them.
+
+Official references checked2026-10-22: [TypeScript JSX output modes](https://www.typescriptlang.org/tsconfig/jsx.html), [module output/resolution](https://www.typescriptlang.org/tsconfig/module.html), [React19 modern transform](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#new-jsx-transform-is-now-required).

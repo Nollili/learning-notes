@@ -2,6 +2,8 @@
 
 ## 🔹 AWS: Pros & Cons
 
+This is study material, not a claim of personal/employer AWS deployment experience. Use the [concrete service-slice lesson](../../node-js/aws-service-slice.md) for a locally linted topology/IAM/IaC and workload-cost example; cloud execution remains learner practice.
+
 **Amazon Web Services (AWS)** is a leading **cloud computing platform** providing a wide range of services including **compute, storage, databases, networking, machine learning, and more**. While it’s extremely popular, there are trade-offs to consider.
 
 ---
@@ -9,14 +11,14 @@
 ## 1️⃣ Pros of AWS
 
 ### 1.1 Scalability & Flexibility
-- Instantly **scale up or down** based on demand.
+- Scale capacity subject to startup time, configured policies, quotas and available resources; response is not instantaneous.
 - Supports **auto-scaling** for applications.
 - Variety of compute options: **EC2, Lambda (serverless), ECS, EKS**.
 
 ### 1.2 Global Infrastructure
 - Data centers in **multiple regions and availability zones (AZs)**.
 - Reduces latency by **serving users from nearby regions**.
-- High **availability and fault tolerance**.
+- Availability/fault tolerance depend on the selected service, explicit multi-AZ design and tested recovery.
 
 ### 1.3 Broad Service Offering
 - Compute: EC2, Lambda, Fargate  
@@ -33,11 +35,11 @@
 
 ### 1.5 Security & Compliance
 - Provides **strong security controls**: IAM, encryption at rest/in-transit, audit logging.
-- Meets **compliance standards**: ISO, GDPR, HIPAA, SOC 2.
+- Provides compliance attestations/programs for defined service scopes; customer application/configuration/data obligations remain under the shared-responsibility model.
 
 ### 1.6 High Reliability
-- Built-in **redundancy** via multiple AZs.
-- Services like S3 provide **11 nines durability**.
+- Some services provide multi-AZ behavior; other workloads require explicit multi-AZ provisioning.
+- Storage durability targets vary by service/class and differ from availability or protection from bad writes/deletion.
 
 ---
 
@@ -49,7 +51,7 @@
 - Requires **cost monitoring and optimization**.
 
 ### 2.2 Learning Curve
-- AWS has **thousands of services**.
+- AWS has a broad and changing service catalog; focus on the workload's compute/storage/network/IAM needs rather than memorize a count.
 - Requires understanding **IAM, networking, storage types, service limits**.
 - Configuration mistakes can lead to **security or availability issues**.
 
@@ -93,3 +95,7 @@
 
 > 💡 Senior Tip:  
 > Always **monitor costs** and use **Infrastructure as Code (IaC)** like **Terraform** or **CloudFormation** to manage AWS resources safely and reproducibly.
+
+## Concrete learning checkpoint
+
+The [AWS service slice](../../node-js/aws-service-slice.md) selects private Fargate→PostgreSQL with distinct deployment/execution/application identities, one tenant S3 read prefix, digest-pinned images and explicitly owned network/secret prerequisites. Its CloudFormation schema/negative checks and hypothetical cost arithmetic have run locally. Effective account IAM, real deployment, region-specific quote, alerts and teardown have not. Complete the linked acceptance exercise and retain actual outcomes before describing personal implementation experience. CloudFormation is the chosen IaC example; Kubernetes administration is optional beyond awareness at this target depth.

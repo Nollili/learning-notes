@@ -45,7 +45,7 @@
 1. **Write tests as you code** (TDD or alongside feature development)
 2. **Test critical paths first**
 3. **Review unit tests in PRs** like production code
-4. **Maintain ownership**: developers who break the code should fix the tests
+4. **Maintain ownership**: developers investigate regressions and fix production behavior or obsolete expectations according to the requirement; do not weaken tests merely to get green
 
 ---
 
@@ -53,7 +53,16 @@
 
 - **Developers are primarily responsible** for unit tests.
 - **QA and team leads** support and enforce quality and coverage.
-- **Ownership matters:** the closer the test is to the code, the better its quality.
+- **Ownership matters:** the author supplies behavior evidence and reviewers challenge assumptions; proximity alone does not guarantee quality.
 
 > 💡 Senior Tip:  
 > Unit tests are **part of the definition of done (DoD)** for a feature. No code should be merged without meaningful tests.
+
+
+## Worked review responsibility
+
+The [configuration-limit TDD fixture](./TDD_-_pros_and_cons(red,_green,_refactor).md#config-tdd) records an authored review finding: a first passing parser suite needed a trailing-newline case because JavaScript `$` can match before a final terminator. The author owns the input contract and repair; a reviewer asks whether “no whitespace” includes newline, requests an observable negative case, and checks the actual implementation/diff rather than accepting the pass count. This is a constructed study record with actual local checks, not a claim that another person performed a review.
+
+The [AI-assisted engineering evidence route](../../ai-assisted-engineering/traceability-and-evaluation.md) adds requirement-to-test mapping and detected defect variants. Independent human review and learner practice remain separate; a model's self-review is not evidence that a peer approved a change. QA can contribute unit, integration or exploratory tests according to expertise; ownership is collaborative rather than a prohibition on who may write a test.
+
+**Exercise acceptance:** prepare a local change record with requirement, failing case, repair, actual diff and rerun output. Have a reviewer identify one missing boundary or explain why coverage is sufficient for the scoped contract. Record disagreement and resolution without inventing a peer's participation. Restricted `src/tests` must remain unchanged in Autocode work; only the user may push. Learner review/practice remains required. [Node test documentation](https://nodejs.org/docs/latest-v24.x/api/test.html) describes the fixture runner; tools do not replace review judgment.

@@ -53,7 +53,7 @@ NFRs define **how the system should perform**. They describe the quality attribu
 ### **Characteristics**
 
 - **System-Oriented**: Focus on how the system behaves and performs.
-- **Qualitative**: Measured using metrics like uptime, load time, or compliance standards.
+- **Verifiable**: Quality goals need explicit measures, workload, environment and acceptance evidence; a vague adjective is not an acceptance criterion.
 - **Cross-Cutting**: Apply across multiple features or the entire system.
 
 ### **When to Consider**
@@ -115,3 +115,24 @@ NFRs define **how the system should perform**. They describe the quality attribu
 - Functional requirements are **feature-focused**, while NFRs are **quality-focused**.
 - Both are equally important—functional requirements ensure the app meets user needs, and NFRs ensure it performs reliably under real-world conditions.
 - Addressing NFRs early prevents costly architectural changes later in the development lifecycle.
+
+## Quality scenarios and acceptance evidence
+
+The examples above are starting points, not complete specifications. “10,000 concurrent users below one second” needs request mix, arrival rate, payload sizes, cache state, device/network, percentile, timeout/error treatment and measurement window. “99.9% uptime” needs an eligible-request denominator, success definition, observation window and exclusions agreed in advance. Encryption alone does not establish authorization; naming WCAG does not establish conformance. Functional and quality requirements overlap: a security invariant can be tested as observable behavior, and both influence architecture.
+
+Use: **stakeholder → stimulus → environment → affected component → response → measurable criterion**. Agree on thresholds before implementation, keep failures in the denominator, and record measured results separately from intended targets.
+
+| Scenario | Design decision and acceptance criterion | Evidence and remaining check |
+|---|---|---|
+| User submits B while earlier query A is delayed | Epoch plus abort ownership; only the newest accepted query renders, even if A ignores abort | [Worked workflow](./Large_Data_Workflow.md) deferred-response test passed; real adapter still needs integration |
+| User requests another page in a large catalogue | One native page, stable IDs and snapshot-bound server cursors; accept no more than 50 rows, no more than 100 selected IDs | Schema rejects 51 rows; fixture proves page replacement and selection retention. Cross-page selection cap and server cursor authorization remain learner tests |
+| User restores filters on a shared device | Explicit, scoped, versioned intent only; fetch fresh first page and reject bad stored shape/version | Unicode/scope/version/oversized-storage fixture checks passed; shared-device policy and logout deletion must be implemented before enabling persistence |
+| Catalogue changes during browsing | Server rejects expired/inconsistent snapshot; client shows recovery and clears selection | Mismatched-token client test passed; actual stable snapshot implementation is not supplied by a token alone |
+| Keyboard user advances a page | Initial load preserves focus; user-requested accepted page focuses result heading and announces a status | DOM-focus check passed; native browser, screen reader, zoom and reflow observations still required |
+| Product needs responsive results | Proposed page budget: 50 rows, agreed maximum response bytes and p95 interaction latency under a recorded workload | Set and measure byte/latency/heap budgets on specified hardware/network; no browser performance result is claimed |
+
+The linked workflow contains an authored **decision record** with context, chosen pagination/persistence policy, alternatives and consequences. It is an actual design artifact for this fixture, not proof that a stakeholder approved it or a learner implemented it. Revisit the decision if users need arbitrary page jumps, editable rows, bulk selection or offline operation.
+
+### Practical exercise
+
+Choose one feature and write three quality scenarios before coding. For each, record stakeholder, stimulus, load/environment, measurable response, architecture choice, cost/trade-off and exact verification method. Implement one negative test and one measurement. Retain raw results and reconcile failures against the original threshold; do not change the threshold after a failed run without recording the decision. Acceptance: all scenarios trace to tests/measurements, proposed versus observed values are visibly distinct, and remaining manual checks have an owner. Use the [official React](https://react.dev/reference/react/useEffect) and [WAI table guidance](https://www.w3.org/WAI/tutorials/tables/) when validating the example's lifecycle and semantics. Learner practice remains outstanding.

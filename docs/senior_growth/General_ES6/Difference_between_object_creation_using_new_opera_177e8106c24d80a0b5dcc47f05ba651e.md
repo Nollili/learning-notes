@@ -1,6 +1,6 @@
 ### Difference between object creation using new operator and function constructor?
 
-In JavaScript, objects can be created using either the **`new` operator** or a **function constructor**, but they are closely related since the `new` operator is commonly used with function constructors. Here's a detailed explanation:
+The new operator invokes a constructor; these are not competing creation mechanisms. Compare construction with new against a factory function that explicitly returns an object. Here's a detailed explanation:
 
 ---
 
@@ -31,11 +31,11 @@ console.log(person1); // Output: Person { name: 'John', age: 30 }
 
 ---
 
-### **2. Object Creation Using a Function Constructor**
+### **2. Object Creation Using a Factory Function**
 
 A **function constructor** is a function intended to be used with the `new` operator to initialize a newly created object. When a function is called with `new`, it acts as a constructor function.
 
-**Example of a Function Constructor:**
+**Factory example:** createPerson is called normally and explicitly returns its product; it is not a constructor example.
 
 ```jsx
 function createPerson(name, age) {
@@ -69,7 +69,7 @@ person1.sayHello(); // Output: Hi, I'm Alice and I'm 30 years old.
 
 ### **Potential Issues Without `new`**
 
-If you forget to use the `new` operator when calling a function constructor, the function will execute in the global scope or the default `this` context, which can lead to unintended side effects (e.g., polluting the global object).
+A plain call has undefined this in strict code/ESM and may throw on this.name assignment. In a sloppy classic script, a plain call substitutes the global object and may pollute it. Calling it as another object's method supplies that receiver instead. It does not execute in global lexical scope.
 
 **Example:**
 
@@ -78,21 +78,21 @@ function Person(name) {
   this.name = name;
 }
 
-const person1 = Person("Alice"); // Forgot to use `new`
-console.log(person1); // undefined
-console.log(globalThis.name || window.name); // "Alice" (pollutes global scope)
+const person1 = Person("Alice"); // Strict/ESM: TypeError before returning.
+// Sloppy classic-script-only demonstration: returns undefined, may set globalThis.name.
+// Do not reference window in portable Node code.
 
 ```
 
 ---
 
-### **Solution: Enforce `new` with `instanceof`**
+### **Solution: Enforce construction with `new.target`**
 
-You can enforce the use of `new` by checking if `this` is an instance of the constructor:
+Use new.target to detect construction. An instanceof check can be fooled by calling the function with an existing compatible receiver:
 
 ```jsx
 function Person(name) {
-  if (!(this instanceof Person)) {
+  if (!new.target) {
     throw new Error("Must use 'new' with Person");
   }
   this.name = name;
@@ -107,7 +107,7 @@ const person2 = Person("Bob"); // Throws Error
 
 ### **Modern Approach: Using ES6 Classes**
 
-With ES6, **classes** provide a more structured and readable way to create objects. Classes internally use function constructors and the `new` operator.
+With ES6, **classes** provide a more structured and readable way to create objects. Classes have constructor/prototype semantics with additional rules; they are not interchangeable with every ordinary function implementation.
 
 **Example:**
 
@@ -146,3 +146,21 @@ console.log(dog); // Output: Animal { name: 'Buddy' }
 - The **`new` operator** is the mechanism for creating objects and linking them to a prototype.
 - A **function constructor** provides the blueprint for initializing object properties and methods when used with `new`.
 - Forgetting `new` can lead to issues, but modern **ES6 classes** simplify the process and enforce better practices.
+## Constructor returns, factories and trade-offs
+
+```js
+function ReturnsObject() { this.ignored = true; return { replacement: true }; }
+function ReturnsPrimitive() { this.kept = true; return 7; }
+console.log(new ReturnsObject()); // {replacement:true}; replacement need not use the constructor prototype
+console.log(new ReturnsPrimitive().kept); // true; primitive return ignored for this base constructor
+const sharedMethods = { greet() { return `Hello ${this.name}`; } };
+function createUser(name) { return Object.assign(Object.create(sharedMethods), { name }); }
+const user = createUser('Ada');
+console.log(user.greet()); // Hello Ada; factory can still share a prototype
+```
+
+A factory can choose the returned shape or hide dependencies in closures; a class/prototype can share methods and express instanceof-based identity. Do not choose solely by allocation folklore: measure construction volume and clarify ownership. instanceof checks a prototype relationship (and can be customized); it is not runtime schema validation and can fail across realms. new.target also supports subclass-aware construction, but derived-class return/super rules are more restrictive than the simple base examples above.
+
+**Exercise:** implement equivalent factory and constructor user objects. Acceptance: separate new invocation from factory return; verify shared versus per-instance method identity; test plain strict call failure, replacement object return and primitive return; explain why a fake prototype chain does not validate a user DTO. Keep intentional throwing calls isolated.
+
+Official references: [ECMA construction](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-new-operator), [new.target/classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html). Checked2026-10-20; Node24 runtime baseline.

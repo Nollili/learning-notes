@@ -2,7 +2,7 @@
 
 In JavaScript, tasks and microtasks are part of the **event loop** mechanism and determine how asynchronous code is executed. Understanding their differences is crucial to mastering how JavaScript works behind the scenes.
 
-![](https://miro.medium.com/v2/resize:fit:1400/1*XVqPA2z1dTHJWm2TwIAsBw.gif)
+External animation reference (unreviewed): [event-loop illustration](https://miro.medium.com/v2/resize:fit:1400/1*XVqPA2z1dTHJWm2TwIAsBw.gif). The explanation and executable fixture below are self-contained; this media is not evidence.
 
 ---
 
@@ -16,13 +16,13 @@ In JavaScript, tasks and microtasks are part of the **event loop** mechanism and
     - `setInterval`
     - `setImmediate` (Node.js)
     - I/O operations (like file reading in Node.js)
-    - UI rendering tasks (in browsers)
+    - Browser event callbacks; rendering opportunities are separately scheduled, not an ordinary FIFO item after every task
 
 ### **How They Work**:
 
 1. Tasks are queued in the **task queue**.
-2. After the **call stack** is empty, the event loop picks the first task from the task queue and executes it.
-3. Once executed, the event loop moves to the next task in the queue.
+2. The browser selects a runnable task from its task sources according to host rules, not one universal FIFO for all events.
+3. Microtask checkpoints and rendering opportunities may occur before another task; rendering is not guaranteed after every task.
 
 ---
 
@@ -30,12 +30,12 @@ In JavaScript, tasks and microtasks are part of the **event loop** mechanism and
 
 ### **Definition**:
 
-- Microtasks are smaller, high-priority tasks that are executed before the next task in the queue.
-- They always run immediately after the currently executing JavaScript code and before any pending tasks.
+- Microtasks are jobs processed at specified checkpoints. They are not necessarily small or safe to run for a long time.
+- They run at checkpoints such as after a task completes; they do not interrupt synchronous code. Checkpoints can also occur during host script/callback cleanup.
 - Examples of microtasks:
     - `Promise` callbacks (`.then`, `.catch`, `.finally`)
     - `MutationObserver` (used for DOM changes)
-    - `queueMicrotask` (a browser API to schedule microtasks)
+    - `queueMicrotask` (available in browsers and Node to enqueue a microtask)
 
 ### **How They Work**:
 
@@ -49,10 +49,10 @@ In JavaScript, tasks and microtasks are part of the **event loop** mechanism and
 
 | Feature | **Tasks (Macrotasks)** | **Microtasks** |
 | --- | --- | --- |
-| **Priority** | Lower | Higher |
-| **Execution Timing** | After the call stack is cleared | Immediately after the current stack |
+| **Scheduling** | Runnable task chosen by host | Drained at a microtask checkpoint |
+| **Execution Timing** | Host task scheduling | At checkpoints, without interrupting current synchronous code |
 | **Examples** | `setTimeout`, `setInterval` | Promises, `queueMicrotask` |
-| **Use Case** | Delayed execution, animations | Critical small tasks, chaining ops |
+| **Use Case** | Timer/event work; rendering uses its own opportunities | Bounded follow-up work/chaining |
 
 ---
 
@@ -85,7 +85,7 @@ console.log("End");
 
 ### **Output**:
 
-```vbnet
+```text
 Start
 End
 Microtask: Promise
@@ -98,3 +98,24 @@ Task: setTimeout
 
 - Microtasks are prioritized, so they allow you to handle follow-up operations immediately after a promise resolves or a DOM mutation occurs.
 - Tasks are better suited for non-urgent actions or delays.
+
+
+## Nested microtasks and rendering starvation
+
+```js
+function checkpointFixture(log) {
+  log('start');
+  setTimeout(() => log('timer'), 0);
+  queueMicrotask(() => { log('micro-1'); queueMicrotask(() => log('micro-3')); });
+  Promise.resolve().then(() => log('micro-2'));
+  log('end');
+}
+```
+
+This bounded fixture produces start,end,micro-1,micro-2,micro-3,timer in the tested Node24 runtime and under the corresponding browser checkpoint rules. Newly queued microtasks are drained in that checkpoint; “await Promise.resolve()” does not necessarily give the browser an opportunity to paint or handle another task. Unbounded recursive microtasks can starve timers/input/rendering. Do not run an infinite starvation demo; use a small bounded counter when inspecting the order.
+
+Browser rendering depends on refresh, visibility, work and host policy. rAF callbacks run around a rendering opportunity, but heavy rAF work can still miss a deadline. Node has no browser paint step and has nextTick/phase/ESM subtleties; label a Node ordering experiment with module type/runtime rather than claim every host follows a single queue diagram.
+
+**Exercise acceptance:** verify the exact nested fixture, then bound100microtasks and show a timer waits until they finish. Replace with chunked task scheduling and compare actual browser responsiveness only when you can record it. Explain why microtask priority is a sequencing rule rather than a latency/performance promise. Retain learner evidence separately; Node output and the unreviewed animation prove no browser paint behavior.
+
+References checked2026-10-22: [HTML event loops/checkpoints/rendering](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops), [Node event loop phases](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick). The existing simple Promise/timer example remains valid within its stated scope.

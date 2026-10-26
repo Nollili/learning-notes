@@ -91,12 +91,12 @@ The component needs to track or update data internally (like open/closed state, 
 
 ### ⚙️ **In modern React**
 
-All components are **function components**, but they can be:
+Function and class components are both supported; new code commonly uses functions. Either can own state:
 
-* **Stateful:** use hooks (`useState`, `useEffect`, etc.)
-* **Stateless:** just a pure function returning JSX
+* **Stateful:** owns render state through useState/useReducer or class state.
+* **Without local render state:** may still use context, refs or Effects; purity and state ownership are different dimensions.
 
-So instead of saying *“class vs functional”*, we now say *“stateful vs stateless”* in terms of whether hooks are used.
+Hook usage alone does not define statefulness: useRef does not schedule renders and an Effect synchronizes externally. State ownership, rendering and side effects must be considered separately.
 
 ---
 
@@ -109,10 +109,31 @@ So instead of saying *“class vs functional”*, we now say *“stateful vs sta
 ### 🗣️ **Interview-ready 30-second answer**
 
 > “A stateful component manages its own data using state or hooks, while a stateless component just receives data via props and renders UI.
-> In modern React, both are function components — the difference is whether they hold state or not.
+> Functions and classes are both supported; the ownership distinction is whether they manage render state.
 > I usually separate stateful logic into higher-level components or custom hooks, and keep the presentational ones stateless for clarity and reusability.”
 
 ---
 
-Would you like me to give you a **quick diagram or code structure** showing how a stateful parent and stateless child interact (like in a typical React architecture)?
 
+
+
+## State ownership and reset decisions
+
+A presentational component can have local interaction state (open disclosure, hovered item) without becoming a business-data container. Container/presenter is an optional separation by responsibility, not a rule requiring every component to be in one fixed category. Put state at the nearest common owner that needs to coordinate it; keep server cache, URL/shareable state and transient UI state under distinct owners.
+
+Props are immutable inputs for one render. A parent changes the value it passes in a later render; the child does not mutate a received object. State setters request another snapshot rather than changing the currently executing closure. useState(initialProp) initializes on mount; it does not resynchronize when initialProp later changes.
+
+```jsx
+function ContactEditor({ contact }) {
+  const [draft, setDraft] = useState(contact.name);
+  return <label>Name <input value={draft} onChange={event => setDraft(event.target.value)} /></label>;
+}
+// Parent deliberately resets this local draft when entity identity changes:
+// <ContactEditor key={contact.id} contact={contact} />
+```
+
+Resetting by key also loses focus and every subtree state, so lift/save drafts when users must switch away and return. A controlled editor instead receives draft/onChange from an owner and can preserve per-entity drafts explicitly. Derived values such as filtered results usually should not be copied into another state variable with an Effect, which creates extra synchronization and possible stale frames.
+
+**Exercise:** build two contact editors with a local draft, a controlled alternative and a per-entity draft map. Acceptance: explain initial-prop behavior; key change resets only the intended editor; preserving a draft is deliberate; no prop mutation; no redundant derived state; ref mutation alone does not rerender. Include an unsaved-edit navigation case and choose its product behavior before adding an Effect.
+
+Official references: [choosing state structure](https://react.dev/learn/choosing-the-state-structure), [sharing state](https://react.dev/learn/sharing-state-between-components), [preserving/resetting state](https://react.dev/learn/preserving-and-resetting-state). React19 baseline; checked2026-10-20.

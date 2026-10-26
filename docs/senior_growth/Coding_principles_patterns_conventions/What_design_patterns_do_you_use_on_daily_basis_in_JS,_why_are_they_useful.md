@@ -88,20 +88,22 @@ const user2 = userFactory('Bob', 'guest');
 
 **Example:**
 
-```js
-class EventEmitter {
-    constructor() { this.events = {}; }
-    on(event, listener) {
-        (this.events[event] = this.events[event] || []).push(listener);
-    }
-    emit(event, data) {
-        (this.events[event] || []).forEach(listener => listener(data));
-    }
+```ts
+// local-signal.ts — one topic; synchronous, fail-fast subscribers.
+export class LocalSignal {
+  private readonly listeners = new Map<symbol, (value: unknown) => undefined>();
+  constructor(private readonly limit = 100) {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) throw new RangeError('Invalid limit');
+  }
+  subscribe(listener: (value: unknown) => undefined): () => void {
+    if (this.listeners.size >= this.limit) throw new RangeError('Listener budget exceeded');
+    const id = Symbol(); this.listeners.set(id, listener);
+    return () => { this.listeners.delete(id); };
+  }
+  emit(value: unknown): void { for (const listener of [...this.listeners.values()]) listener(value); }
+  clear(): void { this.listeners.clear(); }
+  get size(): number { return this.listeners.size; }
 }
-
-const emitter = new EventEmitter();
-emitter.on('data', msg => console.log('Received:', msg));
-emitter.emit('data', 'Hello World');
 ```
 
 **Use Case:**
@@ -144,8 +146,8 @@ console.log(executeStrategy('multiply', 2, 3)); // 6
 ```js
 function logger(fn) {
     return function (...args) {
-        console.log('Calling function with args:', args);
-        return fn(...args);
+        console.log('Function invoked'); // Fixed event only; do not log arbitrary/private arguments.
+        return fn.apply(this, args);
     };
 }
 
@@ -217,3 +219,42 @@ logCommand.execute('Hello World');
 > **Rule of Thumb:**
 > Use patterns **where they make sense** — overusing them can add unnecessary complexity. Most SPAs rely heavily on **Module, Observer, Singleton, Factory, and Strategy** patterns.
 
+
+
+## Ownership, subscription policy and singleton limits
+
+LocalSignal takes a listener snapshot per emit: removal/addition during delivery affects later emits, not the captured list. A synchronous subscriber failure propagates to the emitter and stops later delivery in that emit; document and test that fail-fast policy. Each subscription has its own token even for the same callback, and its disposer is idempotent. Async subscribers need a different awaited/queued/rejection policy; the undefined callback result rejects ordinary async functions statically. This is not Node EventEmitter's complete API or special error-event contract.
+
+The AppConfig singleton above is only per loaded module/realm/instance of the runtime, not one distributed process-wide truth. Mutable global singletons can share one user's request data with another, prolong cache retention and couple tests. Prefer a factory/injected owner for request/user/session state, with explicit disposal. A stateless shared configuration service may be appropriate; do not put a principal or private query cache into its global settings. Factory role selection creates objects, not permission: a caller-selected Admin class does not authorize a server action.
+
+## Bounded undo and redo for owned text
+
+```ts
+// text-history.ts
+export function createTextHistory(initial: string, limit = 50) {
+  const validate = (text: string) => {
+    if (typeof text !== 'string' || text.length > 4000) throw new RangeError('Bounded text required');
+  };
+  validate(initial);
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) throw new RangeError('Invalid history limit');
+  let value = initial;
+  const past: string[] = [], future: string[] = [];
+  return {
+    get value() { return value; },
+    get retained() { return past.length + future.length; },
+    set(next: string) {
+      validate(next); if (next === value) return;
+      past.push(value); if (past.length > limit) past.shift();
+      value = next; future.length = 0;
+    },
+    undo() { if (past.length) { future.push(value); value = past.pop()!; } return value; },
+    redo() { if (future.length) { past.push(value); value = future.pop()!; } return value; },
+  };
+}
+```
+
+This stores immutable string snapshots with a bounded retained count; it does not undo server writes, revoke permissions or compensate an external payment. A new edit after undo drops the redo branch; a no-op preserves it. Current value plus retained snapshots still consumes memory proportional to string lengths; do not generalize this shallow text policy to aliased mutable object graphs. Multi-user history, collaborative transforms and effectful command compensation need separate designs.
+
+**Acceptance:** unsubscribe/repeated disposal, duplicate callback ownership, add/remove during snapshot delivery, listener limit and fail-fast exception order all behave as stated. For history test empty undo/redo, multiple edits, limit eviction, redo branch clearing, no-op preservation, oversized rejection without state change and independent owners. Execute the existing factory/strategy/module examples and explain their limits; patterns are choices, not evidence of completed architecture work. Learner integration remains required.
+
+References checked 2026-10-22: [Node event ordering/listener/error contracts](https://nodejs.org/api/events.html), [React effect/subscription ownership](https://react.dev/reference/react/useEffect), [state identity](https://react.dev/learn/preserving-and-resetting-state).

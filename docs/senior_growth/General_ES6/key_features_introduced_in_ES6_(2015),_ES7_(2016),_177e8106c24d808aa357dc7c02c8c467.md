@@ -61,7 +61,7 @@ const { name, age } = { name: "Alice", age: 25 };
 
 ### **6. Rest and Spread Operators**
 
-- Combine (`rest`) or spread (`spread`) arrays/objects.
+- ES2015 introduced rest parameters and iterable/array spread. Object rest/spread properties are a separate ES2018 addition, shown below.
 
 ```jsx
 function sum(...numbers) {
@@ -95,10 +95,9 @@ console.log(greet("Alice"));
 - Simplified asynchronous code handling.
 
 ```jsx
-fetch("https://jsonplaceholder.typicode.com/posts/1")
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error(error));
+Promise.resolve({ id: 1 })
+  .then(data => data.id)
+  .then(id => console.log(id)); // 1; no host HTTP API is required.
 ```
 
 ---
@@ -150,7 +149,7 @@ console.log(numbers.includes(4)); // false
 
 ---
 
-### **2. Exponentiation Operator (`*`)**
+### **2. Exponentiation Operator (`**`)**
 
 - Shorter syntax for exponents.
 
@@ -167,16 +166,12 @@ console.log(2 ** 3); // 8
 - Built on Promises, making asynchronous code easier to read.
 
 ```jsx
-async function fetchData() {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
-    const data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+async function fetchData(load) {
+  return await load(); // Rejection propagates to the observed caller promise.
 }
-fetchData();
+fetchData(() => Promise.resolve({ id: 1 }))
+  .then(data => console.log(data.id))
+  .catch(() => console.log('Load failed'));
 ```
 
 ---
@@ -223,3 +218,22 @@ function example(a, b,) {
 | **ES6** | `let`, `const`, arrow functions, template literals, classes, modules, promises, destructuring, rest/spread |
 | **ES7** | `includes` for arrays, exponentiation operator (`**`) |
 | **ES8** | `async/await`, `Object.entries`, `Object.values`, string padding |
+
+## Later syntax is not retroactively ES2015
+
+```js
+// object-properties-2018.mjs
+const input = { id: 'a', nested: { count: 1 }, title: 'Original' };
+const copy = { ...input, title: 'Changed' }; // Object spread: ES2018.
+const { id, ...remaining } = input; // Object rest properties: ES2018.
+console.log(copy.title, input.title); // Changed Original
+console.log(copy.nested === input.nested); // true: shallow copy, not deep clone.
+```
+
+ES2016 exponentiation is **, while * is multiplication. ES2015 function rest collects arguments; spread consumes an iterable such as an array. Plain object property spread copies enumerable own properties instead and does not require that object to be iterable. Both array/object copying remain shallow; identity, prototypes/descriptors and mutation need deliberate ownership rules. Do not infer a browser's support solely from a publication year: select targets and distinguish syntax transformation from API polyfills/host capabilities.
+
+Promises belong to ECMAScript; fetch is a host Web API, not a feature added by ES2015's Promise standardization. async/await uses promises and does not make I/O synchronous or block the main thread while awaiting. The examples now use injected deterministic data rather than a live public endpoint; real network boundaries still need status/schema/size/deadline handling.
+
+**Acceptance:** parse/run each independent example separately (repeated names are not one combined module), verify2**3=8 versus2*3=6, array spread, object rest/spread keys and shared nested identity, and an observed async rejection. Keep an edition/target table with object rest/spread under2018; compile a supported target and separately check required runtime APIs. Writing a year label does not prove browser compatibility or learner practice.
+
+Primary references checked2026-10-22: [TC39 finished proposals and publication years](https://github.com/tc39/proposals/blob/main/finished-proposals.md), [ECMAScript promise semantics](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects). Runtime checks use Node24.18.0; older-browser verification remains separate.

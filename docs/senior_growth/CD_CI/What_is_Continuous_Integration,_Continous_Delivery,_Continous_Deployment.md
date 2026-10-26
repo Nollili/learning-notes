@@ -35,7 +35,7 @@ Continuous Integration is the practice of **frequently integrating code changes 
 ## 2️⃣ Continuous Delivery (CD)
 
 **Definition:**  
-Continuous Delivery ensures that **every change that passes CI is deployable to production**, but deployment itself **requires manual approval**.
+Continuous Delivery ensures that changes are kept in a releasable state through the delivery process; the production release decision remains explicit and need not be automatic.
 
 ### Key Points:
 - Build, test, and prepare code for **staging or production**.
@@ -50,14 +50,14 @@ Continuous Delivery ensures that **every change that passes CI is deployable to 
 **Example Flow:**
 1. CI pipeline passes.
 2. Build artifacts are deployed to **staging environment**.
-3. QA approves, then code is **manually deployed to production**.
+3. The authorized release decision triggers the tested automated deployment; delivery does not require a person to copy files.
 
 ---
 
 ## 3️⃣ Continuous Deployment (CD)
 
 **Definition:**  
-Continuous Deployment takes Continuous Delivery **one step further**: **every change that passes tests is automatically deployed to production**.
+Continuous Deployment takes Continuous Delivery **one step further**: eligible changes that pass the complete configured release gates are automatically deployed to production.
 
 ### Key Points:
 - No manual approval is needed.
@@ -81,17 +81,27 @@ Continuous Deployment takes Continuous Delivery **one step further**: **every ch
 | Aspect                 | CI                          | Continuous Delivery          | Continuous Deployment        |
 |------------------------|----------------------------|-----------------------------|-----------------------------|
 | Goal                   | Integrate code frequently   | Ensure deployable builds    | Deploy automatically        |
-| Deployment             | ❌ No deployment            | ✅ Manual deployment        | ✅ Automatic deployment     |
-| Feedback Speed         | Fast                        | Medium (manual deploy)      | Fast (production feedback) |
-| Risk                   | Low                         | Low                         | Medium-high (needs monitoring) |
+| Deployment             | Integration alone does not prescribe deployment; it can coexist with either CD policy | Explicit release decision, usually automated deployment execution | Automatic release/deployment after configured gates |
+| Feedback speed         | Depends on integration/check duration | Includes release-decision waiting time | Depends on gates and production observation |
+| Risk                   | Depends on change, checks and operational controls | Depends on change, checks and operational controls | Depends on change, gates and operational controls |
 
 ---
 
 ### ✅ Summary
 
 - **CI:** Frequent integration + automated tests.  
-- **Continuous Delivery:** CI + deployable builds; manual deployment to production.  
+- **Continuous Delivery:** keep changes releasable with an explicit production release decision and repeatable deployment execution.  
 - **Continuous Deployment:** CI + automated deployment; code goes to production automatically.  
 
 > 💡 Senior Tip:  
 > The **main difference** between Delivery and Deployment is **manual vs automatic release to production**. Both require **strong CI and test automation** to be safe.
+
+## Isolated jobs, artifact identity and safe rollback
+
+An earlier job's installation/worktree is not implicitly shared with later jobs. Install required tooling/dependencies from the matching lockfile in each isolated consumer, or explicitly transfer the immutable artifact and its trusted identity. A dependency cache is an optimization, not proof of the tested/released bytes. Deploy the exact artifact verified in the previous stage, with environment-specific secrets/configuration injected through controlled runtime mechanisms.
+
+Use the [executed artifact and PostgreSQL compatibility lab](../../node-js/release-artifact-compatibility.md) for the primary example. It creates/verifies/extracts actual tar artifacts in distinct job directories and executes old/bridge/new SQL contracts against an isolated real database. The lesson explains the workflow inputs/gates without claiming an unexecuted hosted YAML pipeline exists.
+
+Passing unit tests does not prove production releasability: migration compatibility, authorization/configuration, health/traffic, monitoring and recovery gates still apply. Manual approval is a release decision and can trigger an automated deployment; “manual” does not require a person copying files. Reversing traffic/artifacts is safe only while old code remains compatible with current data/messages/config. V4-only writes can close that window before a column is dropped. Retain a tested rollback allowlist or plan forward repair, not a generic “redeploy old version” promise.
+
+**Exercise acceptance:** configure build/artifact verification/staging gates using the real project's scripts, prove job isolation and exact-byte promotion, and demonstrate old/new database compatibility plus a deliberately rejected unsafe rollback. Record what was run versus planned. Hosted execution and learner practice remain required; the linked local artifact/database checks have passed within their stated limits.

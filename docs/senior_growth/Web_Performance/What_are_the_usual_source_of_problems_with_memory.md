@@ -9,10 +9,10 @@ This can result in **memory leaks**, **increased heap size**, and **slower perfo
 
 ## 🧠 Quick Refresher: How Garbage Collection Works
 
-- JavaScript uses **automatic garbage collection** with a **mark-and-sweep** algorithm.
+- JavaScript engines use automatic, reachability-based garbage collection with implementation-specific generational/incremental/concurrent strategies; one simple mark-and-sweep model is a teaching approximation.
 - The GC only removes objects that are **no longer reachable** from the root scope (like `window` or `document`).
 
-💡 **If something is still referenced**, even indirectly, it will **not be collected**.
+A strong retaining path from a live root matters. An isolated unreachable cycle can be collected; a reference from another unreachable object does not make the cycle live. Weak collections have different retention semantics.
 
 ---
 
@@ -20,13 +20,13 @@ This can result in **memory leaks**, **increased heap size**, and **slower perfo
 
 ### 1. Forgotten Event Listeners
 
-Event handlers attached to DOM elements that are later removed can stay in memory if not properly detached.
+An element/listener cycle alone is not necessarily a leak after removal. A live window/document listener, timer, store or other root can retain a closure and its detached node. Diagnose that root path.
 
 ```js
 function init() {
   const el = document.getElementById('btn');
   el.addEventListener('click', () => doSomething());
-  // If el is removed later → listener still references it
+  // Removal alone does not establish a leak; inspect remaining root paths.
 }
 ```
 
@@ -50,7 +50,7 @@ useEffect(() => {
 
 ### 2. Unintended Global Variables
 
-Omitting `let`, `const`, or `var` creates a property on the global object (`window`), which persists until the page reloads.
+Assigning an undeclared name in sloppy classic-script code can create a global property. Strict mode and modules throw instead; explicitly retained globals still require ownership.
 
 ```js
 function doSomething() {
@@ -65,7 +65,7 @@ Always use strict mode (`'use strict'`) and declare variables explicitly.
 
 ### 3. Closures Holding References
 
-Inner functions capture outer variables — if those variables reference large data, they stay in memory.
+A live closure can retain a captured value that its observable behavior needs; engines may optimize unused captures. Inspect the actual retaining path rather than assume the entire lexical environment is always retained.
 
 ```js
 function setup() {
@@ -130,7 +130,7 @@ function addToCache(key, value) {
 ```
 
 **✅ Solution:**  
-Use weak maps/sets for automatic GC on key objects:
+Use a WeakMap when the semantic key is an object and entries should not keep that key alive; it is not a bounded string/query-key cache:
 
 ```js
 const cache = new WeakMap();
@@ -155,8 +155,7 @@ Wrap them inside lifecycle hooks for proper teardown.
 State or refs holding large data (arrays, objects) that persist across re-renders or pages.
 
 **✅ Solution:**  
-Reset component state when unmounted or when route changes.  
-Don’t store heavy data directly in React state — use external store or cache that can be cleared.
+Place data with the owner whose lifetime needs it; component state becomes collectible after unmount if no other roots retain it. Moving data into a global store can prolong retention. Clear/evict long-lived caches and references deliberately; an unmount state update is not a cleanup requirement.
 
 ---
 
@@ -167,7 +166,7 @@ Especially common in data-heavy apps (dashboards, grids).
 
 **✅ Solution:**  
 Paginate data.  
-Keep only visible/active portions in memory (e.g., virtualization with `react-window`).
+Virtualization reduces mounted DOM, not necessarily retained data. Bound fetched pages separately using pagination/eviction; choose policy for scroll restoration and refetch cost.
 
 ---
 
@@ -194,13 +193,50 @@ Keep only visible/active portions in memory (e.g., virtualization with `react-wi
 | Closures              | Capture large references    | Nullify or avoid large captures   |
 | Detached DOM nodes    | Referenced after removal    | Remove references manually        |
 | Timers/Intervals      | Keep references alive       | Clear on unmount                  |
-| Caches                | Unbounded memory growth     | WeakMaps / eviction logic         |
+| Caches                | Unbounded retained entries/bytes | Bounded policy; WeakMap only for suitable object identity keys |
 | 3rd-party libs        | Internal references         | Call .destroy() / .dispose()      |
-| React state           | Persisting large objects    | Reset on unmount                  |
-| Large data            | No pruning/pagination       | Paginate or virtualize data       |
+| React/store ownership | Data retained beyond needed lifetime | Bound owner/cache lifetime |
+| Large data | Unbounded retained pages | Paginate/evict data; virtualize DOM separately |
 
 ---
 
 **🧠 Rule of thumb:**  
 Memory leaks happen when you keep unintentional references to things that should’ve been forgotten.  
 Always clean up listeners, timers, closures, and caches when the component or feature is no longer in use.
+## Bounded cache: identity, eviction and limitations
+
+```js
+function createLru(maxEntries) {
+  if (!Number.isSafeInteger(maxEntries) || maxEntries < 1) throw new RangeError('Positive capacity required');
+  const entries = new Map();
+  return {
+    get(key) {
+      if (!entries.has(key)) return { hit: false };
+      const value = entries.get(key);
+      entries.delete(key); entries.set(key, value);
+      return { hit: true, value }; // Cached undefined differs from a miss.
+    },
+    set(key, value) {
+      entries.delete(key); entries.set(key, value);
+      if (entries.size > maxEntries) entries.delete(entries.keys().next().value);
+    },
+    clear() { entries.clear(); },
+    get size() { return entries.size; }
+  };
+}
+```
+
+This bounds entry count, not bytes; a single value can still be huge. Decide maximum response bytes/items, TTL/freshness, user-scoped keys, in-flight cancellation and resource disposal separately. Map access order is explicit here; a read refreshes recency. WeakMap is not enumerable and supplies neither a deterministic size nor an LRU policy. Evicting a JS reference also does not automatically close a WebSocket, timer, worker or object URL; resource owners need teardown.
+
+**Exercise:** compare an infinite-scroll list with DOM virtualization alone versus bounded retained pages. Acceptance: demonstrate the two separate bounds, explain back-scroll/refetch trade-offs, test LRU replacement/refresh/cached-undefined/clear and large-value limits; verify user data does not survive logout in a shared cache. For memory, take comparable snapshots after repeated open/close cycles and inspect retainers; no deterministic GC timing/finalizer assertion is valid. Learner heap measurements remain unperformed.
+
+Official references checked2026-10-20: [Chrome memory diagnosis](https://developer.chrome.com/docs/devtools/memory-problems), [ECMAScript weak collections](https://tc39.es/ecma262/#sec-weakmap-objects), [React Effect cleanup](https://react.dev/reference/react/useEffect).
+
+
+## Retaining-path investigation acceptance
+
+Warm the exact page/workflow first, record a baseline, then repeat the same open/use/close cycle and compare equivalent settled states. Inspect retained objects and a path to a live root (window listener, timer, registry/store or developer-tool handle). A temporary allocation spike, sawtooth collection pattern or high one-time cache plateau is not by itself a leak. Distinguish retained bloat, repeated allocation/GC churn and a growing unintended owner.
+
+Avoid accidentally retaining the subject in console variables, logged objects or a selected DevTools node. Use a comparison/dominator/retainer view appropriate to the browser version, identify the owner and remove its strong reference or dispose its resource. Repeat the same cycles and verify useful behavior remains. Do not assert that GC runs by a particular deadline or that a missing finalizer proves a leak. Heap snapshots can contain sensitive application data; keep a minimal synthetic reproduction and the artifact policy appropriate to the project.
+
+**Acceptance:** execute the LRU replacement/read-refresh/cached-undefined/clear cases, then separately collect native before/after retaining-path evidence for one deliberately retained owner. Confirm both mounted DOM and fetched-page/cache bounds for a virtualized list. No native heap/GC result has been performed here; passing cache logic is not heap-profile evidence. [Official memory investigation guidance](https://developer.chrome.com/docs/devtools/memory-problems), checked2026-10-22.

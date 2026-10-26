@@ -1,0 +1,90 @@
+.mermaid-diagram {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+}
+
+.mermaid-diagram__canvas {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.mermaid-diagram__canvas svg {
+  display: block;
+  width: min(100%, var(--diagram-width));
+  /* Mermaid adds an inline max-width; the scroll container owns fitting instead. */
+  max-width: none !important;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.mermaid-diagram__canvas.is-actual-size {
+  width: max-content;
+  min-width: 100%;
+}
+
+.mermaid-diagram__canvas.is-actual-size svg {
+  width: var(--diagram-width);
+}
+
+/* Match Mermaid's off-page measurement, rather than VitePress article typography. */
+.vp-doc .mermaid-diagram foreignObject {
+  line-height: 1.5;
+}
+
+.vp-doc .mermaid-diagram foreignObject p {
+  margin: 0;
+  line-height: inherit;
+}
+
+.mermaid-diagram:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.mermaid-diagram__placeholder {
+  min-height: 8rem;
+}
+
+.mermaid-diagram__controls {
+  position: sticky;
+  left: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.8rem;
+}
+
+.mermaid-diagram__controls button {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  color: var(--vp-c-brand-1);
+}
+
+.mermaid-diagram__controls button:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.mermaid-diagram__error {
+  color: var(--vp-c-danger-1);
+}
+
+.mermaid-diagram__error pre {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc div[class*='language-'] {
+  max-width: 100%;
+}

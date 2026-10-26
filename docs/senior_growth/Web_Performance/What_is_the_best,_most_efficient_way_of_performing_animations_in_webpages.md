@@ -1,13 +1,13 @@
 ### What is the best, most efficient way of performing animations in webpages?
 
-The most efficient way to animate elements on webpages is to use **compositor-only properties**—specifically, **`transform`** and **`opacity`**—because these are handled by the GPU and do not trigger layout or paint operations.
+Prefer transform/opacity when they express the intended effect: browsers can often composite them efficiently. Layer allocation, rasterization, effects, element size and other work determine the actual cost; no property or API guarantees GPU acceleration or absence of paint. Profile the supported devices.
 
 ---
 
 ## 🚀 Golden Rule
 > ✅ **Only animate “compositor-friendly” properties:**  
 > **`transform`** and **`opacity`**  
-> These are GPU-accelerated and **do not cause reflow or repaint**.
+> These often avoid per-frame layout/paint after preparation; verify the actual trace.
 
 ---
 
@@ -21,13 +21,13 @@ When a browser renders a frame, it goes through:
 
 Animating properties like `width`, `height`, `top`, `left`, or `margin` forces the browser to redo layout and paint, which is expensive.
 
-Animating **`transform`** or **`opacity`** skips directly to compositing, which is fast and handled by the GPU.
+A transform/opacity animation may run through compositing without repeating layout/paint, but initial rasterization, invalidation and memory costs still matter.
 
 | Property Type | Triggers | Performance |
 |---------------|----------|-------------| 
-| `width`, `height`, `top`, `left`, `margin`, `font-size` | Layout → Paint → Composite | 🔴 Slow |
-| `background-color`, `color`, `box-shadow` | Paint → Composite | 🟠 Medium |
-| `transform`, `opacity` | Composite only | 🟢 Fast / GPU-accelerated |
+| `width`, `height`, `top`, `left`, `margin`, `font-size` | Typically layout → paint → composite | Depends on scope/work |
+| `background-color`, `color`, `box-shadow` | Typically paint → composite | Depends on paint area |
+| `transform`, `opacity` | Often compositing after setup | Verify trace/layers |
 
 ---
 
@@ -36,8 +36,8 @@ Animating **`transform`** or **`opacity`** skips directly to compositing, which 
 ### 1. **CSS Transitions / CSS Animations**
 ✅ Ideal for simple, declarative animations.
 
-- Hardware accelerated (with transform/opacity)
-- Runs on the compositor thread
+- Can be compositor-eligible for suitable effects
+- Actual scheduling depends on the browser and animation
 - No JavaScript required
 
 ```css
@@ -49,21 +49,27 @@ Animating **`transform`** or **`opacity`** skips directly to compositing, which 
   opacity: 0.8;
 }
 ```
-⚡ Tip: Use `will-change: transform;` to hint the browser to optimize for animation.
+Use will-change only after profiling shows a need. It is a hint, can allocate expensive resources and create stacking contexts; remove it when no longer useful. Do not apply it to every element.
 
 ### 2. **requestAnimationFrame() (rAF) for JS-driven animations**
 ✅ Use for interactive or complex JavaScript animations.
 
-- Runs once per frame (~60 fps)
-- Syncs with browser’s rendering cycle
-- Prevents dropped frames
+- Schedules a one-shot callback before a rendering opportunity; reschedule deliberately
+- Timing follows the display/browser and may pause in hidden documents
+- Long callbacks/main-thread work can still drop frames
 
 ```js
+// Assumes box is an owned element and motion is allowed; see lifecycle wrapper below.
+let frame;
+let start;
 function animate(timestamp) {
-  box.style.transform = `translateX(${Math.sin(timestamp / 100) * 50}px)`;
-  requestAnimationFrame(animate);
+  start ??= timestamp;
+  const progress = Math.min((timestamp - start) / 400, 1);
+  box.style.transform = `translateX(${progress * 50}px)`;
+  if (progress < 1) frame = requestAnimationFrame(animate);
 }
-requestAnimationFrame(animate);
+frame = requestAnimationFrame(animate);
+// On disposal: cancelAnimationFrame(frame); clear the owned transform if appropriate.
 ```
 
 🧠 Prefer rAF over setTimeout/setInterval for smoothness and efficiency.
@@ -71,7 +77,7 @@ requestAnimationFrame(animate);
 ### 3. **Web Animations API (WAAPI)**
 ✅ Native JavaScript API for advanced animation control.
 
-- GPU-accelerated like CSS
+- Compositor eligibility depends on effects and browser, just as with CSS
 - Playback control (pause, reverse, finish)
 - Integrates with Promises/timelines
 
@@ -98,8 +104,8 @@ Libraries help with browser quirks and batching.
 
 | Practice | Why It Helps |
 |----------|--------------|
-| Use transform + opacity | Avoids layout and paint |
-| Add `will-change: transform;` before animating | Prepares GPU layer |
+| Use transform + opacity | Often reduces repeated layout/paint; verify |
+| Add `will-change: transform;` before animating | Hints upcoming changes; costs memory/resources |
 | Use requestAnimationFrame() for JS | Syncs with refresh rate |
 | Avoid animating large DOM trees | Reduces expensive repaints |
 | Debounce scroll/resize-triggered animations | Prevents excessive triggers |
@@ -109,9 +115,9 @@ Libraries help with browser quirks and batching.
 
 ## 🧪 Tools to Measure Animation Performance
 
-- **Chrome DevTools → Performance tab:** Record and check “Frames” graph (aim for 16.6ms/frame)
+- **Chrome DevTools → Performance tab:** Record frames/main-thread work; ~16.7ms at60Hz or8.3ms at120Hz is the entire frame interval, not an exclusive JavaScript budget
 - **Rendering panel:** Enable “Paint flashing” to see repaints
-- **Lighthouse audit:** Reports on layout shifts and animation efficiency
+- **Lab audits:** Supplement traces; a single score does not prove smooth interaction
 
 ---
 
@@ -119,15 +125,71 @@ Libraries help with browser quirks and batching.
 
 | Technique | Pros | Use When |
 |-----------|------|----------|
-| CSS Transitions/Animations | Hardware-accelerated, declarative | Simple cases |
-| requestAnimationFrame() | Full JS control, smooth | Interactive/dynamic |
-| Web Animations API | Modern, GPU-accelerated, controllable | Programmatic |
+| CSS Transitions/Animations | Declarative; may composite efficiently | Simple cases |
+| requestAnimationFrame() | Full JS control; main-thread budget required | Interactive/dynamic |
+| Web Animations API | Programmatic playback/control | Programmatic |
 | Animation Libraries | High-level abstractions | Complex sequences/UI libraries |
 
 ---
 
 ## 🔑 Key Takeaway
 
-💡 Efficient animations use GPU-accelerated properties, compositor-only updates, and frame-synced techniques.  
-Stick to transform/opacity, use requestAnimationFrame, and test with DevTools for smooth 60 FPS performance.
+Prefer effects with low measured rendering cost; match display timing, limit work and preserve user control. Performance and motion accessibility require real device testing.
 
+
+## Worked lifecycle: preference changes, replacement and disposal
+
+This helper owns only the element's transform animation. Keep semantic state changes outside the effect, and do not use animation as the only confirmation of an action. CSS transitions suit simple state changes; WAAPI suits imperative replacement/cancellation; rAF suits computed per-frame effects. A library is an alternative when sequencing/physics justify its cost.
+
+```js
+function createMove(element, preference = matchMedia('(prefers-reduced-motion: reduce)')) {
+  let animation = null;
+  let disposed = false;
+  const cancel = () => { animation?.cancel(); animation = null; };
+  const onPreference = () => { if (preference.matches) cancel(); };
+  preference.addEventListener('change', onPreference);
+  return {
+    play() {
+      if (disposed) throw new Error('Animation owner disposed');
+      cancel(); // Replacement cancels the old effect before starting another.
+      if (preference.matches) return;
+      const current = element.animate(
+        [{ transform: 'translateX(0)' }, { transform: 'translateX(12px)' }, { transform: 'translateX(0)' }],
+        { duration: 250, easing: 'ease-out' }
+      );
+      animation = current;
+      // cancel() rejects finished; consume that expected lifecycle rejection.
+      current.finished.then(
+        () => { if (animation === current) animation = null; },
+        () => { if (animation === current) animation = null; }
+      );
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      cancel();
+      preference.removeEventListener('change', onPreference);
+    }
+  };
+}
+```
+
+```css
+/* Static baseline remains usable; motion is an enhancement. */
+@media (prefers-reduced-motion: no-preference) {
+  .feedback { transition: transform 180ms ease-out; }
+  .feedback:hover { transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .feedback { transition: none; transform: none; }
+}
+```
+
+Avoid a blanket near-zero duration rule: application code waiting for transition/animation events can behave differently, and essential state must still resolve. Slowing motion is not always sufficient. Offer pause/stop where relevant for persistent auto-moving content. WCAG2.3.3 interaction animation is AAA;2.2.2 pause/stop/hide and flashing requirements have separate applicability. Reduced-motion support alone does not establish WCAG conformance.
+
+For rAF, compute progress from timestamps rather than adding a fixed amount per callback; otherwise120Hz displays move faster. Batch layout reads before writes; a layout read after a style write can force synchronous work. Decide whether a resumed hidden tab should jump to elapsed-time completion or restart. Cancel callbacks/listeners on unmount/navigation, and avoid collecting unlimited samples. Browser compositing decisions are independent of choosing CSS versus JavaScript.
+
+**Exercise:** add a nonessential feedback effect using the helper, then implement a timestamp-based rAF alternative with cancel/dispose. Acceptance: rapid replacement has one active animation; cancellation produces no unhandled rejection; changing reduced motion stops the effect; repeated disposal is harmless; no effect starts after disposal; semantic confirmation remains in static mode. Record traces at60/120Hz where available, normal/throttled CPU, paint flashing and layer memory before/after. Explain observed layout/paint and frame misses; do not invent FPS/GPU results. Browser checks remain required; mocked lifecycle checks alone cannot prove smoothness.
+
+Official references checked2026-10-20: [HTML animation frames](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#animation-frames), [Web Animations](https://www.w3.org/TR/web-animations-1/), [media preferences](https://www.w3.org/TR/mediaqueries-5/), [WCAG2.2](https://www.w3.org/TR/WCAG22/), [Chrome animation profiling guidance](https://web.dev/articles/animations-guide). Specification publication status is not a browser support guarantee.

@@ -45,13 +45,13 @@ for (const [key, value] of map) {
 
 | **Aspect** | **Map** | **WeakMap** | **Object** |
 | --- | --- | --- | --- |
-| **Key Types** | Keys can be any type (objects, primitives). | Keys must be objects only. | Keys are strings or symbols only. |
+| **Key Types** | Keys can be any type (objects, primitives). | Keys are objects or nonregistered symbols in modern ECMAScript. | Keys are strings or symbols only. |
 | **Key References** | Strong references to keys and values. | Weak references to keys (key can be garbage-collected if there are no other references). | Strong references to keys and values. |
 | **Iteration Support** | Iterable (can use `for...of`, `.keys()`, `.values()`, etc.). | Not iterable. | Not iterable by default (`Object.keys` needed for keys). |
-| **Order of Keys** | Preserves insertion order of keys. | N/A (WeakMaps do not have order). | No guaranteed order (but modern engines generally maintain insertion order for strings). |
-| **Garbage Collection** | Does not support garbage collection of keys. | Supports garbage collection of keys when no longer referenced elsewhere. | Does not support garbage collection of keys. |
+| **Order of Keys** | Preserves insertion order of keys. | N/A (WeakMaps do not have order). | Ordinary own keys: array-index strings numerically, then other strings by creation, then symbols by creation; APIs select subsets. |
+| **Garbage Collection** | A reachable Map strongly retains entries; the Map and entries can be collected when unreachable. | Supports garbage collection of keys when no longer referenced elsewhere. | Ordinary object properties retain values while reachable; unreachable objects can be collected. |
 | **Direct Size Property** | Has a `size` property. | No `size` property. | No `size` property. Use `Object.keys(obj).length`. |
-| **Use Case** | Best for mapping relationships with frequent additions/removals. | Managing sensitive data with limited lifecycle (e.g., caching). | Generic key-value pairs with string keys. |
+| **Use Case** | Best for mapping relationships with frequent additions/removals. | Object-associated metadata without keeping its key alive; not a security or timely-deletion mechanism. | Generic key-value pairs with string keys. |
 
 ---
 
@@ -75,7 +75,7 @@ https://www.youtube.com/watch?v=ycohYSx5h9w&ab_channel=TraversyMedia
         
 2. **Use `WeakMap`**:
     - When you need:
-        - Keys to be objects.
+        - Keys to be objects or supported nonregistered symbols; registered Symbol.for keys are rejected.
         - Keys that should not prevent garbage collection.
     - Example: Storing metadata or private data about objects.
         
@@ -118,5 +118,46 @@ https://www.youtube.com/watch?v=ycohYSx5h9w&ab_channel=TraversyMedia
 ### **Conclusion**
 
 - Use **Map** for dynamic key-value mappings with non-string keys or frequent updates.
-- Use **WeakMap** when working with object keys and managing memory efficiently.
+- Use **WeakMap** for metadata tied to weakly held objects/nonregistered symbols; do not depend on GC timing.
 - Use **Object** for lightweight and simple mappings with string keys.
+## Equality, ownership, ordering and serialization
+
+```js
+const first = { id: 1 };
+const second = { id: 1 };
+const registry = new Map([[first, 'first']]);
+console.log(registry.get(second)); // undefined: object identity, not deep equality
+registry.set(NaN, 'not-a-number');
+registry.set(-0, 'zero');
+console.log(registry.get(NaN), registry.get(+0)); // not-a-number zero
+registry.set('present', undefined);
+console.log(registry.has('present')); // true; get alone cannot distinguish absence
+
+const marker = Symbol('local');
+const metadata = new WeakMap([[marker, { loaded: true }]]);
+console.log(metadata.get(marker).loaded); // true on the Node24 baseline
+// metadata.set(Symbol.for('global'), {}); // TypeError: registered symbol
+
+const annotation = Symbol('annotation');
+const record = { b: 1, 10: 'ten', 2: 'two', a: 2, [annotation]: true };
+console.log(Object.keys(record)); // ['2', '10', 'b', 'a']
+console.log(Reflect.ownKeys(record)); // same strings, then annotation symbol
+```
+
+Map key comparison uses SameValueZero (NaN equals itself;±0 are equal). Ordinary object keys coerce numbers/objects to property keys; two object keys can collide as '[object Object]'. Object.keys returns only enumerable own string keys; Reflect.ownKeys includes nonenumerable own keys and symbols. Do not infer an arbitrary iterable's behavior from the ordinary-object rule; proxies/exotic objects have their own rules.
+
+Map/Set lookup is required to be average sublinear, not guaranteed O(1) for every operation/engine. Choose by semantics, then benchmark realistic access patterns. A bounded string-key cache should use explicit eviction/TTL; WeakMap cannot hold string keys, enumerate entries or promise prompt deletion. No size/iteration API prevents exposing garbage-collector timing through enumeration.
+
+```js
+const dictionary = Object.create(null);
+dictionary['__proto__'] = 'ordinary own entry';
+console.log(Object.hasOwn(dictionary, '__proto__')); // true
+console.log(JSON.stringify(new Map([['x', 1]]))); // '{}' by default
+console.log(JSON.stringify([...new Map([['x', 1]])])); // '[["x",1]]'
+```
+
+A null-prototype dictionary avoids inherited-key lookup, but it lacks methods such as hasOwnProperty. It does not make later unsafe merges safe. Serializing Map as entries needs an explicit key/value schema: object identity, symbol keys and cyclic values cannot be preserved by ordinary JSON. Object.fromEntries can lose key distinctions when keys coerce; use it only for a defined string-key contract.
+
+**Exercise:** implement a small bounded Map cache with a documented FIFO or LRU policy. Acceptance: distinguish missing from stored undefined; show object identity and NaN/zero cases; verify object key order; reject unsupported serialized keys; enforce an entry limit; explain why no deterministic test can demand a WeakMap key be collected at a particular time. Verify WeakMap symbol support on each runtime in your compatibility matrix.
+
+Official references: [ECMAScript keyed collections](https://tc39.es/ecma262/multipage/keyed-collections.html), [ordinary own key order](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinaryownpropertykeys). Checked2026-10-20, established behavior exercised on Node24.18.0; a living specification can also contain newer APIs not used here.

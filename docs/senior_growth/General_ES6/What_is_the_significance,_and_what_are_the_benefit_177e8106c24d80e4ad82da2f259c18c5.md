@@ -26,13 +26,16 @@ The inclusion of `'use strict';` at the beginning of a JavaScript file or a func
 **Example:**
 
 ```jsx
-// Non-strict mode
-x = 10; // Implicit global variable
-console.log(x); // 10
+// Separate classic non-module script, deliberately demonstrating a bug:
+accidentalGlobal = 10; // Creates a global property in sloppy code.
+console.log(accidentalGlobal); // 10
+```
 
-// Strict mode
+Run the strict version in a fresh script/context; an existing global would hide the undeclared-name failure. A string literal placed after executable statements is not a strict-mode directive.
+
+```js
 'use strict';
-x = 10; // ReferenceError: x is not defined
+strictOnlyMissingName = 10; // ReferenceError in a fresh context
 
 ```
 
@@ -101,9 +104,9 @@ delete Object.prototype; // TypeError: Cannot delete property 'prototype' of fun
 
 ```
 
-### 7. **Prevents Octal Literals**
+### 7. **Rejects Legacy Octal Literal Syntax**
 
-- Octal number literals (e.g., `010`) are disallowed in Strict Mode because they can lead to confusion.
+- Legacy leading-zero octal literals such as `010` are disallowed. Explicit `0o10` is valid modern octal syntax and evaluates to8.
 
 **Example:**
 
@@ -155,3 +158,25 @@ let num = 010; // SyntaxError: Octal literals are not allowed in strict mode.
 - Facilitates debugging by throwing errors for problematic code.
 
 Using `'use strict';` is highly recommended for writing robust and clean JavaScript, especially when working on larger or collaborative projects.
+## Directive placement, call context and failure boundaries
+
+A directive prologue is the initial sequence of string-literal expression statements in a script or function body. Comments do not end it; ordinary statements do. ES modules and class bodies are already strict. A CommonJS file is not automatically an ES module merely because Node executes it; declare module type explicitly.
+
+```js
+function strictCall() {
+  'use strict';
+  return this;
+}
+console.log(strictCall()); // undefined (plain call)
+console.log(strictCall.call(7)); // 7; strict calls do not box/substitute this
+const object = { method: strictCall };
+console.log(object.method() === object); // true; call site supplies receiver
+```
+
+Strictness does not change arrow lexical this. A non-simple parameter list (defaults/rest/destructuring) cannot contain its own use-strict directive; use a strict enclosing script/module instead. Duplicate parameters and invalid legacy octal syntax fail while parsing, before a try/catch within that source can execute. Assignment to a read-only property instead fails at runtime. Test parse failures by parsing separate source strings in a controlled test harness, not by putting all invalid examples into one runnable file.
+
+**Why/when:** explicit strict code catches accidental globals and failed writes earlier during a migration. It does not sanitize input, prevent XSS/injection or establish a security sandbox. Refactoring a sloppy function can change this, arguments aliasing and error behavior, so test callers rather than adding a directive mechanically.
+
+**Exercise:** compare a fresh classic script, a strict script, CJS and ESM. Acceptance: misplaced directive does not activate strict mode; genuine strict undeclared assignment rejects; module plain-call this is undefined; method calls keep their receiver; explicit0o10 succeeds; duplicate strict parameters fail parsing. Retain isolated cases so one parse failure does not prevent other checks.
+
+Official references: [ECMAScript strict code](https://tc39.es/ecma262/multipage/strict-mode-of-ecmascript.html), [directive prologues](https://tc39.es/ecma262/multipage/ecmascript-language-source-code.html#sec-directive-prologues-and-the-use-strict-directive), [Node module classification](https://nodejs.org/api/packages.html). Checked2026-10-20; runtime cases use Node24.18.0.

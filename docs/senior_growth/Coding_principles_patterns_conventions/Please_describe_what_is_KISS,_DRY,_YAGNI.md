@@ -12,7 +12,7 @@ Here’s a breakdown of the acronyms:
    - Focuses on **simplicity**. Don’t overcomplicate solutions.  
 
 2. **DRY** — **Don’t Repeat Yourself**  
-   - Encourages **avoiding code duplication**. Every piece of logic should exist in only one place.  
+   - Encourages **avoiding code duplication**. Represent each shared domain rule in one authoritative place; similar syntax can express unrelated knowledge.  
 
 3. **YAGNI** — **You Aren’t Gonna Need It**  
    - Warns against **prematurely building features** that aren’t currently required.  
@@ -34,7 +34,7 @@ Here’s a breakdown of the acronyms:
 function getEvenNumbers(arr) {
   return arr.filter(num => num % 2 === 0 ? true : false);
 }
-````
+```
 
 **Improved (Simple):**
 
@@ -64,22 +64,22 @@ function getEvenNumbers(arr) {
 * Prevents bugs due to **multiple copies needing updates**.
 * Improves maintainability and scalability.
 
-**Example (Bad DRY):**
+**Coincidental similarity, not automatically a DRY violation:**
 
 ```js
 function calculateArea(width, height) { return width * height; }
 function calculateVolume(width, height, depth) { return width * height * depth; }
 ```
 
-**Improved (DRY):**
+**An arithmetic utility, not automatically an improvement:**
 
 ```js
 function multiply(...args) {
   return args.reduce((acc, val) => acc * val, 1);
 }
 
-const area = multiply(width, height);
-const volume = multiply(width, height, depth);
+const area = multiply(3, 4); // 12
+const volume = multiply(3, 4, 5); // 60
 ```
 
 **Use Cases:**
@@ -110,7 +110,7 @@ function fetchData() {
 }
 ```
 
-**Improved (YAGNI):**
+**Minimal sketch (not a complete production request boundary):**
 
 ```js
 function fetchData() {
@@ -118,7 +118,7 @@ function fetchData() {
 }
 ```
 
-* Add caching or retry logic **only if the need arises**.
+* Add caching or retries when requirements justify them. YAGNI cannot remove required authorization, validation, deadlines, response-status handling, cancellation or observability. A bare fetch is only a sketch; it does not reject HTTP error status by itself.
 
 **Use Cases:**
 
@@ -146,3 +146,12 @@ function fetchData() {
 4. Together, these principles promote **clean, maintainable, and pragmatic software design**.
 
 > 💡 Remember: Following these principles reduces complexity while keeping code flexible for future changes.
+
+
+## Decide what must change together
+
+`calculateArea` and `calculateVolume` preserve different concepts, units and future validation. Extracting multiplication merely because the characters repeat can hide those concepts. A stronger DRY example is one authoritative `isEligibleForFreeStandardDelivery` rule shared by the quote and checkout summary, with boundary tests at 99 and 100. An invoice's tax policy and a marketing discount may both multiply by 0.2 today but change for different reasons; keep those rules separate.
+
+Use the [executed shipping Strategy example](./Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md#worked-change-inject-a-shipping-quote-rule) to compare costs: five behavior assertions protect the required contract; extra plugin registries or an abstract hierarchy would add no current requirement. The [creation lesson](./What_kind_of_creational_design_patterns_do_you_know.md#ownership-and-creation-checks) shows why simplifying object construction must preserve ownership.
+
+**Exercise acceptance:** take two similar functions, name the domain rule each represents, change one requirement and show whether they should change together. Extract only shared knowledge; retain independent domain names. Record one rejected speculative abstraction and one reliability/security obligation that must remain. Run boundary and negative tests after the refactor. Learner practice remains required. For executable checks use the [official Node assertion API](https://nodejs.org/docs/latest-v24.x/api/assert.html); these principles guide decisions rather than providing a numerical correctness guarantee.

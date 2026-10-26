@@ -33,7 +33,7 @@ The acronym **REPL** stands for:
 ### **Key Features of the Node.js REPL**
 
 1. **Execute JavaScript Code**:
-    - You can run any valid JavaScript code directly in the REPL.
+    - You can evaluate JavaScript expressions/statements under REPL-specific scope rules; file-only syntax/module behavior is not necessarily identical. Use dynamic import or an actual module file for module experiments.
     
     ```jsx
     > 2 + 3
@@ -113,8 +113,8 @@ Node.js REPL provides some special commands for convenience:
 | --- | --- |
 | `.help` | Displays a list of REPL commands. |
 | `.break` | Exits a multiline expression. |
-| `.clear` | Resets the context by clearing all declared variables and functions. |
-| `.exit` or `Ctrl+C` | Exits the REPL. |
+| `.clear` | Clears buffered input; resets an isolated REPL context, but does not reset the default evaluator context when useGlobal is true (as in the ordinary CLI REPL). |
+| `.exit` / Ctrl+D | Exits the REPL. Ctrl+C once breaks input; twice on a blank line normally exits. |
 | `.save <file>` | Saves the current REPL session to a file. |
 | `.load <file>` | Loads and executes a JavaScript file into the current REPL session. |
 
@@ -136,7 +136,7 @@ Node.js REPL provides some special commands for convenience:
 ### **Limitations of REPL**
 
 1. **Temporary Context**:
-    - Variables and code exist only during the session. Once you exit, everything is lost unless explicitly saved.
+    - Variables and code exist only during the session. An in-memory binding does not survive process exit, but files/network/database side effects and configured command history can persist. .save records entered source, not a full process/heap snapshot.
 2. **Not Suitable for Large Codebases**:
     - REPL is ideal for small snippets but not practical for developing large-scale applications.
 
@@ -192,3 +192,28 @@ The Node.js REPL is an essential tool for:
 - Learning and experimenting with JavaScript and Node.js.
 - Debugging and testing small code snippets.
 - Rapidly exploring built-in modules and APIs.
+
+## Versioned CLI versus embedded context experiment
+
+The following ordinary CLI behavior was checked with Node24.18.0 and command history disabled. Paths below are scratch examples, not instructions to overwrite project files.
+
+```text
+$ NODE_REPL_HISTORY='' node
+> var replFixture = 42
+undefined
+> .clear
+> replFixture
+42
+> .save /tmp/learning-notes-repl-b103/session-fixture.js
+Session saved to: /tmp/learning-notes-repl-b103/session-fixture.js
+```
+
+The preserved42 demonstrates why .clear must not be advertised as a guaranteed “erase all state” button. With an embedded `repl.start({useGlobal:false})` using the default evaluator, .clear instead resets the isolated context and emits reset; custom evaluators can have their own state. Neither setting undoes filesystem writes, cancels every resource or makes a sandbox for untrusted code. A REPL executes with the process's authority; do not expose an unauthenticated remote REPL.
+
+Ctrl+C once breaks buffered input; on an empty prompt the CLI displays an exit hint, and a second consecutive Ctrl+C exits. Ctrl+D/.exit are alternatives. Terminal/embedded/evaluation settings can change interactions; retain the runtime and exact sequence rather than infer it from a terminal screenshot. .load executes the chosen source, while .save preserves entered code and can overwrite a file. Review that source before replay: it can contain effects, declarations that cannot be redeclared or assumptions about previous state. A saved file is not an automatically portable ES module or complete application session.
+
+The REPL supports convenient expression/await/error behavior and scope choices that differ from ordinary ESM/CommonJS files. Reproduce module problems in the actual module format. Keep examples free of secrets; history, saved sessions and transcript output can retain what you typed. Disabling history for a fixture avoids reading or changing the user's existing history; it does not sanitize an already exposed credential.
+
+**Exercise acceptance:** in a dedicated scratch directory with fake values, run arithmetic/last-result/error recovery, compare CLI .clear with useGlobal:false reset, save/load reviewed source, then close every embedded REPL/stream/timer. Verify Ctrl+C first/second behavior on an actual terminal. Explain which state survives in files/history and why a REPL is not an isolation boundary. The provided author checks do not mark learner practice done.
+
+Official reference checked2026-10-22: [Node REPL commands, context and signals](https://nodejs.org/api/repl.html). The fetched current documentation is newer than the tested24.18.0 runtime; claimed CLI behavior above was independently checked on that pinned runtime.

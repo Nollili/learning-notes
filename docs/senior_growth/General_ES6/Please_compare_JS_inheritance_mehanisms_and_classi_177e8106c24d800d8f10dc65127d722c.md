@@ -10,8 +10,8 @@ Let's break down and compare **JavaScript inheritance** (including **ES6 classes
 
 Before ES6, JavaScript used a **prototype-based inheritance model**. This is quite different from the **class-based inheritance** model commonly used in traditional OOP languages.
 
-- **Prototype-based inheritance** means that every object in JavaScript is linked to another object (its prototype).
-- When you try to access a property on an object, if that property is not found on the object itself, JavaScript looks for the property on the object’s **prototype**. This process continues up the chain of prototypes until it either finds the property or reaches the end of the chain (i.e., `Object.prototype`).
+- **Prototype-based inheritance** means that an object has an internal prototype that is another object or null; Object.create(null) has no inherited Object.prototype.
+- When you try to access a property on an object, if that property is not found on the object itself, JavaScript looks for the property on the object’s **prototype**. This process continues up the chain of prototypes until it either finds the property or reaches a null prototype. Ordinary objects commonly pass through Object.prototype, whose own prototype is null.
 
 Here’s an example of **prototype-based inheritance**:
 
@@ -123,10 +123,10 @@ myDog.bark();   // Output: Woof! (defined in Dog)
 
 ### **Key Points of ES6 Classes in JavaScript:**
 
-- **Syntactic Sugar**: ES6 classes provide a **simpler, more readable syntax** for creating objects and working with inheritance. It makes the prototype-based inheritance easier to understand and work with.
+- **Structured syntax with additional semantics**: ES6 classes provide a **readable syntax** for creating objects and working with inheritance. It makes the prototype-based inheritance easier to understand and work with.
 - **`constructor`**: The `constructor` method is used to initialize object properties when a new instance is created.
 - **`super()`**: The `super()` method is used to call the parent class’s constructor and methods.
-- **Prototype-based**: Internally, **ES6 classes** still use the same prototype-based inheritance as before, so class methods are added to the class’s prototype, not the object itself.
+- **Prototype-based**: Internally, **ES6 classes** still use the same prototype-based inheritance as before, instance methods declared with method syntax are on the prototype; instance fields (including arrow fields) are own properties and static members live on the constructor.
 
 ---
 
@@ -172,3 +172,56 @@ myDog.bark();   // Output: Woof! (defined in Dog)
 - **Classic OOP inheritance** (like in Java or C++) is class-based, where classes define the blueprint for objects and relationships between them are rigid and defined upfront.
 
 JavaScript’s **ES6 classes** are an improvement over the old prototype-based inheritance system, but they are still built on the same underlying concept of **prototypes**.
+## Class semantics are more than a mechanical constructor rewrite
+
+Class code is strict, class declarations have lexical initialization/TDZ behavior and the constructor cannot be called without new. Prototype methods are non-enumerable; static methods belong to the constructor; instance fields belong to instances. `#private` fields enforce branded access, unlike a conventionally named `_private` property. An object with the same visible shape is not automatically an instance with that private brand. `extends` links both the instance-prototype chain and constructor chain; super property access uses its method's home-object relationship. A class field arrow allocates per instance and captures this, while a prototype method needs a receiver at the call site. Do not infer those semantics from a simplistic “just syntax sugar” slogan.
+
+```js
+class Counter {
+  #value = 0;
+  increment() { this.#value += 1; return this.#value; }
+  static purpose() { return 'count'; }
+}
+const counter = new Counter();
+console.log(Object.getPrototypeOf(counter) === Counter.prototype); // true
+console.log(Object.getPrototypeOf(Object.prototype)); // null
+console.log(Object.keys(Counter.prototype)); // []: methods are not enumerable
+// Counter(); // TypeError: constructor requires new
+// Counter.prototype.increment.call({}); // TypeError: receiver lacks #value brand
+```
+
+## Domain composition: independent delivery and rendering policies
+
+An inheritance tree such as EmailPdfReport/EmailHtmlReport/SmsTextReport grows with combinations and can violate substitutability if a subclass rejects inputs its parent accepts. Model independent behavior as small injected capabilities when their axes vary independently. Inheritance remains appropriate for a genuine stable subtype with a documented substitutable contract; composition is a design choice, not an automatic performance win.
+
+```js
+export function createProgressReporter({ render, deliver }) {
+  if (typeof render !== 'function' || typeof deliver !== 'function')
+    throw new TypeError('render and deliver functions required');
+  return Object.freeze({
+    async report(progress, { signal } = {}) {
+      if (!progress || typeof progress.courseId !== 'string' ||
+          !Number.isSafeInteger(progress.completed) || progress.completed < 0)
+        throw new TypeError('Invalid progress');
+      signal?.throwIfAborted();
+      const message = render({ courseId: progress.courseId, completed: progress.completed });
+      if (typeof message !== 'string') throw new TypeError('Renderer must return text');
+      signal?.throwIfAborted();
+      await deliver(message, { signal });
+    }
+  });
+}
+const delivered = [];
+const reporter = createProgressReporter({
+  render: progress => `${progress.courseId}: ${progress.completed} completed`,
+  deliver: async text => { delivered.push(text); } // In-memory adapter, not real email.
+});
+await reporter.report({ courseId: 'c1', completed: 3 });
+console.log(delivered); // ['c1: 3 completed']
+```
+
+The render contract is synchronous and returns text; delivery is async and must honor cancellation if promised by its adapter. ThrowIfAborted before delivery does not forcibly stop a noncooperative transport. Do not silently retry a non-idempotent delivery: define deduplication/retry semantics at the adapter/service boundary. This example performs no network delivery. Rendering plain text here is not safe HTML templating; escape/validate according to the actual output sink. Input projection prevents a renderer receiving unrelated caller fields, but full course authorization and business bounds remain the service's responsibility.
+
+**Exercise acceptance:** inject two renderers and two in-memory delivery adapters without creating four subclasses. Assert correct payloads, input validation, no delivery after a render failure, pre-aborted signal and delivery rejection propagation. Explain resource cleanup/cancel ownership for a real adapter. Separately verify chain termination, enumerable versus non-enumerable methods and private-brand failure; compare a prototype method and per-instance arrow identity. Learner practice remains required.
+
+References checked2026-10-21: [ECMAScript classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions), [Object.getPrototypeOf](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.getprototypeof), [AbortSignal](https://dom.spec.whatwg.org/#interface-abortsignal).

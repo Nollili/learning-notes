@@ -25,9 +25,9 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 - A huge community of developers means access to a vast number of tutorials, forums, and libraries.
 - Free learning resources, like **MDN Web Docs**, **freeCodeCamp**, and **JavaScript.info**, make it easy to get started.
 
-### **5. High Demand in the Job Market**
+### **5. Relevance to Web Development**
 
-- Learning JavaScript prepares you for a career in web development, as it is a must-know language for creating websites and web applications.
+- JavaScript/TypeScript is central to browser application work; language study alone does not establish professional readiness or a job-market guarantee.
 
 ---
 
@@ -38,9 +38,9 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 - JavaScript has some confusing behavior for beginners (e.g., `==` vs. `===`, type coercion, scoping with `var`, etc.).
 - You may encounter issues with asynchronous programming (e.g., Promises, `async/await`), which can be tricky to grasp at first.
 
-### **2. Lack of Strong Typing**
+### **2. Dynamic typing and coercion**
 
-- Unlike languages like Python or Java, JavaScript is dynamically typed, which can lead to bugs that are hard to debug for beginners.
+- JavaScript **and Python are dynamically typed**: a name can be rebound to a value of another type. Java/C# normally use static type checking. Static/dynamic typing and implicit coercion are different dimensions; calling one language simply strong/weak obscures the actual behavior.
 
 ### **3. Broad Ecosystem**
 
@@ -53,7 +53,7 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 ### **Python:**
 
 - **Easier Syntax:** Often considered the easiest language for beginners due to its clean and readable syntax.
-- **More General Purpose:** Used in areas like data science, AI, and automation, in addition to web development.
+- **Different ecosystem:** Commonly used in data science, AI and automation; both Python and JavaScript are general-purpose languages.
 
 ### **Java:**
 
@@ -82,6 +82,35 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 
 ---
 
-### **Bottom Line**
+### **Choosing a starting point**
 
 JavaScript is a great first language for someone interested in creating websites or web apps. Its widespread use and versatility make it a valuable skill. However, pairing JavaScript with resources that explain its quirks will make your learning journey smoother.
+
+## Observe runtime types and static checks separately
+
+```js
+// dynamic-values.mjs
+let value = 1;
+console.log(typeof value); // number
+value = 'one';
+console.log(typeof value); // string
+console.log('1' + 1); // '11': string concatenation, not arithmetic2.
+```
+
+```python
+# dynamic_values.py — intentionally invalid for a static checker, valid Python runtime assignment.
+value: int = 1
+print(type(value).__name__)  # int
+value = "one"
+print(type(value).__name__)  # str; annotations do not enforce assignment at runtime.
+try:
+    print("1" + 1)
+except TypeError:
+    print("TypeError")
+```
+
+The Python runtime accepts the reassignment while mypy reports an incompatible assignment (and the deliberate string-plus-integer expression). TypeScript can similarly reject assigning a string to a number-annotated binding before JavaScript runs. Neither static annotation validates arbitrary incoming JSON at runtime. Different coercion rules explain why JavaScript concatenates these operands while Python raises, even though both languages are dynamic. Prefer explicit domain conversion/validation rather than relying on accidental coercion.
+
+**Exercise acceptance:** run the exact JS/Python programs, retain number/string versus int/str/TypeError outputs, then run mypy and identify both deliberate assignment/operator diagnostics. Add the equivalent TypeScript negative fixture; do not silence its error and claim the runtime became safe. Continue with the [typed Python boundary lesson](../../python-for-ai/typed-modules-and-errors.md) for real application contracts. The language-choice prose is a preference discussion, not evidence of learner competence.
+
+Versions: Node24.18.0/Python3.13.11/TypeScript5.9.3; [Python annotation runtime contract](https://docs.python.org/3.13/library/typing.html) checked2026-10-22. Learner practice remains required.

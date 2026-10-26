@@ -1,8 +1,8 @@
 # Do you use any CSS methodology or have any guidelines for it on your project?
 
-## 🔹 CSS Methodology and Guidelines on Our Project
+## 🔹 Example CSS Methodology and Guidelines
 
-Yes, on our project we follow a **structured approach to writing CSS** to ensure **consistency, maintainability, and scalability**.
+The following is a proposed project policy. It is an interview/example narrative, not a claim that this repository has implemented or measured these practices.
 
 ---
 
@@ -16,7 +16,7 @@ Yes, on our project we follow a **structured approach to writing CSS** to ensure
 .button { }
 .button__icon { }
 .button--primary { }
-````
+```
 
 * **Benefits:**
 
@@ -75,13 +75,13 @@ import styles from './Button.module.css';
 * **SASS / SCSS**: for variables, mixins, modularity.
 * **CSS Modules**: scoped styling per component.
 * **Stylelint**: enforce coding standards.
-* **PostCSS / Autoprefixer**: browser compatibility.
+* **PostCSS / Autoprefixer**: configured transformations/prefixes for selected targets; they do not supply every missing browser feature.
 
 ---
 
 ### ✅ Summary
 
-* We combine **BEM + CSS Modules + SASS** with **linting** to maintain **scalable and maintainable styles**.
+* A project may combine BEM, CSS Modules and Sass where each solves a requirement; no project must adopt all three.
 * Guidelines ensure:
 
   * Predictable structure
@@ -91,3 +91,11 @@ import styles from './Button.module.css';
 
 > 💡 Senior Tip:
 > Even if using modern frameworks or utility-first libraries like Tailwind, **having a methodology or guideline** improves **team consistency and long-term maintainability**.
+
+## Turn a policy into reviewable evidence
+
+Start with component ownership, the existing build and a documented browser support policy. Use CSS Modules for local classes where already supported; retain a small owned global/token layer. Sass remains optional for build-time composition. Set a specificity/nesting budget suited to the actual cascade; three nesting levels is an example limit, not a proof that selectors remain low-specificity.
+
+The [BEM naming/collision/migration fixture](./Do_you_still_think_BEM_style_is_valid_nowadays_Main_benefits.md#executable-naming-policy) supplies an exact Stylelint configuration, a valid stylesheet and negative cases. Its policy is checked in a separate lab, not installed into this notes site's build or an Autocode template. Pair source linting with the [shared theme/cascade lesson](./CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md) and the browser support evidence matrix; a green lint result does not mean the theme is accessible or that no global selector leaks.
+
+**Exercise acceptance:** write a brief decision explaining local/global ownership, token naming, permitted modifiers and exceptional selectors. Execute the valid and three invalid lint cases; migrate one component as described in the BEM lesson and review computed/visual/focus results. Keep the diff scoped and record the actual configuration, changed consumers, failures and retest evidence. Distinguish a proposed guideline, an automated source check and an implemented/migrated project. Learner project implementation remains required.

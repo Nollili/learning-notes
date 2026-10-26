@@ -1,115 +1,42 @@
-### Differences to Vue/Angular?
+# React, Vue and Angular: Compare Mechanisms and Project Constraints
 
-# React - Vue - Angular comparsion
+Baseline checked2026-10-21: React19, Vue3 and Angular21+ behavior. Angular22 is current in the checked documentation; zoneless became the default in Angular21. Existing applications can still explicitly opt into ZoneJS scheduling, so inspect their installed version/bootstrap configuration. This comparison supports the primary React learning path; it does not require implementing the course in three frameworks.
 
-Detailed **comparison of React, Vue, and Angular**, focusing on their core features, strengths, and trade-offs
+## Philosophy, architecture and ecosystem
 
-### **Core Philosophy**
+| Concern | React | Vue | Angular |
+|---|---|---|---|
+| UI model | Components with JSX, props/state and composition | Components with templates or render functions and reactive state | Components/templates, services and framework conventions |
+| State ownership | Built-in state/reducer hooks; Context transports values; external stores are optional | Built-in ref/reactive/computed; Pinia is a separately installed official store option | Signals and services; RxJS interop where appropriate; external stores are optional |
+| Routing | Add a router/framework according to the application | Vue Router is a separate official library | Angular Router is a framework package |
+| Shared dependencies | Context/custom hooks, explicit props or external DI patterns | provide/inject at component or application level | Hierarchical dependency injection with providers |
+| Language/tooling | JavaScript or TypeScript; JSX/TSX | JavaScript or TypeScript; single-file components are common | TypeScript-oriented application tooling |
+| Scaffolding | Supported React framework or an intentional build-tool setup such as Vite | create-vue/Vite and optional framework choices | Angular CLI and supported framework tooling |
 
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Type** | Library for building UIs | Framework with flexibility | Full-featured framework |
-| **Philosophy** | Minimal, focuses on the View | Simplicity with progressive adoption | Opinionated, comprehensive solution |
-| **Learning Curve** | Moderate (JSX and state management) | Low (intuitive syntax) | High (requires understanding of TypeScript, RxJS, etc.) |
-| **Community Size** | Largest, backed by Meta | Growing, community-driven | Large, backed by Google |
+Vue has dependency provision/injection; saying it has "no DI" hides a useful built-in mechanism. Pinia/Vue Router are not magically included in every Vue core installation. React has local state without installing a global-state library. Angular signals and explicit notifications matter even when a project also uses observables. Do not mistake the presence of an ecosystem option for a required architectural dependency.
 
----
+## Rendering and update reasoning
 
-### **Architecture**
+React schedules renders and reconciles elements; a component render is not automatically a browser DOM mutation. Vue tracks reactive dependencies and compiles templates to optimized update work. Angular uses its change-detection/runtime notification model; zoneless applications schedule updates through supported notifications such as template-read signals, bound listeners and explicit marking. ZoneJS is not required in Angular21+ default applications. Learn the actual state-to-render path before diagnosing an update that does not appear.
 
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Primary Language** | JavaScript (JSX), TypeScript optional | JavaScript (with optional TypeScript) | TypeScript |
-| **State Management** | External libraries (e.g., Redux, Context API) | Built-in (Vuex, Pinia) | Built-in (RxJS + Services) |
-| **Routing** | External (e.g., React Router) | Built-in (Vue Router) | Built-in (Angular Router) |
-| **Dependency Injection (DI)** | None | None | Built-in |
+All three still depend on browser layout/paint, event handling, network/data ownership and accessible DOM output. "Virtual DOM" does not give a universal speed ranking. A framework choice cannot make an unbounded list, repeated synchronous parsing or a leaky subscription inexpensive. Inspect the application's rendering strategy, dependency versions, state granularity, batching and work done on the main thread.
 
----
+## Performance, bundles and scale
 
-### **Rendering and DOM Manipulation**
+Compare the same feature under the same rendering/caching/deployment conditions. Record production JS/CSS transfer, hydration/server work, long tasks/interaction latency, memory and a realistic data/interaction trace. Include the actual router, state/form libraries, localization, UI components and assets rather than comparing one framework's core bundle with another complete application.
 
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Change Detection** | Virtual DOM + reconciliation | Virtual DOM + dependency tracking | Zone.js and dirty checking |
-| **Granularity** | Component-level | Fine-grained (reactive bindings) | Tree-based, hierarchical updates |
-| **Performance** | High | High | Moderate (more overhead) |
+A small or enterprise application can be implemented with any of these choices. Team expertise, existing integrations, supported libraries, maintenance policy, accessibility and deployment constraints determine the trade-off. "Angular is always slower/overkill" and "Vue is only for small apps" are not measured design arguments. An opinionated framework can reduce integration decisions; a more assembled stack can fit specialized needs while increasing ownership of those decisions. Both still need clear module/data boundaries and tests.
 
----
+## Testing and migration
 
-### **Ease of Use**
+Use each stack's supported unit/component/browser tooling for the installed version. A DOM assertion, serialization snapshot and screenshot regression establish different evidence. Angular's testing defaults and CLI builders evolve; do not assume a historic Jasmine/Karma list describes every current project. Inspect generated configuration and official migration guidance before replacing a working setup.
 
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Learning Resources** | Extensive, open-source libraries | Easy to pick up, beginner-friendly | Complex but comprehensive |
-| **Declarative UI** | JSX-based | Template-based (HTML-like syntax) | Template-based (Angular templates) |
-| **Complexity for Small Apps** | Moderate | Low | High |
+Create React App is deprecated; it is not the default recommendation for a new React app. An existing CRA application needs a migration plan based on its actual build/routing/tests/deployment requirements. A client-only Vite setup and a server-rendering framework have different responsibilities; choose deliberately instead of treating scaffolding names as interchangeable.
 
----
+## Worked project decision
 
-### **State Management**
+For this study project, keep React/TypeScript as the primary front end with explicit component contracts, owned server state and accessible native controls. If the team already operates a Vue3/Pinia or Angular signals/services application, transfer the underlying state ownership, cleanup, semantic HTML and request-race principles while adapting the framework mechanisms. Do not migrate a stable application solely because a generic comparison table assigns another framework a higher performance label.
 
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Built-in Solution** | None, external libraries needed | Vuex/Pinia (reactive and simple) | Services + RxJS |
-| **Third-party Options** | Redux, MobX, Zustand | Vuex, Pinia | NgRx, Akita |
-| **Reactivity** | Via hooks (e.g., `useState`, `useReducer`) | Built-in reactivity system | Via RxJS observables |
+**Exercise acceptance:** trace one counter update, one asynchronous stale-response race and one shared dependency in the primary React implementation. Explain the corresponding Vue and zoneless Angular mechanisms using official docs. For a framework-selection brief, list project constraints and a reproducible equivalent-feature measurement plan; identify which facts are verified and which are assumptions. A second/third implementation and performance benchmark remain optional learner work; no cross-framework measurement has been run for this note.
 
----
-
-### **Tooling and Ecosystem**
-
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **CLI/Scaffolding** | Create React App (CRA), Vite | Vue CLI, Vite | Angular CLI |
-| **Testing Frameworks** | Jest, React Testing Library | Vue Test Utils | Jasmine, Karma |
-| **Integration with Other Tools** | Easy to integrate with other libraries | Flexible, supports 3rd-party libraries | Self-contained ecosystem |
-| **TypeScript Support** | Good | Good | Excellent |
-
----
-
-### **Scalability**
-
-| Feature | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Small Apps** | Excellent choice | Excellent choice | Overkill |
-| **Large Apps** | Scalable with libraries | Scalable but less common for large apps | Designed for enterprise-level apps |
-| **Modularity** | High, pick what you need | High | Moderate, everything is included |
-
----
-
-### **Performance**
-
-| Metric | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Rendering** | Efficient Virtual DOM | Faster Virtual DOM with dependency tracking | Can be slower for complex apps |
-| **Bundle Size** | Small (React core + libraries) | Small | Larger (built-in features included) |
-| **Initial Load Time** | Fast | Fast | Can be slower due to size |
-
----
-
-### **Trade-offs**
-
-| Factor | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Flexibility** | High; choose your stack | High; intuitive and progressive | Low; must use Angular’s tools |
-| **Complexity** | Moderate; requires additional tools | Low; great for beginners | High; steep learning curve |
-| **Enterprise Support** | Large adoption | Less common for enterprise apps | Strong enterprise support |
-
----
-
-### **Best Use Cases**
-
-| Use Case | **React** | **Vue** | **Angular** |
-| --- | --- | --- | --- |
-| **Small to Medium Apps** | Excellent | Excellent | Overkill |
-| **Dynamic UI-heavy Apps** | Excellent | Excellent | Moderate |
-| **Enterprise Applications** | Good (with third-party libraries) | Less common | Excellent (out of the box) |
-| **Rapid Prototyping** | Good | Excellent | Moderate |
-
----
-
-### **Overall Recommendation**
-
-- **React**: Best for developers who want flexibility and prefer assembling their tech stack. Great for UI-heavy, dynamic applications, and works well with third-party tools.
-- **Vue**: Excellent for small to medium apps or for teams that value simplicity and fast development. Great for prototyping or projects with less complexity.
-- **Angular**: Ideal for enterprise-level applications that need a comprehensive framework and strong TypeScript integration. Best for teams that prefer opinionated structures and built-in tools.
+Official references: [React state](https://react.dev/learn/state-a-components-memory), [React app setup](https://react.dev/learn/installation), [CRA deprecation](https://react.dev/blog/2025/02/14/sunsetting-create-react-app), [Vue provide/inject](https://vuejs.org/guide/components/provide-inject), [Vue store guidance](https://vuejs.org/guide/scaling-up/state-management.html), [Vue tooling](https://vuejs.org/guide/scaling-up/tooling.html), [Angular zoneless](https://angular.dev/guide/zoneless), [Angular DI](https://angular.dev/guide/di). Version-sensitive behavior checked2026-10-21.

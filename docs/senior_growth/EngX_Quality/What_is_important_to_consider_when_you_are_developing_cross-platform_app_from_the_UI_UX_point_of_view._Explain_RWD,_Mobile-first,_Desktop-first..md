@@ -24,7 +24,7 @@ When developing a **cross-platform app** from a **UI/UX perspective**, it's cruc
 
 ### **4. Touch vs. Click**
 
-- **Touch-Friendly Elements**: Buttons and interactive elements must be easily tappable on mobile (e.g., minimum size 48px by 48px).
+- **Touch-Friendly Elements**: Choose comfortable hit areas/spacing for the product;48×48 is a design suggestion, not a universal WCAG minimum. WCAG2.2 AA2.5.8 uses24×24 CSS pixels or qualifying spacing/exception rules; AAA2.5.5 has a44×44 criterion with exceptions.
 - **Hover Effects**: Consider hover interactions on desktop while ensuring alternatives for touch interfaces.
 
 ### **5. Native Feel vs. Universal Design**
@@ -64,7 +64,7 @@ A **mobile-first** approach prioritizes designing for smaller screens first and 
     2. **Improved Performance**: Lightweight designs optimized for mobile work well on all devices.
     3. **Scalable**: It's easier to add complexity for larger screens than to simplify designs for smaller ones.
 - **Best Practices**:
-    - Use **progressive enhancement**: Start with a minimal mobile design and add features for larger screens.
+    - Use **progressive enhancement**: preserve the core task with baseline HTML/server behavior, then add supported CSS/JavaScript capabilities. Viewport expansion is only one kind of enhancement.
     - Prioritize **touch-friendly UI** and vertical layouts.
 
 ---
@@ -99,6 +99,10 @@ A **desktop-first** approach begins with designing for larger screens and scales
 ### **Tips for Balancing Cross-Platform Design**
 
 1. **Start with RWD Principles**: This ensures adaptability by default.
-2. **Adopt Mobile-First When in Doubt**: Mobile is the primary platform for most users globally.
+2. **Adopt Mobile-First When in Doubt**: Choose from the product's actual audience, content and input constraints; do not infer the right design from a global device-share claim.
 3. **Test on Real Devices**: Simulators don’t always capture performance or usability nuances.
 4. **Prototype and Gather Feedback**: Use tools like Figma or Adobe XD to create interactive mockups and validate designs early.
+
+### Worked baseline and verification
+
+The [rendering/capability workflow](./Rendering_and_Capability_Workflows.md#start-with-an-operable-html-baseline) provides a labeled server-search form, real links, block fallback and an `@supports` grid enhancement. It separates no-JS operability from viewport layout and lists exact reflow/zoom/keyboard/touch/assistive-technology checks. Layout and device behavior were not verified in a native browser; follow its acceptance checklist and retain real observations. Do not remove essential capabilities merely because a viewport is narrow, or assume a large viewport has a mouse. Learner practice remains required. [WCAG2.2](https://www.w3.org/TR/WCAG22/) defines the relevant target-size/reflow criteria; matching one CSS size does not establish conformance.

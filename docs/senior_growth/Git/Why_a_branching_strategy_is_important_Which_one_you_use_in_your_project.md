@@ -30,9 +30,9 @@ A **branching strategy** defines how developers manage and organize branches in 
 
 ---
 
-## 2️⃣ Branching Strategy Used in Our Project
+## 2️⃣ Example Branching Strategy
 
-We use a **Git Flow-inspired strategy**:
+This study example uses a **Git Flow-inspired strategy**; it is not evidence of an employer workflow or configured branch protections:
 
 | Branch Type      | Purpose |
 |-----------------|---------|
@@ -66,8 +66,15 @@ We use a **Git Flow-inspired strategy**:
 ### ✅ Summary
 
 - A branching strategy is critical to ensure **organization, stability, and smooth collaboration**.
-- We use a **Git Flow-inspired approach**: `main`, `develop`, feature/release/hotfix branches.
+- This example uses a **Git Flow-inspired approach**: `main`, `develop`, feature/release/hotfix branches.
 - It balances **structured development** with **support for CI/CD and code review**.
 
 > 💡 Senior Tip:  
 > Always **protect main and release branches** and enforce **merge requests with CI/CD checks** to maintain high-quality production code.
+
+
+## Integration and recovery are part of the policy
+
+Follow the [shared local conflict/abort/reflog exercise](./Please_explain_the_git_strategy_in_your_project.md#conflict-abort-and-recovery-practice) and [merge/rebase mechanics](./What's_the_difference_between_merge_and_rebase_in_git_What's_prefferable.md). Branching structure cannot replace contract-based resolution, acceptance checks and review. For a real project, document the actual protected branches and required checks rather than copying this example. In this repository only the user may push; prepare local evidence for the user's handoff.
+
+Acceptance: demonstrate a conflict and a safe abort in an owned scratch repository, resolve according to requirements, rerun relevant checks, retain a recovery reference and explain which changes a reviewer should inspect. The linked authored fixture has retained results; learner practice remains required.

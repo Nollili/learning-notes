@@ -7,7 +7,7 @@ REST is an **architectural style** for designing networked applications, commonl
 ## 🔑 Key Concepts
 
 1. **Resource-Oriented**
-    - Everything is a resource, identified by a URL.
+    - Identify domain resources and exchange representations; a resource is not necessarily one database row.
     - Example:  
       - `/users` → collection of users  
       - `/users/123` → specific user
@@ -52,7 +52,7 @@ REST is an **architectural style** for designing networked applications, commonl
 
 ## ⚠️ Limitations
 
-- Not ideal for **real-time communication** (requires polling or WebSockets)
+- Real-time delivery needs an explicit interaction/transport choice such as polling, streaming/SSE or WebSockets; REST statelessness does not prohibit persistent HTTP connections.
 - Statelessness may lead to repeated authentication on each request
 - Can be inefficient for complex operations requiring multiple requests
 
@@ -81,3 +81,35 @@ Authorization: Bearer <token>
 **Summary:**
 
 > REST is about **resources**, **stateless communication**, and using **HTTP standards** effectively. It is the foundation for most web APIs and works well with modern front-end applications.
+
+
+## Uniform interface is more than a method table
+
+REST's uniform interface includes identifying resources, manipulating them through representations, self-descriptive messages and hypermedia that drives available application transitions. Standard methods/status/content/cache metadata contribute to the message contract. Merely putting JSON behind GET/POST paths does not establish every REST constraint. The style also includes client-server, stateless, cache, layered-system and optional code-on-demand constraints. Stateless requests do not mean no durable server resources or no persistent transport connection; server-session workflows should be described honestly rather than labelled pure REST automatically.
+
+For example, a user representation can contain a self link and related project collection link using a documented link relation/media contract. A client follows an offered relation instead of constructing every workflow URL from undocumented assumptions. Link discovery does not grant authorization, and an absent operation link is not a substitute for server enforcement. Many pragmatic APIs are resource-oriented HTTP/JSON APIs with limited hypermedia; state that scope explicitly.
+
+## Worked versioned consumer boundary
+
+Assume a maintained /v1/users/123 returns id/name and a deliberately versioned /v2/users/123 returns id/displayName. Preserve the numeric id contract; adding a new version does not silently change its type. Normalize the known negotiated representation at the client boundary, then let the UI use one domain model.
+
+```ts
+// user-contract.ts
+export type DisplayUser = Readonly<{ id: number; displayName: string }>;
+export function parseDisplayUser(value: unknown, version: 'v1' | 'v2'): DisplayUser {
+  if (typeof value !== 'object' || value === null || Array.isArray(value) ||
+      !('id' in value) || typeof value.id !== 'number' || !Number.isSafeInteger(value.id) || value.id <= 0) {
+    throw new TypeError('Invalid user representation');
+  }
+  const name = version === 'v1' && 'name' in value ? value.name
+    : version === 'v2' && 'displayName' in value ? value.displayName : undefined;
+  if (typeof name !== 'string' || !name.trim() || name.length > 80) throw new TypeError('Invalid display name');
+  return { id: value.id, displayName: name.trim() };
+}
+```
+
+This parser projects JSON-style values; it is not a server implementation, authorization check or general sanitizer for hostile in-process getters/proxies. Check status/content/body limits before parsing and select a supported version deliberately. Do not guess a version from whichever field happens to exist; mixed payloads must use the negotiated field. Support old/new consumers during a documented migration window, monitor deprecated usage and publish removal policy before deleting the old contract. Additive fields can still break an exact consumer schema; enum expansion/default/error behavior needs compatibility tests, not an assumption that “additive” means safe.
+
+**Exercise acceptance:** accept each valid version into the same UI model; reject missing/wrong/blank/oversized fields and unknown/unnegotiated shapes; demonstrate extra private data is absent from the domain result. Run old/new consumer contract tests while evolving the server, check meaningful method/status/cache/error semantics and test stale update/version conflicts where relevant. Native/deployed endpoint and learner migration evidence remain required; the local parser alone cannot prove the server contract.
+
+Primary architectural reference checked2026-10-22: [Fielding REST constraints/uniform interface](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm). The versioned parser is a pragmatic HTTP/JSON consumer example, not proof that a full hypermedia system has been implemented.

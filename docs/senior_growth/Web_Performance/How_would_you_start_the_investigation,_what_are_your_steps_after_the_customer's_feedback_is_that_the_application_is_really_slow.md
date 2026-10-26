@@ -34,7 +34,7 @@ Before touching code, clarify what “slow” means to the user:
   - Payload size, TTFB (Time To First Byte), caching headers.
 - **Coverage Tab** – Detect unused CSS/JS for possible tree shaking.
 - **Lighthouse / Web Vitals report**:
-  - Key metrics: LCP, FID/INP, TTFB, TTI, CLS.
+  - Current Core Web Vitals: LCP, INP and CLS. Use TTFB/TBT and relevant traces as diagnostics; FID/TTI are historical, and Lighthouse removed TTI in version10.
 
 ### 🔹 **Backend Monitoring (if applicable)**
 - Check API response times and server logs.
@@ -70,7 +70,7 @@ Based on findings:
 After implementing changes:
 - Re-run Lighthouse and DevTools audits.
 - Measure **before vs. after** for metrics like:
-  - **TTFB**, **LCP**, **TTI**, **INP**, **bundle size**, **FPS stability**.
+  - TTFB/LCP/CLS, lab blocking/interaction traces, field INP and initial/total bytes as appropriate to the reported task.
 - Validate perceived speed through user feedback.
 
 ---
@@ -87,13 +87,13 @@ After implementing changes:
 
 ---
 
-### ✅ Example Flow
+### Hypothetical investigation, not measured project evidence
 > Customer: “App loads really slowly on mobile.”
 1. Reproduce on mobile throttling (3G, mid-range CPU).
 2. DevTools → Network: 5 MB JS bundle.  
-   → Root cause: heavy, unoptimized dependencies.
+   → Hypothesis: initial JavaScript contributes; inspect request criticality, parse/evaluate tasks and interaction cost before calling it the root cause.
 3. Apply **code-splitting** and **lazy load non-critical components**.
-4. Bundle drops to 1.5 MB → TTFI improves from 8s → 3.5s.
+4. Illustrative values only: a candidate split might change initial bytes from5MB to1.5MB. Do not infer an8s→3.5s timing improvement from byte counts; define and measure a real loading/interaction outcome.
 
 ---
 
@@ -108,3 +108,19 @@ After implementing changes:
 **In summary:**  
 > Investigate → Measure → Identify → Optimize → Validate  
 > Combine technical analysis with user perspective for lasting improvements.
+
+## An evidence ledger for one reported task
+
+Record a release/artifact, route, dataset, device/browser, cache/network/CPU conditions and exact interaction. Keep a baseline trace plus several repeated runs; identify input delay, processing and presentation cost before selecting a fix. An empty screen can have server, CSS, font, hydration or application-error causes as well as bundle cost. Throttling is useful reproduction evidence, not a real-device equivalence guarantee.
+
+| Stage | Record | Reject this shortcut |
+|---|---|---|
+| Observation | Exact slow task, affected cohort and trace marker | “The app is slow” as a diagnosis |
+| Hypothesis | Owning stack/resource and mechanism | Large transfer alone proves CPU delay |
+| Controlled change | One relevant change, same artifact/scenario controls | Different device/cache conditions compared |
+| Result | Correctness plus repeated raw timings/variability, initial and feature-open behavior | A single Lighthouse score or invented percentage |
+| Follow-up | Field collection/cohort/sample limits and regression budget | Lab TBT declared equal to field INP |
+
+The [INP/TBT diagnostic lesson](./What_is_TTFI_%28Time_to_first_interaction%29._How_can_we_improve_TTFI.md) defines current metric boundaries. The [production split/side-effects fixture](./What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking,_code_splitting_and_bundling,_minimizing,_data_caching..md#worked-production-analysis-module-contracts-before-chunk-tuning) supplies actual synthetic build evidence, explicitly distinct from native user timing.
+
+**Acceptance:** investigate one slow task using this ledger, retain baseline/change traces and correct results, test failure/rapid input/focus, and explain one rejected hypothesis. Report unperformed field/native measurements as such; a written investigation is not a completed project performance result. References checked2026-10-22: [INP](https://web.dev/articles/inp), [historical TTI removal](https://developer.chrome.com/blog/lighthouse-10-0).

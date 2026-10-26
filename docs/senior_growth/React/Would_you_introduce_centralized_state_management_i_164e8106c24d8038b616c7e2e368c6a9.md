@@ -36,7 +36,7 @@ The solution depends on the project scale and requirements:
 | **React Context API** | Small to medium projects with limited shared state. |
 | **Redux Toolkit** | Medium to large projects with complex state logic or frequent updates. |
 | **Zustand** | Simple alternative for centralized state without boilerplate. |
-| **Recoil** | React-specific solution for apps with dynamic state graphs. |
+| **Recoil (historical)** | Repository archived2025-01-01; retain legacy context, not a primary new-project recommendation. |
 
 ---
 
@@ -103,7 +103,7 @@ The solution depends on the project scale and requirements:
       return (
         <div>
           <h1>Welcome, {state.user?.name || 'Guest'}</h1>
-          {!state.user && <button onClick={handleLogin}>Login</button>}
+          {!state.user && <button onClick={handleLogin}>Choose demo profile</button>}
         </div>
       );
     };
@@ -170,7 +170,7 @@ The solution depends on the project scale and requirements:
       return (
         <div>
           <h1>Welcome, {user?.name || 'Guest'}</h1>
-          {!user && <button onClick={handleLogin}>Login</button>}
+          {!user && <button onClick={handleLogin}>Choose demo profile</button>}
         </div>
       );
     }
@@ -190,7 +190,8 @@ The solution depends on the project scale and requirements:
 2. **Create a Store**:
     
     ```jsx
-    import create from 'zustand';
+    // user-store.js
+    import { create } from 'zustand';
     
     const useStore = create((set) => ({
       user: null,
@@ -203,15 +204,18 @@ The solution depends on the project scale and requirements:
 3. **Use Zustand in Components**:
     
     ```jsx
-    const Profile = () => {
-      const { user, setUser } = useStore();
+    // zustand-profile.jsx
+    import useStore from './user-store.js';
+    export const Profile = () => {
+      const user = useStore(state => state.user);
+      const setUser = useStore(state => state.setUser);
     
       const handleLogin = () => setUser({ name: 'John Doe' });
     
       return (
         <div>
           <h1>Welcome, {user?.name || 'Guest'}</h1>
-          {!user && <button onClick={handleLogin}>Login</button>}
+          {!user && <button onClick={handleLogin}>Choose demo profile</button>}
         </div>
       );
     };
@@ -237,3 +241,15 @@ The solution depends on the project scale and requirements:
 ### **Conclusion**
 
 Introducing centralized state management should be driven by specific needs such as complexity, scalability, and maintainability. Start with a lightweight solution like React Context or Zustand for small apps, and opt for Redux Toolkit for larger projects.
+
+## Scope the owner before selecting a store
+
+The examples set a display-only demo user; they do not verify credentials or grant API permissions. Never store access/refresh tokens or derive server authorization from this UI. Primary complex shared-client path: Redux Toolkit. Context/reducer is appropriate for scoped settings; Zustand is an alternative, not an additional required migration. Keep remote query caches, URL state and short-lived form drafts with their appropriate owners.
+
+Zustand5 uses named create; calling the bound hook without a selector subscribes to the entire state. Select a primitive or stable action as above. A new object/array returned on every snapshot is not a stable selection; use individual selectors or the documented useShallow/custom-equality API deliberately. Do not copy an old second comparator argument onto the v5 create hook. The module-level toy store is one client singleton; SSR/test/user-session isolation requires a per-request/scoped store factory and deliberate reset/disposal.
+
+**Acceptance:** verify the current named export in a pinned scratch app; a setUser action updates selected user while the action reference remains stable; unrelated state changes do not change selected primitives. Test independent store instances before adopting SSR. Start with one feature and compare before/after render traces, race behavior and ownership, rather than migrate every local state variable. The [versioned safe preference adapter](./React_state_management_and_tools.md#versioned-persistence-is-a-boundary-not-a-dump-of-the-store) supplies storage validation/migration/disposal; do not persist a full store. Learner browser/profile measurements remain required.
+
+References checked2026-10-22: [Zustand5 migration](https://zustand.docs.pmnd.rs/reference/migrations/migrating-to-v5), [official selector guidance](https://github.com/pmndrs/zustand/blob/main/README.md), [Recoil archive](https://github.com/facebookexperimental/Recoil).
+
+For normalized entities, use the [worked Toolkit adapter](../State_management_and_Redux/Is_still_valid_to_use_Redux_in_a_new_project_nowadays.md#normalize-identity-persist-only-a-reviewed-subset). Keep server mutations with the [pending-overlay/versioned-confirmation workflow](./complex-forms-and-data.md#worked-optimistic-policy-pending-overlay-instead-of-stale-snapshot-rollback): a failed earlier mutation must not restore a stale snapshot over later success; pending intent, confirmed cache and server transaction are distinct owners. Test overlapping failure/success and uncertain commits rather than copy remote records into another global store.

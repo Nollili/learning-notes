@@ -6,7 +6,7 @@
 
 ---
 
-## 1️⃣ Example of Callback Hell
+## 1️⃣ Anti-pattern: incomplete callback nesting
 
 ```javascript
 getUser(userId, function(user) {
@@ -18,7 +18,9 @@ getUser(userId, function(user) {
     });
   });
 });
-````
+```
+
+This deliberately incomplete anti-pattern omits error-first handling and assumes orders[0] exists. It is not a safe executable workflow. The complete bounded orchestration example below treats no orders explicitly.
 
 **Problems:**
 
@@ -34,21 +36,7 @@ getUser(userId, function(user) {
 
 Instead of anonymous functions:
 
-```javascript
-function handleDetails(details) {
-  sendEmail(details, handleEmailResponse);
-}
-
-function handleEmailResponse(response) {
-  console.log('Email sent!');
-}
-
-getUser(userId, function(user) {
-  getOrders(user.id, function(orders) {
-    getOrderDetails(orders[0].id, handleDetails);
-  });
-});
-```
+Name the completion/error handlers and give each asynchronous stage one owned contract. Renaming callbacks alone does not fix missing error handling, an empty collection or duplicate callback invocation. The error-first adapter below demonstrates the actual settlement boundary.
 
 **Benefit:** Flattens the code, improves readability.
 
@@ -58,14 +46,7 @@ getUser(userId, function(user) {
 
 Promises provide **chaining** and **better error handling**.
 
-```javascript
-getUser(userId)
-  .then(user => getOrders(user.id))
-  .then(orders => getOrderDetails(orders[0].id))
-  .then(details => sendEmail(details))
-  .then(() => console.log('Email sent!'))
-  .catch(err => console.error(err));
-```
+Return every asynchronous stage from the chain so rejection/completion remain observable. Use the same notifyFirstOrder workflow below with .then(result => ...).catch(error => ...) when chaining reads more clearly; attach a safe caller error policy instead of dumping raw diagnostics.
 
 **Benefits:**
 
@@ -79,21 +60,7 @@ getUser(userId)
 
 Async/await makes asynchronous code look **synchronous**, improving readability.
 
-```javascript
-async function processEmail(userId) {
-  try {
-    const user = await getUser(userId);
-    const orders = await getOrders(user.id);
-    const details = await getOrderDetails(orders[0].id);
-    await sendEmail(details);
-    console.log('Email sent!');
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-processEmail(1);
-```
+An async function returns a promise. Awaiting the workflow below is the same completion contract as consuming its returned promise; try/catch catches awaited rejection, not an unrelated unawaited task.
 
 **Benefits:**
 
@@ -107,7 +74,9 @@ processEmail(1);
 
 Split complex logic into **small reusable functions**.
 
-```javascript
+Signature sketch only (not executable JavaScript):
+
+```text
 async function getUserOrders(userId) { ... }
 async function getFirstOrderDetails(orders) { ... }
 async function notifyUser(details) { ... }
@@ -128,4 +97,50 @@ async function notifyUser(details) { ... }
   4. **Modularize** complex logic into reusable functions.
 
 > 💡 Senior Tip:
-> For modern projects, prefer **async/await with proper error handling**. Use Promises only if integrating with legacy code.
+> For modern projects, prefer **async/await with proper error handling**. Promises remain the underlying modern abstraction used by async/await, Promise.all/allSettled and many Web/Node APIs. Choose syntax for the dependency/concurrency shape, not a legacy-versus-modern slogan.
+
+
+## Worked error-first interop and empty workflow
+
+```ts
+// callback-workflow.ts
+export type Completion<T> = (...result: [error: Error] | [error: null, value: T]) => void;
+export function fromCallback<T>(start: (done: Completion<T>) => void): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const done: Completion<T> = (...result) => {
+      if (settled) return;
+      settled = true;
+      if (result[0] === null) resolve(result[1]); else reject(result[0]);
+    };
+    try { start(done); }
+    catch (error) { if (!settled) { settled = true; reject(error); } }
+  });
+}
+export type OrderApi = {
+  user: (id: string) => Promise<{ id: string }>;
+  orders: (userId: string) => Promise<readonly { id: string }[]>;
+  details: (orderId: string) => Promise<{ id: string }>;
+  notify: (details: { id: string }) => Promise<void>;
+};
+export type NotificationResult = { kind: 'no_orders' } | { kind: 'notified'; orderId: string };
+export async function notifyFirstOrder(userId: string, api: OrderApi): Promise<NotificationResult> {
+  const user = await api.user(userId);
+  const orders = await api.orders(user.id);
+  const first = orders[0];
+  if (first === undefined) return { kind: 'no_orders' };
+  const details = await api.details(first.id);
+  await api.notify(details);
+  return { kind: 'notified', orderId: details.id };
+}
+```
+
+The callback adapter preserves error-first success/failure and accepts a deliberately undefined success value when T includes undefined. A second callback or a throw after settlement cannot change the outcome. For standard Node callbacks prefer the supported util.promisify API when its signature/receiver semantics fit; event emitters/multiple-value callbacks may need an explicit adapter. Converting a callback does not add a deadline or cancel its source: a callback that never fires still needs the operation owner's timeout/cancellation contract.
+
+OrderApi is an application-owned port whose adapters already validate/bound external data, authorization, deadlines and errors. The orchestration handles sequencing and the empty collection; it is not an HTTP parser or an exactly-once messaging system. Any stage failure propagates and prevents later stages from starting. If notify may have committed before an uncertain failure, do not automatically retry the entire workflow: use a durable/idempotent notification/outbox policy or reconcile. Tests inject a fake notify and send no real message.
+
+Sequential awaits are correct when orders needs user and details needs an order. Independent operations may use a bounded concurrency owner; Promise.all does not itself limit launch concurrency or cancel siblings after rejection. Always observe returned promises and close owned handles. A catch that only logs and returns can falsely turn failure into successful undefined; choose an explicit result or rethrow to a safe caller.
+
+**Acceptance:** test callback success/error/synchronous throw/duplicate callback, undefined success and receiver ownership; require one promise settlement. Run the exact workflow with empty orders (no details/notify), success, and failure at each stage (no downstream side effects). Use deferred fakes to prove each dependency starts only after its predecessor resolves. Assert no real email/network call occurs in the lab. Demonstrate observed rejection versus fire-and-forget and document uncertain notification recovery. Learner implementation and real adapter integration remain required.
+
+Baseline TypeScript5.9.3 strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes and Node24.18.0. Official references checked2026-10-22: [ECMAScript promises](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects), [Node util.promisify](https://nodejs.org/api/util.html#utilpromisifyoriginal). Advanced message delivery remains in the backend reliability lesson, not a new required callback library.

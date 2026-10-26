@@ -25,7 +25,7 @@ class Dog extends Animal {
 
 const dog = new Dog();
 dog.speak(); // Woof
-````
+```
 
 ✅ **Pros**
 
@@ -51,11 +51,11 @@ dog.speak(); // Woof
 **Example:**
 
 ```js
-const canSpeak = obj => ({
+const canSpeak = () => ({
   speak: () => console.log('Hello')
 });
 
-const canWalk = obj => ({
+const canWalk = () => ({
   walk: () => console.log('Walking')
 });
 
@@ -83,10 +83,10 @@ person.walk();  // Walking
 
 ### **Shared State**
 
-* Multiple parts of the system access and mutate the **same data**.
-* Common in OOP where objects hold internal state.
+* Multiple parts of the system access the same data. Sharing and mutability are separate axes: an immutable value can be safely shared; shared **mutable** data needs an ownership/update policy.
+* Can occur in class instances, modules, closures or function-based code; it is not unique to OOP.
 
-**Example (React anti-pattern):**
+**Shared mutable JavaScript state (do not mutate React state this way):**
 
 ```js
 const state = { count: 0 };
@@ -145,7 +145,7 @@ console.log(newState.count); // 1
 | ------------ | ------------------------------- | --------------------------------- | ----------------------------- |
 | Inheritance  | Extend classes (`is-a`)         | Polymorphism, reuse               | Tight coupling, inflexible    |
 | Composition  | Combine objects (`has-a`)       | Flexible, reusable, decoupled     | Slightly more boilerplate     |
-| Shared State | Mutable, global or object state | Simple for small apps             | Hard to debug, error-prone    |
+| Shared State | Multiple readers/owners of a value | Can share immutable snapshots cheaply | Mutation and ownership need explicit coordination |
 | Immutability | Never mutate, return new state  | Predictable, safe, easier to test | Extra memory, verbose updates |
 
 ---
@@ -157,3 +157,45 @@ console.log(newState.count); // 1
 3. **Performance:** With immutability, you can leverage **pure components, memoization, and change detection** efficiently.
 4. **Scalability:** Composition + immutability → easier to maintain large apps, fewer bugs from shared mutable state.
 
+
+
+## Deterministic async lost update
+
+JavaScript callbacks on one event loop run one at a time, yet an `await` splits an operation. Two tasks can read the same old value and later overwrite each other. This is a logical race without threads. Immutability helps ownership but does not make a read-modify-write transaction atomic.
+
+```js
+import assert from 'node:assert/strict';
+let release;
+const gate = new Promise(resolve => { release = resolve; });
+let count = 0;
+async function unsafeIncrement() {
+  const previous = count;
+  await gate;
+  count = previous + 1;
+}
+const a = unsafeIncrement(), b = unsafeIncrement();
+release(); await Promise.all([a, b]);
+assert.equal(count, 1); // Demonstrates the bug: one update was lost.
+count = 0;
+async function ownedIncrement() {
+  await gate;
+  // One synchronous update after awaiting; no suspension inside this local critical step.
+  count = count + 1;
+}
+await Promise.all([ownedIncrement(), ownedIncrement()]);
+assert.equal(count, 2);
+const shared = Object.freeze({currency: 'EUR'});
+const orderA = {settings: shared}, orderB = {settings: shared};
+assert.equal(orderA.settings, orderB.settings); // Sharing is compatible with immutability.
+const before = {profile: {name: 'Ada'}, settings: shared};
+const after = {...before, profile: {...before.profile, name: 'Grace'}};
+assert.equal(before.profile.name, 'Ada');
+assert.equal(after.profile.name, 'Grace');
+assert.equal(before.settings, after.settings); // Unchanged branch can be shared.
+```
+
+**Validation:** exact Node24.18.0 example passed six assertions, including the expected lost update. The repair only covers synchronous in-memory ownership on one event loop. Across processes/database writers, use the relevant transaction/atomic update/version check; don't extend this claim to distributed concurrency. In React use a functional state update (`setCount(previous => previous + 1)`) when based on previous state; request ordering separately needs an epoch/cancellation policy, as in [the large-data workflow](../EngX_Quality/Large_Data_Workflow.md).
+
+`Object.freeze` is shallow; nested mutable objects still require an ownership policy. Spreading only the outer object retains nested aliases. Immutable updates need new objects along the changed path, not a deep copy of every unchanged branch. Composition can hide shared mutable closures too; inheritance can encapsulate immutable values. Choose based on the behavioral contract and lifetime.
+
+**Exercise acceptance:** reproduce the race with a controlled gate, repair it without timing sleeps, and explain why the repair does not synchronize two servers. Add a nested alias failure and a structural-sharing update; demonstrate the original remains unchanged. Record memory/behavior trade-offs before introducing a clone or state library. Learner practice remains required. References: [React queued state updates](https://react.dev/learn/queueing-a-series-of-state-updates), [ECMAScript Object.freeze](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.freeze).

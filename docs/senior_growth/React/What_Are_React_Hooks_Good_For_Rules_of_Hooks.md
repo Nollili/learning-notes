@@ -2,7 +2,7 @@
 
 # Rules of Hooks
 
-React hooks are functions introduced in React 16.8 that allow developers to use state, lifecycle methods, and other React features in functional components. They simplify component development, enhance code reusability, and align well with React's declarative programming paradigm.
+React hooks are functions introduced in React 16.8 that allow developers to use state, synchronization and other React features in functional components. They simplify component development, enhance code reusability, and align well with React's declarative programming paradigm.
 
 ### **Why Use Hooks?**
 
@@ -18,7 +18,7 @@ React hooks are functions introduced in React 16.8 that allow developers to use 
         ```
         
 2. **Side Effect Management**:
-    - The `useEffect` hook replaces lifecycle methods like `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount`.
+    - useEffect synchronizes with an external system; its setup/cleanup is not a one-to-one translation of class lifecycle methods. Derive values during render and perform user-event writes in event handlers.
     - Example:
         
         ```jsx
@@ -33,10 +33,11 @@ React hooks are functions introduced in React 16.8 that allow developers to use 
         
         ```jsx
         const useWindowWidth = () => {
-          const [width, setWidth] = useState(window.innerWidth);
+          const [width, setWidth] = useState(null); // Same server and initial client snapshot.
           useEffect(() => {
             const handleResize = () => setWidth(window.innerWidth);
             window.addEventListener('resize', handleResize);
+            handleResize(); // Effects run on the client, after initial hydration.
             return () => window.removeEventListener('resize', handleResize);
           }, []);
           return width;
@@ -44,7 +45,7 @@ React hooks are functions introduced in React 16.8 that allow developers to use 
         ```
         
 4. **Cleaner Code**:
-    - Hooks eliminate the need for verbose class components and complex lifecycle methods, making the code easier to read and maintain.
+    - Hooks compose state/synchronization logic; class components remain supported, and a large Effect can be harder to maintain than a well-scoped class.
 5. **Improved Composition**:
     - Hooks encourage function composition by breaking logic into smaller, reusable pieces.
 
@@ -59,7 +60,7 @@ React hooks are functions introduced in React 16.8 that allow developers to use 
 | `useContext` | Provides access to context values without nesting consumers. |  |
 | `useReducer` | Manages complex state logic, similar to `redux`. | [https://www.youtube.com/watch?v=kK_Wqx3RnHk&ab_channel=WebDevSimplified](https://www.youtube.com/watch?v=kK_Wqx3RnHk&ab_channel=WebDevSimplified) |
 | `useMemo` | Optimizes performance by memoizing expensive calculations. | [https://www.youtube.com/watch?v=e4G_feMylbg&ab_channel=AtomicCode](https://www.youtube.com/watch?v=e4G_feMylbg&ab_channel=AtomicCode) |
-| `useCallback` | Memoizes callback functions to avoid unnecessary re-creations. | [https://www.youtube.com/watch?v=tLvG7AGVO2c&ab_channel=AtomicCode](https://www.youtube.com/watch?v=tLvG7AGVO2c&ab_channel=AtomicCode) |
+| `useCallback` | Returns a cached function identity; does not prevent argument-function creation. | [https://www.youtube.com/watch?v=tLvG7AGVO2c&ab_channel=AtomicCode](https://www.youtube.com/watch?v=tLvG7AGVO2c&ab_channel=AtomicCode) |
 | `useRef` | Accesses DOM nodes or persists values across renders without causing re-renders. |  |
 | `useLayoutEffect` | Runs synchronously after DOM mutations, useful for layout adjustments. | [https://www.youtube.com/watch?v=wU57kvYOxT4&ab_channel=WebDevSimplified](https://www.youtube.com/watch?v=wU57kvYOxT4&ab_channel=WebDevSimplified) |
 | `useImperativeHandle` | Customizes instance values exposed via `ref` in parent components. | [https://www.youtube.com/watch?v=zpEyAOkytkU&ab_channel=WebDevSimplified](https://www.youtube.com/watch?v=zpEyAOkytkU&ab_channel=WebDevSimplified) |
@@ -126,7 +127,7 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
 3. **Use Custom Hooks for Reusability**:
     - Extract reusable logic into custom hooks to make your components cleaner and more focused.
 4. **Optimize Performance with `useMemo` and `useCallback`**:
-    - Prevent unnecessary re-renders and calculations in performance-sensitive components.
+    - Cache measured expensive calculations or identities at useful boundaries; the containing component can still render.
 5. **Avoid Overusing Hooks**:
     - Use hooks judiciously to keep components manageable and avoid "callback hell."
 
@@ -138,3 +139,107 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
 2. Encourages reusable and composable code via custom hooks.
 3. Reduces boilerplate compared to class components.
 4. Aligns with React's declarative and functional programming principles.
+## Lifecycle ownership, stale closures and SSR
+
+The width hook returns null until the client Effect measures. Render a stable fallback for that state; checking typeof window during render and choosing different initial HTML can cause hydration mismatch. Prefer CSS media/container queries for layout-only decisions. A shared external browser store may use useSyncExternalStore with a stable server snapshot when multiple consumers need consistent subscriptions.
+
+```jsx
+import { useEffect, useState } from 'react';
+export function useTickCount(enabled) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!enabled) return; // Condition inside the Effect, not around the Hook call.
+    const timer = setInterval(() => setCount(previous => previous + 1), 1_000);
+    return () => clearInterval(timer);
+  }, [enabled]);
+  return count;
+}
+```
+
+`setCount(count + 1)` in an empty-dependency interval would repeatedly use the initial snapshot. A pure updater fixes this case because the callback no longer reads count. If the callback also reads a prop such as step, include step or refactor its ownership; do not suppress the dependency rule. For a subscription, unsubscribe the exact installed listener before changing the source.
+
+Development Strict Mode probes setup/cleanup/setup. A well-owned interval/subscription leaves one active instance after setup and zero after unmount. Effects do not run during server rendering. A useLayoutEffect can measure/mutate before browser paint on the client but blocks paint and cannot measure a server DOM; reserve it for necessary layout work.
+
+React19's special use API can read supported resources in conditions/loops, unlike ordinary state/effect hooks; it still has React-context restrictions and cannot be wrapped in try/catch. This is not permission to conditionally call useState or useEffect. Check the installed React version and official use rules rather than generalizing the exception.
+
+**Decision exercise:** classify filtering a list, sending an order on click, subscribing to a socket, and synchronizing a document title. Acceptance: pure derivation stays in render; order write stays in the event action; synchronization has complete dependencies/cleanup; SSR produces no window access or differing initial markup; rapid source changes and Strict Mode leave no stale listener/timer. Confirm interval updates and cleanup with controlled timers, then verify hydration in a real SSR app. Material completion does not imply the exercise ran.
+
+Official references: [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks), [removing Effect dependencies](https://react.dev/learn/removing-effect-dependencies), [useEffect](https://react.dev/reference/react/useEffect), [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore), [special use rules](https://react.dev/reference/react/use). React19 baseline; checked2026-10-20.
+
+## Refs, pure reducers, scoped context and custom hooks
+
+A ref owns an imperative handle/value between commits without scheduling a render. Use state for a value that must appear on screen. DOM refs become available at commit and can return to null on removal; do not read/write arbitrary mutable refs during render to make output depend on hidden state. Focus/selection/scroll requests belong to user events or deliberate synchronization. React19 accepts ref as a function-component prop; useImperativeHandle exposes a limited API rather than the entire internal widget. The typed focus-handle example is in the React/TypeScript note.
+
+```tsx
+import { useRef } from 'react';
+export function FocusSearch() {
+  const input = useRef<HTMLInputElement>(null);
+  return <><label>Search<input ref={input} /></label>
+    <button type="button" onClick={() => input.current?.focus()}>Focus search</button></>;
+}
+```
+
+A reducer expresses related state transitions as a pure function; it does not send requests, subscribe or mutate previous snapshots. Model impossible combinations out of a state machine, as in the worked wizard, rather than adding independent booleans for saving/saved/failed. Dispatch identity is stable; a context's value identity and provider scope still determine consumer updates.
+
+```tsx
+import { createContext, useContext, useReducer, type Dispatch, type ReactNode } from 'react';
+type CounterState = { count: number };
+type CounterAction = { type: 'increment' | 'decrement' | 'reset' };
+export function counterReducer(state: CounterState, action: CounterAction): CounterState {
+  const count = action.type === 'reset' ? 0 : Math.max(0, Math.min(10,
+    state.count + (action.type === 'increment' ? 1 : -1)));
+  return count === state.count ? state : { count };
+}
+const CountContext = createContext<number | null>(null);
+const CounterDispatchContext = createContext<Dispatch<CounterAction> | null>(null);
+export function CounterProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+  return <CounterDispatchContext value={dispatch}><CountContext value={state.count}>
+    {children}
+  </CountContext></CounterDispatchContext>;
+}
+export function useCounter() {
+  const count = useContext(CountContext);
+  const dispatch = useContext(CounterDispatchContext);
+  if (count === null || dispatch === null) throw new Error('CounterProvider required');
+  return { count, dispatch };
+}
+```
+
+React19 provider shorthand is used here; .Provider is the older compatible form. Separate contexts can let a dispatch-only consumer avoid subscribing to count; the combined useCounter subscribes to both by design. A null sentinel must be checked explicitly: zero is valid. Nested providers isolate state. A custom hook shares logic, not one shared instance across all calls—context/store ownership makes sharing explicit. For external mutable stores use useSyncExternalStore's subscribe/getSnapshot/server-snapshot contract rather than an ad hoc Effect that can tear; snapshot references must remain stable while data is unchanged.
+
+**Exercise:** compose two providers, dispatch-only controls, a count display and focus control. Acceptance: reducer bounds/no-op identity/previous-state preservation verified; missing-provider error is understandable; two providers don't share state; ref mutation alone doesn't update displayed state; external subscription setup/cleanup and SSR snapshot behavior are explained. Compare combined versus split context subscriptions with actual profiling, without claiming every rerender is waste. The existing fetch/timer hooks supply cancellation/cleanup failure cases; reusable hooks still need complete dependencies and an explicit API.
+
+## Transitions and deferred values: scheduling, not a worker or debounce
+
+```tsx
+import { memo, useState, useTransition } from 'react';
+const SearchResults = memo(function SearchResults({ rows, query }: {
+  rows: { id: string; title: string }[]; query: string
+}) {
+  const matches = rows.filter(row => row.title.toLowerCase().includes(query.toLowerCase()));
+  return <><p>{matches.length} matches; showing at most50</p>
+    <ul>{matches.slice(0, 50).map(row => <li key={row.id}>{row.title}</li>)}</ul></>;
+});
+export function ScheduledSearch({ rows }: { rows: { id: string; title: string }[] }) {
+  const [input, setInput] = useState('');
+  const [resultsQuery, setResultsQuery] = useState('');
+  const [pending, startTransition] = useTransition();
+  return <section><label>Search courses<input value={input} onChange={event => {
+    const next = event.target.value;
+    setInput(next); // Urgent: controlled typing must update immediately.
+    startTransition(() => setResultsQuery(next));
+  }} /></label>
+    <p role="status">{pending ? 'Updating results…' : ''}</p>
+    <div aria-busy={pending}><SearchResults rows={rows} query={resultsQuery} /></div>
+  </section>;
+}
+```
+
+Rows must retain identity when unchanged for the memo boundary to help; otherwise urgent parent updates still recalculate the child. React can prioritize/interleave rendering work, but cannot interrupt an arbitrary long synchronous filter halfway through its JavaScript call or run it on another thread. Bound data, virtualize measured DOM work or move expensive computation/server filtering appropriately. startTransition calls its action immediately; it doesn't delay every line inside. Do not wrap the controlled input's own value update in a transition.
+
+useDeferredValue is an alternative when receiving a value whose producer you do not control: pass the deferred value to a memoized expensive subtree and label stale content when it differs from current input. It has no fixed debounce interval, does not reduce network request count by itself and does not fix response races. Choose one scheduling ownership strategy instead of piling both onto the same state without a reason. In React19 async Actions, state updates after await still require an additional startTransition to mark them; ordering/cancellation and mutation integrity need their own policy.
+
+**Scheduling acceptance:** profile typing and result rendering in a production/profiling build, compare urgent-only versus transition/deferred variants under the same bounded data, verify latest input/result correctness and stale feedback. Explain a monolithic expensive callback that still blocks despite a transition. Test slow/failed async results with the existing identity/cancellation contract. No measured responsiveness win follows from the code listing alone.
+
+Official references checked2026-10-21: [useRef](https://react.dev/reference/react/useRef), [useReducer](https://react.dev/reference/react/useReducer), [context](https://react.dev/reference/react/useContext), [external store](https://react.dev/reference/react/useSyncExternalStore), [useTransition](https://react.dev/reference/react/useTransition), [useDeferredValue](https://react.dev/reference/react/useDeferredValue).
