@@ -52,7 +52,9 @@ Give additional stories explicit light/dark wrappers (with the same theme CSS as
 
 Use a visual service compatible with Storybook (for example Chromatic) or an existing browser screenshot runner. Primary workflow here is reviewed Storybook snapshots; no account/upload is required by this lesson. Pin browser/OS/fonts, viewport, locale, timezone, color mode and fixture data. Wait for fonts/assets, disable nonessential animation in test mode and avoid live timestamps/random IDs. Capture focus deliberately; never remove focus CSS to quiet a diff. Missing fonts and changed browser antialiasing can create noise: investigate environment drift before approving hundreds of baselines.
 
-In a PR, attach baseline/current/diff for each supported state and the design reason. Maintainer checks clipping, alignment, wrapping, focus, contrast and unintended downstream changes; reviewer approves an intentional baseline only after interaction/type checks pass. An unexplained visual difference blocks the change. Record approved baseline revision and retain rejected diffs for diagnosis. Regenerate only affected stories; a blanket “accept all” conceals regressions. Pixel thresholds are a noise policy, not a correctness guarantee. Theme/interaction combinations should come from risk analysis: both variants × themes, disabled, keyboard focus, narrow width and long label are a useful starting set, not proof of complete coverage.
+In a PR, attach baseline/current/diff for each supported state and the design reason. Maintainer checks clipping, alignment, wrapping, focus, contrast and unintended downstream changes; reviewer approves an intentional baseline only after interaction/type checks pass. An unexplained visual difference blocks the change. Record approved baseline revision and retain rejected diffs for diagnosis. Regenerate only affected stories; a blanket “accept all” conceals regressions. Pixel thresholds are a noise policy, not a correctness guarantee.
+
+Theme/interaction combinations should come from risk analysis: both variants × themes, disabled, keyboard focus, narrow width and long label are a useful starting set, not proof of complete coverage.
 
 ## A consumer migration case
 
@@ -140,12 +142,11 @@ function migrateButton(source) {
 module.exports = { migrateButton };
 ```
 
-Example fixture: `import { Button as Action } from '@acme/ui'; export const Example = <Action tone="quiet">Save</Action>;` becomes `variant="secondary"`. A wrapper function, expression child, event handler, spread or `tone={choice}` is deliberately skipped; the real before/after handler example above needs manual migration. Parse errors are caller failures: catch/report the filename and do not overwrite it. Write transformed output only after successful parsing and review; never partially apply a file. Running twice must produce unchanged output on the second pass. Imported binding resolution here relies on the narrow allowed program structure; lifting those constraints without a proper scope-aware traversal is unsafe.
+Example fixture: `import { Button as Action } from '@acme/ui'; export const Example = <Action tone="quiet">Save</Action>;` becomes `variant="secondary"`. A wrapper function, expression child, event handler, spread or `tone={choice}` is deliberately skipped; the real before/after handler example above needs manual migration. Parse errors are caller failures: catch/report the filename and do not overwrite it. Write transformed output only after successful parsing and review; never partially apply a file. Running twice must produce unchanged output on the second pass.
+
+Imported binding resolution here relies on the narrow allowed program structure; lifting those constraints without a proper scope-aware traversal is unsafe.
 
 ## Practice and acceptance
 
-Create Button stories in the separate consumer and configure its supported runner. Acceptance: Primary interaction runs, Disabled is checked, long label/narrow viewport render, both theme sets have approved baselines, a deliberately broken padding/focus change produces a rejected diff. Keep the runner output and human review evidence; do not claim a snapshot proves accessibility.
+Use the [separate practice requirements and observation ledger](../../practice/frontend/react/design-system-release.md). All learner work remains outstanding.
 
-For migration, test direct and aliased imports, both literal values, unrelated library imports, mixed props, unknown literal, spread, dynamic value and unsupported wrapper. Acceptance: safe fixtures transform exactly, manual cases preserve bytes and report a reason, a second run is idempotent, consumer typecheck and behavior tests pass. Add one real consumer migration record and rollback rehearsal using local artifacts. Publishing/pushing is not part of the exercise. All learner practice remains required.
-
-References checked 2026-10-21: [Storybook React/Vite](https://storybook.js.org/docs/get-started/frameworks/react-vite), [stories](https://storybook.js.org/docs/writing-stories/index), [interaction tests](https://storybook.js.org/docs/writing-tests/interaction-testing), [visual tests](https://storybook.js.org/docs/writing-tests/visual-testing), [SemVer 2.0.0](https://semver.org/), [Babel parser](https://babeljs.io/docs/babel-parser).

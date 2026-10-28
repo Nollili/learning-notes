@@ -110,4 +110,7 @@ The [executed TDD feature](../Testing/TDD_-_pros_and_cons(red,_green,_refactor).
 
 Security scanner results identify known signatures/advisories; zero reported vulnerabilities does not prove the absence of exploitable issues. Review reachability, authorization, data exposure, runtime configuration and remediation urgency. Performance needs explicit device/network/workload, percentiles and observation window, as in [the quality scenarios](../EngX_Quality/Could_please_the_differentiate_between_Functional_and_Non-functional_reqs(NFRs),_How_and_when_to_take_them_into_consideration.md#quality-scenarios-and-acceptance-evidence).
 
-**Exercise acceptance:** choose one risk, record a baseline and a candidate threshold with denominator/exclusions, add a defect that a meaningful assertion catches, then show how the metric and actual behavior differ. Retain first-run failures, tool/version/config and a reasoned improvement decision. Do not report a tool's debt-hours as an engineering estimate; estimate the actual change with dependencies and uncertainty. Learner practice remains required. [Jest's official threshold configuration](https://jestjs.io/docs/configuration#coveragethreshold-object) explains enforceable gates; it does not choose an appropriate risk policy for the team.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/Which_metrics_do_you_use_to_measure_quality_of_your_code.md). All learner practice remains outstanding.

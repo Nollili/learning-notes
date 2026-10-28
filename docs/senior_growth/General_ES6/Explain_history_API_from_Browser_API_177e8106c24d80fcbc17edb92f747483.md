@@ -220,6 +220,10 @@ For search/filter URLs, construct new URL(location.href), update searchParams an
 
 Deep-link reload must be supported by the server with the correct HTML/not-found behavior. Client-side routing does not remove data requests, SSR or loader behavior. Modified clicks/new tabs/downloads/external links should retain native behavior; the example intercepts only its known same-origin routes. A router also needs a documented focus/scroll restoration and unsaved-change policy; Back is not a synchronous function returning a new page. The example keeps browser scroll restoration rather than implementing its own scheme.
 
-**Exercise:** serve this fixture through a local development server and navigate Home→About→Back→Forward→reload. Acceptance: one history entry per intended navigation; initial entry renders on Back even with missing/old state; no hash '#' entry is accidentally added; title/content/focus match route; modified/external clicks retain browser semantics; invalid/cross-origin URLs are rejected or left to native navigation; direct /about reload works server-side. Record browser versions and the actual interaction trace. Learner execution remains required; no local-browser pass is claimed here.
 
 Official references: [WHATWG History](https://html.spec.whatwg.org/multipage/nav-history-apis.html#the-history-interface), [URL Standard](https://url.spec.whatwg.org/). Checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Explain_history_API_from_Browser_API_177e8106c24d80fcbc17edb92f747483.md). All learner practice remains outstanding; the worked examples above are explanatory material.

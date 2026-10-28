@@ -214,6 +214,10 @@ Ctrl+C once breaks buffered input; on an empty prompt the CLI displays an exit h
 
 The REPL supports convenient expression/await/error behavior and scope choices that differ from ordinary ESM/CommonJS files. Reproduce module problems in the actual module format. Keep examples free of secrets; history, saved sessions and transcript output can retain what you typed. Disabling history for a fixture avoids reading or changing the user's existing history; it does not sanitize an already exposed credential.
 
-**Exercise acceptance:** in a dedicated scratch directory with fake values, run arithmetic/last-result/error recovery, compare CLI .clear with useGlobal:false reset, save/load reviewed source, then close every embedded REPL/stream/timer. Verify Ctrl+C first/second behavior on an actual terminal. Explain which state survives in files/history and why a REPL is not an isolation boundary. The provided author checks do not mark learner practice done.
 
 Official reference checked2026-10-22: [Node REPL commands, context and signals](https://nodejs.org/api/repl.html). The fetched current documentation is newer than the tested24.18.0 runtime; claimed CLI behavior above was independently checked on that pinned runtime.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Explain_Read_Eval_Print_Loop_in_NodeJS_177e8106c24d803babd4caa58acdfd5b.md). All learner practice remains outstanding; the worked examples above are explanatory material.

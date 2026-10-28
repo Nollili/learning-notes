@@ -158,7 +158,6 @@ console.log(newState.count); // 1
 4. **Scalability:** Composition + immutability → easier to maintain large apps, fewer bugs from shared mutable state.
 
 
-
 ## Deterministic async lost update
 
 JavaScript callbacks on one event loop run one at a time, yet an `await` splits an operation. Two tasks can read the same old value and later overwrite each other. This is a logical race without threads. Immutability helps ownership but does not make a read-modify-write transaction atomic.
@@ -198,4 +197,7 @@ assert.equal(before.settings, after.settings); // Unchanged branch can be shared
 
 `Object.freeze` is shallow; nested mutable objects still require an ownership policy. Spreading only the outer object retains nested aliases. Immutable updates need new objects along the changed path, not a deep copy of every unchanged branch. Composition can hide shared mutable closures too; inheritance can encapsulate immutable values. Choose based on the behavioral contract and lifetime.
 
-**Exercise acceptance:** reproduce the race with a controlled gate, repair it without timing sleeps, and explain why the repair does not synchronize two servers. Add a nested alias failure and a structural-sharing update; demonstrate the original remains unchanged. Record memory/behavior trade-offs before introducing a clone or state library. Learner practice remains required. References: [React queued state updates](https://react.dev/learn/queueing-a-series-of-state-updates), [ECMAScript Object.freeze](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.freeze).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/patterns/Composition_vs_inheritance_Shared_state_vs_immutability.md). All learner practice remains outstanding.

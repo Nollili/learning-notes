@@ -110,10 +110,14 @@ Modern frameworks like **Next.js** or **Nuxt.js** support combining SSR and CSR.
 
 ## Apply the primary App Router example
 
-Use the [worked Next16 App Router article page](../Web_Performance/Can_SSR_improve_first_render.md#worked-boundary-decision-primary-nextjs-app-router-stack) for a concrete Server Component boundary. The linked note distinguishes Pages Router, Server Components, streaming and Client Components and lists its missing production transport/app checks explicitly. The [form/cache hydration section](../React/complex-forms-and-data.md#ssr-and-hydration-a-cache-scope-is-a-privacy-boundary) covers request-scoped query clients and private cache ownership. Do not duplicate remote records in a second global store merely to make a client route render.
+Use the [worked Next16 App Router article page](../Web_Performance/Can_SSR_improve_first_render.md#worked-boundary-decision-primary-next-js-app-router-stack) for a concrete Server Component boundary. The linked note distinguishes Pages Router, Server Components, streaming and Client Components and lists its missing production transport/app checks explicitly. The [form/cache hydration section](../React/complex-forms-and-data.md#ssr-and-hydration-a-cache-scope-is-a-privacy-boundary) covers request-scoped query clients and private cache ownership. Do not duplicate remote records in a second global store merely to make a client route render.
 
 A useful decision compares the same page/data/device/network across alternatives. For a stable public article, SSG/cache may avoid per-request rendering. For an authenticated editor, a server shell can coexist with client draft ownership and a private query cache. A slow server dependency can dominate TTFB in either an SSR route or a CSR API; moving its call does not remove the work. Rendering location does not determine whether a user is authorized or whether a mutation is recoverable.
 
-**Acceptance:** implement one narrow client interaction inside the server page; keep initial server/client values deterministic and verify no private HTML/serialized prop/cache leak between two sessions. Measure useful content discovery/LCP, server time, client JS/hydration and an actual interaction on cold/warm paths. Test failed/slow data, no-JS native behavior and a deliberate hydration mismatch; retain evidence and fix the cause rather than suppress all warnings. Typechecking/static HTML generation is not a Next deployment or browser performance result. Learner app/measurement practice remains required.
 
 Applicable baseline Next16.4.2 App Router/React19.3 (official docs rechecked2026-10-22): [server/client boundaries](https://nextjs.org/docs/app/getting-started/server-and-client-components), [React hydration contract](https://react.dev/reference/react-dom/client/hydrateRoot). Framework version/configuration must accompany caching/deployment conclusions.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/Can_you_please_compare_SSR_and_CSR%28pros_and_cons%29.md). All learner practice remains outstanding.

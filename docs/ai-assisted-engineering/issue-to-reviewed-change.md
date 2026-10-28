@@ -65,29 +65,7 @@ The strict build passed. The seven acceptance-derived Node tests produced **5 pa
 
 Here is the final complete implementation:
 
-```ts
-// src/retry-read.ts
-export type RetryOptions = {
-  maxRetries?: number;
-  retryable: (error: unknown) => boolean;
-  signal?: AbortSignal;
-};
-export async function retryRead<T>(read: () => Promise<T>, options: RetryOptions): Promise<T> {
-  const maximum = options.maxRetries === undefined ? 2 : options.maxRetries;
-  if (!Number.isInteger(maximum) || maximum < 0 || maximum > 3) throw new RangeError('Invalid retry limit');
-  for (let attempt = 0; ; attempt++) {
-    options.signal?.throwIfAborted();
-    try {
-      const result = await read();
-      options.signal?.throwIfAborted();
-      return result;
-    } catch (error) {
-      options.signal?.throwIfAborted();
-      if (attempt >= maximum || !options.retryable(error)) throw error;
-    }
-  }
-}
-```
+<<< ../workbench/engineering/ai-engineering/retry/src/retry-read.ts{ts}
 
 The actual source diff changes one expression: default only for undefined. Number.isInteger and the bounds then reject NaN, null, strings, booleans and out-of-range values at runtime. TypeScript annotations do not validate external JavaScript/JSON callers. The optional AbortSignal method is the actual supported API, not a generated look-alike. Local execution verifies this fixture on Node24; recheck runtime support when targeting a different environment.
 
@@ -95,41 +73,11 @@ The actual source diff changes one expression: default only for undefined. Numbe
 
 Use an owned directory, not an Autocode src/tests replacement. This tiny package has no runtime dependency. The validation environment used installed TypeScript5.9.3 on PATH; the commands do not demonstrate a clean npm-ci/compiler installation. For an independent clone, provision that exact compiler through your normal reviewed toolchain and retain its dependency lock rather than rely on an unknown global version.
 
-```json
-{"private":true,"type":"module","scripts":{"build":"tsc -p tsconfig.json","test":"node --test checks/*.test.mjs"}}```
+<<< ../workbench/engineering/ai-engineering/retry/package.json{json}
 
-```json
-{"compilerOptions":{"target":"ES2022","module":"NodeNext","strict":true,"noUncheckedIndexedAccess":true,"exactOptionalPropertyTypes":true,"outDir":"build","types":[]},"include":["src/*.ts"]}```
+<<< ../workbench/engineering/ai-engineering/retry/tsconfig.json{json}
 
-```js
-// checks/retry-read.test.mjs
-import {test} from 'node:test';
-import assert from 'node:assert/strict';
-import {retryRead} from '../build/retry-read.js';
-test('zero retries means exactly one attempt',async()=>{
- let calls=0;const original=Error('transient');
- await assert.rejects(retryRead(async()=>{calls++;throw original},{maxRetries:0,retryable:()=>true}),e=>e===original);assert.equal(calls,1);
-});
-test('omitted limit permits two additional attempts',async()=>{
- let calls=0;const result=await retryRead(async()=>{if(++calls<3)throw Error('temporary');return 'ready'},{retryable:()=>true});assert.equal(result,'ready');assert.equal(calls,3);
-});
-test('hard cap terminates persistent failure',async()=>{
- let calls=0;await assert.rejects(retryRead(async()=>{calls++;throw Error('temporary')},{maxRetries:3,retryable:()=>true}));assert.equal(calls,4);
-});
-test('nonretryable and falsy original failures are preserved',async()=>{
- let calls=0;let caught=Symbol();try{await retryRead(async()=>{calls++;throw 0},{maxRetries:3,retryable:()=>false})}catch(e){caught=e}assert.equal(calls,1);assert.equal(caught,0);
-});
-test('invalid limits cause no read',async()=>{
- let calls=0;for(const maxRetries of [-1,4,1.5,NaN,Infinity,'2',true,null]){await assert.rejects(retryRead(async()=>{calls++;return 1},{maxRetries,retryable:()=>true}),RangeError)}assert.equal(calls,0);
-});
-test('preabort prevents work',async()=>{
- const c=new AbortController();const reason=Error('stop');c.abort(reason);let calls=0;await assert.rejects(retryRead(async()=>{calls++;return 1},{retryable:()=>true,signal:c.signal}),e=>e===reason);assert.equal(calls,0);
-});
-test('abort while read runs discards late result without retry',async()=>{
- const c=new AbortController();let release;const pending=new Promise(r=>{release=r});let calls=0;
- const result=retryRead(async()=>{calls++;await pending;return 'late'},{retryable:()=>true,signal:c.signal});c.abort('stop');release();let caught;try{await result}catch(e){caught=e}assert.equal(caught,'stop');assert.equal(calls,1);
-});
-```
+<<< ../workbench/engineering/ai-engineering/retry/checks/retry-read.test.mjs{js}
 
 Run npm run build followed by npm run test. Build emits build/retry-read.js; tests import that emitted artifact, so they exercise the compiled module rather than a copied function. In this documentation repository use npm run docs:build for the notes; these fixture commands belong in the isolated project. Do not invent missing scripts or declare build success from a command that never ran.
 
@@ -139,6 +87,11 @@ After the change, the strict build and all7 tests passed. The diff preserves pub
 
 This is acceptance-derived executable verification, not independent human approval. The same assistant authored the fixture and checks; a separate review should challenge missing cases and assumptions. Subsequent lessons extend this record with mutation/invented-API checks, local Git isolation and requirements-to-evidence evaluation. Do not mark those activities complete merely because their headings appear in a plan.
 
-**Practice acceptance:** recreate the failing baseline, state the additional-attempt/null/cancellation contract in your own words, repair it without unrelated changes, and retain actual build/test output plus the source diff. Challenge a suggested ?? patch with the null requirement. Explain why the attempt cap does not bound an uncooperative promise and why local abort cannot undo a remote write. Provide a context/checkpoint packet another engineer can resume without guessing. Learner practice remains required.
+
 
 References checked2026-10-25: [ECMAScript operator semantics](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html), [Node AbortSignal API](https://nodejs.org/api/globals.html#abortsignalthrowifaborted), [TypeScript strict checking](https://www.typescriptlang.org/tsconfig/strict.html), [Node test runner](https://nodejs.org/api/test.html). The runtime evidence is specifically Node24.18.0/TS5.9.3; current online Node documentation may describe another release.
+
+
+## Separate practice
+
+Apply the [focused requirements](../practice/engineering/ai-engineering/issue-to-reviewed-change.md). All learner practice remains outstanding.

@@ -103,23 +103,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 Primary lab: TypeScript5.9, Node24, ESLint flat configuration and compatible typescript-eslint. The following uses the official defineConfig/projectService configuration shape; pin a compatible ESLint/typescript-eslint/plugin set and lockfile in the practice project. It is not a request to add these tools to this VitePress repository. Do not assume an old eslintrc/TSLint file is a current flat config.
 
-```js
-// eslint.config.mjs — TS-only lab scope; JS/config files need their own rule scope.
-import js from '@eslint/js';
-import { defineConfig } from 'eslint/config';
-import tseslint from 'typescript-eslint';
-export default defineConfig({
-  files: ['src/**/*.ts'],
-  extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],
-  languageOptions: {
-    parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname }
-  },
-  rules: {
-    '@typescript-eslint/no-floating-promises': 'error',
-    '@typescript-eslint/no-misused-promises': 'error'
-  }
-});
-```
+<<< ../../workbench/engineering/quality/typed-gates/eslint.config.mjs{js}
 
 ```json
 {
@@ -145,7 +129,9 @@ export default defineConfig({
 
 ProjectService obtains type information from the nearest applicable tsconfig. If a linted file is outside that project, fix the scope/configuration rather than broadly enabling expensive default-project inference. This TS-only example deliberately does not claim React hooks/accessibility, browser globals, Node ambient types or JS files are covered; add appropriate scoped rules/types to the actual consumer. A transpiling build can pass while typecheck fails. Type-aware linting costs more than syntax-only linting; run required rules at the right feedback boundary and measure duration.
 
-Failure drill: in separate scratch variants, `export const retries: number = '3'` must fail tsc; `export function start() { Promise.resolve('ready'); }` typechecks but must fail no-floating-promises. The second example has no rejecting operation, but exposes an ownership pattern the rule checks. With real rejecting work, await/return it or attach an explicit failure handler according to the API; prefixing void can silence a lint rule without handling rejection. A formatting-only change should fail format:check without a semantic type failure. Force each command to fail in turn and require quality to stop with a nonzero status; do not hide it behind `|| true`. Hooks provide convenience; CI enforces the same commands independently.
+Failure drill: in separate scratch variants, `export const retries: number = '3'` must fail tsc; `export function start() { Promise.resolve('ready'); }` typechecks but must fail no-floating-promises. The second example has no rejecting operation, but exposes an ownership pattern the rule checks. With real rejecting work, await/return it or attach an explicit failure handler according to the API; prefixing void can silence a lint rule without handling rejection.
+
+A formatting-only change should fail format:check without a semantic type failure. Force each command to fail in turn and require quality to stop with a nonzero status; do not hide it behind `|| true`. Hooks provide convenience; CI enforces the same commands independently.
 
 ### Preserve a defined domain contract while extracting names
 
@@ -170,10 +156,16 @@ export function totalAfter(lines: readonly Line[]): number {
 }
 ```
 
-The extraction names two independently meaningful decisions; it does not introduce an abstract factory or one class per discount. Compare empty order, zero-price line, quantity multiplication, just below/at/above the threshold and rounding cases. Assert inputs remain unchanged. Shared before/after equality is useful for a refactor, but add independently specified expected totals so a shared bug cannot pass both implementations. Test invalid data at the existing validation boundary; adding new rejection here would be a behavior change requiring a separate acceptance decision. Integer storage alone does not define tax/discount rounding across currencies; use the product's explicit policy.
+The extraction names two independently meaningful decisions; it does not introduce an abstract factory or one class per discount. Compare empty order, zero-price line, quantity multiplication, just below/at/above the threshold and rounding cases. Assert inputs remain unchanged. Shared before/after equality is useful for a refactor, but add independently specified expected totals so a shared bug cannot pass both implementations.
+
+Test invalid data at the existing validation boundary; adding new rejection here would be a behavior change requiring a separate acceptance decision. Integer storage alone does not define tax/discount rounding across currencies; use the product's explicit policy.
 
 **Review trade-offs:** extra small helpers can clarify domain language but arbitrary one-line extraction may scatter related logic. DRY means shared knowledge, not merging similar code with different reasons to change. Keep the simplest readable implementation when abstraction adds no useful boundary. Use a measured hotspot/profile before claiming this refactor improves performance. Do not use coverage/complexity thresholds as substitutes for checking the discount policy.
 
-**Practice acceptance:** configure the real typed lint/format/compiler tools in a separate lab and retain each intended failure diagnostic. Refactor one real domain function with an explicit valid-input contract, independently expected boundary tests and before/after equivalence; justify its helper names and unchanged behavior. Retain an exception/rule rollout decision from the style-guide lesson. Learner practice remains required.
 
 References checked2026-10-21: [typed linting](https://typescript-eslint.io/getting-started/typed-linting/), [ESLint flat files](https://eslint.org/docs/latest/use/configure/configuration-files), [Prettier check](https://prettier.io/docs/cli#--check), [TypeScript config](https://www.typescriptlang.org/tsconfig/). Full ESLint/Prettier execution needs the practice project's compatible installed packages; syntax validation alone is not a lint pass.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/What_practices%2C_approaches_do_you_know_which_helps_to_improve_code_quality_%28style_guides%2C_coding_principles%29.md). All learner practice remains outstanding.

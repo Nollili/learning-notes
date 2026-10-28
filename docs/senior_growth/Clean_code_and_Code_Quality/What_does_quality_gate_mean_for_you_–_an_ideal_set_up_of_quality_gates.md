@@ -92,4 +92,7 @@ Use the [complete minimal standard fixture](./What_is_code_standard_What_code_st
 
 Coverage≥80%, duplication<5% and complexity<10 above are examples, not universal ideals. Coverage shows execution, not assertions or correct requirements; test a meaningful boundary rather than manufacture coverage. Pin measurement tool/version, scope/generated exclusions and regression policy. A dependency audit finding requires triage of affected paths and a tracked remediation/exception; no findings does not establish no vulnerabilities. Security controls and critical behavior need their own threat/acceptance evidence.
 
-**Exercise:** retain baseline success and lint/type/test failure exits from the shared lab. Add a failing required scenario that is absent from the initial test and observe why the original green gate missed it. Document one justified coverage/complexity policy with owner, cost, false positives and review trigger. Acceptance: distinguish local commands, real hosted execution and repository merge policy; never report an unrun CI deployment or a green gate as professional readiness. Learner CI configuration and project-specific risk review remain required.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/What_does_quality_gate_mean_for_you_%E2%80%93_an_ideal_set_up_of_quality_gates.md). All learner practice remains outstanding.

@@ -17,4 +17,7 @@ An HOC accepts a component and returns another component type; a custom hook is 
 
 The [typed ActionButton adapter](./Composition_and_Higher-Order_Components_%28HOCs%29_in.md#typed-prop-and-ref-transparency-in-react19) implements prop/ref forwarding, stable type creation, event chaining and failure semantics without any/unsafe generic injection. The same lesson's controlled tabs and slots supply the composition alternative. A UI auth wrapper is not backend authorization; every protected operation needs the server policy.
 
-**Acceptance:** choose one requirement and explain why it needs a component adapter rather than a hook or plain child prop. Execute the shared adapter tests and its compile-time negative cases; inspect ref/disabled/caller-handler transparency and type identity on rerender. Document collisions, static fields and version boundaries explicitly. The table is design guidance; learner code and browser practice remain required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/HOC%2C_what_is_it%2C_when_to_use.md). All learner practice remains outstanding; the worked examples above are explanatory material.

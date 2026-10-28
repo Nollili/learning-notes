@@ -181,6 +181,10 @@ For different crops, use picture and a source selection condition rather than li
 
 The fallback img owns the alternative text; changing a crop must retain the described meaning. Source type can offer formats when supported; a source URL is not a guarantee a particular codec exists everywhere. A reusable container-sized card can have a slot narrower than viewport-based sizes predicts—test its actual embedding or choose a justified sizes policy rather than assume the container query controls image selection automatically.
 
-**Acceptance:** supply real candidates with the documented dimensions, inspect currentSrc and network/cache bytes at several widths/densities, verify no-JS fallback and crop meaning, reserve the selected aspect ratio, then place wide/narrow container cards at one viewport size. Test enlarged/translated content and keyboard/source order. Markup/compile checks here do not establish native source selection, layout shifts or the missing asset delivery; learner native-browser work remains required.
 
 Official reference checked 2026-10-22: [HTML responsive images, sizes and picture processing](https://html.spec.whatwg.org/multipage/images.html).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/How_can_you_fit_your_website_for_different_screen_sizes_%28css_media_queries%2C_breakpoints%29.md). All learner practice remains outstanding; the worked examples above are explanatory material.

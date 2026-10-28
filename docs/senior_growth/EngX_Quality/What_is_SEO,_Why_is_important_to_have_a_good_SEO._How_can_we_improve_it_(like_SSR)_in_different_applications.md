@@ -152,7 +152,9 @@ This static fixture represents an indexable public article at a clean canonical 
 </html>
 ```
 
-The JSON-LD describes visible content; do not invent reviews, author identities or product availability. Valid JSON/schema vocabulary is not proof of eligibility for any specific rich-result feature; consult that feature's current required fields and test it. Even eligible markup does not guarantee rich-result display. Escape dynamic JSON embedded in HTML so source strings cannot close the script element; using JSON.stringify alone does not neutralize `</script>` in an HTML parser. Use the framework's reviewed serializer or replace literal `<` with its JSON Unicode escape before embedding; do not build JSON by concatenating untrusted strings.
+The JSON-LD describes visible content; do not invent reviews, author identities or product availability. Valid JSON/schema vocabulary is not proof of eligibility for any specific rich-result feature; consult that feature's current required fields and test it. Even eligible markup does not guarantee rich-result display.
+
+Escape dynamic JSON embedded in HTML so source strings cannot close the script element; using JSON.stringify alone does not neutralize `</script>` in an HTML parser. Use the framework's reviewed serializer or replace literal `<` with its JSON Unicode escape before embedding; do not build JSON by concatenating untrusted strings.
 
 ```text
 # robots.txt public fixture: crawl rules, not authentication
@@ -170,14 +172,22 @@ Sitemap: https://notes.example/sitemap.xml
 
 A sitemap aids discovery; it does not force indexing. Canonical is a preference signal, not a redirect or access rule. Keep internal links, sitemap and canonical consistent. Avoid multiple conflicting canonical tags or fragment identifiers. A redirect is appropriate for an actually moved URL, with a correct target/status. Return404/410 for genuinely absent content rather than a200app shell claiming success; transient server failures should not be disguised as missing articles.
 
-`robots.txt` controls crawling, not confidentiality or guaranteed removal from an index. Google can know a blocked URL without fetching its content. To apply a `noindex` robots meta tag or X-Robots-Tag, the crawler must be able to fetch that directive; blocking the page can prevent it seeing the removal instruction. Do not ship initial `noindex` and expect JavaScript to remove it after rendering. For a private account route, enforce authentication/authorization at the server regardless of robots directives. An `index,follow` meta tag is usually unnecessary because it expresses default behavior; omitting it here is intentional.
+`robots.txt` controls crawling, not confidentiality or guaranteed removal from an index. Google can know a blocked URL without fetching its content. To apply a `noindex` robots meta tag or X-Robots-Tag, the crawler must be able to fetch that directive; blocking the page can prevent it seeing the removal instruction. Do not ship initial `noindex` and expect JavaScript to remove it after rendering.
+
+For a private account route, enforce authentication/authorization at the server regardless of robots directives. An `index,follow` meta tag is usually unnecessary because it expresses default behavior; omitting it here is intentional.
 
 ## Diagnose source HTML, rendered content and indexing separately
 
-Fetch a deep URL directly and inspect status, redirects, headers and initial HTML. Then compare rendered HTML/content/metadata under normal loading, slow/failed JavaScript and blocked critical resources. A crawler may render JavaScript with limitations; analytics showing a browser visit does not prove the same crawler output. Check real `<a href>` discovery, canonical, robots, duplicate routes and hydration changes. Use Search Console URL Inspection for a property you control to compare discovered/indexed versus live-tested state; a live test is not an indexing guarantee. Use Rich Results Test for supported feature markup and inspect warnings/required fields; generic JSON parsing is a different check.
+Fetch a deep URL directly and inspect status, redirects, headers and initial HTML. Then compare rendered HTML/content/metadata under normal loading, slow/failed JavaScript and blocked critical resources. A crawler may render JavaScript with limitations; analytics showing a browser visit does not prove the same crawler output. Check real `<a href>` discovery, canonical, robots, duplicate routes and hydration changes.
+
+Use Search Console URL Inspection for a property you control to compare discovered/indexed versus live-tested state; a live test is not an indexing guarantee. Use Rich Results Test for supported feature markup and inspect warnings/required fields; generic JSON parsing is a different check.
 
 For the fixture, a native browser with JavaScript disabled should still show the article and links. A real deployed check additionally needs an accessible host, real domain/canonical policy and crawler tools. This lesson does not publish a site or claim Google fetched/indexed it. SSR/SSG can simplify initial content but cost caching/compute/freshness work; a private interactive dashboard may appropriately prioritize authenticated UX over public indexing. Do not leak personalized data into public server caches or structured data.
 
-**Exercise acceptance:** implement public article/deep-link404 and private account routes; inspect direct-response and rendered markup, one canonical per article, matching sitemap and visible-content JSON-LD. Test a campaign duplicate, a genuinely different page, moved URL and deleted route. Explain robots-blocked versus crawlable-noindex behavior and show private access fails without authentication. Retain browser/crawler screenshots or exported test results only when actually run. Offline DOM/JSON assertions prove fixture structure, not indexing, structured-data eligibility, rankings or learner completion.
 
 Official references checked2026-10-22: [Google supported meta tags](https://developers.google.com/search/docs/crawling-indexing/special-tags), [dynamic rendering workaround](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering), [canonical signals](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls), [structured-data policies](https://developers.google.com/search/docs/appearance/structured-data/sd-policies), [JavaScript SEO diagnostics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics). Guidance here is explicitly Google-specific where stated; other engines can differ.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/What_is_SEO%2C_Why_is_important_to_have_a_good_SEO._How_can_we_improve_it_%28like_SSR%29_in_different_applications.md). All learner practice remains outstanding.

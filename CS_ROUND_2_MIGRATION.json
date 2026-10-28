@@ -1,0 +1,140 @@
+{
+  "page_ownership_moves": [
+    {
+      "from": "docs/senior_growth/Other/What_is_Big_O_notation_How_can_it_be_used_to_optimize_JS_code.md",
+      "to": "docs/cs-foundations/complexity-and-cost.md",
+      "source_sha256": "44a4a515006c29f33fbb424f38861c190d9b6690af73577026a101cd75b5bde1",
+      "anchors": [
+        {
+          "old": "what-is-big-o-notation-how-can-it-be-used-to-optimize-js-code",
+          "title": "What is Big O notation? How can it be used to optimize JS code?",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "\ud83d\udd39-big-o-notation-in-javascript",
+          "title": "\ud83d\udd39 Big O Notation in JavaScript",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "_1\ufe0f\u20e3-why-big-o-matters",
+          "title": "1\ufe0f\u20e3 Why Big O Matters",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "_2\ufe0f\u20e3-common-big-o-classes",
+          "title": "2\ufe0f\u20e3 Common Big O Classes",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "_3\ufe0f\u20e3-examples-in-javascript",
+          "title": "3\ufe0f\u20e3 Examples in JavaScript",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "linear-search-o-n",
+          "title": "Linear Search (O(n))",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "amortizing-an-index-over-repeated-lookups",
+          "title": "Amortizing an index over repeated lookups",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "nested-loops-o-n2",
+          "title": "Nested Loops (O(n\u00b2))",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "recursion-vs-memoization",
+          "title": "Recursion vs Memoization",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "_4\ufe0f\u20e3-using-big-o-to-optimize-js-code",
+          "title": "4\ufe0f\u20e3 Using Big O to Optimize JS Code",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "\u2705-summary",
+          "title": "\u2705 Summary",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "state-the-cost-model-before-optimizing",
+          "title": "State the cost model before optimizing",
+          "destination": "docs/cs-foundations/complexity-and-cost.md"
+        },
+        {
+          "old": "queues-graph-traversal-and-tree-space-costs",
+          "title": "Queues, graph traversal and tree space costs",
+          "destination": "docs/cs-foundations/trees-graphs-traversal.md"
+        }
+      ]
+    },
+    {
+      "from": "docs/senior_growth/Other/Please_describe_quick_sort_algorithm._What_complexity_does_it_have.md",
+      "to": "docs/cs-foundations/sorting.md",
+      "source_sha256": "3838b66f4875cf906147901498111d2158da03684842c3e057563cbbbdb6487e",
+      "anchors": [
+        {
+          "old": "please-describe-quick-sort-algorithm-what-complexity-does-it-have",
+          "title": "Please describe quick sort algorithm. What complexity does it have?",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "\ud83d\udd39-quick-sort-algorithm",
+          "title": "\ud83d\udd39 Quick Sort Algorithm",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "_1\ufe0f\u20e3-steps-of-quick-sort",
+          "title": "1\ufe0f\u20e3 Steps of Quick Sort",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "_2\ufe0f\u20e3-example-in-javascript",
+          "title": "2\ufe0f\u20e3 Example in JavaScript",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "_3\ufe0f\u20e3-complexity-analysis",
+          "title": "3\ufe0f\u20e3 Complexity Analysis",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "_4\ufe0f\u20e3-characteristics",
+          "title": "4\ufe0f\u20e3 Characteristics",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "\u2705-summary",
+          "title": "\u2705 Summary",
+          "destination": "docs/cs-foundations/sorting.md"
+        },
+        {
+          "old": "analyze-this-implementation-not-just-the-algorithm-name",
+          "title": "Analyze this implementation, not just the algorithm name",
+          "destination": "docs/cs-foundations/sorting.md"
+        }
+      ]
+    }
+  ],
+  "retained_traversal_source": "docs/workbench/cs-foundations/traversals.ts",
+  "assignments": "docs/practice/cs-foundations/retained-exercises.md",
+  "collection_exercise_owner": "docs/practice/cs-foundations/collections-and-queues.md#cache-extension",
+  "related_assignment_moves": [
+    {
+      "from": "docs/senior_growth/General_ES6/What_is_ES6_Map_What_is_the_difference_between_Map_17be8106c24d808caa13f8ae4a80115c.md",
+      "to": "docs/practice/cs-foundations/collections-and-queues.md#cache-extension"
+    },
+    {
+      "from": "docs/senior_growth/Other/What_is_memoization.md",
+      "to": "docs/practice/cs-foundations/sorting.md#memoization-extension"
+    },
+    {
+      "from": "docs/senior_growth/General_ES6/Explain_JavaScript_Code_Execution_177e8106c24d80a0817df62da9bac253.md",
+      "to": "docs/practice/cs-foundations/sorting.md#execution-extension"
+    }
+  ]
+}

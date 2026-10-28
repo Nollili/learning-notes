@@ -31,37 +31,7 @@ console.log(fib(40)); // Slow for large n
 
 ### With Memoization (Efficient)
 
-```javascript
-// bounded-memo.mjs
-export function memoizeBounded(fn, capacity = 128) {
-  if (typeof fn !== 'function' || !Number.isSafeInteger(capacity) || capacity < 1 || capacity > 1024) {
-    throw new TypeError('Invalid memoization contract');
-  }
-  const entries = []; // Most recently used entry is last.
-  function memoized(...args) {
-    const index = entries.findIndex(entry => Object.is(entry.receiver, this)
-      && entry.args.length === args.length
-      && entry.args.every((arg, i) => Object.is(arg, args[i])));
-    if (index !== -1) {
-      const [entry] = entries.splice(index, 1);
-      entries.push(entry);
-      return entry.result; // Includes false, 0, empty string, null and undefined.
-    }
-    const result = Reflect.apply(fn, this, args); // Throws are not cached.
-    entries.push({ receiver: this, args, result });
-    if (entries.length > capacity) entries.shift();
-    return result;
-  }
-  memoized.clear = () => { entries.length = 0; };
-  return memoized;
-}
-
-export const fibMemo = memoizeBounded(function fib(n) {
-  if (!Number.isSafeInteger(n) || n < 0 || n > 70) throw new RangeError('Expected integer0..70');
-  return n < 2 ? BigInt(n) : fibMemo(n - 1) + fibMemo(n - 2);
-}, 128);
-console.log(fibMemo(40)); // 102334155n; this bounded exercise uses exact BigInt results.
-```
+<<< ../../workbench/engineering/specialists/memoization/bounded-memo.mjs{javascript}
 
 ---
 
@@ -108,6 +78,6 @@ Throws are not cached. Async promises require a separate policy: whether to coal
 
 React useMemo/useCallback compare dependency entries with Object.is; an omitted/mutated dependency produces stale results. Calculations must be pure and cannot be relied on for side effects or durable storage. React can discard caches. Profile before adding memoization; if the React Compiler is enabled for supported code it can reduce manual memoization, but do not assume every project has it configured. An inexpensive calculation may cost less than comparison/retention overhead.
 
-**Exercise acceptance:** run the exact synchronous wrapper against un-memoized results. Count calls for every falsy value; distinguish numeric/string/array/object/argument-count keys and two different receivers; verify NaN hits, +0/−0 separation, exception retry, LRU hit promotion/eviction and clear. Demonstrate stale output after mutating an object, then fix the ownership/invalidation contract. Verify fibMemo0/1/40 and invalid bounds without running huge recursion. Compare hit/miss rate and retained data against the cost of recalculation. Async cache design and learner implementation remain separate practice.
+[Separate optional existing memoization exercise](../../practice/cs-foundations/sorting.md#memoization-extension).
 
 Validated with Node24.18.0; official references checked2026-10-22: [Object.is semantics](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.is), [React memo](https://react.dev/reference/react/memo), [useMemo](https://react.dev/reference/react/useMemo), [useCallback](https://react.dev/reference/react/useCallback).

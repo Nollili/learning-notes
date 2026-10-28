@@ -1,6 +1,12 @@
 # TypeScript
 
-## Notes
+## Recommended order
+
+Follow [the prerequisite-led typescript path](../../frontend/typescript.md), then use the reference catalogue below. Apply [the staged practice](../../practice/frontend/).
+
+<span id="notes"></span>
+
+## Reference catalogue
 
 - [Can we write code in TS if we would like to support older browsers?](./Can_we_write_code_in_TS_if_we_would_like_to_support_older_browsers.md)
 - [Explain the purpose of the "never" type in TypeScript? How it's different from "void"?](./Explain_the_purpose_of_the_%22never%22_type_in_TypeScript_How_it's_different_from_%22void%22.md)

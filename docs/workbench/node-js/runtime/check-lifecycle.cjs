@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict');
+const http=require('node:http');
+const path=require('node:path');
+const build=process.env.NODE_RUNTIME_BUILD;
+if(!build || !path.isAbsolute(build))throw new Error('NODE_RUNTIME_BUILD must be an absolute compiled source directory');
+const {createShutdown}=require(path.join(build,'operations/shutdown.js'));
+const {DiagnosticError,serializeError}=require(path.join(build,'operations/safe-errors.js'));
+const {createMeasuredDb}=require(path.join(build,'diagnostics/measured-db.js'));
+const {parseUtcInstant,parseCalendarDate,addCalendarDays}=require(path.join(build,'dates/date-boundaries.js'));
+(async()=>{
+for(const timeoutMs of [0,Infinity,2**31,1.5])assert.throws(()=>createShutdown({timeoutMs}),RangeError);
+const order=[];let release;const draining=new Promise(r=>release=r);
+const server=http.createServer();
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const shutdown=createShutdown({server,readiness:{markUnready(){order.push('unready')}},jobs:{stopIntake(){order.push('stop')},async drain(){order.push('drain');await draining}},database:{async close(){order.push('database')}},logger:{info(){},warn(){},error(){}},timeoutMs:2000});
+const first=shutdown('test');assert.equal(shutdown('again'),first);assert(!order.includes('database'));release();await first;assert.equal(order.at(-1),'database');
+assert(!JSON.stringify(serializeError(new Error('secret-token'))).includes('secret-token'));
+assert.equal(serializeError(new DiagnosticError('DATABASE_UNAVAILABLE')).code,'DATABASE_UNAVAILABLE');
+let released=0;const primary={private:'secret'};
+const measured=createMeasuredDb({async acquire(){return{async query(){throw primary},release(){released++}}}},()=>{throw Error('metrics')});
+await assert.rejects(measured.query('SELECT 1',[]),e=>e===primary);assert.equal(released,1);assert.equal(measured.droppedObservations,2);
+assert.throws(()=>parseCalendarDate('2023-02-29'));assert.equal(addCalendarDays('2024-02-28',1),'2024-02-29');assert.throws(()=>parseUtcInstant('2024-02-30T00:00:00.000Z'));
+console.log('Lifecycle drain/idempotence/budget, diagnostic redaction/ownership, and calendar boundary checks passed.');
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -188,6 +188,10 @@ Named successful controls participate in FormData; disabled/unchecked controls c
 
 For a reusable component, choose controlled value+onChange or an uncontrolled defaultValue and document the invariant; do not keep an unsynchronized internal copy of a controlled prop. A controllable hybrid needs a deliberate single-owner policy and should reject switching modes. Preserve caret/IME composition when formatting: coercing/uppercasing every keystroke can interrupt editing; consider parsing on blur/submit or a tested composition-aware mask. Prefer native semantics and field/error associations regardless of ownership style. Neither controlled nor uncontrolled is inherently “the scalable one.”
 
-**Exercise acceptance:** compare both owners under typing, checkbox changes, empty numeric input, reset, new props, conditional remount and IME composition; predict FormData for disabled/unchecked/repeated/file fields. Demonstrate the mode-switch warning then fix it, preserve dirty drafts on background data changes, and verify labels/focus/server validation. No browser/framework behavior is claimed from JSX parsing alone. Vue/Angular are comparison awareness, not additional framework mastery targets.
 
 Official references checked2026-10-21: [React input contracts](https://react.dev/reference/react-dom/components/input), [Vue component v-model](https://vuejs.org/guide/components/v-model.html), [Angular zoneless/version policy](https://angular.dev/guide/zoneless), [HTML form data](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-entry-list).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Data_Binding_in_React_and_Comparison_to_Other_Majo.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -26,7 +26,7 @@ A synchronous `def` handler can run in a thread; cancellation does not forcibly 
 
 ## Executed error/cancellation/legacy fixture
 
-Copy the repository lab `docs/python-for-ai/mcp-lab/` into an owned directory, run `uv sync --locked`, then `uv run --locked python check_lifecycle.py`. The direct AnyIO dependency is now recorded explicitly in its lock/manifest.
+Copy the repository lab `docs/workbench/applied-ai/mcp-lab/` into an owned directory, run `uv sync --locked`, then `uv run --locked python check_lifecycle.py`. The direct AnyIO dependency is now recorded explicitly in its lock/manifest.
 
 ```python
 import asyncio
@@ -116,4 +116,4 @@ Before upgrading, run the same contract/negative/auth/lifetime fixtures in an is
 
 ## Practice acceptance
 
-Reproduce the fixture, add a cooperative downstream operation and prove cancellation plus resource cleanup. Test a real HTTP streaming call in the correct mode and separately demonstrate the documented JSON-response limitation. Add one non-cooperative/synchronous unit with its own deadline/checkpoints. Inject safe tool, protocol and transport failures and assert distinct recovery without leaking raw arguments/tokens. Compare one actual older peer or isolated SDK version before claiming interoperability. Retain cancelled versus completed/unknown write evidence and do not equate a supplied test passing with independent mastery. Learner practice remains **still required**.
+[Separate learner criteria](../practice/applied-ai/chapters/mcp-lifecycle.md).

@@ -16,7 +16,6 @@ Normal block flow stacks blocks; inline formatting lays text/inline boxes into l
 
 Adjacent vertical block margins can collapse; flex/grid item margins do not collapse in the same way. A block formatting context can contain floats and prevent certain parent/child margin collapse; flow-root expresses that intent without using overflow clipping as an accidental hack. Normal-flow rules differ inside flex/grid formatting contexts. Logical properties such as margin-inline and padding-block support writing modes better than hardcoded left/top assumptions.
 
-**Exercise:** reproduce the200/244/156box calculations, parent-child margin collapse and a float escaping its parent. Acceptance: computed measurements match; border-box includes padding/border; flow-root fixes the intended containment without clipping focus/menus. Test text zoom/RTL before deciding that a fixed size is appropriate.
 
 ## Flexbox: distribution is constrained by intrinsic minimums
 
@@ -37,7 +36,6 @@ flex-basis sets the starting size for free-space distribution; grow/shrink facto
 
 For a column app shell, a child scroller often needs min-block-size:0 before overflow:auto can shrink within a bounded-height parent. align-items controls the cross axis and justify-content the main axis; those axes depend on flex-direction/writing mode. gap provides spacing without relying on child margin exceptions. order/row-reverse changes visual order without necessarily changing DOM reading/tab order; do not use it to repair a semantically wrong source order.
 
-**Exercise:** remove the minimum/wrap fix and reproduce overflow with a long identifier, then restore it. Acceptance: controls wrap instead of disappearing; text remains available; no page-wide horizontal scroll at the supported narrow width; tab order follows meaningful DOM order; a nested column scroller does not force the whole shell taller. Record the failing and corrected computed-style evidence.
 
 ## Grid: explicit track constraints and content-driven layout
 
@@ -58,7 +56,6 @@ An fr track distributes available space after other constraints; a bare1fr has a
 
 Use explicit columns/areas for stable page relationships, auto placement for regular content and subgrid when nested items need to align with parent tracks and the support policy allows it. Dense auto-placement can change visual placement relative to source order; keep keyboard/reading order understandable. Flex is a good default for distributing one row/column of controls; grid is useful when track alignment across rows/columns matters. They compose; neither is globally “more responsive.”
 
-**Exercise:** build a sidebar/results layout plus cards with empty/one/many items, long translations and a table. Acceptance: track inspector explains each width; one intrinsic item does not widen the viewport; card columns adapt without device-name breakpoints; logical source order remains intact. Compare auto-fit/auto-fill with fewer items than possible tracks.
 
 ## Positioning, containing blocks and stacking contexts
 
@@ -88,7 +85,6 @@ Stacking contexts paint as atomic groups. A huge child's z-index cannot escape a
 
 The tooltip still paints within the lower context; change ownership/ancestor layering or use a suitable top-layer primitive. A native modal dialog/popover top layer has its own behavior/semantics; a React portal only changes placement. It does not automatically make a dialog accessible or solve every clipping/stacking issue. Maintain a small documented layer scale and inspect the stacking chain before adding larger numbers.
 
-**Exercise:** reproduce transformed-ancestor fixed positioning, sticky under an accidental overflow ancestor, and the tooltip context failure. Acceptance: identify the exact containing/scroll/stacking ancestor; fix the root cause; no focus outline or essential content is clipped; zoom/sticky headers do not entirely hide the focused control. Record before/after screenshots in each supported engine; this is unperformed practice here.
 
 ## Container queries and progressive fallback
 
@@ -117,7 +113,6 @@ The logged nodes may be shifted victims rather than the initiating cause. This o
 
 Reserve image/video dimensions or aspect ratios; give skeleton/ad/embed slots realistic reserved space; compare fallback and loaded font metrics; avoid inserting banners above content after load without reserving space. A transform animation can avoid layout movement but must not conceal an underlying layout/interaction defect. Coordinate font strategy and image selection with the respective notes.
 
-**Exercise:** use delayed images/fonts/results to reproduce a shift. Acceptance: capture the entry/trace and identify the causal resource; add reserved dimensions/fallback metrics; repeat the same cold-cache/device conditions; record before/after lab evidence and a plan for field collection. Do not invent measurements, and do not call a local score a p75 improvement.
 
 ## Cross-browser debugging record
 
@@ -125,7 +120,6 @@ Keep an explicit matrix of browser+version, OS/device, input, viewport/density, 
 
 For the long-flex-title bug, record the default automatic minimum, overflow width and corrected min-inline-size/wrap values. For grid, compare bare1fr with minmax(0,1fr) under the same content. For viewport height, compare vh/svh/dvh while browser chrome/keyboard changes; see the units note. A successful parse/build does not execute any of these layout algorithms.
 
-**Batch lab acceptance:** retain the five fixtures (box/flow, flex/grid overflow, sticky/stacking, container fallback, CLS) with expected behavior, actual per-browser results, screenshots/traces, chosen fix and residual limitations. Keep this practical evidence separate from completed learning material. No test result is supplied by this lesson.
 
 ## Official references
 
@@ -135,3 +129,8 @@ For the long-flex-title bug, record the default automatic minimum, overflow widt
 - [CLS definition and measurement](https://web.dev/articles/cls), [WCAG focus not obscured](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html).
 
 Specifications contain evolving sections; use only capabilities validated against the declared runtime/browser policy. References checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/layout-and-responsive-design.md). All learner practice remains outstanding; the worked examples above are explanatory material.

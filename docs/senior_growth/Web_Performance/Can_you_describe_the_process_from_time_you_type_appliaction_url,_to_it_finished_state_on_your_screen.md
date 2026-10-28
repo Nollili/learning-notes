@@ -181,6 +181,10 @@ if (navigation) {
 
 Zero intervals can mean cache/reuse/restricted timing, not an infinitely fast network. requestToFirstByte includes network/server work, not just server CPU. TLS timing can overlap the connection interval; do not add overlapping spans twice. Resource Timing cross-origin detail needs appropriate Timing-Allow-Origin permission. Capture timing after the event/window of interest and distinguish document navigation from SPA transitions or back-forward-cache restoration.
 
-**Exercise:** draw the dependency graph for an HTML→CSS/font and HTML→script→API→image scenario. Acceptance: record initiators/protocol/connection IDs where available; compare cold/warm/reused/cache/service-worker cases; identify which late discovery delays LCP; explain parser-blocking classic scripts versus defer/async/module behavior. Add native interaction and hydration observations without calling load a readiness guarantee. Retain actual waterfall and trace; no browser capture is supplied by this note.
 
 References checked2026-10-20: [HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html), [HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html), [Navigation Timing2](https://www.w3.org/TR/navigation-timing-2/), [Network tooling](https://developer.chrome.com/docs/devtools/network/reference).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/Can_you_describe_the_process_from_time_you_type_appliaction_url%2C_to_it_finished_state_on_your_screen.md). All learner practice remains outstanding.

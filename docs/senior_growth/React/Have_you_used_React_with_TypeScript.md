@@ -250,7 +250,6 @@ export function FocusInput({ ref }: { ref?: Ref<FocusHandle> }) {
 
 React19 permits ref as a prop; React18 uses forwardRef for this pattern. Expose the smallest imperative interface instead of letting parents mutate arbitrary DOM internals. Rendering cannot assume a ref already points to a mounted element. Event currentTarget is the typed element handling the event; target may be a descendant in bubbling interactions.
 
-**Exercise:** finish the radio-group Picker API and use Action/FocusInput in a form. Acceptance: age0 renders the paragraph; invalid Action combinations fail with @ts-expect-error; one controlled selection per uniquely named group; labels/keyboard behavior work; deleted selection has an explicit policy; ref.focus works only after mount and does not expose extra methods. Parse network data before passing typed items. Retain typecheck and browser behavior evidence separately.
 
 Official references: [React with TypeScript](https://react.dev/learn/typescript), [useImperativeHandle](https://react.dev/reference/react/useImperativeHandle), [React19 ref prop](https://react.dev/blog/2024/12/05/react-19#ref-as-a-prop). Checked2026-10-20; examples target React19/TS5.9+, not React18 unchanged.
 
@@ -290,6 +289,10 @@ Picker remains controlled: the parent owns selectedId and updates it after onSel
 
 For Action, the bounded link/button union is deliberate polymorphism: a button requires its action; a link requires href; mixed props fail. Arbitrary as types/ref forwarding require more complex native-attribute and ref contracts. Do not cast a universal component to any to advertise unsupported combinations. Native anchor navigation and keyboard behavior still require browser evidence.
 
-**Acceptance drill:** typecheck Picker inference with an object item and reject a nonexistent callback field; reject missing/contradictory Action props and a ready state without data. Add a new LoadState variant and observe the exhaustive switch diagnostic. In RTL, rerender a controlled Picker after a click, verify parent-owned selection, reorder/remove the chosen record, and render two instances with different group names. Test all LoadView states, including empty ready data, and show a new state cannot accidentally display stale success. React19.3.0/@types/react19 and TypeScript5.9.3 are the validated baseline. Simulated-DOM checks do not establish actual browser focus, screen-reader output or learner completion.
 
 Official references checked2026-10-22: [React TypeScript unions and hooks](https://react.dev/learn/typescript), [controlled inputs](https://react.dev/reference/react-dom/components/input), [TypeScript narrowing/exhaustiveness](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Have_you_used_React_with_TypeScript.md). All learner practice remains outstanding; the worked examples above are explanatory material.

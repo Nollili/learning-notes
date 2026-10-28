@@ -96,7 +96,6 @@ Use the [owned socket example](./RESTful_API_HTTP__and_WebSockets_-_why_and_when
 > WebSockets → efficient, real-time, high-frequency, bidirectional communication.
 
 
-
 ## Polling exercise and debugging evidence
 
 Extract startPolling from the shared transport lesson into a scratch module. Supply a controllable load(signal) promise and fake clock. Hold the first request beyond two intervals: require one active request and no second timer-triggered load. Resolve it, advance less than the interval (still one request), then the full interval (second request). Abort while loading: the adapter must observe abort and the consumer must not receive a late value. Dispose twice; no timer or listener may survive.

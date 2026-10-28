@@ -1,6 +1,6 @@
 ### What tools do you use in a typical React app (routing, render, etc)?
 
-In a typical React application, various tools and libraries are used to handle essential functionalities like routing, rendering, state management, form handling, and testing. Here's a breakdown of commonly used tools and libraries:
+
 
 ---
 
@@ -229,6 +229,10 @@ The form endpoint is an exercise contract, not an implemented API. It must valid
 
 The query example deliberately disables automatic retry to make failure handling explicit. staleTime is freshness; gcTime applies to inactive-cache retention, not a guarantee to cap active data bytes. Browser online state does not prove the API is reachable. Query keys must contain every data-affecting filter/scope; private user data must be segregated and cleared appropriately on logout. A304/cache hit, stale cached data, empty success and unavailable data are different states. Add byte/item bounds at the real API boundary. Avoid copying query data into a second global store without a concrete synchronization requirement.
 
-**Exercise acceptance:** implement the form and course API contract; test invalid/whitespace input, delayed/failing/committed-but-response-lost save, initial/empty/error/retry/stale/offline query states and logout cache separation. Verify labels, field errors/focus, status announcements, keyboard controls and preserved last data; no data.title dereference before a successful shape check. Run actual library typechecks and user-interaction tests in the separate app. Syntax/helper tests in this notes project do not execute React, RHF or Query.
 
 Official references checked2026-10-21: [TanStack Query5 overview](https://tanstack.com/query/latest/docs/framework/react/overview), [important defaults](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults), [RHF source/API contract](https://github.com/react-hook-form/react-hook-form/blob/master/src/types/form.ts), [RHF registration documentation](https://react-hook-form.com/docs/useform/register), [React19 migration](https://react.dev/blog/2024/04/25/react-19-upgrade-guide), [Recoil archive](https://github.com/facebookexperimental/Recoil). RHF documentation page returned403 during verification; primary repository types/README were used as fallback. No learner practice is marked complete.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_tools_do_you_use_in_a_typical_React_app_%28rout_16fe8106c24d8097a0c5ccc154925913.md). All learner practice remains outstanding; the worked examples above are explanatory material.

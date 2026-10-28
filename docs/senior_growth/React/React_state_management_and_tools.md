@@ -1,7 +1,7 @@
 # React state management and tools
 ## Alternative State Management Solutions in React
 
-While Redux is a powerful and widely-used state management library, it's not the only option available. Depending on your project's needs, you might find that another solution fits better. Let's explore some popular alternatives to Redux and see how they compare.
+While Redux is a powerful and widely-used state management library, it's not the only option available. Depending on your project's needs, you might find that another solution fits better.
 
 ### 1. MobX
 
@@ -250,8 +250,14 @@ export function connectPrefs(store, storage, target) {
 
 Connect once in an application-owner Effect after mount, obtaining window.localStorage inside a try/catch because even access can throw; pass window as target. Return the disposer from the Effect. Do not invoke storage while rendering or overwrite storage with server defaults before the initial read. Render a consistent server/client baseline; reserve preference-sensitive layout and expose hydration failure if it affects a decision. In a real SSR app use a scoped store and a compatible server preference policy; this module singleton is a SPA example.
 
-The adapter compares serialized values on local writes and suppresses persistence during remote application, avoiding cross-tab echo writes. It rereads current storage rather than replaying a stale event.newValue; an old queued clear/update event must not overwrite a newer snapshot. storage events arrive in other same-origin documents, not the source tab; the store subscription handles the source. Clear/remove events reset safe defaults. Concurrent edits remain last-write-wins; there is no atomic cross-tab transaction. Once data/storage fails, this adapter stays memory-only to avoid destroying corrupt/future data; provide an explicit user reset/recovery flow before reconnecting. Zustand persist middleware is an alternative with partialize/version/migrate/hydration hooks; understand those contracts rather than adding a second persistence owner on top of this adapter.
+The adapter compares serialized values on local writes and suppresses persistence during remote application, avoiding cross-tab echo writes. It rereads current storage rather than replaying a stale event.newValue; an old queued clear/update event must not overwrite a newer snapshot. storage events arrive in other same-origin documents, not the source tab; the store subscription handles the source. Clear/remove events reset safe defaults. Concurrent edits remain last-write-wins; there is no atomic cross-tab transaction.
 
-**Exercise:** justify why theme/density need sharing while a draft and query records do not. Implement the store/adapter in a pinned app and a scoped SSR alternative if applicable. Acceptance: narrow subscriptions, no nested mutation, v1 migration/v2 round-trip, corrupt/future/oversized values rejected, storage unavailable/quota failure stays usable, initial load never overwrites unread data, cross-tab update/clear and stale-event reread work without echo writes, disposal removes subscription/listener, no sensitive fields persist. Test logout/user scoping if preferences become account-specific. Record actual React/hydration/storage/browser results separately from pure codec tests.
+Once data/storage fails, this adapter stays memory-only to avoid destroying corrupt/future data; provide an explicit user reset/recovery flow before reconnecting. Zustand persist middleware is an alternative with partialize/version/migrate/hydration hooks; understand those contracts rather than adding a second persistence owner on top of this adapter.
+
 
 Official references checked2026-10-21: [Zustand create](https://zustand.docs.pmnd.rs/reference/apis/create), [v5 migration](https://zustand.docs.pmnd.rs/reference/migrations/migrating-to-v5), [official repository](https://github.com/pmndrs/zustand), [React context](https://react.dev/learn/passing-data-deeply-with-context), [Web Storage](https://html.spec.whatwg.org/multipage/webstorage.html), [Recoil archive](https://github.com/facebookexperimental/Recoil). Runtime store/SSR/browser practice remains required; no package install is performed here.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/React_state_management_and_tools.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -1,6 +1,6 @@
 ### What are the tasks / microtasks?
 
-In JavaScript, tasks and microtasks are part of the **event loop** mechanism and determine how asynchronous code is executed. Understanding their differences is crucial to mastering how JavaScript works behind the scenes.
+In JavaScript, tasks and microtasks are part of the **event loop** mechanism and determine how asynchronous code is executed. 
 
 External animation reference (unreviewed): [event-loop illustration](https://miro.medium.com/v2/resize:fit:1400/1*XVqPA2z1dTHJWm2TwIAsBw.gif). The explanation and executable fixture below are self-contained; this media is not evidence.
 
@@ -102,20 +102,16 @@ Task: setTimeout
 
 ## Nested microtasks and rendering starvation
 
-```js
-function checkpointFixture(log) {
-  log('start');
-  setTimeout(() => log('timer'), 0);
-  queueMicrotask(() => { log('micro-1'); queueMicrotask(() => log('micro-3')); });
-  Promise.resolve().then(() => log('micro-2'));
-  log('end');
-}
-```
+<<< ../../workbench/frontend/javascript/checkpoints.mjs{js}
 
 This bounded fixture produces start,end,micro-1,micro-2,micro-3,timer in the tested Node24 runtime and under the corresponding browser checkpoint rules. Newly queued microtasks are drained in that checkpoint; “await Promise.resolve()” does not necessarily give the browser an opportunity to paint or handle another task. Unbounded recursive microtasks can starve timers/input/rendering. Do not run an infinite starvation demo; use a small bounded counter when inspecting the order.
 
 Browser rendering depends on refresh, visibility, work and host policy. rAF callbacks run around a rendering opportunity, but heavy rAF work can still miss a deadline. Node has no browser paint step and has nextTick/phase/ESM subtleties; label a Node ordering experiment with module type/runtime rather than claim every host follows a single queue diagram.
 
-**Exercise acceptance:** verify the exact nested fixture, then bound100microtasks and show a timer waits until they finish. Replace with chunked task scheduling and compare actual browser responsiveness only when you can record it. Explain why microtask priority is a sequencing rule rather than a latency/performance promise. Retain learner evidence separately; Node output and the unreviewed animation prove no browser paint behavior.
 
 References checked2026-10-22: [HTML event loops/checkpoints/rendering](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops), [Node event loop phases](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick). The existing simple Promise/timer example remains valid within its stated scope.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_are_the_tasks_microtasks_177e8106c24d804f94a8c0f84060cdf2.md). All learner practice remains outstanding; the worked examples above are explanatory material.

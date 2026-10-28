@@ -105,65 +105,8 @@ List/dict comprehensions are concise transformations when one expression/filter 
 
 This module accepts bounded, already-loaded records, validates each record, normalizes tags and returns fresh public dictionaries. It is not a streaming file parser or a tokenizer. Reject duplicate document IDs rather than silently overwrite content, and preserve tag order while removing case-insensitive duplicates. The selected normalization strips outer body whitespace but preserves internal paragraph layout; aggressive whitespace folding can damage source meaning.
 
-```python
-# basics.py
-import re
+<<< ../workbench/applied-ai/python/basics.py
 
-_ID = re.compile(r"[A-Za-z0-9_-]{1,64}")
-
-
-def clean_tags(raw: object, /) -> tuple[str, ...]:
-    if not isinstance(raw, list) or len(raw) > 10:
-        raise ValueError("tags must be a list of at most10 strings")
-    result: list[str] = []
-    seen: set[str] = set()
-    for value in raw:
-        if not isinstance(value, str):
-            raise ValueError("tag must be text")
-        tag = value.strip().casefold()
-        if not 1 <= len(tag) <= 40:
-            raise ValueError("tag length out of range")
-        if tag not in seen:
-            seen.add(tag)
-            result.append(tag)
-    return tuple(result)
-
-
-def normalize_document(raw: object) -> dict[str, object]:
-    if not isinstance(raw, dict) or not set(raw) <= {"id", "body", "tags"}:
-        raise ValueError("unexpected document shape")
-    identity = raw.get("id")
-    body = raw.get("body")
-    if not isinstance(identity, str) or _ID.fullmatch(identity) is None:
-        raise ValueError("invalid document id")
-    if not isinstance(body, str) or not 1 <= len(body.strip()) <= 20000:
-        raise ValueError("invalid document body")
-    return {"id": identity, "body": body.strip(), "tags": clean_tags(raw.get("tags", []))}
-
-
-def normalize_documents(raw: object, *, max_records: int = 100) -> list[dict[str, object]]:
-    if type(max_records) is not int or not 1 <= max_records <= 1000:
-        raise ValueError("invalid record budget")
-    if not isinstance(raw, list) or len(raw) > max_records:
-        raise ValueError("document batch exceeds budget or is not a list")
-    result: list[dict[str, object]] = []
-    seen: set[str] = set()
-    for candidate in raw:
-        document = normalize_document(candidate)
-        identity = str(document["id"])  # normalize_document already established a string ID.
-        if identity in seen:
-            raise ValueError("duplicate document id")
-        seen.add(identity)
-        result.append(document)
-    return result
-
-
-def add_tag(tag: str, tags: list[str] | None = None) -> list[str]:
-    # A fresh default per call; existing input is copied rather than mutated.
-    result = [] if tags is None else list(tags)
-    result.append(tag)
-    return result
-```
 
 Function annotations document intended types but do not enforce them at runtime. The explicit checks enforce this boundary. Modules/typed domain objects and static checking receive a deeper lesson next; dict[str,object] is intentionally a simple first representation rather than the final service model. Content may contain untrusted instructions: normalization validates shape, not factual trust or permission to execute anything in the text.
 
@@ -173,64 +116,13 @@ The implementation uses pure result construction: it does not mutate the input, 
 
 ## Executable boundary tests
 
-```python
-# lab_tests/test_basics.py — learner-project tests; never Autocode src/tests
-from copy import deepcopy
+<<< ../workbench/applied-ai/python/lab_tests/test_basics.py
 
-import pytest
-
-from basics import add_tag, clean_tags, normalize_documents
-
-
-def test_normalization_preserves_source_and_order():
-    raw = [{"id": "doc-1", "body": "  First\n\nSecond  ", "tags": [" AI ", "ai", "Python"]}]
-    before = deepcopy(raw)
-    result = normalize_documents(raw, max_records=2)
-    assert result == [{"id": "doc-1", "body": "First\n\nSecond", "tags": ("ai", "python")}]
-    assert raw == before
-    assert normalize_documents([]) == []
-
-
-@pytest.mark.parametrize("record", [
-    None,
-    {"id": "../file", "body": "text"},
-    {"id": "doc", "body": "  "},
-    {"id": "doc", "body": "text", "role": "admin"},
-    {"id": "doc", "body": "text", "tags": [1]},
-    {"id": "doc", "body": "text", "tags": [""]},
-])
-def test_untrusted_record_rejected(record):
-    with pytest.raises(ValueError):
-        normalize_documents([record])
-
-
-def test_duplicate_and_budget_are_explicit():
-    record = {"id": "same", "body": "text"}
-    with pytest.raises(ValueError, match="duplicate"):
-        normalize_documents([record, record])
-    with pytest.raises(ValueError, match="budget"):
-        normalize_documents([record, {"id": "other", "body": "text"}], max_records=1)
-    with pytest.raises(ValueError):
-        normalize_documents([], max_records=True)
-
-
-def test_defaults_and_identity():
-    assert add_tag("first") == ["first"]
-    assert add_tag("second") == ["second"]
-    source = ["existing"]
-    assert add_tag("new", source) == ["existing", "new"]
-    assert source == ["existing"]
-    assert clean_tags(["Straße", "STRASSE"]) == ("strasse",)
-    with pytest.raises(TypeError):
-        clean_tags(raw=["ai"])
-```
 
 These tests check intended outputs and rejection boundaries, not whether the learner can reproduce or explain them. Use descriptive assertions and parameterization for distinct invalid categories. A passing test command with zero collected tests is not acceptance; retain the collection/result count. The later testing lesson will cover fixtures, fake I/O, integration boundaries and failures more deeply.
 
 ## Practice and acceptance
 
-**Acceptance:** build the learner project with the pinned interpreter and lockfile, then recreate its environment with uv sync --locked and run the tests. Explain how the lock differs from the interpreter pin and why .venv is disposable. Change the Python requirement or dev dependency without updating the lock and prove --locked rejects the mismatch; restore the intended declaration afterward. Do not “repair” a failed locked check by silently resolving inside CI.
-
-Implement an independent extension that filters normalized documents by a required tag and produces counts by tag. Preserve first-seen ordering, handle an empty batch, reject duplicate identities and leave input unchanged. Add tests for exact body/tag/count limits, non-text/bytes values, Unicode case folding and a keyword-only misuse. Demonstrate the shallow-copy aliasing and mutable-default bugs separately, then repair them without introducing a hidden global cache. Explain len(text) versus bytes/tokens before estimating any AI context budget. No model, provider account or paid request is needed for this batch. Learner practice remains required.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/setup-and-basics.md).
 
 References checked2026-10-21: [Python3.13 introduction](https://docs.python.org/3.13/tutorial/introduction.html), [collections](https://docs.python.org/3.13/tutorial/datastructures.html), [functions/defaults/parameter kinds](https://docs.python.org/3.13/tutorial/controlflow.html), [virtual environments](https://docs.python.org/3.13/tutorial/venv.html), [uv projects](https://docs.astral.sh/uv/guides/projects/), [uv lock/sync](https://docs.astral.sh/uv/concepts/projects/sync/), [pytest getting started](https://docs.pytest.org/en/stable/getting-started.html).

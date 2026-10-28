@@ -1,0 +1,10 @@
+/* Button.module.css */
+.button { font: inherit; padding: .5rem 1rem; border: 2px solid currentColor; }
+.primary { background: var(--action-bg); color: var(--action-text); }
+.secondary { background: var(--surface); color: var(--text); }
+.button:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.button:disabled { cursor: not-allowed; }
+@media (forced-colors: active) {
+  .button { border-color: ButtonText; }
+  .button:focus-visible { outline-color: Highlight; }
+}

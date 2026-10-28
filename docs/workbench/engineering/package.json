@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@reduxjs/toolkit": "2.13.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-redux": "9.3.0",
+    "@tanstack/react-query": "5.105.0",
+    "rxjs": "7.8.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "24.19.2",
+    "typescript": "5.9.3",
+    "esbuild": "0.28.2"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "check:reference": "esbuild check.ts --bundle --platform=node --format=esm --packages=external --outfile=build/check.mjs && node --unhandled-rejections=strict build/check.mjs"
+  }
+}

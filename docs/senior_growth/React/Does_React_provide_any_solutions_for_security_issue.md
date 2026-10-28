@@ -213,6 +213,10 @@ While React provides some inherent security features, securing a React applicati
 
 Use the [server ownership/tenant conditional write](../../node-js/module-09-authentication-authorization.md#ownership-and-attribute-based-access-control) and [cookie/CSRF/XSS discussion](../../node-js/module-09-authentication-authorization.md#_12-browser-token-storage-cookies-csrf-and-xss). The [worked threat model and negative query-plan cases](../Communication_and_Security/Can_you_provide_several_examples_of_Web_Security_related_issues__like_types_of_attack__and_how_can_we_prevent_them__OWASP_10.md#worked-threat-model-private-note-title) distinguishes a client gate, schema parsing, query scoping and actual database enforcement.
 
-**Exercise acceptance:** render pending/anonymous/signed-in states, prove attacker text remains text, and attempt direct requests with absent identity and another user's/tenant's ID. Check server denial before mutation even if the UI gate is bypassed. Test missing/invalid CSRF proof for cookie-authenticated mutations and CSP in an allowed native browser. UI/port tests are not native CSP or deployed-authentication evidence; learner implementation remains required.
 
 Authoritative references checked 2026-10-22: [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), [CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Does_React_provide_any_solutions_for_security_issue.md). All learner practice remains outstanding; the worked examples above are explanatory material.

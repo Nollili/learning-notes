@@ -1,0 +1,1 @@
+{"compilerOptions":{"strict":true,"noUncheckedIndexedAccess":true,"exactOptionalPropertyTypes":true,"skipLibCheck":true,"target":"ES2022","module":"ESNext","moduleResolution":"bundler","jsx":"react-jsx","noEmit":true,"types":["react","react-dom"],"lib":["DOM","DOM.Iterable","ES2022"]},"include":["*.tsx"]}

@@ -8,44 +8,8 @@ A conversation store needs tenant/subject scope, ownership checks on every read/
 
 The pure helper below keeps a suffix of complete user/assistant exchanges, not half a pair. It is a bounded serialization fixture, not a database, summary model or token counter. Text is copied as data. The current question and application instructions are separate inputs to the final request and must not be evicted along with old history.
 
-```python
-# study_ai/history.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/history.py
 
-import hashlib
-import json
-from collections.abc import Sequence
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class Exchange:
-    user: str
-    assistant: str
-
-    def __post_init__(self) -> None:
-        for value in (self.user, self.assistant):
-            if not value.strip() or len(value) > 2000:
-                raise ValueError("Invalid exchange")
-            try:
-                if len(value.encode("utf-8", errors="strict")) > 4000:
-                    raise ValueError("Invalid exchange")
-            except UnicodeEncodeError:
-                raise ValueError("Invalid exchange") from None
-
-
-def history_payload(exchanges: Sequence[Exchange], *, keep: int = 4) -> str:
-    if type(keep) is not int or not 0 <= keep <= 6 or len(exchanges) > 20:
-        raise ValueError("Invalid history policy")
-    retained = exchanges[-keep:] if keep else ()
-    return json.dumps({"exchanges": [
-        {"user": turn.user, "assistant": turn.assistant} for turn in retained
-    ]}, ensure_ascii=False, separators=(",", ":"))
-
-
-def history_digest(payload: str) -> str:
-    return hashlib.sha256(payload.encode("utf-8", errors="strict")).hexdigest()
-```
 
 Exchange objects must be constructed/validated by the application; type annotations do not validate arbitrary deserialized dictionaries. The20-input/6-retained caps bound this helper, not an unlimited stored transcript. A real paginated conversation reader should load only the authorized window it needs. A hash identifies bytes for a checkpoint; it is neither encryption nor a signature, and it cannot establish ownership. Avoid logging transcript content or even stable identifiers when the retention policy excludes them.
 
@@ -82,10 +46,6 @@ A resumable checkpoint names the job/conversation revision, completed stage, che
 
 ## Practice and acceptance
 
-Run strict typing and deterministic history tests:0/1/4/6 retained turns, complete pair/order preservation, excessive input, invalid keep/bool, blank/oversize/invalid-Unicode text, fake role delimiters staying data and stable/changing digests. These establish bounded serialization only, not authorization, summarization quality or tokens.
-
-Build an application-owned checkpoint fixture for the document assistant. Interrupt after source resolution and again after answer validation. Resume against the same revision, then against a changed source/permission/conversation revision; require reuse only for still-valid artifacts and no unauthorized disclosure. Retain stage inputs/outputs as approved fixture data, not raw private production logs. Measure stage and total latency/cost plus errors; compare the fixed workflow with one larger prompt under the same held-out task rather than assuming decomposition wins.
-
-Create a labeled summary set containing negation, rejected options, explicit budgets, changed decisions, unresolved questions and embedded commands. For each candidate check factual support, constraint retention and source references with a human rubric. Acceptance: no permission is granted from summary text, contradictions are caught before use, omission is explicit and stale revision cannot overwrite current state. Test a final request's count/generation equality after adding history. Native UI recovery, durable store/CAS/deletion, actual provider summary quality and independent learner implementation remain required.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/history-and-workflows.md).
 
 References checked2026-10-24: [official conversation state and context management](https://developers.openai.com/api/docs/guides/conversation-state), [prompt roles and code versions](https://developers.openai.com/api/docs/guides/prompt-engineering), [Python dataclasses](https://docs.python.org/3/library/dataclasses.html), [hashlib](https://docs.python.org/3/library/hashlib.html), [exact token budgeting](./token-budgets.md), [verified citation boundaries](./retrieval-context.md). No hosted conversation/compaction API or live model is invoked in this lesson.

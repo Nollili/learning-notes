@@ -178,4 +178,7 @@ Hard termination suits this isolated pure CPU job. It does not run arbitrary wor
 
 **Actual local validation:** the same browser-shaped worker code ran through an owned Node24 worker_threads adapter. Tests proved transfer detachment, sum258, empty input, cancellation with null reason, pre-abort/no launch/no transfer, input/deadline rejection and termination of every owned Node worker. A controlled non-cooperative adapter verified the deadline. This verifies computation/ownership/lifetime under that adapter, not browser Worker loading, UI responsiveness or browser termination timing. The separate [service-worker policy lesson](../EngX_Quality/Rendering_and_Capability_Workflows.md#worked-public-offline-fallback) covers the distinct offline lifecycle.
 
-**Exercise acceptance:** run the native module worker in an owned browser app, compare main-thread blocking with/without it, and record startup/copy/transfer plus total latency on a stated device/input. Assert a detached caller buffer, cancellation/unmount cleanup, malformed results, worker-load failure and a bounded queue if pooling. Small work can cost more to offload than it saves; choose from measurements. Native browser and learner practice remain required. Official references: [HTML module workers/lifetime](https://html.spec.whatwg.org/multipage/workers.html), [structured transfer](https://html.spec.whatwg.org/multipage/structured-data.html#transferable-objects).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/Could_you_please_describe_Web_Workers_in_details.md). All learner practice remains outstanding.

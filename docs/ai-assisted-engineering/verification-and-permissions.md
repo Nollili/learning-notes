@@ -45,6 +45,11 @@ Use a requirements-derived behavioral oracle, strict compiler/dependency checks,
 
 For this issue the evidence is: baseline failure, final one-expression diff, strict build, seven named acceptance tests and four detected defect variants. Limitations are: no real transport/load/backoff/deadline, callback can ignore cancellation, no mutation/write retry authorization, no clean compiler installation and no separate human approval. State unperformed checks rather than imply they passed. For a real UI/database/security change, add the corresponding actual integration/browser/authorization checks instead of treating this pure fixture as representative.
 
-**Practice acceptance:** review a candidate patch with at least one plausible semantic error and one nonexistent API. Identify the violated requirement before running tests; then show the appropriate compiler/runtime check rejects it. Challenge a generated test that copies the buggy expectation. Check the actual diff for scope/config/dependency changes and prepare a minimized context/error record containing no real secrets. Preserve a separate independent reviewer outcome when one actually occurs; do not invent it. Learner practice remains required.
+
 
 References checked2026-10-25: [Node AbortSignal](https://nodejs.org/api/globals.html#abortsignalthrowifaborted), [Node test runner](https://nodejs.org/api/test.html), [TypeScript strict](https://www.typescriptlang.org/tsconfig/strict.html), [OWASP secrets management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html). Runtime challenge results are from the stated local fixture; a current Node docs page may describe a different release.
+
+
+## Separate practice
+
+Apply the [focused requirements](../practice/engineering/ai-engineering/verification-and-permissions.md). All learner practice remains outstanding.

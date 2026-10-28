@@ -1,6 +1,6 @@
 ### Can you explain to me what "arrow functions" are and how they are working? What kind of issues could be solved by using them as event handlers?
 
-**Arrow functions** (introduced in **ES6**) are a more concise way of writing functions in JavaScript. They have a slightly different syntax and behavior compared to traditional function expressions, especially when it comes to handling the `this` keyword. Let’s explore **arrow functions**, how they work, and how they can be used to solve issues like handling `this` in event handlers.
+**Arrow functions** (introduced in **ES6**) are a more concise way of writing functions in JavaScript. They have a slightly different syntax and behavior compared to traditional function expressions, especially when it comes to handling the `this` keyword.
 
 ---
 
@@ -172,7 +172,6 @@ button.addEventListener('click', function() {
 - When working with **callbacks** or **event handlers**, where `this` needs to refer to the surrounding context (e.g., the object that contains the method).
 - For functions that don’t require their own `this`, like **simple event handlers** or **functional callbacks**.
 
-Let’s dive deeper into **arrow functions** and see more detailed examples of how they handle `this` in various scenarios.
 
 ## **1. Arrow Functions with Event Handlers**
 
@@ -436,7 +435,6 @@ class Ticker {
 
 For DOM binding, retain the exact callback reference and return a disposer that removes it and stops the ticker. An anonymous new arrow passed to removeEventListener is a different function and will not remove the original listener. Async polling needs a different completion-driven loop: setInterval does not wait for async work and can overlap requests.
 
-**Exercise:** inject a fake clock into Ticker, test duplicate starts/stop/restart, then bind start to a real button with a disposer. Acceptance: one active timer maximum, expected count increments, no callbacks after stop, listener removed by exact identity; compare a method call, detached method and lexical arrow under CJS/ESM/browser contexts. Explain why passing a fresh wrapper to a memoized React child changes prop identity even if its body calls a cached function.
 
 Official references: [ECMA functions/arrows/classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html), [Node timers](https://nodejs.org/api/timers.html), [WHATWG timers](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers). Checked2026-10-20; runtime/fake-clock examples use Node24.18.0. Browser/native listener behavior remains a separate practice check.
 
@@ -459,3 +457,8 @@ console.log(new ReplacesInstance().name); // replacement: explicit object return
 ```
 
 A regular constructor returning a primitive normally keeps its created receiver; an explicit object return can replace it. Derived class constructors have additional super/return constraints. Do not infer constructor capability merely from typeof value being function: arrows and methods can be callable without being constructible. **Acceptance:** run the new/bind examples, verify new-arrow and detached strict-call errors, and demonstrate valid/invalid directive placement in separate parsed fixtures. Browser receiver observations remain separate learner practice.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Can_you_explain_to_me_what_arrow_functions_are_and_177e8106c24d802c83c5d9951499fa84.md). All learner practice remains outstanding; the worked examples above are explanatory material.

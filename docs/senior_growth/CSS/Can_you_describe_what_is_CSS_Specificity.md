@@ -129,7 +129,6 @@ Inherited values do not compete as if the parent's selector matched the child. A
 
 **Debugging workflow:** inspect the exact element/state; find the winning property in Computed/Styles; inspect crossed-out declarations, layer and stylesheet order; check inherited versus direct values; disable one rule to test the hypothesis; fix ownership or layer structure before escalating specificity.
 
-**Exercise:** run the layer example, add an unlayered color, then compare important layer rules and a user stylesheet. Acceptance: predict each computed color before checking; calculate all tuples above; demonstrate an inheritance case and a where-based low-specificity component; retain a short explanation/screenshots. Scope and Shadow DOM cases need supported-browser checks rather than assumed output.
 
 Official references: [cascade layers](https://www.w3.org/TR/css-cascade-5/), [selector specificity](https://www.w3.org/TR/selectors-4/#specificity-rules), [scope/cascade](https://www.w3.org/TR/css-cascade-6/). Verified2026-10-20.
 
@@ -158,6 +157,10 @@ Keep the native button and visible label. Test the outline against both control 
 
 Use `::before`/`::after` for decoration, not essential error messages, required-field meaning or the only control name. Generated content exposure varies; put meaningful text in HTML. `:nth-child()` counts siblings, whereas `:nth-of-type()` counts the element type; filtered `:nth-child(... of selector)` needs the declared browser support policy. Inspect the actual selector/state before increasing specificity. Functional-selector tuple rules are in the preceding table.
 
-**Exercise:** implement a submit button and labeled field with normal, hover, pressed, invalid, disabled and keyboard-focus states. Acceptance: native keyboard activation works; focus is visible and not hidden under sticky UI; information survives forced colors and no-hover input; no essential text comes from pseudo-elements; compute the winning tuple for each state. Record real contrast measurements and screenshots in light/dark themes. These checks remain learner practice.
 
 References checked2026-10-20: [Selectors](https://www.w3.org/TR/selectors-4/), [forced colors](https://www.w3.org/TR/css-color-adjust-1/), [focus visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html), [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/Can_you_describe_what_is_CSS_Specificity.md). All learner practice remains outstanding; the worked examples above are explanatory material.

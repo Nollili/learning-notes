@@ -65,4 +65,7 @@ The [configuration-limit TDD fixture](./TDD_-_pros_and_cons(red,_green,_refactor
 
 The [AI-assisted engineering evidence route](../../ai-assisted-engineering/traceability-and-evaluation.md) adds requirement-to-test mapping and detected defect variants. Independent human review and learner practice remain separate; a model's self-review is not evidence that a peer approved a change. QA can contribute unit, integration or exploratory tests according to expertise; ownership is collaborative rather than a prohibition on who may write a test.
 
-**Exercise acceptance:** prepare a local change record with requirement, failing case, repair, actual diff and rerun output. Have a reviewer identify one missing boundary or explain why coverage is sufficient for the scoped contract. Record disagreement and resolution without inventing a peer's participation. Restricted `src/tests` must remain unchanged in Autocode work; only the user may push. Learner review/practice remains required. [Node test documentation](https://nodejs.org/docs/latest-v24.x/api/test.html) describes the fixture runner; tools do not replace review judgment.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/What_do_you_think%2C_who_is_responsible_for_write_unit_tests.md). All learner practice remains outstanding.

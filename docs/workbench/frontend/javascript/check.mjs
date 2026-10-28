@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {bindingFixture,makeCounter} from './bindings.mjs';
+import {checkpointFixture} from './checkpoints.mjs';
+import {asyncLesson} from './lifetime.mjs';
+assert.deepEqual(bindingFixture(),{beforeVar:undefined,beforeLet:'ReferenceError',beforeFunction:5,later:4,method:7,detached:undefined,rebound:9,arrow:7});
+const a=makeCounter(0),b=makeCounter(0);assert.equal(a(),1);assert.equal(a(),2);assert.equal(b(),1);
+const order=[];checkpointFixture(v=>order.push(v));await new Promise(r=>setTimeout(r,15));assert.deepEqual(order,['start','end','micro-1','micro-2','micro-3','timer']);
+const normal=[];asyncLesson(v=>normal.push(v));await new Promise(r=>setTimeout(r,15));assert.deepEqual(normal,['start','end','promise','timer']);
+const canceled=[];const dispose=asyncLesson(v=>canceled.push(v));dispose();dispose();await new Promise(r=>setTimeout(r,15));assert.deepEqual(canceled,['start','end']);
+console.log('Binding, closure independence, nested microtask order and repeated disposal passed (Node host; no paint claim).');

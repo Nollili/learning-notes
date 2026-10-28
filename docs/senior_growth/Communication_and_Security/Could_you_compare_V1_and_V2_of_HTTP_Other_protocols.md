@@ -133,6 +133,10 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 A browser-to-CDN connection can use h3 while the CDN-to-origin hop uses h2 or1.1. Inspect the relevant hop, ALPN/protocol, connection reuse, cache state and waterfall before attributing a result to a version. HTTP3 avoids TCP's cross-stream loss ordering, but delivery still depends on congestion control, flow control, the affected stream's bytes and QPACK header dependencies. Unsupported/blocked QUIC needs a supported fallback; no CDN/browser compatibility measurement is claimed here.
 
-**Exercise acceptance:** record protocol/connection and comparable cold/reused runs for an allowed test endpoint, identify an application dependency waterfall separately from transport effects, and explain optional0RTT replay risk. A non-idempotent action must not be assumed safe merely because a transport permits early data; apply the server's explicit early-data/retry policy. Native packet-loss/network/h2/h3 and learner results remain unperformed. Use the [TLS lesson](./HTTPS._Could_you_please_describe_advantages_and_disadvantages_of_this_protocol.md) for handshake concepts rather than inventing custom cryptography.
 
 Official standards checked2026-10-22: [HTTP2 RFC9113](https://www.rfc-editor.org/info/rfc9113/), [HTTP3 RFC9114](https://www.rfc-editor.org/info/rfc9114/), [HTTP early data RFC8470](https://www.rfc-editor.org/info/rfc8470/). Exact browser/server feature support remains a deployment check.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/Could_you_compare_V1_and_V2_of_HTTP_Other_protocols.md). All learner practice remains outstanding.

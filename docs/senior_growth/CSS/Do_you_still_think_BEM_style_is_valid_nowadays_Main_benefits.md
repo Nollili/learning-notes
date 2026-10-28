@@ -127,6 +127,10 @@ In the fixture, run `stylelint lesson-card.css --config stylelint.config.mjs`; v
 
 A selector such as `.legacy .lesson-card` can pass this policy while changing appearance. Linting cannot prove that modifier classes have a base class in HTML, prevent every collision, establish token contrast or validate screenshots. Keep visual and behavior evidence separate.
 
-**Migration exercise acceptance:** inventory one component's global selectors and consumers; add the new class to markup, move only its owned rules, retain a documented temporary alias where needed, test normal/compact/focus/error states and remove the alias after consumers migrate. Demonstrate the three lint failures and one collision the linter does not detect. Check computed styles, keyboard focus, zoom and reviewed browser images in an allowed environment. Record before/after evidence; no migration or native browser result has been performed merely by supplying this fixture.
 
 Official rule references checked2026-10-22: [class pattern](https://stylelint.io/user-guide/rules/selector-class-pattern/), [specificity budget](https://stylelint.io/user-guide/rules/selector-max-specificity/), [important declarations](https://stylelint.io/user-guide/rules/declaration-no-important/).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/Do_you_still_think_BEM_style_is_valid_nowadays_Main_benefits.md). All learner practice remains outstanding; the worked examples above are explanatory material.

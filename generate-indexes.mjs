@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const rootDir = path.resolve('./docs/senior_growth');
+const rootDir = path.resolve(process.argv[2] ?? './docs/senior_growth');
 
 function getTitleFromFile(filePath) {
   try {
@@ -23,6 +23,8 @@ function getTitleFromFile(filePath) {
 }
 
 function generateOverview(dir) {
+  // Curated prerequisite order and compatibility anchors must survive reruns.
+  if (fs.existsSync(path.join(dir, 'index.md'))) return;
   const items = fs.readdirSync(dir, { withFileTypes: true });
   const subfolders = items.filter(i => i.isDirectory());
   const files = items.filter(

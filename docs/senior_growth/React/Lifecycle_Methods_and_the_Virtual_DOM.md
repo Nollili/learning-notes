@@ -100,6 +100,10 @@ The reporter receives a fixed safe event, not raw user content/stack traces. An 
 
 Error boundaries are not a universal try/catch. They do not catch ordinary event-handler errors, arbitrary timer/Promise rejections, their own fallback failures or server-rendering failures. Handle asynchronous outcomes in the request/action owner; use the framework's server/route error mechanism where applicable. A boundary does not undo a database write or recover an abandoned subscription automatically. Resource-owning effects still need cleanup.
 
-**Acceptance:** healthy child renders; a throwing child produces only the safe fallback and leaves an outside sibling; reporter receives the fixed code; reporter failure is contained; after fixing the child, explicit retry recovers; a new boundary key resets state. Verify the deliberate even-state example's internal/displayed behavior and explain why it is unsuitable as a general optimization. Test fallback focus and recovery in a browser separately. Learner implementation remains required.
 
 Official references checked 2026-10-22: [Component/error boundary/update contracts](https://react.dev/reference/react/Component), [state/type/key reset](https://react.dev/learn/preserving-and-resetting-state).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Lifecycle_Methods_and_the_Virtual_DOM.md). All learner practice remains outstanding; the worked examples above are explanatory material.

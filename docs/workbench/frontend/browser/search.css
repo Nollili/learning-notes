@@ -1,0 +1,8 @@
+/* search.css */
+body { font: 1rem/1.5 system-ui; margin: 1rem; color: #111; background: #fff; }
+main { max-width: 65ch; }
+form { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+input { min-width: 0; max-width: 100%; flex: 1 1 12rem; font: inherit; }
+button { min-height: 2.75rem; font: inherit; }
+:focus-visible { outline: 3px solid #174ea6; outline-offset: 3px; }
+[hidden] { display: none !important; }

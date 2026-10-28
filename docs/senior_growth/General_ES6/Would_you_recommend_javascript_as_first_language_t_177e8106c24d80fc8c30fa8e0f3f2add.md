@@ -111,6 +111,10 @@ except TypeError:
 
 The Python runtime accepts the reassignment while mypy reports an incompatible assignment (and the deliberate string-plus-integer expression). TypeScript can similarly reject assigning a string to a number-annotated binding before JavaScript runs. Neither static annotation validates arbitrary incoming JSON at runtime. Different coercion rules explain why JavaScript concatenates these operands while Python raises, even though both languages are dynamic. Prefer explicit domain conversion/validation rather than relying on accidental coercion.
 
-**Exercise acceptance:** run the exact JS/Python programs, retain number/string versus int/str/TypeError outputs, then run mypy and identify both deliberate assignment/operator diagnostics. Add the equivalent TypeScript negative fixture; do not silence its error and claim the runtime became safe. Continue with the [typed Python boundary lesson](../../python-for-ai/typed-modules-and-errors.md) for real application contracts. The language-choice prose is a preference discussion, not evidence of learner competence.
 
 Versions: Node24.18.0/Python3.13.11/TypeScript5.9.3; [Python annotation runtime contract](https://docs.python.org/3.13/library/typing.html) checked2026-10-22. Learner practice remains required.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Would_you_recommend_javascript_as_first_language_t_177e8106c24d80fc8c30fa8e0f3f2add.md). All learner practice remains outstanding; the worked examples above are explanatory material.

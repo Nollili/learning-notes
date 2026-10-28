@@ -1,6 +1,6 @@
 ### Could you suggest architectural approaches for showing thousands of data sets on UI?
 
-When displaying **thousands of data sets** in a user interface (UI), performance, usability, and responsiveness are crucial factors to consider. You need to ensure that the UI remains fast, user-friendly, and accessible, even as the amount of data grows. Below are some **architectural approaches** to handle large datasets in the UI:
+When displaying **thousands of data sets** in a user interface (UI), performance, usability, and responsiveness are crucial factors to consider. You need to ensure that the UI remains fast, user-friendly, and accessible, even as the amount of data grows. 
 
 ---
 
@@ -219,7 +219,9 @@ LIMIT 51;
 -- Matching index starts with tenant_id, created_at DESC, id DESC; search indexing is a separate workload decision.
 ```
 
-Send at most50rows and derive has-more/cursor from the extra row; never return an arbitrary unbounded limit. The endpoint validates cursor shape/length and binds it to sort/filter/version policy; encoded does not mean trusted. Parameterization protects values, while dynamic column/direction names require an allowlist. Escape percent/underscore/backslash when the search contract means literal substring matching. Define previous-cursor semantics, null handling, concurrent insertion/deletion and snapshot/freshness behavior. A keyset cursor is a location, not a snapshot or authorization token. Do not compute all matching counts on every keystroke without measuring query cost.
+Send at most50rows and derive has-more/cursor from the extra row; never return an arbitrary unbounded limit. The endpoint validates cursor shape/length and binds it to sort/filter/version policy; encoded does not mean trusted. Parameterization protects values, while dynamic column/direction names require an allowlist. Escape percent/underscore/backslash when the search contract means literal substring matching. Define previous-cursor semantics, null handling, concurrent insertion/deletion and snapshot/freshness behavior.
+
+A keyset cursor is a location, not a snapshot or authorization token. Do not compute all matching counts on every keystroke without measuring query cost.
 
 ### Bounded infinite-query alternative
 
@@ -268,11 +270,14 @@ export function useCoursePages(scope: string, q: string) {
 }
 ```
 
-The scope partitions a client cache; the server derives its own session/tenant. maxPages limits these query pages to three, not the entire application heap. Eviction needs previous/next cursor support and a scroll-anchor/back-scroll refetch policy; the visible list must not jump merely because a front page was dropped. Deduplicate by stable ID if the chosen live-data consistency model permits overlapping pages, and investigate duplicate boundary causes instead of silently hiding server errors. Bound response bytes at the service/reader too; a parsed JSON row limit does not prevent a huge transfer allocation.
+The scope partitions a client cache; the server derives its own session/tenant. maxPages limits these query pages to three, not the entire application heap. Eviction needs previous/next cursor support and a scroll-anchor/back-scroll refetch policy; the visible list must not jump merely because a front page was dropped.
 
-A Load more button should call fetchNextPage only when hasNextPage and no fetch is already running; show a status/error/retry while retaining prior pages. An IntersectionObserver may enhance the same controller, but must disconnect and not repeatedly fetch an already failing/end page. Keep explicit keyboard controls, previous-page recovery and access to footer content. Cancelling old filter queries and separate query keys prevent an old response from becoming the new filter's data. Pagination uses page/cursor in its query key; placeholderData/keepPreviousData can retain prior rows during a transition, but label that temporary old data and prevent actions based on the wrong page.
+Deduplicate by stable ID if the chosen live-data consistency model permits overlapping pages, and investigate duplicate boundary causes instead of silently hiding server errors. Bound response bytes at the service/reader too; a parsed JSON row limit does not prevent a huge transfer allocation.
 
-**Page acceptance:** test empty/one/full/final pages, missing/expired/malformed cursor, equal timestamps, inserts/deletes between requests, rapid filters and failed next-page loads. Retain server query plan/call counts and client page/byte bounds. Explain offset/keyset choice and what consistency is promised. Actual DB/Query/browser tests remain required.
+A Load more button should call fetchNextPage only when hasNextPage and no fetch is already running; show a status/error/retry while retaining prior pages. An IntersectionObserver may enhance the same controller, but must disconnect and not repeatedly fetch an already failing/end page. Keep explicit keyboard controls, previous-page recovery and access to footer content.
+
+Cancelling old filter queries and separate query keys prevent an old response from becoming the new filter's data. Pagination uses page/cursor in its query key; placeholderData/keepPreviousData can retain prior rows during a transition, but label that temporary old data and prevent actions based on the wrong page.
+
 
 ## Stable table identity, selection and sorting
 
@@ -332,9 +337,10 @@ export function VirtualCourses({ rows }: { rows: { id: string; title: string }[]
 }
 ```
 
-These positions/counts describe the loaded window, not the total database result set; don't advertise them as global indexes after page eviction. Variable-height rows require measurement/anchor handling; fonts, width changes, images and expanded content can invalidate estimates. Do not use fixed row assumptions on wrapping translations without testing. Interactive virtualization must keep the active/focused row available or intentionally move focus before unmount, and preserve edit state by ID outside recycled DOM. Browser find/print/screen-reader access only sees mounted content; offer an appropriate paginated/export alternative. Virtual DOM is not list virtualization, and neither data pagination nor CSS content-visibility automatically implements the whole focus/retention contract.
+These positions/counts describe the loaded window, not the total database result set; don't advertise them as global indexes after page eviction. Variable-height rows require measurement/anchor handling; fonts, width changes, images and expanded content can invalidate estimates. Do not use fixed row assumptions on wrapping translations without testing.
 
-**Virtualization acceptance:** compare the same dataset with/without it, inspect mounted row count, heap/page retention and interaction traces. Test variable heights, prepend/eviction, font/viewport changes, RTL, zoom, keyboard scrolling and return navigation. Retain actual per-browser evidence; no measured FPS or accessibility conformance is supplied here.
+Interactive virtualization must keep the active/focused row available or intentionally move focus before unmount, and preserve edit state by ID outside recycled DOM. Browser find/print/screen-reader access only sees mounted content; offer an appropriate paginated/export alternative. Virtual DOM is not list virtualization, and neither data pagination nor CSS content-visibility automatically implements the whole focus/retention contract.
+
 
 ## Saved views: versioned intent, not cached server results
 
@@ -361,7 +367,6 @@ Save filter/sort/visible-column intent with schema version, owner/name and migra
 
 Define whether URL or selected saved view wins after the user edits filters; a useful policy is URL=current view, saved view=template, and edits mark an unsaved custom view until explicitly saved. Do not leak sensitive search terms into shareable URLs/logs/referrers. Local-only views can reuse the bounded/versioned storage principles from the preferences/draft notes. Deep-link restoration and query keys must agree; do not keep an unrelated hidden store with different filters.
 
-**View acceptance:** round-trip public intent into URL/from URL with Unicode, percent/ampersand and missing/unknown fields, reject future schema, remove unavailable columns, reset cursor after filter change, and verify two users cannot read each other's saved view. No arbitrary sort expression reaches SQL.
 
 ## Charts: provide values and meaning, not only colored pixels
 
@@ -388,7 +393,6 @@ Choose a chart that answers the question: bars compare categories, lines show or
 
 The decorative duplicate bars are hidden from assistive technology; the visible summary/table carry meaning and values. For SVG/canvas libraries, provide an appropriate accessible name/summary and structured data alternative rather than stuffing an entire table into aria-describedby (which flattens structure). Interactive tooltips need keyboard/touch access and equivalent values; color alone must not distinguish series. Filter/legend controls are named native controls with status updates. Test forced colors, contrast, zoom and reduced motion; choose a chart library by its actual accessibility/runtime contract, not visual polish alone.
 
-**Chart acceptance:** confirm aggregate math/units/missing values, identical chart/table/filter data, meaningful nonvisual description and keyboard/touch interactions. Retain source/aggregation fixtures and real browser/screen-reader results. No chart-library or user benchmark is claimed here.
 
 ## Official references
 
@@ -398,3 +402,8 @@ Checked2026-10-21: [TanStack Query5 infinite queries/maxPages](https://tanstack.
 ## Executed pagination workflow
 
 Continue with [the bounded React workflow and decision record](./Large_Data_Workflow.md): saved filters, scope changes, ID selection, result focus, stale response protection and cursor/snapshot failure handling. Its six local behavior tests are distinguished from native-browser accessibility and performance work still required.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/Could_you_suggest_architectural_approaches_for_showing_thousands_of_data_sets_on_UI.md). All learner practice remains outstanding.

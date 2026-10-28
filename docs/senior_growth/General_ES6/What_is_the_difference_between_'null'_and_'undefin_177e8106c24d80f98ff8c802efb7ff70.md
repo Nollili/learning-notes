@@ -168,7 +168,9 @@ console.log(Number.isNaN('bad'), isNaN('bad')); // false true: global isNaN coer
 | `false` | false | 0 | false | fallback |
 | `NaN` | false | NaN | NaN | fallback |
 
-`+` can concatenate after primitive conversion (`1 + '2'` gives `'12'`), while numeric subtraction converts (`'2' - 1` gives1). Objects can run user-defined conversion methods; never use coercion as validation for an unknown object. `Number.isFinite` rejects Infinity/NaN without coercing strings. Integers beyond Number.MAX_SAFE_INTEGER lose exact integer guarantees; use integer minor units with safe-integer bounds for this money lab or a reviewed decimal representation. BigInt is distinct from Number: mixed arithmetic throws, and BigInt does not provide fractional decimal money automatically. Binary floating point makes `0.1 + 0.2 === 0.3` false; Number.EPSILON is spacing near1, not a universal tolerance for every magnitude or domain.
+`+` can concatenate after primitive conversion (`1 + '2'` gives `'12'`), while numeric subtraction converts (`'2' - 1` gives1). Objects can run user-defined conversion methods; never use coercion as validation for an unknown object. `Number.isFinite` rejects Infinity/NaN without coercing strings. Integers beyond Number.MAX_SAFE_INTEGER lose exact integer guarantees; use integer minor units with safe-integer bounds for this money lab or a reviewed decimal representation.
+
+BigInt is distinct from Number: mixed arithmetic throws, and BigInt does not provide fractional decimal money automatically. Binary floating point makes `0.1 + 0.2 === 0.3` false; Number.EPSILON is spacing near1, not a universal tolerance for every magnitude or domain.
 
 ### Worked boundary: a strict quantity parser
 
@@ -184,6 +186,10 @@ export function parseQuantity(raw) {
 
 This grammar rejects empty/whitespace, leading zeros, Infinity, NaN, hexadecimal and scientific notation before conversion. Number('') alone would accept0 and parseInt('12items',10) would partially accept12. Those may be useful conversions elsewhere, but violate this explicit quantity contract. Validate an API JSON number with safe-integer/domain checks instead of coercing it through the UI's string parser. JSON omits undefined object properties, serializes undefined array entries as null and cannot serialize a BigInt by default; serialization has a different contract from equality.
 
-**Exercise acceptance:** run every equality/coercion row and explain the algorithm; test quantity boundaries1/999, trimmed valid input,0/1000/01/1e2/12items/empty/NaN/Infinity/nonstring. Show an object-conversion side effect without executing untrusted code. Choose and document absence/null/reset semantics for one form and its PATCH endpoint; preserve false/zero instead of defaulting them away. Learner implementation remains required.
 
 References checked2026-10-21: [ECMAScript equality/conversion algorithms](https://tc39.es/ecma262/multipage/abstract-operations.html), [Number values](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-ecmascript-language-types-number-type). Examples checked with Node24.18.0; browser-only document.all is a documented exception, not a locally executed test.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_is_the_difference_between_%27null%27_and_%27undefin_177e8106c24d80f98ff8c802efb7ff70.md). All learner practice remains outstanding; the worked examples above are explanatory material.

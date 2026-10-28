@@ -97,7 +97,6 @@ The returned DTO projects only public fields. This deliberately accepts extra in
 
 A user-defined `value is User` predicate is a promise made by its author; an incorrect predicate is as dangerous as an assertion. Validate nested objects, ranges, format and domain invariants, not only `typeof`. Static `readonly` is shallow and does not freeze aliased objects at runtime.
 
-**Exercise — hostile JSON:** implement this parser and a client that checks HTTP status before reading it. Acceptance: accept a valid user; reject null/arrays/missing name/string id/negative id/blank name; prove extra secret fields are absent from the result; verify invalid JSON is handled separately. Include a compile-time negative call with `@ts-expect-error`; do not count this exercise as performed merely because the material exists.
 
 [Official TypeScript narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) explains narrowing unknown values; [TypeScript basics](https://www.typescriptlang.org/docs/handbook/2/basic-types.html) explains erased types.
 
@@ -141,3 +140,8 @@ TypeScript helps solve:
 Use the [type inventory](./What_are_the_different_types_of_TypeScript_%28Built-in_%26_User-defined%29.md#readonly-is-shallow-aliases-still-matter) to execute nested/aliased mutation examples and distinguish a readonly view from runtime freezing/ownership. The [discriminated-state lesson](./Explain_the_purpose_of_the_%22never%22_type_in_TypeScript_How_it%27s_different_from_%22void%22.md#discriminated-object-states-and-exhaustive-rendering) implements idle/loading/success/error with exhaustive narrowing, contextual void and compile-time negative cases. These shared examples provide the depth behind the overview without duplicating a second state model here.
 
 **Parser scope:** this small User parser accepts projected JSON-style object data, positive safe-integer IDs and nonblank names up to80UTF-16code units. It is not a general sanitizer for arbitrary in-process objects with hostile getters/proxies, and it does not authenticate the ID or authorize a user. Bound transport/body size before JSON.parse, handle syntax errors separately, and apply domain authorization after parsing. Negative type-only calls must not be executed as normal application code.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/What_kind_of_problems_could_be_solved_by_using_TS.md). All learner practice remains outstanding; the worked examples above are explanatory material.

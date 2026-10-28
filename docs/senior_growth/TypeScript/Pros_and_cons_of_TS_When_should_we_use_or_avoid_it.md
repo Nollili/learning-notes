@@ -88,6 +88,10 @@ Do not use any, broad assertions, ts-ignore or blanket skipLibCheck as a success
 
 The [generics lesson](./Generics.md) contains worked dependent-key/indexed access, mapped modifiers, allowlisted utility-type patches, conditional infer/distribution, overload and callback-variance examples with negative compile-time cases. Its runtime patch helper projects allowed fields instead of spreading an arbitrary object. Use the [type inventory](./What_are_the_different_types_of_TypeScript_%28Built-in_%26_User-defined%29.md) for structural assignment and readonly/alias limits. These are reusable learning examples, not evidence that a project has been migrated.
 
-**Exercise acceptance:** migrate one small JS domain slice while preserving its behavior tests. Add positive and intentionally rejected key/payload/update cases; the checker must reject invalid combinations without assertions. Feed malformed external JSON and prove the parser rejects it at runtime. Record typecheck time, representative diagnostic quality and unchanged runtime behavior before/after, not an unsupported productivity percentage. Keep a rollback plan and review public declarations. Learner migration, timing and troubleshooting evidence remain required.
 
 Official references checked2026-10-22: [incremental migration](https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html), [compiler strictness](https://www.typescriptlang.org/tsconfig/strict.html), [Node24 type stripping limits](https://nodejs.org/docs/latest-v24.x/api/typescript.html). The executable fixtures here use compiler5.9.3 and runtime24.18.0; these are pinned study baselines, not claims that they are the newest releases.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/Pros_and_cons_of_TS_When_should_we_use_or_avoid_it.md). All learner practice remains outstanding; the worked examples above are explanatory material.

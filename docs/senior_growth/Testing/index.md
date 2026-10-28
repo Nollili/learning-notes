@@ -1,5 +1,9 @@
 # Testing
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/quality.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [FIRST principles - how a good unit test looks like?](./FIRST_principles_-_how_a_good_unit_test_looks_like.md)

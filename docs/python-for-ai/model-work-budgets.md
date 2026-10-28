@@ -8,78 +8,12 @@ The primary SDK client keeps `max_retries=0`. If application retries are added, 
 
 This local gate caps active and waiting jobs. Waiting acquisition has a deadline; cancellation releases the waiting counter and an acquired slot. The token bucket is a synchronous same-event-loop request-rate baseline with an injected monotonic timestamp. It permits a bounded burst, unlike a strict “N per fixed minute” rule. It is not a distributed quota, a token estimator or a spend ledger.
 
-```python
-# study_ai/work_admission.py
-from __future__ import annotations
-
-import asyncio
-import math
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+<<< ../workbench/applied-ai/python/study_ai/work_admission.py
 
 
-class AdmissionRejected(Exception):
-    pass
+Create the gate/bucket in one application lifespan and use them on its event loop; do not share them across processes, threads or closed loops. Exposed counters are observation-only. All paths that call a model must pass through admission; HTTP pool settings alone cannot enforce it. Reject overload with a safe recoverable service response instead of creating unlimited blocked tasks. Count queue wait separately from execution latency. Use a bounded per-tenant policy and fair scheduling for multi-tenant workloads; an unbounded dictionary of tenant buckets can itself exhaust memory.
 
-
-class Gate:
-    def __init__(self, capacity: int, max_waiting: int) -> None:
-        if type(capacity) is not int or not 1 <= capacity <= 100 or type(max_waiting) is not int or not 0 <= max_waiting <= 100:
-            raise ValueError("Invalid admission policy")
-        self._semaphore = asyncio.Semaphore(capacity)
-        self.active = 0
-        self.waiting = 0
-        self._max_waiting = max_waiting
-
-    @asynccontextmanager
-    async def slot(self, *, wait_seconds: float = 1.0) -> AsyncIterator[None]:
-        if isinstance(wait_seconds, bool) or not math.isfinite(wait_seconds) or not 0 < wait_seconds <= 30:
-            raise ValueError("Invalid queue deadline")
-        queued = self._semaphore.locked()
-        if queued and self.waiting >= self._max_waiting:
-            raise AdmissionRejected("Model queue full")
-        if queued:
-            self.waiting += 1
-        try:
-            try:
-                async with asyncio.timeout(wait_seconds):
-                    await self._semaphore.acquire()
-            except TimeoutError:
-                raise AdmissionRejected("Model queue deadline") from None
-        finally:
-            if queued:
-                self.waiting -= 1
-        self.active += 1
-        try:
-            yield
-        finally:
-            self.active -= 1
-            self._semaphore.release()
-
-
-class RequestBucket:
-    def __init__(self, *, per_second: float, burst: int, now: float) -> None:
-        if (isinstance(per_second, bool) or not math.isfinite(per_second) or not 0 < per_second <= 100
-            or type(burst) is not int or not 1 <= burst <= 100
-            or isinstance(now, bool) or not math.isfinite(now) or now < 0):
-            raise ValueError("Invalid rate policy")
-        self._rate = per_second
-        self._burst = burst
-        self._tokens = float(burst)
-        self._last = now
-
-    def take(self, now: float) -> bool:
-        if isinstance(now, bool) or not math.isfinite(now) or now < self._last:
-            raise ValueError("Invalid monotonic clock")
-        self._tokens = min(self._burst, self._tokens + (now - self._last) * self._rate)
-        self._last = now
-        if self._tokens < 1:
-            return False
-        self._tokens -= 1
-        return True
-```
-
-Create the gate/bucket in one application lifespan and use them on its event loop; do not share them across processes, threads or closed loops. Exposed counters are observation-only. All paths that call a model must pass through admission; HTTP pool settings alone cannot enforce it. Reject overload with a safe recoverable service response instead of creating unlimited blocked tasks. Count queue wait separately from execution latency. Use a bounded per-tenant policy and fair scheduling for multi-tenant workloads; an unbounded dictionary of tenant buckets can itself exhaust memory. For multiple replicas use an authoritative shared policy/ledger or partitioned capacity with explicit failure rules; multiplying local limits by replica count is not a global guarantee.
+For multiple replicas use an authoritative shared policy/ledger or partitioned capacity with explicit failure rules; multiplying local limits by replica count is not a global guarantee.
 
 ## Retry only explicitly classified temporary rejection
 
@@ -87,60 +21,8 @@ Do not retry malformed/schema requests,401/403, refusals, exhausted credits/quot
 
 Current official guidance distinguishes temporary429slow_down and503server_is_overloaded from billing/quota/action-required failures. Follow a valid Retry-After minimum plus jitter, including an HTTP-date after validated conversion to seconds using an aware clock. If that minimum exceeds the job's allowed wait, defer/stop rather than clamp it and retry too early. Missing/invalid hints use exponential backoff with jitter. Provider/SDK behavior changes; verify the installed version.
 
-```python
-# study_ai/work_retries.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/work_retries.py
 
-import asyncio
-import math
-import random
-import time
-from collections.abc import Awaitable, Callable
-from typing import TypeVar
-from .work_admission import AdmissionRejected, Gate, RequestBucket
-
-T = TypeVar("T")
-
-
-class TemporaryRejection(Exception):
-    def __init__(self, retry_after: float | None = None) -> None:
-        if retry_after is not None and (isinstance(retry_after, bool) or not math.isfinite(retry_after) or retry_after < 0):
-            raise ValueError("Invalid trusted server delay")
-        self.retry_after = retry_after
-        super().__init__("Temporary model rejection")
-
-
-class RetryDeferred(Exception):
-    pass
-
-
-async def run_budgeted(call: Callable[[], Awaitable[T]], *, gate: Gate, bucket: RequestBucket,
-                       jitter: Callable[[], float] = random.random,
-                       clock: Callable[[], float] = time.monotonic,
-                       sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
-                       deadline: float = 10.0) -> T:
-    if isinstance(deadline, bool) or not math.isfinite(deadline) or not 0 < deadline <= 30:
-        raise ValueError("Invalid overall deadline")
-    async with asyncio.timeout(deadline):
-        async with gate.slot():
-            for attempt in range(3):
-                if not bucket.take(clock()):
-                    raise AdmissionRejected("Model request rate exceeded")
-                try:
-                    return await call()
-                except TemporaryRejection as error:
-                    if attempt == 2:
-                        raise
-                    extra = jitter()
-                    if isinstance(extra, bool) or not math.isfinite(extra) or not 0 <= extra < 1:
-                        raise ValueError("Invalid jitter") from None
-                    minimum = error.retry_after if error.retry_after is not None else 0.1 * (2 ** attempt)
-                    delay = minimum + extra * 0.1
-                    if delay > 2:
-                        raise RetryDeferred("Server delay requires deferred work") from None
-                    await sleep(delay)
-    raise AssertionError("Unreachable retry state")
-```
 
 The overall timer includes admission, attempts and sleep; per-attempt transport/stream timeouts remain inside the adapter. It propagates timeout/cancellation instead of retrying them. The same slot stays occupied during backoff, deliberately reducing throughput and bounding concurrent retry jobs; a scheduler releasing slots between attempts needs a separate bounded job queue. Each actual attempt takes another request token. No token is refunded on failure, and no queued rate-limited wait is created by this example. Jitter/clock/sleep are owned ports for deterministic tests, not user inputs. Cooperative timeouts cannot terminate synchronous CPU loops or an adapter that suppresses cancellation.
 
@@ -156,6 +38,4 @@ Token quotas require reserving estimated input plus configured output/reasoning 
 
 ## Practice and acceptance
 
-Run deterministic fake-clock retry/bucket tests and concurrent async gate tests. Acceptance: active jobs never exceed capacity; waiting stays bounded; overflow rejects; cancelled/timed-out waiters and failed/cancelled active work leave counters/slots reusable; local rate bursts/refill/clock rejection are correct; every retry consumes a token; three attempts maximum; server minima are honored or deferred, never shortened; jitter/backoff and cancellation/deadline are observable; permanent/ambiguous errors execute once. Inject a rate rejection during retries and a server hint above the wait limit. Separately design per-tenant fairness and token/spend reservation with a durable policy; real provider load, distributed enforcement and learner implementation remain required.
-
-Applicable runtime: Python3.13.11 and the existing one-attempt SDK3.35.1 configuration. References checked2026-10-22: [OpenAI rate limits and retry hints](https://developers.openai.com/api/docs/guides/rate-limits), [SDK retry/timeouts](https://developers.openai.com/api/reference/python), [existing async boundary](./async-http.md), [stream cancellation](./model-streaming.md), [token admission](./token-budgets.md). No live requests, spend or account configuration changes are required for offline tests.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/model-work-budgets.md).

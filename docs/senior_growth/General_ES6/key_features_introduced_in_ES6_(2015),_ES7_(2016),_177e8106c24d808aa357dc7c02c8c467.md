@@ -234,6 +234,10 @@ ES2016 exponentiation is **, while * is multiplication. ES2015 function rest col
 
 Promises belong to ECMAScript; fetch is a host Web API, not a feature added by ES2015's Promise standardization. async/await uses promises and does not make I/O synchronous or block the main thread while awaiting. The examples now use injected deterministic data rather than a live public endpoint; real network boundaries still need status/schema/size/deadline handling.
 
-**Acceptance:** parse/run each independent example separately (repeated names are not one combined module), verify2**3=8 versus2*3=6, array spread, object rest/spread keys and shared nested identity, and an observed async rejection. Keep an edition/target table with object rest/spread under2018; compile a supported target and separately check required runtime APIs. Writing a year label does not prove browser compatibility or learner practice.
 
 Primary references checked2026-10-22: [TC39 finished proposals and publication years](https://github.com/tc39/proposals/blob/main/finished-proposals.md), [ECMAScript promise semantics](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects). Runtime checks use Node24.18.0; older-browser verification remains separate.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/key_features_introduced_in_ES6_%282015%29%2C_ES7_%282016%29%2C_177e8106c24d808aa357dc7c02c8c467.md). All learner practice remains outstanding; the worked examples above are explanatory material.

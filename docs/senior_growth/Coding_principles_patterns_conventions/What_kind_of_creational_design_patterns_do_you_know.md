@@ -160,7 +160,6 @@ console.log(Object.hasOwn(clone, 'age')); // false
 5. Creational patterns improve **code maintainability, scalability, and flexibility**.
 
 
-
 ## Ownership and creation checks
 
 `Object.create(person)` sets the prototype; it does not copy `person`'s own properties. Reassigning `person.age` changes an inherited read until shadowed on the child. Nested objects are shared too. Spread copies enumerable own properties shallowly, so nested references remain shared. For supported structured data, `structuredClone` creates independent nested data, but cannot clone arbitrary functions/classes with their behavior. Undo needs an explicit snapshot/history policy; prototype delegation alone does not preserve an old state.
@@ -211,4 +210,7 @@ assert.throws(() => builder.setWheels(0), RangeError);
 
 **Validation:** exact block executed on Node24.18.0; ten assertions passed. No class hierarchy is needed for the earlier two-case simple factory; use Factory Method when the creator's workflow actually needs a replaceable creation hook. A validated options object is often clearer than a builder for a small configuration.
 
-**Exercise acceptance:** demonstrate delegated versus own properties and a nested shallow-copy alias; make a builder return an independent result, including a nested field; compare a simple factory with an actual overridden method. Show a concrete requirement that justifies the abstraction and preserve behavior with negative tests. Learner practice remains required. Official references: [ECMAScript Object.create algorithm](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.create), [Node24 structuredClone](https://nodejs.org/docs/latest-v24.x/api/globals.html#structuredclonevalue-options).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/patterns/What_kind_of_creational_design_patterns_do_you_know.md). All learner practice remains outstanding.

@@ -2,7 +2,7 @@
 
 # 💡 Thoughts on TypeScript
 
-TypeScript is, in my view, a **highly valuable tool for modern JavaScript development**, especially in professional, large-scale, or long-term projects. Here’s a structured perspective:
+TypeScript is, in my view, a **highly valuable tool for modern JavaScript development**, especially in professional, large-scale, or long-term projects.
 
 ---
 
@@ -44,4 +44,7 @@ TypeScript checks declared/inferred relationships and supports tooling. Runtime 
 
 Use the [measurable adoption exercise](./Pros_and_cons_of_TS_When_should_we_use_or_avoid_it.md#a-measurable-adoption-decision) rather than infer success from project size. For senior depth, the [generics lesson](./Generics.md) implements keyed/indexed relationships, mapped/conditional utilities, overloads and variance; the [unknown-input parser](./What_kind_of_problems_could_be_solved_by_using_TS.md#runtime-input-boundary) establishes a separate runtime boundary. Do not count these overview pages as additional implementation/practice evidence.
 
-**Acceptance:** explain one real relationship caught by the checker, one malformed external value caught only by a parser and one behavior bug requiring a runtime test. Apply the linked migration exercise to a small owned slice and retain before/after diagnostics and behavior evidence. Material is supplied; learner migration and professional readiness remain unestablished.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/What_do_you_think_about_typescript.md). All learner practice remains outstanding; the worked examples above are explanatory material.

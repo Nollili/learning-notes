@@ -32,7 +32,7 @@ While JavaScript is still technically running on a single thread, the event loop
 
 ## **Difference Between Node.js and the Browser**
 
-Although both Node.js and the browser run JavaScript, they serve different environments and have some key differences in terms of **execution context**, **APIs**, and **performance**. Let’s explore these differences:
+Although both Node.js and the browser run JavaScript, they serve different environments and have some key differences in terms of **execution context**, **APIs**, and **performance**.
 
 ### **1. Execution Environment:**
 
@@ -120,6 +120,10 @@ function sampleWork(run, now = () => performance.now()) {
 
 For n1000/10000 and q1/100, validate identical checksums before comparing timings. Count index builds and query sizes; expected hash lookup assumptions and O(n) construction explain scaling, while retained memory/GC and constants affect actual latency. Warmup here is a small illustration, not proof that optimization has stabilized. Do not subtract loop overhead blindly, log inside timed loops, compare different outputs or extrapolate one tiny sample to production. Repeated samples show variability; a single median still omits tails, startup, CPU contention and input distributions. Retain Node/browser/engine/OS versions and raw data; no universal numeric speedup is supplied here.
 
-**Exercise acceptance:** run the fixture at multiple n/q values, include one case where building an index is unjustified, and report construction/lookup counts plus observed durations/memory limitations. Profile a real interaction/server request separately; a CPU microbenchmark does not measure UI paint or API throughput. Explain why wrapping the same synchronous loop in an async function does not move it to another thread. Learner measurements remain required.
 
 References checked2026-10-22: [ECMAScript Set semantics](https://tc39.es/ecma262/multipage/keyed-collections.html#sec-set-objects), [Node performance measurement](https://nodejs.org/api/perf_hooks.html), [browser versus server host APIs](https://nodejs.org/api/globals.html). Actual capacity is a property of the whole bounded system, not JIT alone.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/People_usually_say_JS_is_fast_language_Do_you_agre_177e8106c24d80ffb378d1793d66982f.md). All learner practice remains outstanding; the worked examples above are explanatory material.

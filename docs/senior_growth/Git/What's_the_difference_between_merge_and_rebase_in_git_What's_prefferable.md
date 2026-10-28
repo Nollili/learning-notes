@@ -132,6 +132,10 @@ Reflog inspection and a new recovery branch can retain an old local commit witho
 
 **Executed 2026-10-25, Git2.54:** a fresh local repository with no remote proved `--ff-only` moved main to the existing tip without adding a commit; `--no-ff` created a two-parent commit. A deliberate rebase conflict exposed three index stages. Abort restored the original commit/clean tree; a second attempt resolved the explicit `limit=0` contract, continued to a new commit on the new main, and preserved the old commit via an inspected reflog/recovery branch. The separate shared retry fixture's resolved build and seven tests passed in B162. These are authored local fixtures, not learner completion or a real team's history.
 
-**Practice acceptance:** reproduce fast-forward versus forced merge, conflict→abort→continue and recovery in your own scratch repository. Record old/new commit IDs, parent counts, the behavioral reason for the resolution and checks run after replay. Explain why rewriting a collaborator's base is disruptive. Prepare a concise local review record; only the user may push. Learner practice remains required.
 
 Official references: [merge](https://git-scm.com/docs/git-merge), [rebase modes](https://git-scm.com/docs/git-rebase), [reflog](https://git-scm.com/docs/git-reflog).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/git/What%27s_the_difference_between_merge_and_rebase_in_git_What%27s_prefferable.md). All learner practice remains outstanding.

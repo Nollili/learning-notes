@@ -196,8 +196,12 @@ function processChunks(items, visit, schedule = setTimeout, unschedule = clearTi
 
 The owner must cancel on replacement/navigation. Do not mutate the input during processing. Callback errors propagate to the scheduler; production UI should own an explicit error/result channel. Timer clamping and background throttling mean no latency guarantee. For user-visible async search, also guard result identity: immutability and cancellation alone do not prove freshness.
 
-**Exercise:** process a 10,000-item fixture with a deliberately bounded visitor, then compare a worker implementation and a windowed result view. Acceptance: timer fixture proves ordered exactly-once visits, at most100 visits per scheduled turn, no visits after cancellation and harmless repeated disposal; worker results carry request identity and stale replies are ignored. In a real browser retain input responsiveness traces, layout/paint events and memory under repeated mount/dispose, with device/refresh/CPU settings. Demonstrate a dirty write/read loop versus reads-before-writes. Check reduced motion and focus retention. No browser measurements have been performed merely by providing this exercise.
 
 Use the adjacent [animation lifecycle lesson](./What_is_the_best,_most_efficient_way_of_performing_animations_in_webpages.md) for cancellation and reduced-motion code rather than maintaining a second animation owner.
 
 References checked2026-10-22: [Chromium rendering pipeline](https://www.chromium.org/developers/the-rendering-critical-path/), [Chrome layout thrashing guidance](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing), [Chrome cooperative idle scheduling](https://developer.chrome.com/blog/using-requestidlecallback). Browser support and timing must be checked for the chosen deployment targets.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_if_you_have_to_create_an_app_with_some_pretty_sophisticated_UI_%28views%2C_animations%2C_etc%29._What_are_the_pitfalls_%28UI_interractions%2C_60fps%2C_split_into_chunks%2C_workers_etc%29._Stages_to_build_frame.md). All learner practice remains outstanding.

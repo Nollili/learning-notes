@@ -99,7 +99,6 @@ For an internal component, use typed props and run a separate typecheck in CI. F
 
 JavaScript-only consumers of a component package need published declarations for editor help and, where the boundary warrants it, explicit runtime validation. Removing `propTypes` is not permission to remove domain validation. A reusable component can use default parameters for optional function props; explicit `null` does not trigger a default.
 
-**Exercise:** migrate the legacy button above to the typed version and add a boundary parser for `{label: unknown}`. Acceptance: invalid label never reaches render; omitted onClick is supported; typed incorrect calls fail; production behavior does not depend on a console warning. Retain separate typecheck and runtime-test evidence. Learner implementation remains required.
 
 [Official React 19 migration guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#removed-proptypes-and-defaultprops-for-functions).
 
@@ -123,4 +122,7 @@ export function ParsedButton({ label, onClick }: ButtonProps) {
 
 Parse JSON-style configuration once at the boundary; the projected result retains only a bounded nonblank label. Callbacks come from trusted application code, never JSON. Treat an invalid configuration as a controlled load/error state rather than pass it into rendering or fabricate success. Bound body size before parsing JSON and handle syntax errors separately; this helper does not authorize an action or sanitize arbitrary objects with hostile getters/proxies. React text rendering escapes the label; do not reinterpret it through dangerouslySetInnerHTML.
 
-**Acceptance:** accept/trim a valid label; reject null, arrays, missing/nonstring/blank/over80code-unit values; prove unrelated secrets are omitted. Render a label containing angle brackets and inspect escaped text, invoke an owned click callback, and support omitted onClick. Add a rejected typed call and show malformed unknown input fails at runtime in React19 without relying on PropTypes warnings. Keep checker, parser, React behavior and native accessibility evidence separate; learner practice remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/Prop_Types_or_typescript.md). All learner practice remains outstanding; the worked examples above are explanatory material.

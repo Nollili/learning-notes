@@ -21,7 +21,7 @@
 16. [ACID and BASE](#16-acid-and-base)
 17. [Architecture, testing, and production readiness](#17-architecture-testing-and-production-readiness)
 18. [Concurrency, atomicity, and transactions](#18-concurrency-atomicity-and-transactions)
-19. [Read/write concerns and schema evolution](#19-readwrite-concerns-and-schema-evolution)
+19. [Read/write concerns and schema evolution](#19-read-write-concerns-and-schema-evolution)
 20. [Diagnosing MongoDB applications](#20-diagnosing-mongodb-applications)
 21. [Final review checklist](#21-final-review-checklist)
 
@@ -267,134 +267,7 @@ mongosh "$MONGODB_URI"
 
 ### Commands inside `mongosh`
 
-After connecting, these commands run inside the interactive MongoDB shell.
-
-Inspect the server and select a database:
-
-```js
-show dbs
-use learning_db
-db.getName()
-show collections
-db.stats()
-```
-
-`use learning_db` selects the database, but MongoDB creates it only after the first write. Collections can also be created explicitly:
-
-```js
-db.createCollection('products')
-show collections
-```
-
-Insert documents:
-
-```js
-db.products.insertOne({ name: 'Coffee', price: 5, stock: 10 })
-
-db.products.insertMany([
-  { name: 'Tea', price: 4, stock: 20, category: 'drinks' },
-  { name: 'Cake', price: 7, stock: 5, category: 'food' },
-])
-```
-
-Read and filter documents:
-
-```js
-// Return every product.
-db.products.find()
-
-// Return the first matching product.
-db.products.findOne({ name: 'Coffee' })
-
-// Comparison operators: greater than or equal and less than.
-db.products.find({ price: { $gte: 5, $lt: 10 } })
-
-// Match one of several values.
-db.products.find({ category: { $in: ['drinks', 'food'] } })
-
-// Sort by price descending and return at most five documents.
-db.products.find().sort({ price: -1 }).limit(5)
-
-// Projection: include only name and price; omit _id.
-db.products.find({}, { _id: 0, name: 1, price: 1 })
-
-// Count matching documents and list distinct field values.
-db.products.countDocuments({ price: { $gte: 5 } })
-db.products.distinct('category')
-```
-
-Update documents:
-
-```js
-db.products.updateOne(
-  { name: 'Coffee' },
-  { $set: { price: 6 } },
-)
-
-// Atomically increment a numeric field.
-db.products.updateOne(
-  { name: 'Coffee' },
-  { $inc: { stock: -1 } },
-)
-
-// Add a field to all matching documents.
-db.products.updateMany(
-  { category: 'drinks' },
-  { $set: { available: true } },
-)
-```
-
-Delete documents:
-
-```js
-db.products.deleteOne({ name: 'Coffee' })
-
-// deleteMany removes every matching document; inspect with find() first.
-db.products.find({ available: false })
-db.products.deleteMany({ available: false })
-```
-
-Inspect and manage indexes:
-
-```js
-// Every collection automatically has a unique _id index.
-db.products.getIndexes()
-
-// Create a single-field index.
-db.products.createIndex({ name: 1 })
-
-// Create a compound index matching category + descending price queries.
-db.products.createIndex({ category: 1, price: -1 })
-
-// Show how MongoDB plans and executes a query.
-db.products.find({ category: 'drinks' })
-  .sort({ price: -1 })
-  .explain('executionStats')
-```
-
-Inspect a collection and leave the shell:
-
-```js
-db.products.stats()
-exit
-```
-
-Destructive shell commands should be used deliberately:
-
-```js
-// Delete every document in the collection but keep the collection/indexes.
-db.products.deleteMany({})
-
-// Delete the entire collection and its indexes.
-db.products.drop()
-
-// Delete the currently selected database.
-db.dropDatabase()
-```
-
-Before running `deleteMany({})`, `drop()`, or `dropDatabase()`, verify the active database with `db.getName()`.
-
-A database and collection can be created implicitly by the first write. For production setup, explicit migrations or initialization scripts make intent clearer.
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/database/mongo-shell.md).
 
 ### MongoDB Compass
 
@@ -661,7 +534,9 @@ bootstrap().catch(error => {
 });
 ```
 
-The HTTP close callback is not async: its result becomes a promise and database cleanup is awaited outside it. A rejection cannot escape as an unobserved callback promise. Repeated signals share one cleanup promise, errors from both resources are retained and a failed listener startup releases an already-connected database. This is a focused lifecycle example: production readiness/drain deadlines, forced upgraded-socket handling, bounded database shutdown and removal of process listeners for reusable test fixtures belong to the full lifecycle lesson. An external supervisor still needs an ultimate process deadline; do not infer this helper bounds a stuck disconnect call.
+The HTTP close callback is not async: its result becomes a promise and database cleanup is awaited outside it. A rejection cannot escape as an unobserved callback promise. Repeated signals share one cleanup promise, errors from both resources are retained and a failed listener startup releases an already-connected database.
+
+This is a focused lifecycle example: production readiness/drain deadlines, forced upgraded-socket handling, bounded database shutdown and removal of process listeners for reusable test fixtures belong to the full lifecycle lesson. An external supervisor still needs an ultimate process deadline; do not infer this helper bounds a stuck disconnect call.
 
 Mongoose uses a default connection when calling `mongoose.connect()`, and models created on that connection share its pool. Advanced applications can create explicit connections for isolation or multiple databases.
 
@@ -1429,7 +1304,9 @@ export async function backfillDisplayNames({ signal, batchSize = 500, maxBatches
 
 This historical firstName/lastName→stored displayName exercise uses **legacy_users**, not the main User schema's name field and computed displayName virtual. The migration schema declares every filter/read/write field and uses strict:'throw' to expose undeclared update fields rather than strip the update into a no-op. Do not combine a stored path and a same-named virtual in one schema. Test the exact model/collection mapping before running a migration.
 
-The operation is idempotent for already-filled records, bounds work per run and detects a no-progress batch rather than looping forever. Conditional updates preserve a displayName another writer already set. Under a single migration owner, zero progress is suspicious; concurrent workers can also finish a selected batch first, so inspect/retry a bounded run rather than assume corruption. Invalid legacy names stop before issuing that batch: quarantine/fix them deliberately, do not write literal undefined into a display name. Partial unordered bulk failure may leave some records updated; retain safe checkpoint/error details and resume from the missing-field predicate after diagnosis.
+The operation is idempotent for already-filled records, bounds work per run and detects a no-progress batch rather than looping forever. Conditional updates preserve a displayName another writer already set. Under a single migration owner, zero progress is suspicious; concurrent workers can also finish a selected batch first, so inspect/retry a bounded run rather than assume corruption.
+
+Invalid legacy names stop before issuing that batch: quarantine/fix them deliberately, do not write literal undefined into a display name. Partial unordered bulk failure may leave some records updated; retain safe checkpoint/error details and resume from the missing-field predicate after diagnosis.
 
 Cancellation is checked between database calls; it does not promise to cancel an in-flight bulkWrite. Configure supported driver/connection timeouts and an operational stop policy for the chosen version. maxTimeMS bounds the query's server execution, not all connection/queue/network waiting. Add measured pacing and metrics for modified/remaining rows; completed:false is not successful migration completion. Close the migration connection in finally, including when validation/DB errors occur. Actual strict-casting, resumability and partial-failure behavior require tests against a real isolated MongoDB deployment.
 
@@ -1479,72 +1356,11 @@ Total possible connections equal roughly pool size multiplied by replica count. 
 
 ### Diagnostic exercise
 
-Create an inventory reservation workflow.
-
-Prove that:
-
-- stock never becomes negative under concurrent requests;
-- duplicate order commands return one logical result;
-- the query uses the intended index;
-- transaction retries do not duplicate external side effects;
-- a schema backfill can stop and resume;
-- pool saturation fails within a bounded time instead of hanging indefinitely.
-
----
+[Exercises and learner checklist](../practice/node-js/module-07-mongodb-mongoose.md).
 
 ## 21. Final review checklist
 
-### Concurrency and operations
-
-- [ ] Replace unsafe read-modify-write code with atomic conditional updates where possible.
-- [ ] Use optimistic concurrency when conflicting overwrites must be detected.
-- [ ] Keep multi-document transactions short and free of external side effects.
-- [ ] Explain read concern, write concern, read preference, and stale-read consequences.
-- [ ] Evolve document shapes with compatible readers, new writers, and resumable backfills.
-- [ ] Separate pool wait time from query execution time during diagnosis.
-
-### NoSQL selection
-
-- [ ] Explain document, key-value, wide-column, and graph models.
-- [ ] Choose a database from data shape, access patterns, and guarantees.
-- [ ] Compare relational and document models without relying on slogans.
-- [ ] Explain why production systems sometimes use multiple database types.
-
-### MongoDB
-
-- [ ] Explain databases, collections, documents, BSON, and `_id`.
-- [ ] Validate and construct ObjectIds safely.
-- [ ] Use `mongosh` or Compass to explore data.
-- [ ] Design single-field, unique, and compound indexes from queries.
-- [ ] Explain index costs and the compound-index left-prefix rule.
-
-### Mongoose
-
-- [ ] Distinguish schema, model, document, query, and repository.
-- [ ] Connect before listening and disconnect during shutdown/tests.
-- [ ] Implement CRUD, filters, projections, sorting, and pagination.
-- [ ] Use `lean()` for appropriate read-only queries.
-- [ ] Use safe update operators and `runValidators`.
-- [ ] Classify validation, cast, duplicate-key, and unexpected errors.
-- [ ] Explain document hooks versus query hooks.
-- [ ] Build aggregation pipelines with ordered stages.
-
-### Data modeling
-
-- [ ] Embed small, bounded, owned data that is read with its parent.
-- [ ] Reference shared, independent, or unbounded data.
-- [ ] Account for the 16 MiB document limit and array growth.
-- [ ] Resolve references with `populate()` or `$lookup` deliberately.
-- [ ] Plan referential integrity and deletion behavior in application workflows.
-
-### Distributed-system theory
-
-- [ ] Define CAP consistency, availability, and partition tolerance.
-- [ ] Explain why the C/A trade-off matters specifically during a partition.
-- [ ] Avoid treating CP/AP labels as immutable database identities.
-- [ ] Define ACID and BASE.
-- [ ] Distinguish ACID consistency from CAP consistency.
-- [ ] Explain why SQL/NoSQL and ACID/BASE are not exact synonyms.
+[Exercises and learner checklist](../practice/node-js/module-07-mongodb-mongoose.md).
 
 ### One-minute recap
 
@@ -1553,14 +1369,4 @@ NoSQL is a family of data models selected by access pattern, not a single replac
 
 ## Model, lifecycle and update acceptance labs
 
-Primary backend study stack remains PostgreSQL; MongoDB/Mongoose is the document-model alternative. Examples here use Mongoose9.11.2/Node24.18.0 for the local schema/control-flow checks; verify server compatibility separately. Do not assume an offline schema test exercises a MongoDB server.
-
-**Model consistency:** validate user/editor/country/loginCount examples against the declared main schema; confirm invalid roles/negative or fractional loginCount fail on document validation. Understand that $inc query update validators do not enforce every numeric invariant: protect critical increments with validated operations/conditional filters, and database validation where required. Base author population works with the declared ref; nested reviewer/team needs its explicit model variant. Aggregation country comes from the top-level declared field, with a documented missing-country policy.
-
-**Bounded comments:** create a valid small post; document validation rejects over100 embedded comments and overlong text. The update path must use $each+$slice:-100, so repeated/concurrent writes preserve at most the recent100 snapshot. Keep full history in a separate paginated collection when required. Test other writers/database validation and maximum BSON size separately; a Mongoose array validator alone does not guarantee every query update is bounded.
-
-**Inventory:** reject0, negatives, fractions, nonnumbers, Infinity and unsafe integers before decrementing stock or beginning the transaction. A negative decrement would otherwise increase stock. Race two valid reservations against the real conditional filter and require nonnegative remaining stock/one accepted reservation when capacity fits only one. Declare the Product stock/version fields and verify transaction-capable topology and outbox schemas before treating the snippets as a complete service.
-
-**Migration and lifecycle:** use only legacy_users fixtures for this backfill, verify declared displayName survives strict casting and a missing destination field fails loudly; test empty/completed/bounded/resumed/invalid-name/no-progress/partial-error/cancel cases. Trigger HTTP-close and disconnect failures and require one awaited rejected cleanup result, no unhandled rejection and no second disconnect on repeated signals. Real Mongo transaction/index/pool/startup/shutdown deadlines and learner practice remain separate required evidence.
-
-References checked2026-10-21: [Mongoose strict schema](https://mongoosejs.com/docs/guide.html#strict), [update validator limits](https://mongoosejs.com/docs/validation.html#update-validators), [Mongo atomicity](https://www.mongodb.com/docs/manual/core/write-operations-atomicity/), [$push/$slice](https://www.mongodb.com/docs/manual/reference/operator/update/slice/), [Mongoose9 migration](https://mongoosejs.com/docs/migrating_to_9.html).
+[Exercises and learner checklist](../practice/node-js/module-07-mongodb-mongoose.md).

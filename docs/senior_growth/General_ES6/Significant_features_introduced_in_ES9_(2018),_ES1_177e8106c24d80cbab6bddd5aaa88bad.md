@@ -276,7 +276,6 @@ console.log(matches.map(match => [match[0], match.index])); // [['test',0],['tes
 
 The digits do not belong to the pattern. matchAll requires a global regex when given a RegExp; capture groups are distinct from the whole match. A g regex's test/exec methods advance lastIndex, which can surprise repeated validation. Escape external literal text before constructing a regex and bound hostile inputs; nested ambiguous quantifiers can cause ReDoS. Unicode-aware flags/properties change matching semantics but are not a universal word-boundary or security solution.
 
-**Exercise:** instrument request start times to compare eager map versus the sequential producer without calling public services. Acceptance: sequential peak concurrency1; bounded variant respects its configured cap; every rejection is handled immediately; signal abort releases active body work; iterator break runs cleanup; regex matches exclude digits at offsets0/5. Add a hostile near-match performance case in an isolated worker/process with a deadline, never an unbounded regex on the request thread.
 
 Official references: [async iteration](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-asynciterator-interface), [generator protocols](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-generator-objects), [RegExp](https://tc39.es/ecma262/multipage/text-processing.html#sec-regexp-regular-expression-objects). Checked2026-10-20; Node24 baseline.
 
@@ -304,7 +303,9 @@ function literalMatches(text, literal) {
 }
 ```
 
-The stateful test results are true,false,true because g updates/reset lastIndex. Do not reuse that instance as a stateless field validator. m changes anchors, s changes dot matching and u enables Unicode-aware syntax/properties; g enumerates matches and y instead requires a match at lastIndex. d, on supporting runtimes, adds match indices; it does not change semantic truth. u/v are distinct mutually exclusive modes, not flags to combine casually. Unicode property escapes do not make `\b` a general multilingual word boundary. The letter fixture returns árvíz andπ, omitting the emoji; it is not universal name validation, grapheme counting or language-aware word segmentation.
+The stateful test results are true,false,true because g updates/reset lastIndex. Do not reuse that instance as a stateless field validator. m changes anchors, s changes dot matching and u enables Unicode-aware syntax/properties; g enumerates matches and y instead requires a match at lastIndex. d, on supporting runtimes, adds match indices; it does not change semantic truth. u/v are distinct mutually exclusive modes, not flags to combine casually.
+
+Unicode property escapes do not make `\b` a general multilingual word boundary. The letter fixture returns árvíz andπ, omitting the emoji; it is not universal name validation, grapheme counting or language-aware word segmentation.
 
 RegExp.escape is a later standardized API (ES2025), not an ES2018/2020 feature. The literal helper intentionally rejects an unsupported runtime rather than silently use an incomplete hand-written escape recipe. For simple literal containment use String.includes, avoiding regex construction entirely. If a supported target lacks escape, choose and test a maintained spec-compatible polyfill or redesign the query, including delimiter/leading-digit/context cases. Never let a user choose arbitrary flags/pattern syntax for this literal-only contract.
 
@@ -314,4 +315,7 @@ A pattern with ambiguous nested repetition such as `^(a+)+$` can explore many po
 
 For an isolated exercise, run increasing short a-runs plus`!` in a dedicated worker/process; parent-enforced deadline must terminate it and consume exit/error events. Stop at the first deadline, retain runtime/length/results and do not extrapolate a universal threshold across engines. Compare the intended linear pattern `^a+$` under a strict input cap. Test success and near-failure; matching only easy positive examples hides the problem. The course's Node worker lifecycle lesson supplies termination/exit ownership; this note's author check uses only a short bounded child-process fixture, not a claim of a production regex sandbox.
 
-**Additional acceptance:** exact match groups/indices0and5, m/s behavior, lastIndex cycling, literal punctuation/leading digits/Unicode cases, missingescape support and input bounds are tested. Show that matchAll requires g for a RegExp and does not turn captures into full matches. Record safe child-process timeout termination for a hostile near-match separately from ordinary unit timings. User regex execution, advanced parser support and learner performance evidence remain separate decisions.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Significant_features_introduced_in_ES9_%282018%29%2C_ES1_177e8106c24d80cbab6bddd5aaa88bad.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -106,6 +106,10 @@ The actual controlled ?? mutation compiled but failed the invalid-limits test. U
 
 For mentoring, ask the author to predict null/zero/default behavior and explain the invariant, then test the prediction together. Supply enough context to learn without simply demanding a preferred line. After a correction, review the actual new diff and affected evidence. If a disagreement remains, record the competing assumptions, options, decision owner and concrete experiment; a resolved thread is not proof the code is correct.
 
-**Exercise acceptance:** review a learner-authored change against explicit requirements, write one concrete blocking comment and one optional improvement, resolve a disagreement using a counterexample/test, and retain the final diff/evidence plus the author's explanation. The local fixture supplies traceability and defect checks, but it does not establish real mentoring, peer approval or learner skill. Those outcomes remain practice required.
 
 References: [reviewable local workflow](../../ai-assisted-engineering/local-workflow-and-git.md), [independent verification dimensions](../../ai-assisted-engineering/verification-and-permissions.md). The authored dialogue and executed mutation are distinguished deliberately.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/Why_code_review_is_important_and_how_does_it_work_on_your_project%2C_what_is_your_own_work_flow_for_it.md). All learner practice remains outstanding.

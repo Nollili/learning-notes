@@ -224,7 +224,7 @@ const EnvironmentSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'debug']).default('info'),
   DATABASE_URL: z.string().url(),
-  SHUTDOWN_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
+  SHUTDOWN_TIMEOUT_MS: z.coerce.number().int().min(1).max(2_147_483_647).default(20_000),
   TRUST_PROXY: z.enum(['true', 'false']).default('false'),
 });
 
@@ -337,25 +337,11 @@ void start().catch(() => {
 
 **When to use it:** use this composition-root pattern for long-running services. It makes dependency ownership, startup failure, integration testing, and cleanup explicit.
 
-```ts
-// listen-ready.ts — async bind errors become a rejected startup promise
-import type { Server } from 'node:http';
-export function listenReady(server: Server, port: number, host: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const cleanup = () => {
-      server.off('error', onError);
-      server.off('listening', onListening);
-    };
-    const onError = (error: Error) => { cleanup(); reject(error); };
-    const onListening = () => { cleanup(); resolve(); };
-    server.once('error', onError);
-    server.once('listening', onListening);
-    try { server.listen(port, host); } catch (error) { cleanup(); reject(error); }
-  });
-}
-```
+<<< ../workbench/node-js/runtime/operations/listen-ready.ts
 
-A listen callback is not an error callback. EADDRINUSE arrives through the server error event after listen returns. The helper owns startup listeners until one outcome and removes them; a separate runtime error owner remains for the running server. connectDatabase must close its partially-created pool if connection itself rejects. The composition-root catch owns resources only after that factory successfully hands them over. Apply a startup deadline and real driver connect/query limits too; a caught rejection does not bound a never-settling operation. The abbreviated composition snippet needs the real readiness/jobs/config adapter from section9, not an unrelated second shutdown implementation.
+A listen callback is not an error callback. EADDRINUSE arrives through the server error event after listen returns. The helper owns startup listeners until one outcome and removes them; a separate runtime error owner remains for the running server. connectDatabase must close its partially-created pool if connection itself rejects. The composition-root catch owns resources only after that factory successfully hands them over.
+
+Apply a startup deadline and real driver connect/query limits too; a caught rejection does not bound a never-settling operation. The abbreviated composition snippet needs the real readiness/jobs/config adapter from section9, not an unrelated second shutdown implementation.
 
 ### Startup ordering
 
@@ -438,49 +424,7 @@ Pino is another common choice with an emphasis on low overhead. The important pr
 
 Winston/logform errors({ stack: true }) handles an Error as the log record or its message; it does not recursively serialize arbitrary metadata.error. Raw Error fields are often non-enumerable, so JSON can lose them. Conversely, blindly copying enumerable driver fields can leak SQL, tokens or request bodies. Select the diagnostic contract deliberately.
 
-```ts
-// safe-errors.ts — application-owned diagnostic metadata, not arbitrary driver serialization
-const messages = {
-  UNEXPECTED: 'Unexpected operation failure',
-  DATABASE_UNAVAILABLE: 'Required database unavailable',
-  INVENTORY_REJECTED: 'Inventory operation rejected',
-} as const;
-type DiagnosticCode = keyof typeof messages;
-interface OwnedDiagnostic { code: DiagnosticCode; frames: string; cause: unknown }
-const owned = new WeakMap<Error, OwnedDiagnostic>();
-export class DiagnosticError extends Error {
-  constructor(code: DiagnosticCode, cause?: unknown) {
-    super(messages[code], { cause });
-    this.name = 'DiagnosticError';
-    // Capture here; never accept a caller-provided stack/message as diagnostic metadata.
-    const frames = (new Error().stack ?? '').split('\n').slice(2, 10).join('\n').slice(0, 2048);
-    owned.set(this, { code, frames, cause });
-  }
-}
-interface SafeError {
-  code: DiagnosticCode;
-  message: string;
-  stackFrames?: string;
-  cause?: SafeError;
-  truncated?: boolean;
-}
-export function serializeError(value: unknown): SafeError {
-  const seen = new Set<unknown>();
-  function visit(current: unknown, depth: number): SafeError {
-    if (seen.has(current) || depth >= 3) {
-      return { code: 'UNEXPECTED', message: messages.UNEXPECTED, truncated: true };
-    }
-    seen.add(current);
-    const detail = current instanceof Error ? owned.get(current) : undefined;
-    if (!detail) return { code: 'UNEXPECTED', message: messages.UNEXPECTED };
-    return {
-      code: detail.code, message: messages[detail.code], stackFrames: detail.frames,
-      ...(detail.cause === undefined ? {} : { cause: visit(detail.cause, depth + 1) }),
-    };
-  }
-  return visit(value, 0);
-}
-```
+<<< ../workbench/node-js/runtime/operations/safe-errors.ts
 
 ```ts
 try {
@@ -667,7 +611,8 @@ Readiness starts false, becomes true only after initialization, and becomes fals
 ```ts
 // readiness-probe.ts — one underlying operation, even when a driver ignores deadlines
 export function createReadinessProbe(ping: () => Promise<void>, timeoutMs = 500) {
-  if (!Number.isInteger(timeoutMs) || timeoutMs < 1) throw new Error('Invalid probe budget');
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647)
+    throw new RangeError('Invalid probe budget');
   let inFlight: Promise<boolean> | undefined;
   return function check(): Promise<boolean> {
     if (inFlight) return inFlight;
@@ -697,7 +642,9 @@ router.get('/health/ready', async (_req, res) => {
 
 Where possible, use an actual lightweight operation such as `SELECT 1`, not only a driver's cached “connected” flag.
 
-For the primary PostgreSQL/MikroORM 7.2 path, pass reviewed pg pool options via driverOptions, for example connectionTimeoutMillis:300, statement_timeout:400 and query_timeout:600 (milliseconds), with a bounded pool. Run a real SELECT1 through the same owned pool. PostgreSQL statement_timeout bounds server statement execution; pg query_timeout bounds client query waiting and must not be described as cancelling arbitrary server work. Acquisition/connect has its own budget. Tune these values for deployment latency and reserve pool capacity; never expose the raw error on the endpoint. Some adapters implement cancellation/connection destruction; verify their actual driver contract rather than attach an unused AbortSignal. A separate tiny health pool avoids starving application work but does not establish the main pool's health. Do not start replacement pings after timeout while an older one still owns a connection.
+For the primary PostgreSQL/MikroORM 7.2 path, pass reviewed pg pool options via driverOptions, for example connectionTimeoutMillis:300, statement_timeout:400 and query_timeout:600 (milliseconds), with a bounded pool. Run a real SELECT1 through the same owned pool. PostgreSQL statement_timeout bounds server statement execution; pg query_timeout bounds client query waiting and must not be described as cancelling arbitrary server work. Acquisition/connect has its own budget.
+
+Tune these values for deployment latency and reserve pool capacity; never expose the raw error on the endpoint. Some adapters implement cancellation/connection destruction; verify their actual driver contract rather than attach an unused AbortSignal. A separate tiny health pool avoids starving application work but does not establish the main pool's health. Do not start replacement pings after timeout while an older one still owns a connection.
 
 The [executed container/Compose lab](./container-deployment-lab.md) applies this contract to actual image/startup/readiness/shutdown configuration and a bounded PostgreSQL client owner. Its database-stall test distinguishes HTTP timeout from connection destruction and verifies persistence/replacement. It is a disposable counter fixture, not a production Task Board deployment.
 
@@ -744,96 +691,21 @@ The application deadline must be shorter than the platform's termination grace p
 
 ### Promise wrapper for server close
 
-```ts
-import type { Server } from 'node:http';
-
-function closeServer(server: Server): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Reap connections that become idle after draining starts, without aborting active responses.
-    const sweep = setInterval(() => server.closeIdleConnections(), 100);
-    const finish = (error?: Error) => {
-      clearInterval(sweep);
-      if (error) reject(error); else resolve();
-    };
-    try { server.close(finish); } catch (error) {
-      clearInterval(sweep);
-      reject(error);
-    }
-  });
-}
-```
+The complete close helper is included with the coordinated shutdown implementation below. It clears its idle-connection sweep after closure or a synchronous failure.
 
 Modern supported Node.js releases close idle keep-alive connections as part of `server.close()`. The owned sweep additionally handles connections observed becoming idle after drain begins; it is cleared on callback or synchronous failure and never calls closeAllConnections during normal draining. The real Node 24 fixture required this to finish an active-then-idle keep-alive response within its short budget. Upgraded protocols such as WebSockets and arbitrary custom sockets still need explicit ownership and cleanup.
 
 ### Coordinated shutdown
 
-```ts
-// shutdown.ts — all adapters are owned; logger methods must not throw
-import type { Server } from 'node:http';
-interface LifecycleLogger {
-  info(event: string, fields?: object): void;
-  warn(event: string, fields?: object): void;
-  error(event: string, fields?: object): void;
-}
-interface ShutdownDependencies {
-  server: Server;
-  readiness: { markUnready(): void };
-  database: { close(): Promise<void> };
-  jobs: { stopIntake(): void; drain(): Promise<void> };
-  logger: LifecycleLogger;
-  timeoutMs: number;
-}
-export function createShutdown(deps: ShutdownDependencies) {
-  let pending: Promise<void> | undefined;
-  return function shutdown(signal: string): Promise<void> {
-    if (pending) return pending;
-    pending = (async () => {
-      const failures: unknown[] = [];
-      deps.readiness.markUnready();
-      deps.logger.warn('shutdown.started', { signal });
-      const deadline = setTimeout(() => {
-        deps.logger.error('shutdown.deadline_exceeded');
-        try { deps.server.closeAllConnections(); } finally { process.exit(1); }
-      }, deps.timeoutMs); // Referenced: deadline still fires if a stuck promise owns no handle.
-      async function attempt(work: () => Promise<void>): Promise<void> {
-        try { await work(); } catch (error) { failures.push(error); }
-      }
-      try {
-        try { deps.jobs.stopIntake(); } catch (error) { failures.push(error); }
-        // Both settle before the shared database closes, even if HTTP drain rejects.
-        await Promise.all([
-          attempt(() => closeServer(deps.server)),
-          attempt(() => deps.jobs.drain()),
-        ]);
-        await attempt(() => deps.database.close());
-        if (failures.length) {
-          process.exitCode = 1;
-          deps.logger.error('shutdown.failed', { failureCount: failures.length });
-        } else {
-          deps.logger.info('shutdown.completed');
-        }
-      } finally { clearTimeout(deadline); }
-    })();
-    return pending;
-  };
-}
-export function installShutdownHandlers(deps: ShutdownDependencies) {
-  const shutdown = createShutdown(deps);
-  const onTerm = () => { void shutdown('SIGTERM'); };
-  const onInt = () => { void shutdown('SIGINT'); };
-  process.once('SIGTERM', onTerm);
-  process.once('SIGINT', onInt);
-  return { shutdown, dispose() {
-    process.off('SIGTERM', onTerm); process.off('SIGINT', onInt);
-  } };
-}
-```
+<<< ../workbench/node-js/runtime/operations/shutdown.ts
 
 **What it does:** prevents duplicate shutdown, removes the instance from readiness, stops new HTTP work, waits for active requests, closes owned resources, and enforces a final deadline.
 
 **When to use it:** every long-running service needs an ownership list for pools, consumers, schedulers, telemetry exporters, workers, sockets, and timers that must stop.
 
-The jobs adapter stops intake synchronously, then drain settles only after all owned work has stopped using the database. A rejected drain must still mean its workers have stopped; if they cannot stop, keep the drain pending for the final deadline rather than falsely claim release. Cover schedulers, retries, detached promises and upgraded sockets in the ownership inventory. The small example's final forced exit is process-wide; test it only in a child process. Do not inject process.exit into an ordinary test runner. Validate timeoutMs at startup (positive finite integer shorter than platform grace). Readiness/logger adapters are trusted synchronous nonthrowing operations. Failures are counted and produce a nonzero exit without logging raw error objects; add reviewed diagnostic codes when needed. Cleanup does not report completed when any attempt failed.
+The jobs adapter stops intake synchronously, then drain settles only after all owned work has stopped using the database. A rejected drain must still mean its workers have stopped; if they cannot stop, keep the drain pending for the final deadline rather than falsely claim release. Cover schedulers, retries, detached promises and upgraded sockets in the ownership inventory. The small example's final forced exit is process-wide; test it only in a child process.
+
+Do not inject process.exit into an ordinary test runner. Validate timeoutMs at startup (positive finite integer shorter than platform grace). Readiness/logger adapters are trusted synchronous nonthrowing operations. Failures are counted and produce a nonzero exit without logging raw error objects; add reviewed diagnostic codes when needed. Cleanup does not report completed when any attempt failed.
 
 ### Important subtleties
 
@@ -847,18 +719,7 @@ The jobs adapter stops intake synchronously, then drain settles only after all o
 
 ### Test shutdown
 
-An automated integration test can:
-
-1. Start the application on an ephemeral port.
-2. Begin a controlled slow request.
-3. trigger the shutdown function directly rather than signaling the test runner;
-4. verify readiness becomes `503`;
-5. verify the in-flight request completes;
-6. verify new connections are rejected;
-7. verify pools and workers close;
-8. verify the deadline handles a deliberately stuck resource.
-
----
+[Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 
 ## 10. Application and process-level errors
 
@@ -932,7 +793,7 @@ process.setUncaughtExceptionCaptureCallback(() => {
 
 **Why replace the default uncaught reporter here?** Node's default reporter prints the error message/stack. `uncaughtExceptionMonitor` observes an exception but does not suppress that output, so an otherwise safe logger would still leak a credential embedded in an error message. This executable deliberately installs a capture callback to own reporting and exit. Coordinate this process-wide choice with crash-reporting integrations; a second capture callback cannot be installed concurrently. The callback must never resume service. An external supervisor performs replacement.
 
-A stable category alone provides limited diagnosis. At an earlier, controlled operation boundary, capture a reviewed diagnostic code and bounded application-owned frames using the serializer in section 6; never fall back to raw exception text at process level. The Task Board uses the same fixed-code fatal boundary and tests it with a secret sentinel. Fatal events can lose output when stderr itself is unavailable; termination remains mandatory.
+A stable category alone provides limited diagnosis. At an earlier, controlled operation boundary, capture a reviewed diagnostic code and bounded application-owned frames using the serializer in section 6; never fall back to raw exception text at process level. The runnable application uses the same fixed-code fatal boundary and tests it with a secret sentinel. Fatal events can lose output when stderr itself is unavailable; termination remains mandatory.
 
 ### Exit codes
 
@@ -1186,89 +1047,17 @@ Measure latency distributions, resource saturation, and recovery—not only tota
 
 ## Graduated practice: logging and lifecycle
 
-### 1. Worked example
-
-Run Task Board checkpoint 10. Observe one request ID, two different health checks, and a signal-triggered shutdown. Follow `server.ts` → `createShutdown` → `db.close`; identify which function owns each resource.
-
-### 2. Guided failure
-
-Start with an unreachable database port. Hint: metadata discovery does not establish connectivity. **Success:** HTTP never listens, startup reports only a stable diagnostic code, and the command terminates unsuccessfully. Then restore the database and repeat a successful start.
-
-### 3. Independent task
-
-Add a bounded background job with explicit `stopIntake` and `drain` ownership. **Success:** SIGTERM prevents new jobs, lets an active job finish, and closes its database only after the job releases it. A stuck job reaches the process deadline. Use a child process to test forced termination.
-
-### 4. Optional depth: structured diagnostics
-
-Use the primary Node 24/Express 5 stack and a locked Winston 3 version. Route metadata must be developer-defined templates; no req.path/originalUrl fallback on matched, unmatched or aborted requests. A router mounted under a prefix may need explicit static route IDs to distinguish operations. Never derive a log/metric route label by partially redacting a raw URL. Keep request IDs bounded and accept an upstream value only under an explicit trusted-gateway policy; they are correlation metadata, never authorization.
-
-**Acceptance:** capture actual Winston JSON output. A nested raw Error demonstrates missing stack with the errors formatter alone; the explicit owned projection preserves bounded stack/cause codes. Put token/password/SQL sentinels into an unknown error message, enumerable fields, cause object and raw URL; none may appear in emitted records. Mutating an owned Error's message/stack after construction must not alter its recorded safe diagnostic. More than three causes truncate predictably. Unknown exceptions remain observable as a stable category rather than silently disappearing. Matched routes emit a static template; unmatched/aborted routes use a fixed label. Run overlapping asynchronous request contexts and prove each completion/inner event retains its own ID. Retain evidence of the actual sink format, without recording real secrets.
-
-Keep a short record of the emitted JSON and sentinel checks. Review retention/access controls when choosing a hosted log sink.
-
-References checked 2026-10-21: [logform errors format contract](https://github.com/winstonjs/logform#errors), [Winston formats/transports](https://github.com/winstonjs/winston), [OWASP logging and sensitive data](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html), [Node 24 AsyncLocalStorage](https://nodejs.org/download/release/v24.18.0/docs/api/async_context.html).
-
-
-### 5. Optional depth: lifecycle failure matrix
-
-**Acceptance:** start on an ephemeral port, hold a slow request/job, initiate shutdown twice and prove both calls share one promise. Intake stops immediately and readiness becomes false; active work finishes before database close; new connections are rejected. Force server-close/job/database failures separately and together: every eligible cleanup runs, failure exit status is nonzero and completed is absent. A job that cannot release its database ownership keeps drain pending until the final child-process deadline. Test deadline termination and uncaught startup rejection in disposable child processes, not the parent test runner.
-
-Bind a second server to an occupied address and verify the async startup rejection closes its handed-over database. For readiness, issue concurrent calls to a deliberately never-settling ping: each reply returns false within budget and underlying call count stays one across subsequent probes. Then use a real driver-backed slow query with configured statement/acquisition limits; prove the query actually ends and later probes can recover. A response-only Promise.race test does not demonstrate database cancellation. Test shutdown beginning during a successful ping to prevent a late 200 readiness response. Record the observed deadlines and exit statuses; do not infer driver cancellation from the HTTP response alone.
-
-References checked 2026-10-21: [Node 24 HTTP server lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/http.html), [Node 24 net listen/error events](https://nodejs.org/download/release/v24.18.0/docs/api/net.html), [pg client timeout configuration](https://node-postgres.com/apis/client), [PostgreSQL statement timeout](https://www.postgresql.org/docs/16/runtime-config-client.html#GUC-STATEMENT-TIMEOUT), [MikroORM 7 driver options](https://mikro-orm.io/docs/configuration#driver-options).
-
----
+[Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 
 ## 15. Final review checklist
 
-### Architecture and deployment
-
-- [ ] Explain VMs, multiple instances, containers/orchestrators, and serverless trade-offs.
-- [ ] Keep correctness independent of one process's memory or local disk.
-- [ ] Build once and configure the same artifact per environment.
-- [ ] Run migrations as controlled one-off release/admin work.
-- [ ] Rely on an external supervisor for restart and replacement.
-
-### Configuration
-
-- [ ] Parse and validate all environment values before listening.
-- [ ] Never provide unsafe defaults for secrets or trust decisions.
-- [ ] Export a typed configuration object instead of spreading `process.env` reads.
-- [ ] Keep production secrets out of source, images, `.env` files, logs, and error output.
-- [ ] Understand Node's `--env-file` and the local-development role of dotenv-style files.
-
-### Logging and observability
-
-- [ ] Emit structured events with deliberate severity levels.
-- [ ] Preserve error stacks/causes and avoid duplicate logging.
-- [ ] Redact credentials and unnecessary personal data.
-- [ ] Propagate validated correlation context with `AsyncLocalStorage` or tracing.
-- [ ] Distinguish operational logs, audit events, metrics, and traces.
-- [ ] Avoid high-cardinality metric labels.
-
-### Health and lifecycle
-
-- [ ] Distinguish startup, liveness, and readiness consequences.
-- [ ] Keep liveness shallow and readiness bounded by timeouts.
-- [ ] Mark the instance unready before draining.
-- [ ] Stop new work, complete bounded in-flight work, and close owned resources.
-- [ ] Handle WebSockets, workers, consumers, timers, pools, and telemetry explicitly.
-- [ ] Keep shutdown shorter than the platform's forced-termination deadline.
-
-### Errors and security
-
-- [ ] Use a final Express error handler and respect `headersSent`.
-- [ ] Return stable public errors without production stack traces.
-- [ ] Treat uncaught exceptions and unhandled rejections as fatal defects.
-- [ ] Use TLS and configure proxy trust precisely.
-- [ ] Apply Helmet as a reviewed baseline, not a complete security solution.
-- [ ] Understand that CORS is a browser read policy, not authorization.
-- [ ] Configure rate limits for the actual multi-instance deployment and threat model.
-- [ ] Bound body size, query cost, concurrency, queues, pools, and dependency duration.
+[Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 
 ### One-minute recap
 
-A production Node.js service starts by validating configuration and connecting critical dependencies before it accepts traffic. It emits structured, redacted events and propagates correlation or trace context so behavior can be reconstructed. Separate startup, liveness, and readiness checks let infrastructure make the correct decision without creating restart cascades. On termination, the service becomes unready, stops accepting work, finishes bounded in-flight operations, closes every owned resource, and exits before the platform deadline. Stable error contracts hide internal details while logs preserve diagnostic evidence. TLS, reviewed security headers, precise proxy trust, deliberate CORS, distributed rate limiting, and resource bounds form a baseline—not a substitute for application authorization and threat modeling. Logs, metrics, traces, load tests, and failure tests show whether these controls work under real conditions.
+A production Node.js service starts by validating configuration and connecting critical dependencies before it accepts traffic. It emits structured, redacted events and propagates correlation or trace context so behavior can be reconstructed. Separate startup, liveness, and readiness checks let infrastructure make the correct decision without creating restart cascades. On termination, the service becomes unready, stops accepting work, finishes bounded in-flight operations, closes every owned resource, and exits before the platform deadline.
+
+Stable error contracts hide internal details while logs preserve diagnostic evidence. TLS, reviewed security headers, precise proxy trust, deliberate CORS, distributed rate limiting, and resource bounds form a baseline—not a substitute for application authorization and threat modeling. Logs, metrics, traces, load tests, and failure tests show whether these controls work under real conditions.
 
 Module 11 continues from these operational signals into systematic performance diagnosis. Module 12 continues from retries and dependency failure into queues, idempotent consumers, outbox workflows, caches, circuit breakers, and distributed consistency.
 

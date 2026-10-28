@@ -16,7 +16,7 @@ A **Map** in ES6 is a collection of key-value pairs where both the keys and valu
 4. **Iterable**:
     - A `Map` is iterable and can be directly used in `for...of` loops or spread operations.
 5. **Performance**:
-    - Optimized for frequent additions and removals of key-value pairs.
+    - Suitable semantics for dynamic key/value collections; actual costs depend on implementation and workload.
 
 ### **Example:**
 
@@ -106,7 +106,7 @@ https://www.youtube.com/watch?v=ycohYSx5h9w&ab_channel=TraversyMedia
 - **Key Flexibility**: `Map` allows non-string keys, unlike `Object`.
 - **Iteration**: Built-in methods for iteration (`forEach`, `keys`, `values`, `entries`).
 - **Size Property**: Easy access to the number of elements with `size`.
-- **Performance**: Better optimized for frequent additions and deletions.
+- **Performance**: Measure the required access/update workload; Map is not universally faster than an object.
 
 ### **Advantages of Object over Map**
 
@@ -158,6 +158,6 @@ console.log(JSON.stringify([...new Map([['x', 1]])])); // '[["x",1]]'
 
 A null-prototype dictionary avoids inherited-key lookup, but it lacks methods such as hasOwnProperty. It does not make later unsafe merges safe. Serializing Map as entries needs an explicit key/value schema: object identity, symbol keys and cyclic values cannot be preserved by ordinary JSON. Object.fromEntries can lose key distinctions when keys coerce; use it only for a defined string-key contract.
 
-**Exercise:** implement a small bounded Map cache with a documented FIFO or LRU policy. Acceptance: distinguish missing from stored undefined; show object identity and NaN/zero cases; verify object key order; reject unsupported serialized keys; enforce an entry limit; explain why no deterministic test can demand a WeakMap key be collected at a particular time. Verify WeakMap symbol support on each runtime in your compatibility matrix.
+[Separate collection/cache exercise](../../practice/cs-foundations/collections-and-queues.md#cache-extension). For representation and complexity tradeoffs, see [CS data structures](../../cs-foundations/data-structures.md).
 
 Official references: [ECMAScript keyed collections](https://tc39.es/ecma262/multipage/keyed-collections.html), [ordinary own key order](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ordinaryownpropertykeys). Checked2026-10-20, established behavior exercised on Node24.18.0; a living specification can also contain newer APIs not used here.

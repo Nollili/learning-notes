@@ -71,21 +71,16 @@ Async Task Finished!
 
 ## One small ordering and cancellation fixture
 
-```js
-function asyncLesson(log) {
-  log('start');
-  let cancelled = false;
-  const timer = setTimeout(() => { if (!cancelled) log('timer'); }, 0);
-  Promise.resolve().then(() => { if (!cancelled) log('promise'); });
-  log('end');
-  return () => { cancelled = true; clearTimeout(timer); };
-}
-```
+<<< ../../workbench/frontend/javascript/lifetime.mjs{js}
 
 Without cancellation this fixture records start,end,promise,timer in the browser and tested Node24 runtime. A settled Promise schedules its reaction as a microtask; it does not run the reaction inline. Browser microtasks drain at checkpoints before the next task/render opportunity, and microtasks can enqueue more microtasks. An unbounded chain can delay both timers and rendering. Rendering is an opportunity subject to host/display rules, not guaranteed after every task. Node has its own phases/nextTick behavior, so do not generalize this small fixture into a complete cross-host queue ordering table.
 
 The disposer clears a pending timer and guards the Promise reaction, because this Promise itself is not cancellable. Fetch cancellation uses AbortSignal plus stale-result ownership, not clearTimeout alone. Neither promises nor async/await automatically run expensive computation on another core. Use the advanced lifecycle/debounce lessons for request identity, replacement and unmount; keep this newcomer example small.
 
-**Exercise acceptance:** verify the normal order and immediate disposal producing only start/end; repeat disposal safely. Delay the event loop and explain why timer eligibility is a minimum rather than exact timing. In an actual browser observe responsiveness/render timing separately; Node output is not evidence of painted frames. Retain learner implementation/evidence separately.
 
 References checked2026-10-22: [HTML tasks and microtasks](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops), [Node timers](https://nodejs.org/api/timers.html). The restaurant analogy illustrates overlapping waits, not literal simultaneous execution of one chef's JavaScript instructions.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Explain_asynchronousity_event_loop_in_JS_to_a_newc_177e8106c24d80a2ae55e9f5b8e91cf0.md). All learner practice remains outstanding; the worked examples above are explanatory material.

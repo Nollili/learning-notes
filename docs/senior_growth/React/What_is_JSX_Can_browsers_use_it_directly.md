@@ -115,6 +115,10 @@ With target ES2022, module ESNext and jsx react-jsx, the generated module import
 
 Keep .tsx extensions and React type declarations aligned with the checker configuration. A component library should publish the intended module formats/declarations and peer dependency contract; packaging one React copy per component can create invalid-hook/context identity problems. Avoid “fixing” resolution by disabling checks without finding which file/package is actually loaded.
 
-**Exercise acceptance:** transform the exact source with react-jsx and react modes and compare helper import versus createElement reference; preserve mode must retain JSX and is not browser-ready JavaScript. Typecheck the primary automatic path, render the valid component to static HTML and inspect escaping; then diagnose a missing runtime/bare browser import from the generated artifact. Production/native-browser packaging checks remain learner practice; compiler/SSR checks do not prove them.
 
 Official references checked2026-10-22: [TypeScript JSX output modes](https://www.typescriptlang.org/tsconfig/jsx.html), [module output/resolution](https://www.typescriptlang.org/tsconfig/module.html), [React19 modern transform](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#new-jsx-transform-is-now-required).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_is_JSX_Can_browsers_use_it_directly.md). All learner practice remains outstanding; the worked examples above are explanatory material.

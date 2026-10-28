@@ -190,6 +190,10 @@ Avoid a blanket near-zero duration rule: application code waiting for transition
 
 For rAF, compute progress from timestamps rather than adding a fixed amount per callback; otherwise120Hz displays move faster. Batch layout reads before writes; a layout read after a style write can force synchronous work. Decide whether a resumed hidden tab should jump to elapsed-time completion or restart. Cancel callbacks/listeners on unmount/navigation, and avoid collecting unlimited samples. Browser compositing decisions are independent of choosing CSS versus JavaScript.
 
-**Exercise:** add a nonessential feedback effect using the helper, then implement a timestamp-based rAF alternative with cancel/dispose. Acceptance: rapid replacement has one active animation; cancellation produces no unhandled rejection; changing reduced motion stops the effect; repeated disposal is harmless; no effect starts after disposal; semantic confirmation remains in static mode. Record traces at60/120Hz where available, normal/throttled CPU, paint flashing and layer memory before/after. Explain observed layout/paint and frame misses; do not invent FPS/GPU results. Browser checks remain required; mocked lifecycle checks alone cannot prove smoothness.
 
 Official references checked2026-10-20: [HTML animation frames](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#animation-frames), [Web Animations](https://www.w3.org/TR/web-animations-1/), [media preferences](https://www.w3.org/TR/mediaqueries-5/), [WCAG2.2](https://www.w3.org/TR/WCAG22/), [Chrome animation profiling guidance](https://web.dev/articles/animations-guide). Specification publication status is not a browser support guarantee.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_is_the_best%2C_most_efficient_way_of_performing_animations_in_webpages.md). All learner practice remains outstanding.

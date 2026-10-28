@@ -187,31 +187,10 @@ These mechanisms explain sequencing and ownership, not an efficiency guarantee. 
 
 ## Worked bindings, this and retained lexical state
 
-```js
-function bindingFixture() {
-  'use strict';
-  const beforeVar = value;
-  var value = 3;
-  let beforeLet;
-  try { beforeLet = typeof later; } catch (error) { beforeLet = error.name; }
-  let later = 4;
-  const beforeFunction = declared();
-  function declared() { return 5; }
-  const owner = { value: 7, read() { return this?.value; }, makeArrow() { return () => this.value; } };
-  const detached = owner.read;
-  const lexical = owner.makeArrow();
-  return { beforeVar, beforeLet, beforeFunction, later,
-    method: owner.read(), detached: detached(), rebound: detached.call({ value: 9 }),
-    arrow: lexical.call({ value: 99 }) };
-}
-function makeCounter(start) {
-  let value = start;
-  return () => ++value;
-}
-```
+<<< ../../workbench/frontend/javascript/bindings.mjs{js}
 
 The fixture yields beforeVar undefined, beforeLet ReferenceError, beforeFunction5, later4, method7, detached undefined, rebound9 and arrow7. Even `typeof` throws for an uninitialized lexical binding; it is not the same as `typeof` on an undeclared identifier. The arrow retains its creator's this; call() cannot replace it. Constructors establish a new receiver under their own rules. makeCounter retains a lexical binding after its outer call returns, which illustrates why “all locals disappear when a stack frame pops” is a poor lifetime model.
 
-**Exercise acceptance:** run those results under strict function code/ESM, create two independent counters and explain binding versus object identity and captured lifetime. Compare classic-script, CommonJS-wrapper and ESM top-level this using separate files rather than assuming a REPL result applies to all. Use a heap snapshot/retaining path for a real leak; do not assert a GC schedule or physical stack placement from console output. Learner debugging remains required.
+[Separate optional existing execution and binding exercise](../../practice/cs-foundations/sorting.md#execution-extension).
 
 References checked2026-10-22: [ECMAScript execution contexts/environments](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html), [HTML host event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops), [Node module boundaries](https://nodejs.org/api/esm.html). Execution contexts are specification mechanisms, not JavaScript objects returned by this.

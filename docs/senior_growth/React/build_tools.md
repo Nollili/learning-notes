@@ -115,7 +115,6 @@ Use Vite+React+TypeScript for client-only labs and Next.js16 App Router when rou
 
 For a CRA migration, inventory environment prefixes/public values, asset paths, routing fallback, test setup, CSS preprocessing, browser targets, service workers and deployment base paths. Move one working route/build at a time; compare emitted assets and real user behavior. Vite development success does not prove production chunk paths, polyfills or HTTP compression. Read the installed Vite major's migration guide; do not transplant Webpack splitChunks configuration into Vite.
 
-**Exercise acceptance:** document the framework/build-tool choice and alternatives; reproduce a clean dependency install, typecheck and production build/preview; test a deep link, dynamic chunk, environment value and asset under the real base path; ensure secrets do not enter client assets. Keep migration/benchmark evidence separate from learning-material completion. No CRA/Vite application migration was executed here.
 
 Official references checked2026-10-20: [CRA deprecation](https://react.dev/blog/2025/02/14/sunsetting-create-react-app), [current Vite guide](https://vite.dev/guide/), [Vite8 migration](https://vite.dev/guide/migration).
 
@@ -223,7 +222,9 @@ console.log(priceLabel(1250));
 priceLabel(-1); // deliberate diagnostic failure, not application success
 ```
 
-TypeScript resolves `./price.js` to the TS source for checking; emitted ESM keeps the `.js` specifier that Node can load from dist. Run `tsc -p node-lab`, then `node --enable-source-maps node-lab/dist/main.js`: the deliberate error must produce a nonzero exit and a source-level `price.ts` location. Compare the stack without the flag. An extensionless relative ESM import that Bundler mode accepts is not a valid assumption for NodeNext output. `.mjs`/`.mts` force ESM; `.cjs`/`.cts` force CommonJS. In a type-module package, a CommonJS config using `require` should use `.cjs`, not an accidentally ESM `.js` filename. Do not mix arbitrary `require`/named imports to paper over a package's `exports` conditions; inspect that package's supported entry points and type definitions.
+TypeScript resolves `./price.js` to the TS source for checking; emitted ESM keeps the `.js` specifier that Node can load from dist. Run `tsc -p node-lab`, then `node --enable-source-maps node-lab/dist/main.js`: the deliberate error must produce a nonzero exit and a source-level `price.ts` location. Compare the stack without the flag. An extensionless relative ESM import that Bundler mode accepts is not a valid assumption for NodeNext output. `.mjs`/`.mts` force ESM; `.cjs`/`.cts` force CommonJS.
+
+In a type-module package, a CommonJS config using `require` should use `.cjs`, not an accidentally ESM `.js` filename. Do not mix arbitrary `require`/named imports to paper over a package's `exports` conditions; inspect that package's supported entry points and type definitions.
 
 `NodeNext` follows Node module conventions as TypeScript evolves; pin the compiler when reproducing diagnostics. The tiny lab avoids Node-specific APIs, hence `types:[]`; a real server using Node APIs needs compatible `@types/node` and a deliberate `lib` set. Native Node TS execution is a different workflow from running emitted JS and does not make this compilation exercise unnecessary.
 
@@ -266,6 +267,8 @@ The staging helper demonstrates artifact separation, not a complete secret scann
 
 ### Acceptance and failure drill
 
-Retain compiler/tool versions, locked install and commands. Acceptance: browser alias typecheck passes; injected type error fails; missing alias produces the expected host-specific failure; NodeNext emits and runs with `.js` imports; deliberate failure maps to the original TS line; staging excludes nested maps and refuses an existing output; map inventory is associated with exactly one release/hash. Demonstrate the private upload/retention policy against a chosen provider in learner practice, and prove public map URLs are unavailable after deployment. Check an actual supported browser and production base path separately. Documentation/example checks do not establish that the learner has completed this lab.
+Use the [separate practice requirements and observation ledger](../../practice/frontend/react/build_tools.md). All learner work remains outstanding.
 
-Official references checked 2026-10-21: [TypeScript host resolution](https://www.typescriptlang.org/docs/handbook/modules/reference), [moduleResolution](https://www.typescriptlang.org/tsconfig/moduleResolution), [Vite8 build options](https://vite.dev/config/build-options), [Node source-map support](https://nodejs.org/docs/latest-v24.x/api/cli.html#--enable-source-maps), [Node file copying](https://nodejs.org/docs/latest-v24.x/api/fs.html#fspromisescpsrc-dest-options).
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/build_tools.md). All learner practice remains outstanding; the worked examples above are explanatory material.

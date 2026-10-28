@@ -148,11 +148,14 @@ Even with hooks, **CI/CD pipelines** rerun checks independently of local hooks:
 > Always use **hooks for developer productivity** and **CI/CD for enforcement at the team level**. Local hooks catch issues early, protected CI checks enforce configured gates; untested behavior and misconfiguration can still slip through.
 
 
-
 ## Verify enforcement without touching the submission template
 
 Use the [minimal lint/type/test/build lab](./What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). Test a passing source, an ESLint violation and a type error; the gate must stop with a nonzero exit. A hook is developer convenience, not a security boundary: HUSKY=0 or Git options can bypass it. Required CI/status checks and repository policy are separate administrative configuration, not implemented by this document. No push is part of this exercise; only the user may push.
 
-**Acceptance:** explain React versus Git hooks, reducer/Context ownership, initialized .husky files and bypass behavior. In an isolated Git practice checkout, install the pinned compatible hook release, inspect the generated runner and demonstrate both an allowed and blocked local commit without changing src/tests. Hook installation/commit behavior itself remains learner practice here; the gate commands are checked separately.
 
 References checked2026-10-24: [Husky current initialization](https://typicode.github.io/husky/get-started.html), [React useReducer](https://react.dev/reference/react/useReducer), [React reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/Are_you_using_any_tool_to_enforce_it%2C_is_it_included_in_hooks_as_well.md). All learner practice remains outstanding.

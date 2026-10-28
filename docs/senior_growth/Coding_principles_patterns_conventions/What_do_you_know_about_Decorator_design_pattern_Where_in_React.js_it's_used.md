@@ -99,6 +99,10 @@ An HOC is a function-to-component adapter that can resemble object decoration; i
 
 The coffee wrapper preserves cost() but is not automatically every method/identity of Coffee. Nesting decorators composes behavior in order; real wrappers that add fees, discounts or resource handling may not commute. Define disposal, exceptions and exposed interface explicitly instead of promising all wrapped state/statics/ref behavior is transparent.
 
-**Acceptance:** execute plain/wrapped/nested cost examples without mutating the original, explain the maintained interface, and run the shared ActionButton ref/prop/pending/handler-order/telemetry-failure checks. Prove rendering alone does not record an action and private props are not captured. Document missing static/generic/ref contracts rather than assume they are forwarded. Learner integration remains required.
 
 Official references checked 2026-10-22: [React render purity](https://react.dev/reference/rules/components-and-hooks-must-be-pure), [TypeScript decorator contracts](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/patterns/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it%27s_used.md). All learner practice remains outstanding.

@@ -76,7 +76,7 @@ The executed [local issue-to-review workflow](../../ai-assisted-engineering/loca
 * Workflow emphasizes **code reviews, CI/CD, and small, incremental changes**.
 
 > 💡 Senior Tip:
-> Choose a Git strategy **that matches team size and release cadence**. For smaller teams, **GitHub Flow** is often sufficient. For larger teams, **Git Flow** or **GitLab Flow** provides more structure.
+> Choose from supported release lines, review/check policy and integration cadence. Team size alone does not select a branching model.
 
 ## Conflict, abort and recovery practice
 
@@ -102,6 +102,10 @@ Replace the uppercase placeholder with the exact inspected local commit ID. Crea
 
 **Actual validation2026-10-25:** a disposable Git2.54 repository produced a conflict with three index stages, merge abort restored the prior clean main commit, a second merge was resolved from the contract and the TS5.9.3 build/all7 Node24 tests passed. An inspected reflog commit was retained by a recovery branch. Earlier branch/worktree isolation and same-branch/dirty-removal refusal checks also passed in the same owned fixture. No user repository history or remote was changed.
 
-**Exercise acceptance:** reproduce conflict→abort→resolve in a disposable repo, explain each side/base and show the resolved behavior passes acceptance tests. Preserve a known commit through reflog inspection and a new branch; demonstrate the limits for uncommitted/expired data. Repeat with a separate worktree and account for shared ports/credentials. Retain the issue/diff/check record. Learner practice remains required.
 
 Official references checked2026-10-25: [merge](https://git-scm.com/docs/git-merge), [reflog](https://git-scm.com/docs/git-reflog), [worktree](https://git-scm.com/docs/git-worktree).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/git/Please_explain_the_git_strategy_in_your_project.md). All learner practice remains outstanding.

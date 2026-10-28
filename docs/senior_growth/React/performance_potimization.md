@@ -1,7 +1,5 @@
 # Performance Optimization in React
 
-In this guide, we’ll cover several performance optimization techniques useful for React development. You will also learn some tips to improve rendering efficiency.
-
 ---
 
 ## Immutable Data Structures
@@ -10,8 +8,8 @@ Immutable data structures are fundamental for predictable state updates and effi
 
 ### Why Immutability Matters
 
-- **No Side Effects:** Immutable updates prevent unintended mutations, ensuring cleaner and more predictable state management.
-- **Simplified State Comparisons:** React can efficiently determine whether to re-render a component by comparing references (`===`).
+- **Snapshot ownership:** Copying each changed path avoids mutating previous state; it does not remove unrelated network or other side effects.
+- **Simplified State Comparisons:** React uses `Object.is` for state equality and default per-prop memo comparison; allocating a new object alone schedules no update.
 - **Improved Debugging:** Changes in immutable data structures can be tracked over time.
 
 ### Example
@@ -58,7 +56,7 @@ An unchanged user reference can skip parent-driven work; state/context changes c
 
 ### Limitations
 
-❎ Shallow Comparison: Only compares top-level props. For nested objects/arrays, use **Immer** or **immutable.js**.
+❎ Shallow Comparison: Only compares top-level props. Preserve immutable snapshots and compare the actual prop identities; a library does not make shallow comparison deep.
 ❎ Overhead: Avoid using for rarely re-rendered components, as memoization cost may outweigh benefits.
 
 ### Custom Comparison
@@ -293,6 +291,10 @@ export function SearchInput({ query, onSearch }) {
 
 An inline function is an allocation, not an unintended side effect by itself. It matters when an identity-sensitive child/Effect/subscription observes it and meaningful work follows. useMemo does not stop its component rendering; immutability does not prevent request races. Prop spreading into a DOM element should be an intentional public API with valid attributes, not a blanket ban; filter internal/sensitive props and preserve required ARIA/data/event contracts.
 
-**Exercise:** update a same-id user's name and a selected comment's callback, then unmount a pending search. Acceptance: new name appears; newest callback runs; parent passes the cached function directly; old search timer is cancelled; data key remains stable through reorder. Use an honest repeated Profiler/browser comparison before claiming speed gains; test keyboard/focus behavior as well as render output.
 
 Official references: [memo](https://react.dev/reference/react/memo), [useMemo](https://react.dev/reference/react/useMemo), [useCallback](https://react.dev/reference/react/useCallback), [Effect cleanup](https://react.dev/reference/react/useEffect), [lodash debounce/cancel](https://lodash.com/docs/#debounce). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/performance_potimization.md). All learner practice remains outstanding; the worked examples above are explanatory material.

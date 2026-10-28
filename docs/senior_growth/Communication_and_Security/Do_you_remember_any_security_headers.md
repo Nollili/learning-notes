@@ -173,24 +173,7 @@ v
 
 A CSP nonce must be unpredictable and generated anew per HTML response, then used in both that response's script-src and the intended script element. Do not reuse a static nonce, interpolate untrusted script/HTML or add unsafe-inline to silence violations. This Node24.18.0 stand-alone example uses only fixed markup and a generated base64 value; a real template still needs contextual escaping for every external value.
 
-```js
-// nonce-document.mjs
-import { randomBytes } from 'node:crypto';
-export function nonceDocument(reportOnly = true) {
-  const nonce = randomBytes(24).toString('base64');
-  const policy = `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`;
-  return {
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-store',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'X-Content-Type-Options': 'nosniff',
-      [reportOnly ? 'Content-Security-Policy-Report-Only' : 'Content-Security-Policy']: policy,
-    },
-    body: `<!doctype html><html lang="en"><meta charset="utf-8"><title>Nonce lab</title><body><p id="message"></p><script nonce="${nonce}">document.getElementById('message').textContent = 'Ready';</script></body></html>`,
-  };
-}
-```
+<<< ../../workbench/engineering/security/nonce-document.mjs{js}
 
 Start a controlled rollout in Report-Only to discover incompatible loading/execution paths; that mode does not block violations, including framing. Inspect violations and design a bounded, privacy-aware reporting endpoint/Reporting-Endpoints+report-to deployment separately; this function does not configure report delivery. Then enable enforcement and test allowed and blocked cases. Do not permit arbitrary origins or unsafe-eval merely to suppress reports. Framework streaming/SSR and caches must deliver matching nonce/header/markup per response; this simple example uses no-store rather than claiming compatibility with shared HTML caching.
 
@@ -198,6 +181,10 @@ A strict script policy limits XSS impact but does not replace safe DOM APIs, con
 
 strict-origin-when-cross-origin sends the full referrer for same-origin requests, origin-only cross-origin where permitted, and no referrer on HTTPS→HTTP downgrade. The older no-referrer-when-downgrade can disclose a full URL to another HTTPS origin. Use no-referrer when no referrer information should leave the document; keep secrets out of URLs regardless. Header availability/behavior must be tested against the browser support matrix.
 
-**Exercise acceptance:** generate two responses and verify different nonces, exactly matching script/header values, fixed safe markup and selected report-only/enforced header. In an HTTPS browser lab, demonstrate intended script execution, a script without the nonce blocked under enforcement, report-only nonblocking behavior and allowed/denied framing. Inspect cross-origin referrer values without real secrets. Retain a rollout/rollback plan and assess third-party scripts, style policy and CSP reporting privacy. Node string checks do not prove browser enforcement or learner completion.
 
 Authoritative references checked2026-10-22: [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html), [Referrer Policy specification](https://w3c.github.io/webappsec-referrer-policy/), [Fetch CORS](https://fetch.spec.whatwg.org/#http-cors-protocol). Cookie/CSRF boundaries are expanded in the adjacent CORS lesson.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/Do_you_remember_any_security_headers.md). All learner practice remains outstanding.

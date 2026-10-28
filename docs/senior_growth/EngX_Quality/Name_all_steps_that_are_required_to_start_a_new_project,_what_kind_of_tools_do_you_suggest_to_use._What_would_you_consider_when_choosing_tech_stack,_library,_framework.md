@@ -1,6 +1,5 @@
 ### Name all steps that are required to start a new project, what kind of tools do you suggest to use? What would you consider when choosing tech stack, library/framework?
 
-Starting a new project as a senior software developer requires careful planning and execution. Below are the key steps to start a new project, tools that can be useful, and considerations when choosing a tech stack, library, or framework.
 
 ---
 
@@ -86,9 +85,11 @@ Starting a new project as a senior software developer requires careful planning 
 
 ### Proposed ADR-CATALOGUE-01
 
-Status: proposed for learner implementation; not an adopted team decision. Context: private data, shared frontend/backend contract and limited implementation scope. Decision: a modular single service with server-established identity, tenant-scoped queries, bounded cursor pagination and explicit public DTOs; keep transport/contracts separate from use cases and persistence. Alternative: arbitrary GraphQL projections could help several clients, but add query-cost/schema governance that this single operation does not yet need. Microservices/microfrontends add deployment/coordination cost without a current independent-release requirement. Consequence: simple local ownership and one deployment, with an explicit repository/auth port and migration/rollback policy. Revisit when client projection needs or independent ownership measurably exceed this design.
+Status: proposed for learner implementation; not an adopted team decision. Context: private data, shared frontend/backend contract and limited implementation scope. Decision: a modular single service with server-established identity, tenant-scoped queries, bounded cursor pagination and explicit public DTOs; keep transport/contracts separate from use cases and persistence. Alternative: arbitrary GraphQL projections could help several clients, but add query-cost/schema governance that this single operation does not yet need.
 
-Use [the actual OpenAPI workbench](../../node-js/rest-contract-workbench.md) for generated/checked response contracts, auth/errors/pagination and drift tests. Its real local HTTP checks are evidence for that fixture; real issuer/PostgreSQL/frontend/deployment integration remains a learner deliverable. A Swagger link alone is not a completed API contract.
+Microservices/microfrontends add deployment/coordination cost without a current independent-release requirement. Consequence: simple local ownership and one deployment, with an explicit repository/auth port and migration/rollback policy. Revisit when client projection needs or independent ownership measurably exceed this design.
+
+Use [the actual OpenAPI workbench](../../workbench/node-js/backend/rest-contracts.md) for generated/checked response contracts, auth/errors/pagination and drift tests. Its real local HTTP checks are evidence for that fixture; real issuer/PostgreSQL/frontend/deployment integration remains a learner deliverable. A Swagger link alone is not a completed API contract.
 
 ### Small work breakdown and uncertainty
 

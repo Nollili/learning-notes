@@ -136,7 +136,7 @@ Static analysis includes:
 - Detection of unused or unreachable code.
 - Dependency vulnerability and license checks.
 
-Types can prove that a value is shaped like a number; a test can prove that the tax calculation produces the correct number. Use both.
+TypeScript checks static relationships under the program’s declared types. It does not prove that unknown network input is a number; that requires runtime validation. A behavioral test checks selected calculation outcomes. Use all three boundaries where they apply.
 
 ---
 
@@ -224,7 +224,7 @@ npm test
 ### First test
 
 ```js
-// sum.js
+// sum.cjs
 function sum(left, right) {
   return left + right;
 }
@@ -233,8 +233,8 @@ module.exports = sum;
 ```
 
 ```js
-// sum.test.js
-const sum = require('./sum');
+// sum.test.cjs
+const sum = require('./sum.cjs');
 
 test('adds two numbers', () => {
   expect(sum(5, 2)).toBe(7);
@@ -307,6 +307,8 @@ module.exports = {
 `ts-jest` is not the only option. Projects may compile first, transform with Babel/SWC, or use Jest's ESM configuration. Follow the existing project toolchain because module format, transformer, and TypeScript settings must agree.
 
 ### Test file organization
+
+These layouts describe standalone practice projects. Autocode replaces `src/tests`; never add or modify files there, and preserve its supplied Jest configuration.
 
 Co-located:
 
@@ -974,6 +976,8 @@ export async function getPrediction(name: string): Promise<Prediction> {
     throw new Error('Name must contain English letters only');
   }
 
+  // httpClient must validate the external payload before returning this typed DTO.
+  // A generic type argument alone does not validate JSON.
   const response = await httpClient.get<Prediction>('/prediction', {
     params: { name },
   });
@@ -1655,7 +1659,7 @@ Autocode replaces src/tests with predefined tests. Never edit/add fixtures/helpe
 - Ensure every validation command reports failures and terminates.
 - Control time, randomness, network access, and external state so results are repeatable.
 
-Each isolated npm job needs its own clean locked install or a deliberately restored compatible dependency environment. A cache is an optional speed optimization; built output needed downstream must be transferred as a named artifact, not assumed to exist after a prior job. See the [complete GitLab job-isolation example](../senior_growth/CD_CI/Do_you_run_tests_within_CICD.md#3-example-ci-pipeline-with-tests).
+Each isolated npm job needs its own clean locked install or a deliberately restored compatible dependency environment. A cache is an optional speed optimization; built output needed downstream must be transferred as a named artifact, not assumed to exist after a prior job. See the [complete GitLab job-isolation example](../senior_growth/CD_CI/Do_you_run_tests_within_CICD.md).
 
 CI should validate the same behavior developers can run locally. If a check only works in one environment, find and remove the hidden dependency instead of weakening the test.
 
@@ -1789,86 +1793,17 @@ Use mutation testing selectively on critical pure logic. It is computationally e
 
 ### Diagnostic exercise
 
-Take a deliberately flaky API suite and fix it without adding sleeps.
-
-Include these defects:
-
-- fixed port collisions;
-- shared database records;
-- a spy that is not restored;
-- dependence on the current timezone;
-- an unclosed server;
-- a missing `await` on a rejected promise.
-
-Document the evidence that identified each cause.
-
----
+[Exercises and learner checklist](../practice/node-js/module-04-testing.md).
 
 ## 17. Final review checklist
 
-You should be able to explain and demonstrate each item:
-
-### Advanced confidence
-
-- Reuse contract tests across compatible implementations.
-- Describe when a property expresses behavior better than selected examples.
-- Test shared-state invariants under concurrent operations.
-- Diagnose order, parallelism, time, environment, and open-handle flakiness.
-- Replace sleeps with deterministic completion signals.
-- Use mutation testing selectively to assess assertion strength.
-
-### Strategy
-
-- The Testing Pyramid emphasizes unit tests; the Testing Trophy emphasizes integration tests and static analysis.
-- Both are heuristics, not fixed test ratios.
-- Unit tests isolate small behaviors; integration tests connect selected real components; E2E tests use the external system boundary.
-- The smallest test boundary that detects the target failure usually gives the best feedback.
-- Static analysis complements runtime tests.
-
-### Jest
-
-- `test()` and `it()` define tests; `describe()` groups behavior and hook scope.
-- `beforeAll()`/`afterAll()` run once per scope; `beforeEach()`/`afterEach()` surround each test.
-- Every asynchronous test and hook must return or await its work.
-- `toBe()` checks primitive equality/object identity; `toEqual()` checks structural values.
-- Synchronous exceptions use `expect(() => action()).toThrow()`.
-- Promise failures use `await expect(action()).rejects.toThrow()`.
-- Parameterized tests reduce duplication when cases share one behavior.
-
-### Test doubles
-
-- `jest.fn()` creates a controllable, inspectable function.
-- `jest.spyOn()` observes a real object method and calls it by default until mocked.
-- `jest.mock()` replaces a module according to the project's module system.
-- `clearAllMocks()` clears history, `resetAllMocks()` also removes implementations, and `restoreAllMocks()` restores supported replaced properties/spies.
-- Unit tests replace external boundaries but should not mock the behavior under test.
-- Over-mocking can let incompatible real components pass independently.
-
-### Test levels
-
-- Unit tests cover happy paths, errors, boundaries, and collaborator outcomes deterministically.
-- Integration tests explicitly define which components are real.
-- Integration infrastructure and data must be isolated and cleaned up.
-- Supertest can test a Node.js app without binding a fixed public port.
-- API tests assert status, body contract, headers, authorization, and important side effects.
-- Nock mocks outbound HTTP; it is not itself an E2E runner.
-- Uncontrolled public services should not be a normal CI dependency.
-
-### Coverage and reliability
-
-- Coverage measures execution, not correctness or assertion quality.
-- Statement, branch, function, and line coverage answer different questions.
-- `collectCoverageFrom` ensures never-imported source appears in reports.
-- Coverage thresholds can fail CI but should reflect meaningful risk.
-- Coverage reporters serve different consumers: text/HTML for people and LCOV/Cobertura for tooling.
-- Tests must control time, randomness, environment, files, network, database state, and identifiers when those affect results.
-- Open handles must be closed so Jest terminates.
-- Sleeps should be replaced with completion signals or fake timers.
-- Tests must pass alone, together, in different orders, and under expected parallelism.
+[Exercises and learner checklist](../practice/node-js/module-04-testing.md).
 
 ### One-minute recap
 
-A strong Node.js test suite uses static checks for immediate feedback, unit tests for focused logic, integration tests for meaningful component boundaries, and E2E tests for critical external flows. Jest supplies test grouping, lifecycle hooks, matchers, mocks, asynchronous assertions, fake timers, and coverage. Good tests assert observable contracts, control nondeterministic inputs, isolate mutable state, await every asynchronous operation, and clean up every resource. Mocks make unit tests fast and deterministic, but real integrations are necessary to detect wiring and infrastructure problems. Coverage identifies unexecuted code; it cannot tell whether assertions are meaningful. A reliable CI pipeline repeats the build and test process in a clean environment and reports failures clearly.
+A strong Node.js test suite uses static checks for immediate feedback, unit tests for focused logic, integration tests for meaningful component boundaries, and E2E tests for critical external flows. Jest supplies test grouping, lifecycle hooks, matchers, mocks, asynchronous assertions, fake timers, and coverage. Good tests assert observable contracts, control nondeterministic inputs, isolate mutable state, await every asynchronous operation, and clean up every resource.
+
+Mocks make unit tests fast and deterministic, but real integrations are necessary to detect wiring and infrastructure problems. Coverage identifies unexecuted code; it cannot tell whether assertions are meaningful. A reliable CI pipeline repeats the build and test process in a clean environment and reports failures clearly.
 
 ## Worked review: acceptance-to-evidence mapping
 
@@ -1888,6 +1823,6 @@ A concise review finding should name the trigger, observed consequence and small
 
 Retain a reviewer evidence record: scope/version, changed behavior, matrix rows covered, exact checks/results, unrun checks and their reason, known trade-offs and the remaining learner practice. Reject accidental snapshots/exclusions that merely hide the defect. A qualified result can state that pure checks pass while the real DB boundary remains unverified; do not label the whole feature ready from that partial evidence.
 
-**Practice acceptance:** implement the registration change in a separate practice project, map every requirement to at least one meaningful test, deliberately remove the stored hash and observe REG-2 fail, then remove the unique constraint and observe the concurrency protection fail. Restore the implementation and run the real applicable Autocode commands without altering src/tests. Record a short review with one genuine finding and its corrected verification. Writing this matrix does not complete learner practice.
+[Related practice](../practice/node-js/module-04-testing.md).
 
 Official references checked2026-10-21: [Jest30.5 CLI](https://jestjs.io/docs/cli), [Jest configuration/coverage](https://jestjs.io/docs/configuration), [asynchronous tests](https://jestjs.io/docs/asynchronous). Supplied project AGENTS instructions govern Autocode scripts/test restrictions even where a generic tutorial differs.

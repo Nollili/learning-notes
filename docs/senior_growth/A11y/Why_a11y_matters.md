@@ -80,6 +80,10 @@
 
 A useful first task is finding a note and recovering when the enhanced search fails. The [HTML-first search fixture](../Other/Cross_Browser_Progressive_Enhancement.md) supplies a configured browser test path; the [React component lesson](../React/React_testing.md) supplies executable pending/error/retry behavior. Neither is claimed as a measured accessibility project outcome. Follow the [audit and retest contract](./Can_we_test,_measure_a11y_somehow.md) for actual keyboard, reader, reflow and contrast evidence.
 
-**Acceptance:** choose one important task and access need; describe the starting state, input method, expected outcome and failure/recovery path. Record a real observed barrier, a scoped correction and retest under the same conditions. Keep automated DOM behavior, native browser observations and user/reader evidence separate. A personal statement such as “we test accessibility” requires retained project evidence; learner practice remains required.
 
 Authoritative guidance checked 2026-10-22: [WAI evaluation overview](https://www.w3.org/WAI/test-evaluate/), [WCAG2.2 technical criteria and conformance](https://www.w3.org/TR/WCAG22/).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/Why_a11y_matters.md). All learner practice remains outstanding; the worked examples above are explanatory material.

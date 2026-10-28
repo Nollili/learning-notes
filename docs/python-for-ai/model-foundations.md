@@ -34,87 +34,13 @@ A cache stores prior work, a retrieval index stores representations/references, 
 
 This intentionally small regression example fits slope/intercept from labeled pairs. It is not a neural network, language model or realistic accuracy benchmark. It demonstrates a learned parameter artifact and pure inference with no GPU, network, model download or paid job. The closed-form solution minimizes squared error for this two-parameter model.
 
-```python
-# study_ai/model_basics.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/model_basics.py
 
-import math
-from collections.abc import Sequence
-from dataclasses import dataclass
-
-
-def _number(value: float) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError("Invalid numeric value")
-    result = float(value)
-    if not math.isfinite(result) or abs(result) > 10000:
-        raise ValueError("Invalid numeric value")
-    return result
-
-
-@dataclass(frozen=True, slots=True)
-class LinearModel:
-    slope: float
-    intercept: float
-
-    def predict(self, value: float) -> float:
-        return self.slope * _number(value) + self.intercept
-
-
-def fit_linear(examples: Sequence[tuple[float, float]]) -> LinearModel:
-    if not 2 <= len(examples) <= 10000:
-        raise ValueError("Invalid training set size")
-    pairs = [(_number(x), _number(y)) for x, y in examples]
-    mean_x = math.fsum(x for x, y in pairs) / len(pairs)
-    mean_y = math.fsum(y for x, y in pairs) / len(pairs)
-    variance = math.fsum((x - mean_x) ** 2 for x, y in pairs)
-    if variance == 0:
-        raise ValueError("Training inputs must vary")
-    covariance = math.fsum((x - mean_x) * (y - mean_y) for x, y in pairs)
-    slope = covariance / variance
-    return LinearModel(slope, mean_y - slope * mean_x)
-```
 
 The model class is an internal trained artifact here; loading arbitrary external numeric weights would need its own finite/schema/shape/version checks. A frozen dataclass stops ordinary field reassignment; it does not authenticate a downloaded artifact. Near-constant features can make even this simple fit numerically sensitive; a real pipeline needs scaling/conditioning diagnostics and representative validation. A bounded input range alone is not a proof of statistical adequacy.
 
-```python
-# lab_tests/test_model_basics.py
-import math
+<<< ../workbench/applied-ai/python/lab_tests/test_model_basics.py
 
-import pytest
-
-from study_ai.model_basics import fit_linear
-
-
-def test_training_produces_parameters_inference_preserves_them():
-    examples = [(1.0, 3.0), (2.0, 5.0), (3.0, 7.0)]
-    model = fit_linear(examples)
-    before = (model.slope, model.intercept)
-    assert before == (2.0, 1.0)
-    assert model.predict(4.0) == 9.0
-    assert model.predict(4.0) == 9.0
-    assert (model.slope, model.intercept) == before
-    assert examples == [(1.0, 3.0), (2.0, 5.0), (3.0, 7.0)]
-    retrained = fit_linear([*examples, (4.0, 100.0)])
-    assert retrained.predict(4.0) != model.predict(4.0)
-    assert (model.slope, model.intercept) == before
-
-
-@pytest.mark.parametrize("examples", [[], [(1.0, 1.0)], [(1.0, 2.0), (1.0, 3.0)],
-                                      [(float("nan"), 1.0), (2.0, 3.0)],
-                                      [(1.0, float("inf")), (2.0, 3.0)],
-                                      [(True, 1.0), (2.0, 3.0)]])
-def test_invalid_training_data(examples):
-    with pytest.raises(ValueError):
-        fit_linear(examples)
-
-
-def test_inference_boundary():
-    model = fit_linear([(1.0, 3.0), (2.0, 5.0)])
-    for value in [float("inf"), True, 10001.0]:
-        with pytest.raises(ValueError):
-            model.predict(value)
-```
 
 Repeating inference above is deterministic because this simple implementation has no sampling. A language-model serving stack can vary outputs even when weights are unchanged; decoding, numerical/runtime behavior and service changes matter. Do not generalize this toy's repeatability to a hosted generator or treat temperature0 as a universal reproducibility promise.
 
@@ -153,14 +79,9 @@ Provider capability is version-sensitive. As checked2026-10-21, OpenAI's model-o
 
 ## Practice and acceptance
 
-Run the tiny fit/predict tests. Explain which values are learned parameters, which data is used at training, and why calling predict does not update them. Change training labels, compare old/new artifacts and retain the original unchanged. Add a held-out noisy example, compute an error and explain why evaluating on a training point is insufficient. Explain why adding a source paragraph to the SDK request changes inference context rather than fitting weights.
-
-For three project tasks—validated CRUD, note classification and supported-answer generation—write a justified deterministic/model boundary and a failure criterion. Create a deployment comparison for one hosted adapter and one hypothetical self-managed release: required artifacts, license/model-card checks, hardware/capacity measurements, privacy/logging controls and rollback ownership. Do not purchase resources or download weights merely to complete the comparison.
-
-**Acceptance:** tests pass; learned artifacts and inference state remain distinct; you can classify the task/model/output type without treating every model as chat; hosted/open-weight dimensions and their operational trade-offs are explicit; no fabricated benchmark or account capability is claimed. Real model quality measurements, hardware benchmarking, model training/fine-tuning and learner practice remain unperformed. Later lessons cover transformers, embeddings, sampling, retrieval and selection in more depth.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/model-foundations.md).
 
 References checked2026-10-21: [model optimization and current fine-tuning availability](https://developers.openai.com/api/docs/guides/model-optimization), [supervised training/evaluation workflow](https://developers.openai.com/api/docs/guides/supervised-fine-tuning), [concrete open-weight model release](https://developers.openai.com/api/docs/models/gpt-oss-20b), [hosted SDK boundary](./model-sdk.md), [context and inference budgets](./token-budgets.md). The small regression implementation uses only Python3.13 standard-library arithmetic and is deliberately independent of these hosted products.
-
 
 ## Hallucinations: separate fluent output from supported facts
 
@@ -178,100 +99,8 @@ For a narrow classification task, a score may become useful after calibration ag
 
 Choose an abstention threshold from validation data and the cost of wrong answers versus missed answers; freeze it before held-out evaluation. Measure coverage alongside accuracy among answered cases and unsupported-answer rate. The following small evaluator intentionally ignores self-reported confidence and scores observable task outcomes. It is an exact-answer classroom fixture, not a semantic truth detector or confidence calibrator.
 
-```python
-# study_ai/selection_eval.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/selection_eval.py
 
-import math
-from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
-from typing import Literal
-
-
-@dataclass(frozen=True, slots=True)
-class EvalCase:
-    id: str
-    acceptable: frozenset[str]  # Empty means the permitted corpus cannot answer.
-    allowed_citations: frozenset[str]
-
-
-@dataclass(frozen=True, slots=True)
-class Prediction:
-    status: Literal["answer", "insufficient_evidence"]
-    text: str
-    citations: tuple[str, ...]
-
-
-@dataclass(frozen=True, slots=True)
-class Metrics:
-    total: int
-    answered: int
-    correct: int
-    unsupported: int
-
-    @property
-    def coverage(self) -> float:
-        return self.answered / self.total
-
-    @property
-    def selective_accuracy(self) -> float | None:
-        return self.correct / self.answered if self.answered else None
-
-
-def evaluate(cases: Sequence[EvalCase], predictions: Mapping[str, Prediction]) -> Metrics:
-    if not 1 <= len(cases) <= 10000:
-        raise ValueError("Invalid evaluation size")
-    ids = {case.id for case in cases}
-    if len(ids) != len(cases) or set(predictions) != ids:
-        raise ValueError("Case/output ID mismatch")
-    answered = correct = unsupported = 0
-    for case in cases:
-        prediction = predictions[case.id]
-        if prediction.status == "insufficient_evidence":
-            if prediction.text or prediction.citations:
-                raise ValueError("Abstention must not carry an answer")
-            continue
-        if prediction.status != "answer" or not prediction.text or len(prediction.text) > 2000:
-            raise ValueError("Invalid prediction")
-        answered += 1
-        cited = set(prediction.citations)
-        valid_citations = bool(cited) and len(cited) == len(prediction.citations) and cited <= case.allowed_citations
-        exact_answer = prediction.text in case.acceptable
-        if exact_answer and valid_citations:
-            correct += 1
-        else:
-            unsupported += 1  # Conservative classroom failure bucket, not a semantic diagnosis.
-    return Metrics(len(cases), answered, correct, unsupported)
-
-
-@dataclass(frozen=True, slots=True)
-class Candidate:
-    id: str  # Versioned model+prompt+retriever+settings configuration, not just a brand.
-    metrics: Metrics
-    p95_ms: float
-    cost_units: float  # Same declared unit/workload for all candidates.
-
-
-def select_candidate(candidates: Sequence[Candidate]) -> str | None:
-    if not 1 <= len(candidates) <= 100 or len({item.id for item in candidates}) != len(candidates):
-        raise ValueError("Invalid candidates")
-    eligible: list[Candidate] = []
-    for item in candidates:
-        m = item.metrics
-        if (any(isinstance(value, bool) or not isinstance(value, int)
-                for value in (m.total, m.answered, m.correct, m.unsupported))
-            or not 1 <= m.total <= 10000 or not 0 <= m.correct <= m.answered <= m.total
-            or m.unsupported != m.answered - m.correct):
-            raise ValueError("Invalid metrics")
-        if any(isinstance(value, bool) or not math.isfinite(value) or value < 0
-               for value in (item.p95_ms, item.cost_units)):
-            raise ValueError("Invalid measurement")
-        if (m.coverage >= 0.5 and m.selective_accuracy is not None
-            and m.selective_accuracy >= 0.95 and m.unsupported == 0
-            and item.p95_ms <= 1500 and item.cost_units <= 10):
-            eligible.append(item)
-    return min(eligible, key=lambda item: (item.cost_units, item.p95_ms, item.id)).id if eligible else None
-```
 
 All inputs here are typed, application-owned fixture data; external JSON needs runtime parsing and string/collection bounds before constructing them. The exact-answer oracle deliberately accepts only authored strings. Paraphrases can be marked wrong and a valid source ID can still accompany a false statement in a real free-text answer. Human-reviewed claim/source support or a calibrated semantic grader belongs in a broader evaluation; never call this function an entailment verifier. Its `unsupported` count combines incorrect text, missing/wrong/duplicate citations and answers where abstention was required. Retain separate failure labels in a production analysis.
 
@@ -291,6 +120,6 @@ Record versioned case IDs, corpus snapshot, label policy, model snapshot/alias, 
 
 Implement the four synthetic configurations above and test identical case coverage, unknown/missing/duplicate IDs, invalid abstentions, absent/foreign/duplicate citations, empty inputs, always-abstain accuracy None, cost/latency gate rejection and deterministic tie-breaking. Add a wrong answer with a valid citation and a correct answer with a foreign citation; both must fail the classroom contract. Demonstrate that changing a model's claimed confidence alone cannot change these metrics. Freeze a validation threshold, then inspect results on a separately authored held-out set containing paraphrases and missing evidence, reporting this exact-match grader's false negatives.
 
-**Acceptance:** code/tests pass offline; every metric has an explicit denominator; no-answer and wrong-answer cases remain visible; a candidate can fail selection; the learner explains why citation existence, similarity, token probability and self-confidence cannot establish truth. For actual model comparison, retain permitted samples, human-reviewed labels, repeated outcomes, latency/cost measurements and limitations. Live model quality, calibrated confidence and learner practice remain unperformed.
+[Separate learner criteria](../practice/applied-ai/chapters/model-foundations.md).
 
 References checked2026-10-22: [OpenAI model selection](https://developers.openai.com/api/docs/guides/model-selection), [task-specific evaluation and human calibration](https://developers.openai.com/api/docs/guides/evaluation-best-practices), [token-logprob example and confidence limitations](https://developers.openai.com/cookbook/examples/using_logprobs). Optional parameters are model/endpoint-specific; this offline evaluator requests none. OpenAI's hosted Evals platform is being deprecated (official guide currently lists read-only2026-10-31 and shutdown2026-11-30); the local evaluator here does not depend on that service. Recheck availability before planning a hosted evaluation workflow. Preserve privacy by retaining approved/redacted evidence and metrics, rather than copying a provider guide's broad logging advice into raw prompt/secret logging.

@@ -381,6 +381,30 @@ await fs.unlink('archive.txt');
 
 `writeFile()` is appropriate when replacing the whole output is intended. For valuable existing data, consider writing a temporary file and renaming it only after the write succeeds.
 
+### File handles and write ownership
+
+`open()` gives the caller a file handle. Close that handle on success and failure; garbage collection is not a resource-lifecycle policy.
+
+```js
+import { open } from 'node:fs/promises';
+
+const handle = await open('input.txt', 'r');
+try {
+  const { bytesRead, buffer } = await handle.read(Buffer.alloc(128), 0, 128, 0);
+  console.log(buffer.subarray(0, bytesRead).toString('utf8'));
+} finally {
+  await handle.close();
+}
+```
+
+A read can return **fewer bytes than requested**, including zero at EOF. A partial read is not a complete binary record; a protocol reader must accumulate bytes under a limit. This short text preview does not promise to preserve a character split at its final byte.
+
+Serialize writes to the same file/handle instead of starting overlapping `writeFile()` operations. With `open(path, 'wx')`, creation fails if the entry already exists; that is useful for an application-owned new output. A successful exclusive create does not validate untrusted ancestor directories or make a multi-file transaction.
+
+For replacement, a temporary file in the same owned directory followed by rename can separate incomplete output from the published filename. **Atomic visibility and crash durability are different requirements**: filesystem/platform semantics, flushing data and directory metadata, concurrent writers and recovery still need an explicit policy. Rename across filesystems can fail; do not treat it as a general copy operation. Aborting a filesystem write is best effort and can leave partial data.
+
+[Node 24 file handles and write contracts](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html).
+
 ### Directory APIs
 
 | API                                         | Purpose                                       | Useful option                                                            |
@@ -934,70 +958,15 @@ Use `new URL('./worker.mjs', import.meta.url)` so the worker path is relative to
 
 ### Promise wrapper
 
-```ts
-import { Worker } from 'node:worker_threads';
+<<< ../workbench/node-js/runtime/worker.ts
 
-export async function runWorker<TInput, TResult>(
-  filename: URL,
-  workerData: TInput,
-  parseResult: (value: unknown) => TResult,
-  { signal, timeoutMs = 5_000 }: { signal?: AbortSignal; timeoutMs?: number } = {},
-): Promise<TResult> {
-  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647)
-    throw new RangeError('timeoutMs must be a valid finite timer delay');
-  if (typeof parseResult !== 'function') throw new TypeError('Result parser required');
-  signal?.throwIfAborted();
-  return new Promise<TResult>((resolve, reject) => {
-    const worker = new Worker(filename, { workerData });
-    let selected = false;
-    type Outcome = { ok: true; value: TResult } | { ok: false; error: unknown };
-    const cleanup = () => {
-      worker.removeListener('message', onMessage);
-      worker.removeListener('messageerror', onMessageError);
-      worker.removeListener('error', onError);
-      worker.removeListener('exit', onExit);
-    };
-    const finish = (outcome: Outcome) => {
-      if (selected) return;
-      selected = true;
-      clearTimeout(timer);
-      signal?.removeEventListener('abort', onAbort);
-      // Keep the error/exit handlers until termination has completed.
-      Promise.resolve().then(() => worker.terminate()).then(() => {
-        cleanup();
-        if (outcome.ok) resolve(outcome.value); else reject(outcome.error);
-      }, terminationError => {
-        cleanup();
-        reject(new AggregateError(outcome.ok ? [terminationError] :
-          [outcome.error, terminationError], 'Worker cleanup failed'));
-      });
-    };
-    const onMessage = (raw: unknown) => {
-      if (selected) return;
-      try { finish({ ok: true, value: parseResult(raw) }); }
-      catch (error) { finish({ ok: false, error }); }
-    };
-    const onMessageError = (error: Error) => finish({ ok: false, error });
-    const onError = (error: Error) => finish({ ok: false, error });
-    const onExit = (code: number) => finish({ ok: false,
-      error: new Error(`Worker exited without a result (code=${code})`) });
-    const onAbort = () => finish({ ok: false, error: signal?.reason ??
-      new Error('Worker aborted') });
-    const timer = setTimeout(() => finish({ ok: false,
-      error: new Error('Worker deadline exceeded') }), timeoutMs);
-    worker.on('message', onMessage);
-    worker.on('messageerror', onMessageError);
-    worker.on('error', onError);
-    worker.on('exit', onExit);
-    signal?.addEventListener('abort', onAbort, { once: true });
-    if (signal?.aborted) onAbort();
-  });
-}
-```
+Node24 baseline. This is a **one-result, owned worker** protocol: the first valid result ends the task and the worker is terminated before the caller settles. A worker that exits without a result rejects even for code0; startup/worker/message-deserialization/parser errors, timeout and caller abort also reject. The timer remains referenced so the deadline cannot silently disappear while the task is pending.
 
-Node24 baseline. This is a **one-result, owned worker** protocol: the first valid result ends the task and the worker is terminated before the caller settles. A worker that exits without a result rejects even for code0; startup/worker/message-deserialization/parser errors, timeout and caller abort also reject. The timer remains referenced so the deadline cannot silently disappear while the task is pending. Terminal races select one outcome, clear the timer/abort listener, retain error handling during termination and release worker listeners afterward. Termination failure is surfaced, not swallowed. Cancellation is forceful worker termination, not a transactional rollback of effects the worker may already have performed.
+Terminal races select one outcome, clear the timer/abort listener, retain error handling during termination and release worker listeners afterward. Termination failure is surfaced, not swallowed. Cancellation is forceful worker termination, not a transactional rollback of effects the worker may already have performed.
 
-The parser is a real runtime boundary rather than `message as TResult`: worker messages are structured-cloned values. For the sum example, use `(value: unknown) => { if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Invalid sum'); return value; }`. Do not send progress messages on this result channel; a pool needs task IDs and a separate result/error/progress protocol. Deadline latency includes event-loop scheduling and termination; it is not a hard real-time guarantee. Native/uninterruptible work may delay termination, so deployment-level shutdown limits still need an external process supervisor. For many tasks, use a bounded reusable pool instead of this per-task wrapper.
+The parser is a real runtime boundary rather than `message as TResult`: worker messages are structured-cloned values. For the sum example, use `(value: unknown) => { if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Invalid sum'); return value; }`. Do not send progress messages on this result channel; a pool needs task IDs and a separate result/error/progress protocol. Deadline latency includes event-loop scheduling and termination; it is not a hard real-time guarantee.
+
+Native/uninterruptible work may delay termination, so deployment-level shutdown limits still need an external process supervisor. For many tasks, use a bounded reusable pool instead of this per-task wrapper.
 
 ### Message copying, transfer, and shared memory
 
@@ -1087,33 +1056,17 @@ exec(`convert ${userFilename} output.png`, callback);
 
 A shell interprets spaces, quotes, substitutions, pipes, and redirections. Escaping every platform correctly is difficult. An argument array avoids shell parsing when a shell is not required.
 
-### Robust `spawn()` lifecycle
+### Own child completion through `close`
 
-```ts
-import { spawn } from 'node:child_process';
+An error notification and resource closure are separate events. In particular, aborting a child can emit an `AbortError` before the process has closed. A promise that rejects immediately from its error listener can let its caller finish while the child is still alive.
 
-function run(command: string, args: string[], signal: AbortSignal) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, {
-      stdio: ['ignore', 'inherit', 'inherit'],
-      signal,
-      shell: false,
-    });
+<<< ../workbench/node-js/runtime/child.ts
 
-    child.once('error', reject);
-    child.once('close', (code, childSignal) => {
-      if (code === 0) resolve();
-      else reject(new Error(`Child failed: code=${code}, signal=${childSignal}`));
-    });
-  });
-}
-```
+This one-child helper records the first error, then settles at **`close`**, after the child's stdio closes. A pre-aborted signal starts no child. Cancellation uses a forceful kill for this bounded, disposable child; it is not graceful application shutdown or a rollback of effects. The caller must provide a deadline as well as any external cancellation. An argument array avoids shell expansion but does not make arbitrary executables or their options safe: allowlist the executable and validate its own argument grammar.
 
-**What it does:** streams output, supports cancellation, detects startup errors, and checks the final exit result.
+The helper owns only the direct child. Descendants, platform signal differences and uninterruptible OS work require a separate process-group/container/supervisor policy; a local timeout cannot prove every external effect stopped. For actual services, request graceful termination first and enforce an external hard deadline.
 
-**When to use it:** use this shape for external tools and long-running child processes. Decide who owns termination of child processes during application shutdown.
-
-Never assume an `'exit'` event means output streams are finished. The `'close'` event occurs after stdio closes.
+[Node 24 child error, exit and close events](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#event-close).
 
 ---
 
@@ -1193,59 +1146,12 @@ Every resource should have one clear owner responsible for closing it.
 
 ### Diagnostic exercise
 
-Create a thumbnail-processing service with a fixed worker pool.
-
-It must:
-
-- reject work when its bounded queue is full;
-- cancel tasks whose caller disconnects;
-- replace a worker that crashes;
-- transfer image buffers where ownership permits;
-- expose queue depth and task duration;
-- stop accepting work and terminate workers during shutdown.
-
----
+[Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).
 
 ## 13. Final review checklist
 
-You should be able to explain and demonstrate each item without looking it up:
-
-- Avoid shell injection by separating executable names from argument arrays.
-- Bound child-process runtime and output, and interpret exit code versus signal.
-- Design a worker pool with a bounded queue, cancellation, and crash replacement.
-- Explain copying, transferring, and sharing binary memory between workers.
-- Identify and close the owner of every timer, handle, child, worker, and socket.
-- Read positional arguments with `process.argv.slice(2)` and named options with `parseArgs()`.
-- Parse `process.env` values instead of treating them as typed configuration.
-- Keep results on stdout and errors on stderr.
-- Prefer `process.exitCode` when pending work should finish.
-- Distinguish operational failures from programmer bugs.
-- Match errors to synchronous throws, promise rejections, callback errors, or `'error'` events.
-- Know when `readFile()` returns a `Buffer` versus a string.
-- Use promise-based `fs` methods and understand when streams are more appropriate.
-- Sort directory entries whenever deterministic order matters.
-- Use `path.join()` for composition and `path.resolve()` for an absolute result.
-- Distinguish `process.cwd()` from the current module's directory.
-- Use SHA-256 for integrity checks, not password storage.
-- Use `randomBytes()` or `randomUUID()` when unpredictability matters.
-- Choose `exec`, `execFile`, `spawn`, or `fork` based on shell, buffering, streaming, and IPC needs.
-- Use cluster for multiple server processes and worker threads for CPU-heavy JavaScript.
-- Remember that cluster workers have separate process memory and worker threads only share memory explicitly.
-- Handle child and worker startup errors as well as non-zero exits.
-
+[Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).
 
 ## 14. Boundary and ownership labs
 
-Baselines: Node24.18.0 runtime and TypeScript5.9.3 for isolated type checks; official Node24 API contracts checked2026-10-21. Use scratch fixtures and temporary app-owned directories, not production paths.
-
-**Filesystem acceptance:** create a normal child, a valid `..notes` child, a lexical ../ escape and a symlink to an external scratch file. Assert the first two resolve and the latter two reject; absolute/missing/empty paths follow the documented contract. Explain why a deliberately swapped ancestor after resolution is still a race and why the helper requires an untrusted-writer-free tree. Test Windows separately. Do not claim a traversal-resistant OS sandbox from this check.
-
-**Fingerprint acceptance:** compare the formerly ambiguous arrays `['a,b','c']` and `['a','b,c']` and require different digests. Input permutation produces the same digest, caller arrays are not mutated, empty/Unicode names are encoded deterministically, and content changes alone do not affect a names-only digest. If content integrity is required, design and version a separate canonical entry/content format.
-
-**Error-boundary acceptance:** a plain Error must not pass the code guard; an Error with a numeric code must fail; an Error with a string code passes. Unknown cannot authorize code/path access before checks. A nonempty configured signing secret must be narrowed before HMAC creation, not asserted present. These tests do not implement the full raw-body/timestamp/replay-safe webhook protocol, which is a separate lesson.
-
-**Worker acceptance:** write real workers for a valid result, invalid result, duplicate messages, immediate exit0, nonzero exit, thrown exception, message then live interval, and no-result live interval. Require exactly one selected outcome, exit0/no-message rejection, bounded deadline/caller abort behavior, no callbacks after cleanup and natural test-process termination. Pre-aborted signals must not start a worker; uncloneable input and invalid filename must reject. Confirm the parser protects result shape rather than casting unknown to TResult. A worker pool's queue/capacity/replace/drain implementation remains a separate practice task; this lab repairs one owned task.
-
-Material checks and learner practice are separate. Record commands, Node version, fixtures, observations and any platform limitations. No user practice or production readiness follows from reading these examples.
-
-Official references: [Node24 workers and termination](https://nodejs.org/docs/latest-v24.x/api/worker_threads.html), [Node24 path.relative](https://nodejs.org/docs/latest-v24.x/api/path.html#pathrelativefrom-to), [Node24 realpath/file APIs](https://nodejs.org/docs/latest-v24.x/api/fs.html), [Node24 crypto](https://nodejs.org/docs/latest-v24.x/api/crypto.html), [OWASP path traversal](https://community.owasp.org/attacks/Path_Traversal), [OWASP race conditions](https://community.owasp.org/pages/vulnerabilities/race_conditions).
+[Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).

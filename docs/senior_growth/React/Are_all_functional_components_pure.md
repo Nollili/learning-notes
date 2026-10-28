@@ -1,6 +1,6 @@
 ### Are all functional components pure?
 
-No, not all functional components in React are **pure**. While functional components can be written as **pure functions**, their purity depends on how they are implemented. Let's explore what this means in the context of React:
+No, not all functional components in React are **pure**. While functional components can be written as **pure functions**, their purity depends on how they are implemented.
 
 ### **What is a Pure Function?**
 
@@ -147,6 +147,10 @@ React may restart or abandon render work; development Strict Mode intentionally 
 
 An Effect fetching data can run a setup/cleanup/setup sequence in development. The first request must be aborted/ignored, and subscription cleanup must exactly undo setup. The example's cancellation is not an error announcement after unmount. Add a product-specific retry button/server error distinction for production UX rather than retrying indefinitely.
 
-**Exercise:** compare a render-time global counter with state updated by an event handler. Then rapidly switch FetchData user IDs using delayed responses. Acceptance: render has no external mutation; no stale user's name is displayed; HTTP/invalid JSON/invalid shape failures have UI; cleanup prevents late state use; Strict Mode replay leaves no duplicate subscription. A network call during development replay is not by itself evidence of a production double-write.
 
 Official references: [React render purity](https://react.dev/reference/rules/components-and-hooks-must-be-pure), [Effect synchronization](https://react.dev/learn/synchronizing-with-effects), [avoiding unnecessary Effects](https://react.dev/learn/you-might-not-need-an-effect). Checked2026-10-20. Browser interaction tests remain required learner evidence.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Are_all_functional_components_pure.md). All learner practice remains outstanding; the worked examples above are explanatory material.

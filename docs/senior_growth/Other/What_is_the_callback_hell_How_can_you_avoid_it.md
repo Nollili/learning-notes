@@ -102,38 +102,7 @@ async function notifyUser(details) { ... }
 
 ## Worked error-first interop and empty workflow
 
-```ts
-// callback-workflow.ts
-export type Completion<T> = (...result: [error: Error] | [error: null, value: T]) => void;
-export function fromCallback<T>(start: (done: Completion<T>) => void): Promise<T> {
-  return new Promise((resolve, reject) => {
-    let settled = false;
-    const done: Completion<T> = (...result) => {
-      if (settled) return;
-      settled = true;
-      if (result[0] === null) resolve(result[1]); else reject(result[0]);
-    };
-    try { start(done); }
-    catch (error) { if (!settled) { settled = true; reject(error); } }
-  });
-}
-export type OrderApi = {
-  user: (id: string) => Promise<{ id: string }>;
-  orders: (userId: string) => Promise<readonly { id: string }[]>;
-  details: (orderId: string) => Promise<{ id: string }>;
-  notify: (details: { id: string }) => Promise<void>;
-};
-export type NotificationResult = { kind: 'no_orders' } | { kind: 'notified'; orderId: string };
-export async function notifyFirstOrder(userId: string, api: OrderApi): Promise<NotificationResult> {
-  const user = await api.user(userId);
-  const orders = await api.orders(user.id);
-  const first = orders[0];
-  if (first === undefined) return { kind: 'no_orders' };
-  const details = await api.details(first.id);
-  await api.notify(details);
-  return { kind: 'notified', orderId: details.id };
-}
-```
+<<< ../../workbench/engineering/specialists/callbacks/callback-workflow.ts{ts}
 
 The callback adapter preserves error-first success/failure and accepts a deliberately undefined success value when T includes undefined. A second callback or a throw after settlement cannot change the outcome. For standard Node callbacks prefer the supported util.promisify API when its signature/receiver semantics fit; event emitters/multiple-value callbacks may need an explicit adapter. Converting a callback does not add a deadline or cancel its source: a callback that never fires still needs the operation owner's timeout/cancellation contract.
 
@@ -141,6 +110,10 @@ OrderApi is an application-owned port whose adapters already validate/bound exte
 
 Sequential awaits are correct when orders needs user and details needs an order. Independent operations may use a bounded concurrency owner; Promise.all does not itself limit launch concurrency or cancel siblings after rejection. Always observe returned promises and close owned handles. A catch that only logs and returns can falsely turn failure into successful undefined; choose an explicit result or rethrow to a safe caller.
 
-**Acceptance:** test callback success/error/synchronous throw/duplicate callback, undefined success and receiver ownership; require one promise settlement. Run the exact workflow with empty orders (no details/notify), success, and failure at each stage (no downstream side effects). Use deferred fakes to prove each dependency starts only after its predecessor resolves. Assert no real email/network call occurs in the lab. Demonstrate observed rejection versus fire-and-forget and document uncertain notification recovery. Learner implementation and real adapter integration remain required.
 
 Baseline TypeScript5.9.3 strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes and Node24.18.0. Official references checked2026-10-22: [ECMAScript promises](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise-objects), [Node util.promisify](https://nodejs.org/api/util.html#utilpromisifyoriginal). Advanced message delivery remains in the backend reliability lesson, not a new required callback library.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/What_is_the_callback_hell_How_can_you_avoid_it.md). All learner practice remains outstanding.

@@ -1,6 +1,12 @@
 # General_ES6
 
-## Notes
+## Recommended order
+
+Follow [the prerequisite-led javascript path](../../frontend/javascript.md), then use the reference catalogue below. Apply [the staged practice](../../practice/frontend/).
+
+<span id="notes"></span>
+
+## Reference catalogue
 
 - [Can you explain to me what "arrow functions" are and how they are working? What kind of issues could be solved by using them as event handlers?](./Can_you_explain_to_me_what_arrow_functions_are_and_177e8106c24d802c83c5d9951499fa84.md)
 - [Could you please describe with which Browser APIs you've already worked with?](./Could_you_please_describe_with_which_Browser_APIs__177e8106c24d802caa88e9916f01fc53.md)

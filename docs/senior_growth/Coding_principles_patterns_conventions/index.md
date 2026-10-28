@@ -1,5 +1,9 @@
 # Coding_principles_patterns_conventions
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/quality.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Can you decipher SOLID acronym? What is "L"?](./Can_you_decipher_SOLID_acronym_What_is_%22L%22.md)

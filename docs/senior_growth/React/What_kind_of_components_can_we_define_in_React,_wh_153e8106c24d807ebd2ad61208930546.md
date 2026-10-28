@@ -270,8 +270,12 @@ The fallback hides raw exception messages/stacks and replaces only this subtree.
 
 Changing only children after a caught failure keeps this boundary in its failed state. A deliberate parent-owned key such as recordId/attempt can remount it when navigation or an explicit recovery action justifies a new attempt. Resetting blindly while the same child still throws creates a repeated failure, not recovery. Keyed remount also discards local subtree state and affects focus; preserve unrelated user drafts elsewhere. Do not retry a committed server mutation just because a UI boundary reset.
 
-**Acceptance drill:** render a throwing child with an unaffected sibling outside the boundary; require a safe alert, intact sibling and fixed telemetry code without the private exception string. Rerender a healthy child with the same key and verify fallback persists; change the recovery key and verify the healthy child appears. Confirm a still-throwing child remains a failure after remount. Typecheck the exact boundary and keep render recovery evidence separate from browser focus/AT, server errors and learner practice.
 
 Validated baseline React19.3.0/@types/react19/TypeScript5.9.3. Official reference checked2026-10-22: [Component and error boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary). Hooks and performance wrappers are separate from this error-containment capability.
 
 For working reducer/ref contracts, continue with the [pure reducer and scoped Context examples](./What_Are_React_Hooks_Good_For_Rules_of_Hooks.md#refs-pure-reducers-scoped-context-and-custom-hooks) and [typed imperative ref facade](./Have_you_used_React_with_TypeScript.md#narrow-imperative-ref-facade). These are implementations with ownership/validation exercises, not merely hook names.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_kind_of_components_can_we_define_in_React%2C_wh_153e8106c24d807ebd2ad61208930546.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -192,6 +192,10 @@ In derived constructors, call super before using this. Static fields and instanc
 
 **Trade-off:** shared prototype methods reduce per-instance function allocation; arrow fields make detached callbacks convenient but have per-instance identity and different override/super behavior. Composition with explicit dependencies can avoid an inheritance tree when behavior varies independently.
 
-**Exercise:** inspect property descriptors and prototypes of the class/function examples, then test field-versus-assignment and private-brand failure. Acceptance: expected false/true enumerable flags; field construction succeeds while setter assignment fails; detached private method fails without binding; subclass does not read uninitialized fields. Do not describe a hand-written constructor as fully equivalent without matching these behaviors.
 
 Official references: [ECMA class definitions and field initialization](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions), [property descriptors](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html). Checked2026-10-20; Node24.18.0 baseline.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_is_a_JavaScript_class_under_the_hood_177e8106c24d80019723e427afd629f4.md). All learner practice remains outstanding; the worked examples above are explanatory material.

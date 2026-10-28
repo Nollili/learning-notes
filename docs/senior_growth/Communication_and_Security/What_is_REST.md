@@ -93,23 +93,16 @@ For example, a user representation can contain a self link and related project c
 
 Assume a maintained /v1/users/123 returns id/name and a deliberately versioned /v2/users/123 returns id/displayName. Preserve the numeric id contract; adding a new version does not silently change its type. Normalize the known negotiated representation at the client boundary, then let the UI use one domain model.
 
-```ts
-// user-contract.ts
-export type DisplayUser = Readonly<{ id: number; displayName: string }>;
-export function parseDisplayUser(value: unknown, version: 'v1' | 'v2'): DisplayUser {
-  if (typeof value !== 'object' || value === null || Array.isArray(value) ||
-      !('id' in value) || typeof value.id !== 'number' || !Number.isSafeInteger(value.id) || value.id <= 0) {
-    throw new TypeError('Invalid user representation');
-  }
-  const name = version === 'v1' && 'name' in value ? value.name
-    : version === 'v2' && 'displayName' in value ? value.displayName : undefined;
-  if (typeof name !== 'string' || !name.trim() || name.length > 80) throw new TypeError('Invalid display name');
-  return { id: value.id, displayName: name.trim() };
-}
-```
+<<< ../../workbench/engineering/security/user-contract.ts{ts}
 
-This parser projects JSON-style values; it is not a server implementation, authorization check or general sanitizer for hostile in-process getters/proxies. Check status/content/body limits before parsing and select a supported version deliberately. Do not guess a version from whichever field happens to exist; mixed payloads must use the negotiated field. Support old/new consumers during a documented migration window, monitor deprecated usage and publish removal policy before deleting the old contract. Additive fields can still break an exact consumer schema; enum expansion/default/error behavior needs compatibility tests, not an assumption that “additive” means safe.
+This parser projects JSON-style values; it is not a server implementation, authorization check or general sanitizer for hostile in-process getters/proxies. Check status/content/body limits before parsing and select a supported version deliberately. Do not guess a version from whichever field happens to exist; mixed payloads must use the negotiated field.
 
-**Exercise acceptance:** accept each valid version into the same UI model; reject missing/wrong/blank/oversized fields and unknown/unnegotiated shapes; demonstrate extra private data is absent from the domain result. Run old/new consumer contract tests while evolving the server, check meaningful method/status/cache/error semantics and test stale update/version conflicts where relevant. Native/deployed endpoint and learner migration evidence remain required; the local parser alone cannot prove the server contract.
+Support old/new consumers during a documented migration window, monitor deprecated usage and publish removal policy before deleting the old contract. Additive fields can still break an exact consumer schema; enum expansion/default/error behavior needs compatibility tests, not an assumption that “additive” means safe.
+
 
 Primary architectural reference checked2026-10-22: [Fielding REST constraints/uniform interface](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm). The versioned parser is a pragmatic HTTP/JSON consumer example, not proof that a full hypermedia system has been implemented.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/What_is_REST.md). All learner practice remains outstanding.

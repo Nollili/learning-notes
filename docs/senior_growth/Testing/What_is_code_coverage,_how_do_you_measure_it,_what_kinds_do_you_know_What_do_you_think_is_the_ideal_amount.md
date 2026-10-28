@@ -75,33 +75,21 @@ A percentage must name its metric and denominator: which production files were i
 > Always combine **high coverage with well-thought-out test cases**, focusing on **behavior and edge cases** rather than just percentage numbers.
 
 
-
 ## Executed counterexample: 100% coverage misses a bug
 
 In an owned Node24.18.0 scratch directory, create:
 
-```js
-// arithmetic.mjs
-export function add(a, b) { return a - b; } // Deliberate defect.
-```
+<<< ../../workbench/engineering/testing/coverage-counterexample/arithmetic.mjs{js}
 
-```js
-// weak.test.mjs
-import {test} from 'node:test';
-import {add} from './arithmetic.mjs';
-test('only executes the function', () => { add(2, 3); });
-```
+<<< ../../workbench/engineering/testing/coverage-counterexample/weak.test.mjs{js}
 
 `node --test --test-reporter=tap --experimental-test-coverage weak.test.mjs` actually passed and reported **100% lines, branches and functions** for this one arithmetic file. This uses Node's built-in experimental coverage, not Jest/Vitest, and makes no statement about this repository's overall coverage. The function is wrong despite the report.
 
-```js
-// strong.test.mjs
-import {test} from 'node:test';
-import assert from 'node:assert/strict';
-import {add} from './arithmetic.mjs';
-test('adds the two operands', () => { assert.equal(add(2, 3), 5); });
-```
+<<< ../../workbench/engineering/testing/coverage-counterexample/strong.test.mjs{js}
 
 `node --test --test-reporter=tap strong.test.mjs` actually failed with an assertion error. This failure is useful evidence: it observes the required result. Fixing subtraction to addition is learner work; add boundary and type/domain cases according to a stated contract instead of assuming every possible numeric input is valid.
 
-**Acceptance:** reproduce both outcomes, explain the metric/denominator and add a defect a behavioral assertion catches while coverage stays high. Configure relevant thresholds in an owned project, preserving Autocode's template Jest scripts and Module4 Cobertura settings. Record provider versions, exclusions and results. Learner practice remains required. References: [Vitest coverage providers](https://vitest.dev/guide/coverage.html), [Jest thresholds](https://jestjs.io/docs/configuration#coveragethreshold-object), [Node24 coverage](https://nodejs.org/docs/latest-v24.x/api/test.html#collecting-code-coverage).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/What_is_code_coverage%2C_how_do_you_measure_it%2C_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md). All learner practice remains outstanding.

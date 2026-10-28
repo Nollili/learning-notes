@@ -154,4 +154,7 @@ function fetchData() {
 
 Use the [executed shipping Strategy example](./Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md#worked-change-inject-a-shipping-quote-rule) to compare costs: five behavior assertions protect the required contract; extra plugin registries or an abstract hierarchy would add no current requirement. The [creation lesson](./What_kind_of_creational_design_patterns_do_you_know.md#ownership-and-creation-checks) shows why simplifying object construction must preserve ownership.
 
-**Exercise acceptance:** take two similar functions, name the domain rule each represents, change one requirement and show whether they should change together. Extract only shared knowledge; retain independent domain names. Record one rejected speculative abstraction and one reliability/security obligation that must remain. Run boundary and negative tests after the refactor. Learner practice remains required. For executable checks use the [official Node assertion API](https://nodejs.org/docs/latest-v24.x/api/assert.html); these principles guide decisions rather than providing a numerical correctness guarantee.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/patterns/Please_describe_what_is_KISS%2C_DRY%2C_YAGNI.md). All learner practice remains outstanding.

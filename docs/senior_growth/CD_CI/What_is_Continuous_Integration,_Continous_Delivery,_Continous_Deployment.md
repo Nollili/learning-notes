@@ -104,4 +104,7 @@ Use the [executed artifact and PostgreSQL compatibility lab](../../node-js/relea
 
 Passing unit tests does not prove production releasability: migration compatibility, authorization/configuration, health/traffic, monitoring and recovery gates still apply. Manual approval is a release decision and can trigger an automated deployment; “manual” does not require a person copying files. Reversing traffic/artifacts is safe only while old code remains compatible with current data/messages/config. V4-only writes can close that window before a column is dropped. Retain a tested rollback allowlist or plan forward repair, not a generic “redeploy old version” promise.
 
-**Exercise acceptance:** configure build/artifact verification/staging gates using the real project's scripts, prove job isolation and exact-byte promotion, and demonstrate old/new database compatibility plus a deliberately rejected unsafe rollback. Record what was run versus planned. Hosted execution and learner practice remain required; the linked local artifact/database checks have passed within their stated limits.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/delivery/What_is_Continuous_Integration%2C_Continous_Delivery%2C_Continous_Deployment.md). All learner practice remains outstanding.

@@ -1,5 +1,9 @@
 # Web_Performance
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/performance.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Can SSR (Server-Side Rendering) Improve First Render?](./Can_SSR_improve_first_render.md)

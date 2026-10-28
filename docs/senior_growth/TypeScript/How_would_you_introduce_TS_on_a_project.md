@@ -158,6 +158,10 @@ assert.deepEqual(vendor.parseLabel('x'.repeat(40)), { value: 'x'.repeat(40) });
 
 Validated with Node24.18.0 and TypeScript5.9.3. Run tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext declaration-contract.ts (without skipLibCheck for this declaration lab), then node declaration-runtime.mjs. Never execute the negative type fixture as application code. The compiler trusts the declaration; it does not establish that the JavaScript returns the promised value. Runtime checks expose that separate boundary. A dependency upgrade can keep typechecking while changing behavior, so rerun both checks and inspect release notes.
 
-**Exercise acceptance:** remove each @ts-expect-error and confirm its diagnostic; deliberately change the runtime export or null behavior and confirm the runtime check fails. Restore consistency, add a Unicode length boundary test and state that this example's limit counts JavaScript UTF-16 code units, not user-perceived characters. For an actual vendor package record its installed version, export mode and the subset you verified. Prefer a narrow adapter with unknown input/runtime parsing when trusting the vendor's output is inappropriate. Existing Autocode task configuration and src/tests must remain unchanged; use a separate lab.
 
 Official references checked2026-10-22: [module declarations](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html), [extension substitution and module resolution](https://www.typescriptlang.org/docs/handbook/modules/reference), [Vite TypeScript transformation](https://vite.dev/guide/features.html#typescript). Learner practice remains required.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/How_would_you_introduce_TS_on_a_project.md). All learner practice remains outstanding; the worked examples above are explanatory material.

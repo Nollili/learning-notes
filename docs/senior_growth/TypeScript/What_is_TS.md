@@ -66,4 +66,7 @@ console.log(greet(john));
 
 An interface annotation does not examine incoming JSON or remove fields. The compiler's type model is separate from JavaScript runtime behavior: static readonly is shallow access control, a discriminated union narrows checked alternatives, and an assertion can bypass the intended check. Start with the [worked unknown-input parser](./What_kind_of_problems_could_be_solved_by_using_TS.md#runtime-input-boundary), then the [generic contract examples](./Generics.md) for advanced relationships. The primary baseline is compiler5.9.3 strict; the [adoption note](./Pros_and_cons_of_TS_When_should_we_use_or_avoid_it.md) explains runtime stripping and incremental alternatives without changing an existing task's configuration.
 
-**Exercise acceptance:** typecheck greet with a valid User and a deliberately wrong age/name call; retain an expected compile-time failure. Execute the valid emitted JavaScript and verify the greeting. Feed malformed JSON through the parser and show runtime rejection, then explain why assigning an interface alone could not perform that check. Run compiler checking separately from any fast transpile/dev-server step. Learner exercise completion remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/What_is_TS.md). All learner practice remains outstanding; the worked examples above are explanatory material.

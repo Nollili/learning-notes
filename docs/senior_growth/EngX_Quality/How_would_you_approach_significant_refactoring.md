@@ -83,20 +83,7 @@ Refactoring involves restructuring existing code without changing its behavior. 
 
 A refactor preserves an existing contract; performance/security/product changes need separately agreed behavior. Coverage percentage or a smaller file is not proof that the contract survived. Begin with a tiny pure example whose whitespace/default behavior can be fully characterized.
 
-```ts
-// title-seam.ts
-export function legacyTitle(raw: string): string {
-  return raw.trim().replace(/\s+/g, ' ') || 'Untitled';
-}
-export function titleWords(raw: string): readonly string[] {
-  return raw.trim().split(/\s+/).filter(Boolean);
-}
-export function renderTitle(words: readonly string[]): string {
-  return words.join(' ') || 'Untitled';
-}
-// Public compatibility export: consumers keep one existing signature.
-export function displayTitle(raw: string): string { return renderTitle(titleWords(raw)); }
-```
+<<< ../../workbench/engineering/design/refactor/title-seam.ts{ts}
 
 Characterize empty/all-whitespace input, leading/trailing spaces, repeated spaces, tabs/newlines, Unicode whitespace, punctuation and non-Latin labels. Compare both implementations and explicit expected strings; equivalence alone could preserve the same mistake in two copied functions. This typed string helper is not a hostile-input parser or a rule for validating private data. Do not “improve” capitalization/defaults/allowed characters inside the refactor without a separate requirement.
 
@@ -104,7 +91,6 @@ Characterize empty/all-whitespace input, leading/trailing spaces, repeated space
 
 **Risk/budget record:** scope this exercise to one export/consumer and one reviewable increment. Stop if behavior requirements are unclear, the seam changes persisted data or a critical characterization fails. Record owner, affected callers, intended benefit, no-change contracts, tests, rollback point and follow-up deadline for the temporary adapter. Choose a real project's numeric time/latency/error budget from its baseline; this example supplies no invented production gain. Use the [proposed dependency ADR/rule](../React/application_struvture.md#a-proposed-decision-with-an-executable-boundary) if the seam also separates UI from infrastructure.
 
-**Acceptance:** explicit expected and old/new results match across boundary cases and generated strings; deliberately change the default/whitespace rule and confirm failure. Keep the public signature and previous consumers working, inspect errors/side effects for a real service, then remove obsolete duplication. A passing pure exercise is not a completed product refactor; learner migration/review/rollout evidence remains required.
 
 Technical references checked 2026-10-22: [React state/type identity during a component refactor](https://react.dev/learn/preserving-and-resetting-state), [ESLint dependency-rule boundary](https://eslint.org/docs/latest/rules/no-restricted-imports).
 
@@ -125,4 +111,7 @@ The sequential planning envelope is1.5–3 focused days plus explicitly named re
 
 **Measure after execution:** compare observed effort against the range, number of touched policy owners, characterization failures and actual follow-up changes needing multiple edits. A smaller file or added tests alone does not prove the debt paid off. Record a no-benefit/negative outcome honestly and stop further migration if the maintenance cost exceeds the value. For service refactors also inspect the agreed user-facing latency/error/resource budget; do not optimize a microbenchmark without an application requirement.
 
-**Acceptance:** retain the assumptions/range, milestone evidence, alternatives, chosen trade-off, owner, follow-up and actual-versus-estimated record. Explain a plausible scope discovery and revise the estimate without concealing it. Tie the change to a delivery outcome and distinguish proposed benefits from measured results. The note supplies a complete planning example; executing the migration and collecting project delivery outcomes remain learner practice.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/How_would_you_approach_significant_refactoring.md). All learner practice remains outstanding.

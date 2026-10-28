@@ -117,51 +117,18 @@ In some scenarios, Promises and Observables can complement each other:
 
 ## Bounded conversion and owned teardown
 
-```ts
-// bounded-observable-promises.ts
-import { firstValueFrom, lastValueFrom, take, timeout, type Observable } from 'rxjs';
-function checkedWait(waitMs: number): void {
-  if (!Number.isSafeInteger(waitMs) || waitMs < 1 || waitMs > 5000) throw new Error('Invalid wait budget');
-}
-export function firstNumber(source: Observable<number>, waitMs = 1000): Promise<number> {
-  checkedWait(waitMs);
-  return firstValueFrom(source.pipe(timeout({ first: waitMs })));
-}
-export function lastOfThree(source: Observable<number>, waitMs = 1000): Promise<number> {
-  checkedWait(waitMs);
-  return lastValueFrom(source.pipe(take(3), timeout({ first: waitMs, each: waitMs })));
-}
-```
+<<< ../../workbench/engineering/design/observables/bounded-observable-promises.ts{ts}
 
 firstValueFrom unsubscribes after the first value, including0; lastValueFrom waits for completion. take(3) caps emissions but alone does not terminate a silent source, so the timeout matters. Empty completion rejects with EmptyError unless an explicitly meaningful defaultValue is supplied. A source error rejects the promise; callers must catch it. These timer budgets cannot preempt a synchronous producer blocking the JavaScript event loop. Cancellation of an external await still needs an operation/subscription owner, not an assumption that promises can be cancelled.
 
-```ts
-// owned-observable.ts
-import { Observable } from 'rxjs';
-export function eventValues(target: EventTarget, type: string): Observable<Event> {
-  return new Observable(subscriber => {
-    const listener = (event: Event) => subscriber.next(event);
-    target.addEventListener(type, listener);
-    return () => target.removeEventListener(type, listener);
-  });
-}
-export function fromAbortable<T>(work: (signal: AbortSignal) => Promise<T>): Observable<T> {
-  return new Observable(subscriber => {
-    const controller = new AbortController();
-    try {
-      void work(controller.signal).then(value => {
-        if (!subscriber.closed) { subscriber.next(value); subscriber.complete(); }
-      }, () => { if (!subscriber.closed) subscriber.error(new Error('Resource unavailable')); });
-    } catch {
-      subscriber.error(new Error('Resource unavailable'));
-    }
-    return () => controller.abort();
-  });
-}
-```
+<<< ../../workbench/engineering/design/observables/owned-observable.ts{ts}
 
 These are cold wrappers: each subscription owns one registration/controller and teardown. A Subject is hot: next can happen with no subscribers and is not replayed to late subscribers unless a replaying abstraction is chosen. Sharing/replay operators change ownership: one consumer leaving must not unexpectedly stop another's work. A controller abort request does not force an ignoring library/promise to stop or undo a committed write; this wrapper also prevents late notifications after unsubscribe. RxJS subscription disposal is not automatic stream backpressure.
 
-**Acceptance:** verify no registration/work before subscription, separate work for two cold subscriptions, exact listener removal/abort on unsubscribe, late success/rejection not delivered, and no unhandled rejection. Test first0, finite last, empty/error/silent source timeout and invalid wait budgets. Contrast a hot Subject emission before subscription with a cold source; document the owner and disposal of shared work. Advanced RxJS orchestration is optional for this learning path; primary one-shot async remains Promises/async-await, and learner introductory practice is still separate from supplied material.
 
 Validated baseline RxJS7.8.2/TypeScript5.9.3/Node24.18.0. Official references checked2026-10-22: [RxJS Observable guide](https://rxjs.dev/guide/observable), [promise conversion deprecation](https://rxjs.dev/deprecations/to-promise), [firstValueFrom official source](https://github.com/ReactiveX/rxjs/blob/7.8.2/src/internal/firstValueFrom.ts). The installed7.8.2 package source/declarations were inspected because the documentation site's text requires JavaScript.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities%2C_differences_against_Promise._When_to_use_which.md). All learner practice remains outstanding.

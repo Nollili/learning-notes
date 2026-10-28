@@ -208,7 +208,6 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 > 🧩 Security = Prevention (architecture) + Detection (monitoring) + Reaction (logging & updates)
 
 
-
 ## Worked threat model: private note title
 
 **Scope:** an authenticated owner renames one private note in one tenant. The server's verified principal/current membership is trusted input to the use case; browser state, URL IDs, request bodies and stored strings are untrusted. Assets are note confidentiality, title integrity, session credentials and availability. The browser→HTTP boundary and application→database boundary must each enforce their contract. A compromised same-origin script can issue authenticated actions, so an HttpOnly cookie is not an XSS cure.
@@ -228,31 +227,14 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 
 This isolated TypeScript5.9.3 helper builds a fixed PostgreSQL query; it is not a complete HTTP endpoint. Principal comes from verified server authentication, never req.body or the UI gate. The caller must enforce body limits and the session/CSRF policy first.
 
-```ts
-// rename-plan.ts
-export type Principal = Readonly<{ userId: string; tenantId: string }>;
-export class RenameRejected extends Error {
-  constructor(readonly code: 'unauthenticated' | 'invalid') { super(code); }
-}
-export function planRename(actor: Principal | null, input: unknown) {
-  if (!actor) throw new RenameRejected('unauthenticated');
-  if (!input || typeof input !== 'object' || Array.isArray(input)
-    || Object.keys(input).length !== 3 || Object.keys(input).some(key => !['id', 'title', 'version'].includes(key))
-    || !('id' in input) || typeof input.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(input.id)
-    || !('title' in input) || typeof input.title !== 'string' || !input.title.trim() || input.title.length > 80
-    || !('version' in input) || typeof input.version !== 'number' || !Number.isSafeInteger(input.version)
-    || input.version < 1 || input.version >= Number.MAX_SAFE_INTEGER) throw new RenameRejected('invalid');
-  return {
-    text: `UPDATE notes SET title = $1, version = version + 1
-           WHERE id = $2 AND tenant_id = $3 AND owner_id = $4 AND version = $5
-           RETURNING id, title, version`,
-    values: [input.title.trim(), input.id, actor.tenantId, actor.userId, input.version] as const,
-  };
-}
-```
+<<< ../../workbench/engineering/security/rename-plan.ts{ts}
 
 Execute through a maintained PostgreSQL adapter with values passed separately. Use the [primary server conditional-write example](../../node-js/module-09-authentication-authorization.md#ownership-and-attribute-based-access-control) for integration; MikroORM uses its own parameter placeholder conventions. A plan assertion proves fixed query text and parameter order, not live row isolation, deployed sessions or CSRF. The notes table/schema/version policy and zero-row conflict/not-found response must be implemented consistently. Avoid a second unscoped write after checking a row; map inaccessible objects consistently without revealing their contents.
 
-**Acceptance:** verify missing principal/malformed/extra-field commands produce no plan, SQL-shaped title remains solely in the values array, and caller owner/tenant fields cannot alter predicates. Then execute actual database/API tests for owner success, cross-user/cross-tenant denial, stale-version rejection, unchanged forbidden rows, missing CSRF and expired identity. Check safe rendering separately. The local plan/UI/codec checks do not establish the unperformed deployed database/browser/security properties; learner practice remains required.
 
 References checked 2026-10-22: [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [parameterized SQL](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html), [DOM XSS](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html), [CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/Can_you_provide_several_examples_of_Web_Security_related_issues__like_types_of_attack__and_how_can_we_prevent_them__OWASP_10.md). All learner practice remains outstanding.

@@ -84,29 +84,7 @@ With **Server-Side Rendering**:
 
 Applicable baseline: Next.js16 App Router with React19; official docs checked2026-10-20 (site16.4.2). Pages Router getServerSideProps is a supported alternative architecture, not the App Router API. Do not mix the two models in one example. This minimal server page assumes an allowed API origin in server configuration, a JSON array response and an error boundary supplied by the exercise.
 
-```tsx
-// app/articles/page.tsx — Server Component; API_ORIGIN remains server configuration.
-type Article = { id: string; title: string };
-function parseArticles(value: unknown): Article[] {
-  if (!Array.isArray(value) || !value.every(item =>
-    item !== null && typeof item === 'object' &&
-    typeof item.id === 'string' && typeof item.title === 'string'
-  )) throw new Error('Invalid article response');
-  return value.map(item => ({ id: item.id, title: item.title }));
-}
-export default async function ArticlesPage() {
-  const origin = process.env.API_ORIGIN;
-  if (!origin) throw new Error('API_ORIGIN required');
-  const response = await fetch(new URL('/articles', origin), {
-    cache: 'no-store', signal: AbortSignal.timeout(5000)
-  });
-  if (!response.ok) { await response.body?.cancel(); throw new Error('Articles unavailable'); }
-  const articles = parseArticles(await response.json());
-  return <main><h1>Articles</h1><ul>{articles.map(article =>
-    <li key={article.id}>{article.title}</li>
-  )}</ul></main>;
-}
-```
+<<< ../../workbench/engineering/performance/app/articles/page.tsx{tsx}
 
 This intentionally chooses fresh requests rather than relying on changing cache defaults. The timeout covers body reading; it does not set a byte/array bound, which a production boundary must also enforce. Server configuration must be trusted/validated; do not accept an arbitrary user-provided URL. Server failures should render a safe error/retry experience, not expose upstream details. Add loading/error boundaries as the next exercise; this page alone does not demonstrate streaming or full deployment.
 
@@ -118,8 +96,12 @@ Hydration expects matching initial server/client output. Date/random values, loc
 
 SSR can worsen TTFB when data/server CPU dominate and still require significant client hydration work. SSG can serve stable public content efficiently; CSR can suit an interactive private tool; streaming can avoid waiting for independent slow sections. Compare actual server cost, freshness, JS payload, resource discovery, accessibility and operational constraints. SEO depends on crawlable content/status/metadata and many other factors; SSR does not guarantee rankings, and CSR is not universally unindexable.
 
-**Exercise:** implement the article route with validated data, loading/error boundaries and one small client filter. Acceptance: useful initial HTML and correct status/error behavior; native links work without JS; no mismatch/secret leakage; stale/private cache behavior is explained; slow/failing upstream requests terminate; filter state/keyboard behavior survives hydration. Compare cold/warm CSR and SSR/SSG alternatives under the same device/network/data; retain waterfall, LCP and interaction traces plus server timings. No installed Next runtime, executed app or learner measurements are claimed here.
 
 Official references: [Next Server/Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components), [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch), [React hydration](https://react.dev/reference/react-dom/client/hydrateRoot).
 
 For a reconciled comparison without speed/security guarantees, see [SSR/CSR decisions](../EngX_Quality/Can_you_please_compare_SSR_and_CSR(pros_and_cons).md). The URL pipeline and request-topology notes separately explain QUIC/reuse/overlapping work; no fixed DNS/request-count budget establishes performance.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/Can_SSR_improve_first_render.md). All learner practice remains outstanding.

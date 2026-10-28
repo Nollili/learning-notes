@@ -134,7 +134,6 @@ If the root computes to20px, panel text is25px, button text20px, vertical paddin
 
 **Debugging:** inspect computed font sizes from root to child and compare CSS pixels with `devicePixelRatio`; do not multiply every layout value by device pixel ratio. Test long translations and200% text/400% page zoom; rem units alone cannot prevent fixed-height clipping. Avoid disabling browser zoom. Pixel borders can be appropriate while text and component padding remain font-relative.
 
-**Exercise:** reproduce the calculation, change the default root to20px, and add a long label. Acceptance: measured button font/padding match the calculation; content reflows without clipped text at zoom; page width stays bounded; mobile viewport changes do not hide essential controls. Record actual browser versions. Material completion is separate from this audit.
 
 Official references: [CSS absolute/font-relative lengths and math](https://www.w3.org/TR/css-values-4/), [WCAG reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
@@ -152,3 +151,8 @@ Official references: [CSS absolute/font-relative lengths and math](https://www.w
 Here max chooses at least1rem of inline padding, or the physical left safe-area inset when larger. This simple symmetric rule is conservative for a left notch; a real layout should handle left/right and writing direction deliberately rather than assume a physical inset is a logical start inset. The first declarations remain useful when a later value is unsupported. Safe-area values may be zero; this is not a substitute for testing mobile browser chrome or the page's viewport configuration.
 
 For an arithmetic self-check, root20px × panel1.25 × button0.8 = button20px; its0.5em padding is10px. A changed device-pixel ratio does not alter this CSS-unit calculation by itself. Actual computed layout/zoom/mobile viewport behavior still requires a browser; parsing or compiling this stylesheet proves neither reflow nor accessible sizing. Current examples are material, and the native audit remains learner practice.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/Difference_between_pixels%2C_ems_or_rems_Which_one_we_should_use.md). All learner practice remains outstanding; the worked examples above are explanatory material.

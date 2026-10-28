@@ -104,6 +104,10 @@ The Google Incremental DOM repository was archived2025-06-20 and is read-only. K
 
 **Worked reasoning:** changing a greeting from Ada to Lili should retain the intended paragraph identity, update its text and preserve unrelated controls/drafts. Replacing every DOM child is not equivalent if it loses focus, selection, listeners or edit state. Stable keyed list identity, escaping/untrusted text, event cleanup and resource ownership need a defined policy in either renderer. A keyed reorder and an append are different workloads; compare equivalent outcomes rather than just a stopwatch around different operations.
 
-**Introductory acceptance:** trace initial render, text update, keyed reorder and removal through the two models. Identify where identity, subscriptions and cleanup are owned. In the primary React app, verify stable keys and preserved input state, then inspect a browser trace to determine whether computation/reconciliation or browser layout dominates. A native trace is still unperformed here. Installing/building a historical Incremental DOM app and controlled cross-renderer benchmarks remain explicitly deferred optional advanced practice; no performance or memory ranking is claimed.
 
 Official sources checked2026-10-22: [Incremental DOM implementation/archive](https://github.com/google/incremental-dom), [React render and commit](https://react.dev/learn/render-and-commit), [state/type/key identity](https://react.dev/learn/preserving-and-resetting-state). For actual production diagnosis use the [trace/evidence ledger](../Web_Performance/How_would_you_start_the_investigation,_what_are_your_steps_after_the_customer%27s_feedback_is_that_the_application_is_really_slow.md#an-evidence-ledger-for-one-reported-task).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/Incremental_DOM_vs_Virtual_DOM_Pros_and_cons.md). All learner practice remains outstanding.

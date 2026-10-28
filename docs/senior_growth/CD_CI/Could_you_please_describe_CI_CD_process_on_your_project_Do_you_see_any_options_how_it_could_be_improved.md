@@ -107,4 +107,7 @@ Use the [artifact/database compatibility lab](../../node-js/release-artifact-com
 
 A release check record should include source revision, lockfile/runtime, artifact hash/digest, checks and database state, deployment target, injected configuration identity without secret values, health/smoke outcome, rollback compatibility window and owner. The artifact and its evidence must refer to the same bytes. Build/test caches can speed jobs but are not the release identity. Manual approval is a decision; deployment itself should stay reproducible and automated.
 
-**Exercise acceptance:** configure the real project scripts in an owned pipeline, promote the exact verified artifact, demonstrate a failed gate blocks promotion and execute the safe/unsafe rollback drill. Retain hosted-run evidence separately from the local fixtures; do not invent personal pipeline usage, credentials or measured production benefits. Only the user may push. Learner practice remains required. References: [GitLab artifacts](https://docs.gitlab.com/ci/jobs/job_artifacts/), [Docker build practices](https://docs.docker.com/build/building/best-practices/).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/delivery/Could_you_please_describe_CI_CD_process_on_your_project_Do_you_see_any_options_how_it_could_be_improved.md). All learner practice remains outstanding.

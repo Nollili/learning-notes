@@ -1,0 +1,37 @@
+# N8N-P01: a small refresh-event integration
+
+**Learner status: still required.** Prerequisites: JSON/HTTP, [n8n reading order](../../applied-ai/n8n/index.md), the shared notes dataset and custom-service authentication/idempotency concepts. Use [shared evidence](./index.md#evidence-for-every-stage). Reference n8n 2.44.7; verify the installed supported patch/node versions and feature availability before actual practice.
+
+## N-1: manual items and transformation
+
+**Scope:** synthetic manual input, one to twenty items, no credential or external service. Use the [workbench transformation](../../workbench/applied-ai/n8n/index.md) as a reference after attempting your own projection.
+
+**Acceptance:** distinguish multiple items from one nested array; validate allowed event fields; preserve event/item correlation; reject owner overrides and unknown actions without copying raw data into errors. Demonstrate expressions on current versus linked items, zero/multiple items and a deliberate broken item-link reference. Branch on a fixed validation result; a rejected item reaches no HTTP node.
+
+**Evidence/failures:** actual editor input/output screenshots with synthetic data, node modes/versions, expected envelope and invalid/type/size examples. Plain Node transform tests are narrower than an n8n engine test.
+
+## N-2: test webhook and scoped service
+
+**Scope:** owned local/test n8n instance, test URL only, separate inbound Header Auth and outbound HTTP credentials; no publication, paid service or external notification required.
+
+**Acceptance:** execute the [node recipe](../../applied-ai/n8n/integration.md), use the test listener's exact URL and a fixed custom-service destination. Inbound auth decides who can trigger; outbound credential maps to server-owned source scope. Body tenant/URL/credential fields cannot expand it. Return a correlated projected receipt only after the service outcome, or explicitly acknowledge durable acceptance rather than completion.
+
+Test valid/invalid credential, malformed/oversize event, multi-item correlation, rejected/private source and fixed URL/timeout behavior. The local fake adapter only records an in-memory receipt; a durable service implementation is a separate integration step, not a claim made by that fixture.
+
+**Evidence:** installed release/node versions, sanitized request/status/receipt, credential names/scopes without values, actual zero-call rejected cases and owned service cleanup. In a container document why its localhost differs from the host. Real webhook registration/credential delivery remains untested until you run it.
+
+## N-3: failures, replay and subworkflow
+
+**Acceptance:** controlled 503 gives no false success; forbidden/conflicting inputs do not loop; a timeout after a fake commit is reconciled with the same event key. Record bounded attempts/delay/overall deadline and avoid stacked retries. Keep automatic write retries off until same-key behavior is verified. Same event/changed command rejects with no additional effect.
+
+Extract normalization or service-call logic into an explicit subworkflow input/output contract. Configure allowed callers and whether the parent waits; retain event ID through branches and joins. Demonstrate an error workflow/Stop And Error in the installed runtime under its documented automatic-versus-manual behavior; no email node is needed. Explain that manual failure alone does not prove production error handling.
+
+**Evidence:** execution/node failure categories, call/effect counts, event/business ID versus execution ID, parent/child outcome and retry/replay decision. If production publication is outside your authorization, record the automatic error-trigger observation as unperformed rather than publish to finish a checklist.
+
+## N-4: history, tests and operational note
+
+Use pinning/mocking only for safe development fixtures, then unpin for actual service tests. Inspect a failed execution or use a sanitized fixture when debug replay is unavailable in your edition. Verify saved fields exclude credentials/private excerpts and that replay cannot repeat a business effect with a new key.
+
+Document development/production separation, TLS/proxy/webhook URL, least-privilege editor/service access, pinned image/configuration, persistent database and credential-key recovery, execution retention/pruning and an isolated restore plan. Do not activate restored triggers until destinations/credentials are reviewed. Queue mode, cloud hosting, AI nodes and enterprise features are optional.
+
+**Completion evidence:** transformation and actual test-webhook/service observations, failure/replay/subworkflow records and an operational decision note. Distinguish unperformed installation/credential/deployment/restore features. No external publication or paid integration is required or implied.

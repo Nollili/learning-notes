@@ -91,7 +91,6 @@ Keep a small serialization snapshot for a deliberately reviewed structure or val
 
 When a snapshot fails, inspect the actual diff, source change and requirement before accepting a new baseline. Scope an update to the intended test and review the generated file; blindly running jest -u across the suite can ratify unrelated regressions. Do not insert arbitrary replacement IDs/timestamps to make a failure disappear if their stability is part of the behavior being tested. Prefer deterministic fixtures and reviewed serializers for genuinely irrelevant variation.
 
-**Exercise acceptance:** demonstrate a DOM-structure change that fails a small serialization snapshot, then an external CSS-only change that leaves that snapshot unchanged. In a real browser, create/review a matching screenshot baseline and show which CSS change it catches. Add behavior assertions for pending/error/retry and inspect accessible names/focus separately. Report DOM, pixel and interaction evidence independently. No browser screenshot/assistive-technology validation or learner practice has been completed merely by writing these examples.
 
 References checked2026-10-22: [Jest snapshot review/updates](https://jestjs.io/docs/snapshot-testing), [Playwright visual baseline/environment](https://playwright.dev/docs/test-snapshots), [RTL DOM testing](https://testing-library.com/docs/react-testing-library/intro/).
 
@@ -99,4 +98,11 @@ References checked2026-10-22: [Jest snapshot review/updates](https://jestjs.io/d
 
 Use the exact `reviewed visual baseline` test and three-project configuration in the [cross-browser search lesson](../Other/Cross_Browser_Progressive_Enhancement.md). It waits for document fonts before comparing the full 320px-wide search page with `toHaveScreenshot`. The fixture uses fixed local data and no animation; pin the browser binaries, OS and fonts in the learner environment as well. An engine-specific approved baseline is needed for each configured project. No baseline has been generated or reviewed here, and test discovery/type checking does not execute image comparison.
 
-For the exercise, first approve the intended appearance, then change the stylesheet's input width or focus outline. Keep the serialized form markup unchanged and show that the DOM contract still passes while a reviewed browser image changes. Investigate a difference before updating it: an inaccessible outline or clipped control is a bug even when a new image could make the test green. Pair the image assertion with keyboard/name/failure behavior tests and the manual accessibility matrix; pixels alone cannot establish reading order or successful use of assistive technology.
+For the exercise, first approve the intended appearance, then change the stylesheet's input width or focus outline. Keep the serialized form markup unchanged and show that the DOM contract still passes while a reviewed browser image changes. Investigate a difference before updating it: an inaccessible outline or clipped control is a bug even when a new image could make the test green.
+
+Pair the image assertion with keyboard/name/failure behavior tests and the manual accessibility matrix; pixels alone cannot establish reading order or successful use of assistive technology.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/What_is_snapshot_testing_When_should_we_avoid_using_it.md). All learner practice remains outstanding.

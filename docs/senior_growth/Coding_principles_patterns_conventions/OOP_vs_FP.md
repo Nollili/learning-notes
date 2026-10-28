@@ -153,4 +153,8 @@ assert.throws(() => new Quantity(Number.MAX_SAFE_INTEGER).add(new Quantity(1)), 
 
 This class has no mutation method; addition validates the resulting invariant and returns a new value. A pure function over a validated data structure is a simpler alternative if encapsulation adds no useful guarantee. Both can call the same injected pure shipping strategy; neither requires subclassing. See [contract/substitution checks](./Can_you_decipher_SOLID_acronym_What_is_"L".md#behavioral-contracts-and-dependency-substitution) and [the async ownership race](./Composition_vs_inheritance_Shared_state_vs_immutability.md#deterministic-async-lost-update).
 
-**Validation:** exact Node24.18.0 block passed five assertions, including invalid input and overflow. **Exercise acceptance:** implement the same small invariant using a class and a function-based representation; prove original values remain unchanged, invalid transitions are rejected and effects are injected at the boundary. Compare readability and ownership instead of declaring a universal winner. Advanced paradigm specialization is optional; learner practice remains required. [Official JavaScript class-field semantics](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions) and [Node assertions](https://nodejs.org/docs/latest-v24.x/api/assert.html) support the language/check details.
+**Validation:** exact Node24.18.0 block passed five assertions, including invalid input and overflow.
+
+## Separate practice
+
+Apply the [focused requirements](../../practice/engineering/patterns/OOP_vs_FP.md). All learner practice remains outstanding.

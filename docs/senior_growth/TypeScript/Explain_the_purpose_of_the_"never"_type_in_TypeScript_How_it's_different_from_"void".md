@@ -138,10 +138,14 @@ function invalidVoid(): void { return 123; }
 
 A `() => void` callback means its caller will ignore the result; it does not prove the implementation returns undefined. This permits array.push callbacks in forEach. An async callback assigned to a void-returning API may leave a rejection unhandled if the API does not await it; prefer a promise-aware contract or deliberate error handling. A never-returning function has no normal return value and can be used where another return type is required, but never does not mean “null”.
 
-**Exercise:** add a cancelled state to LoadState and make the checker identify the missing switch case, then implement it. Acceptance: illegal success/loading access fails; every variant has a result; invalid external input is rejected by a parser; contextual-void versus explicit-void behavior is explained; no infinite loop is run. Keep type assertions/any out of the model and retain compile-time negative cases. Learner implementation remains required.
 
 Official references: [discriminated unions and never](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking), [void callback assignability](https://www.typescriptlang.org/docs/handbook/2/functions.html#return-type-void). TypeScript5.9.3 strict baseline; checked2026-10-20.
 
 ### Runtime versus checker evidence
 
 For the contextual-void example, invoke sink in an isolated lab: JavaScript still returns123 even though the caller's static type is void. Do not “prove” never by running infiniteLoop. Instead execute label for each valid discriminated state, and add a new variant to make the exhaustiveness check fail before handling it. Keep deliberately rejected assignments as type-only fixtures; running emitted code from a negative type test can execute unsafe operations. The [generic callback lesson](./Generics.md#overloads-and-callback-variance) explains why ignoring a return value is a different relationship from accepting every callback parameter type.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/Explain_the_purpose_of_the_%22never%22_type_in_TypeScript_How_it%27s_different_from_%22void%22.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -8,7 +8,9 @@ Continue [the pinned primitive lab](./mcp-primitives.md). Primary versions remai
 2. The **tool's input/output schemas** describe data shape. The catalogue tool requires `note_id` from a closed enum; the output publishes a bounded `StudyNote`. A model seeing a schema does not guarantee its next JSON obeys it. Validate on the server; validate the result again before the application uses it.
 3. **Application policy** decides who may read which current record or execute a write. A syntactically valid ID, a declared capability or an authenticated connection does not establish this permission.
 
-The SDK uses snake-case Python properties such as `input_schema`, `output_schema`, `structured_content` and `is_error`; wire schemas use their protocol-defined field names. Do not copy a v1 or TypeScript property spelling into a v2 Python program. Input constraints should describe lengths, ranges, enums, required/optional fields and extra-field policy. JSON Schema defaults are not a universal promise that every validator fills missing values; the adapter's actual behavior matters. Our function has no optional ID and rejects the tested malformed/out-of-enum inputs. Its output model rejects extra fields. Do not assume every decorator-generated input model forbids all unknown fields: inspect and test that policy explicitly when it matters.
+The SDK uses snake-case Python properties such as `input_schema`, `output_schema`, `structured_content` and `is_error`; wire schemas use their protocol-defined field names. Do not copy a v1 or TypeScript property spelling into a v2 Python program. Input constraints should describe lengths, ranges, enums, required/optional fields and extra-field policy. JSON Schema defaults are not a universal promise that every validator fills missing values; the adapter's actual behavior matters. Our function has no optional ID and rejects the tested malformed/out-of-enum inputs. Its output model rejects extra fields.
+
+Do not assume every decorator-generated input model forbids all unknown fields: inspect and test that policy explicitly when it matters.
 
 A tool list can be paginated in a larger integration. Cap discovery work and follow the documented cursor instead of assuming the first page is complete. Cache discovery only under a version/server/principal-aware policy; metadata can change and is not a long-lived grant to call everything discovered. Keep a reviewed application allowlist of the capabilities needed for the current task. The [official tool schema guide](https://py.sdk.modelcontextprotocol.io/servers/tools/) and [structured-output guide](https://py.sdk.modelcontextprotocol.io/servers/structured-output/) describe the pinned APIs.
 
@@ -33,7 +35,7 @@ Starting a local stdio server runs code under an OS account. Protocol schemas an
 
 ## Actual subprocess integration
 
-The repository lab `docs/python-for-ai/mcp-lab/` contains this added `check_connections.py`. Copy the entire lab to an owned directory, run `uv sync --locked`, then `uv run --locked python check_connections.py`.
+The repository lab `docs/workbench/applied-ai/mcp-lab/` contains this added `check_connections.py`. Copy the entire lab to an owned directory, run `uv sync --locked`, then `uv run --locked python check_connections.py`.
 
 ```python
 import asyncio

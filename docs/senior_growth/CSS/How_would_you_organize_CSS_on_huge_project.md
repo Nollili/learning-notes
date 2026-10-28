@@ -1,6 +1,8 @@
 # How would you organize CSS on huge project?
 
-For a **huge frontend project**, organizing CSS well is crucial to maintainability, scalability, and performance. Here’s a structured approach that a senior frontend dev would typically consider:
+Canonical owner: large-project stylesheet/token boundaries, Sass module output and migration. [Runtime themes and SSR first paint](./styling_react_apps.md) remain a distinct React integration concern.
+
+Large-project CSS needs explicit ownership of global rules, component styles and public tokens.
 
 ---
 
@@ -304,12 +306,13 @@ graph TD
 * **Flexible**: Mix of CSS Modules + Styled Components works well in large teams.
 
 
-
 ## Token API and component contract
 
 Treat semantic tokens as a versioned public API: `--surface`, `--text`, `--action-bg` express roles, while raw palette values remain implementation details. A component consumes documented semantic roles and exposes deliberate variants, states, focus behavior and disabled semantics. CSS cannot make a clickable div equivalent to a native button. Document which component-level overrides are supported instead of asking consumers to target undocumented descendants or increase specificity.
 
-When renaming `--brand` to `--action-bg`, keep a temporary fallback for old consumers, migrate one component/route, then remove the compatibility alias in an explicit breaking token release after checking every supported theme. The alias direction matters: define the new token from the old value during migration so changing the old theme token still affects new consumers. A var() alias resolves where it is declared: a nested theme changing --brand must redeclare --action-bg there rather than inherit an already-computed parent value. The dark scope below does so. Never create cyclic var() aliases. Invalid custom-property values can fail at computed-value time; a fallback does not type-check an arbitrary supplied token value.
+When renaming `--brand` to `--action-bg`, keep a temporary fallback for old consumers, migrate one component/route, then remove the compatibility alias in an explicit breaking token release after checking every supported theme. The alias direction matters: define the new token from the old value during migration so changing the old theme token still affects new consumers.
+
+A var() alias resolves where it is declared: a nested theme changing --brand must redeclare --action-bg there rather than inherit an already-computed parent value. The dark scope below does so. Never create cyclic var() aliases. Invalid custom-property values can fail at computed-value time; a fallback does not type-check an arbitrary supplied token value.
 
 ```scss
 // _tokens.scss: compile-time module, runtime declarations emitted separately.
@@ -341,12 +344,18 @@ The Sass breakpoint emits a literal48rem; do not write `@media(min-width:var(--w
 
 ## SSR, style cost and migration evidence
 
-Server/static-extracted CSS Modules can avoid runtime style generation, but still deliver CSS bytes and require correct route discovery/order. Runtime CSS-in-JS can offer prop-driven APIs while adding generation/insertion, bundle and cache/SSR setup costs. Some tools extract styles at build time; do not assign identical costs to every “CSS-in-JS” library. A server registry/cache must be isolated per request or use a deliberately safe immutable cache; a mutable module-global registry can mix concurrent users' output. Ensure server/client class IDs and initial theme agree to avoid hydration mismatches or flashes; a browser-only localStorage preference cannot be read by the server without an explicit transport/default strategy.
+Server/static-extracted CSS Modules can avoid runtime style generation, but still deliver CSS bytes and require correct route discovery/order. Runtime CSS-in-JS can offer prop-driven APIs while adding generation/insertion, bundle and cache/SSR setup costs. Some tools extract styles at build time; do not assign identical costs to every “CSS-in-JS” library. A server registry/cache must be isolated per request or use a deliberately safe immutable cache; a mutable module-global registry can mix concurrent users' output.
+
+Ensure server/client class IDs and initial theme agree to avoid hydration mismatches or flashes; a browser-only localStorage preference cannot be read by the server without an explicit transport/default strategy.
 
 Load critical route styles with the route's initial HTML; a late dynamic import can cause an unstyled flash. Lazy route CSS reduces initial bytes only if required styles remain discoverable and retained correctly on navigation. Inline critical CSS trades repeat HTML bytes/cacheability and CSP handling against discovery. Measure transferred/unused CSS, style recalculation, interaction layout, runtime JS and server rendering under a fixed scenario; counting classes or rerenders alone is not a cost comparison.
 
 **Worked migration record:** a legacy global `.button` styles every route. Add a versioned semantic-token layer and one `Button.module.scss` consumer using the same documented variants. Check default/dark/high-contrast/disabled/focus and narrow/wide layouts; migrate call sites for that route, then remove its legacy dependency. Keep old/new outputs comparable and rollback to the old route stylesheet if the migration fails. Record selectors/tokens removed, remaining legacy consumers and actual CSS/runtime size changes. Do not run an unused-CSS purge on one route's coverage and delete classes used by another route or dynamically chosen state.
 
-**Exercise acceptance:** compile the exact two Sass files with current Dart Sass; verify48rem output, semantic token fallback and one theme emission. Build a native button component contract and migrate one legacy route with unchanged behavior. Retain computed-style/focus/contrast/theme and SSR/hydration evidence, source-map/bundle sizes and rollback decision. Demonstrate an unlayered override and fix it deliberately; confirm remaining routes still load their required styles. Introductory migration criteria and code are learning material; actual route migration/browser/SSR performance and learner practice remain required.
 
 References checked2026-10-22: [Sass modules](https://sass-lang.com/documentation/at-rules/use/), [forwarding module APIs](https://sass-lang.com/documentation/at-rules/forward/), [CSS custom-property semantics](https://www.w3.org/TR/css-variables/), [cascade layers](https://www.w3.org/TR/css-cascade-5/). Dart Sass1.106.1 is used for the isolated compiler check; deployment browser support must be verified separately.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/How_would_you_organize_CSS_on_huge_project.md). All learner practice remains outstanding; the worked examples above are explanatory material.

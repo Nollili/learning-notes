@@ -41,6 +41,10 @@ To reduce the cost of unnecessary renders and improve performance:
 
 Run the exact [QueueLab snapshot/functional-updater example](./Change_Detection_in_React.md#snapshot-queue-commit-and-paint). Two setCount(count+1) replacements capture the same value and yield+1; two pure n=>n+1 updaters consume queued results and yield+2. This is correctness, not a promise about an incidental number of component calls. Derived doubled is computed during render instead of synchronizing a second state through an effect.
 
-**Acceptance:** predict then run both buttons and repeated independent clicks; retain correct count/derived output. Add a parent update and distinguish component calls, committed DOM changes and browser paint. Use profiling to locate an expensive consumer before adding memoization; test context/local-state changes and stable-key identity as well. Keep effects/handlers correct under StrictMode. A timer/debounce may reduce frequency while delaying feedback, and a transition does not offload synchronous CPU work. Native trace/performance and learner results remain unperformed.
 
 Official references checked 2026-10-22: [queued updates](https://react.dev/learn/queueing-a-series-of-state-updates), [memo limits](https://react.dev/reference/react/memo), [render and commit](https://react.dev/learn/render-and-commit).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Practical_Tips_for_Front-End_Optimization.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -1,6 +1,6 @@
 ### Which is better suited for React, OOP or FP, why?
 
-React is generally better suited for **Functional Programming (FP)**, though it can also accommodate **Object-Oriented Programming (OOP)** concepts. Let’s explore this in detail to understand why FP aligns more naturally with React’s design philosophy.
+React is generally better suited for **Functional Programming (FP)**, though it can also accommodate **Object-Oriented Programming (OOP)** concepts.
 
 ### **Why React Favors Functional Programming (FP)**
 

@@ -54,63 +54,15 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 
 Use the actual createProfileStore/loadProfile request-ID example in the [Redux debugging lesson](./How_would_you_debug_an_application_using_Redux.md#reproduce-a-race-before-changing-the-ui). The adapter below completes its browser HTTP boundary. Store-side validation still protects other adapters/fakes; no raw Response/Error/Promise is placed in Redux state.
 
-```ts
-// profile-http.ts — beside profile-race.ts in the standalone lab
-import type { Profile, ProfileApi } from './profile-race.js';
-export function createProfileHttpApi(send: typeof fetch = fetch): ProfileApi {
-  return { async load(id, callerSignal): Promise<Profile> {
-    if (!/^[A-Za-z0-9_-]{1,40}$/.test(id)) throw new Error('Invalid profile identity');
-    const deadline = new AbortController();
-    const signal = AbortSignal.any([callerSignal, deadline.signal]);
-    const timer = setTimeout(() => deadline.abort(), 5000);
-    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-    try {
-      signal.throwIfAborted();
-      const response = await send(`/api/profiles/${encodeURIComponent(id)}`, {
-        method: 'GET', credentials: 'same-origin', cache: 'no-store', redirect: 'error', signal,
-      });
-      if (!response.ok || response.headers.get('content-type')?.split(';', 1)[0]?.trim().toLowerCase() !== 'application/json'
-        || response.body === null) {
-        await response.body?.cancel();
-        throw new Error('Profile unavailable');
-      }
-      reader = response.body.getReader();
-      const parts: Uint8Array[] = [];
-      let size = 0;
-      for (let reads = 0; ; reads++) {
-        signal.throwIfAborted();
-        if (reads >= 512) throw new Error('Profile stream budget exceeded');
-        const item = await reader.read();
-        signal.throwIfAborted();
-        if (item.done) break;
-        size += item.value.byteLength;
-        if (size > 4096) throw new Error('Profile body too large');
-        parts.push(item.value);
-      }
-      const bytes = new Uint8Array(size);
-      let offset = 0;
-      for (const part of parts) { bytes.set(part, offset); offset += part.byteLength; }
-      const raw: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
-      if (!raw || typeof raw !== 'object' || !('id' in raw) || raw.id !== id || !('name' in raw)
-        || typeof raw.name !== 'string' || !raw.name.trim() || raw.name.length > 80) throw new Error('Invalid profile');
-      return { id, name: raw.name };
-    } catch {
-      if (signal.aborted) throw new DOMException('Profile request cancelled', 'AbortError');
-      throw new Error('Profile unavailable');
-    } finally {
-      clearTimeout(timer);
-      if (reader) {
-        try { await reader.cancel(); } catch { /* Best effort after failure/closed native stream. */ }
-        finally { reader.releaseLock(); }
-      }
-    }
-  } };
-}
-```
+<<< ../../workbench/engineering/state/profile-http.ts{ts}
 
-The fixed relative endpoint is for an eligible same-origin browser request; it is not an arbitrary user-chosen URL. Native fetch does not reject merely for404/500, so response.ok is checked before JSON handling. The media contract accepts application/json with parameters, not application/jsonjunk. The4096-byte cap counts bytes actually read even without Content-Length; fatal UTF-8 decoding rejects malformed sequences, and runtime projection requires the requested ID/name before returning. JSON duplicate-member semantics follow JSON.parse in this small non-authority display DTO; use the application's stricter decoder if its contract forbids duplicate names. No client field grants identity/permissions.
+The fixed relative endpoint is for an eligible same-origin browser request; it is not an arbitrary user-chosen URL. Native fetch does not reject merely for404/500, so response.ok is checked before JSON handling. The media contract accepts application/json with parameters, not application/jsonjunk. The4096-byte cap counts bytes actually read even without Content-Length; fatal UTF-8 decoding rejects malformed sequences, and runtime projection requires the requested ID/name before returning.
 
-The512-read cap bounds callback/empty-chunk work as well as total bytes; unusually fragmented otherwise-valid responses can hit it, so tune/test the documented policy with the actual transport rather than treat chunk boundaries as records. Native fetch/body reading must cooperate with the combined signal for the five-second deadline. An injected library ignoring cancellation is outside that guarantee and needs its own enforceable boundary. Cleanup clears the timer, cancels remaining body work and releases the reader; cancel errors do not replace the safe original result/error. Abort never undoes a server write; this adapter is GET-only.
+JSON duplicate-member semantics follow JSON.parse in this small non-authority display DTO; use the application's stricter decoder if its contract forbids duplicate names. No client field grants identity/permissions.
+
+The512-read cap bounds callback/empty-chunk work as well as total bytes; unusually fragmented otherwise-valid responses can hit it, so tune/test the documented policy with the actual transport rather than treat chunk boundaries as records. Native fetch/body reading must cooperate with the combined signal for the five-second deadline. An injected library ignoring cancellation is outside that guarantee and needs its own enforceable boundary.
+
+Cleanup clears the timer, cancels remaining body work and releases the reader; cancel errors do not replace the safe original result/error. Abort never undoes a server write; this adapter is GET-only.
 
 Wire createProfileStore(createProfileHttpApi()) once per client owner or per SSR request with the appropriate server adapter; the browser relative URL/credentials policy does not magically work in Node SSR. The owner dispatches loadProfile, handles unwrap rejection, calls the returned dispatch promise's abort method on supersession/unmount as appropriate, and retains the reducer request-ID guard from the debugging lesson. Network abort reduces waste; it does not replace stale-result protection. Use the existing route/session scope rules before extending this demonstration to private data.
 
@@ -139,63 +91,32 @@ Primary learning implementation remains Toolkit's injected thunk/request owner a
 > Keep reducers **pure**; all async, side-effect, or impure operations belong in **middleware**. This maintains predictability and testability of your Redux state.
 
 
-
 ## Current exports and one primary Toolkit path
 
 Verified2026-10-21 with Redux Toolkit2.13.0, Redux5.0.1, Redux Thunk3.1.0, React Redux9.3.0 and Immer11.2.7. Redux Thunk3 has named thunk and withExtraArgument exports; Immer10+ uses named produce. configureStore already includes thunk in its default middleware. Inject dependencies through its thunk.extraArgument option instead of adding a second thunk instance or hardcoding a service inside every action creator.
 
-```ts
-// counter-store.ts
-import { configureStore, createAction, createReducer, type ThunkAction, type UnknownAction } from '@reduxjs/toolkit';
-
-export type CounterApi = Readonly<{ nextDelta: () => Promise<unknown> }>;
-export const incremented = createAction<number>('counter/incremented');
-export const themeChanged = createAction<'light' | 'dark'>('preferences/themeChanged');
-export const ticked = createAction('telemetry/ticked');
-
-const counter = createReducer({ value: 0 }, builder => {
-  builder.addCase(incremented, (state, action) => { state.value += action.payload; });
-});
-const preferences = createReducer({ theme: 'light' as 'light' | 'dark' }, builder => {
-  builder.addCase(themeChanged, (state, action) => { state.theme = action.payload; });
-});
-const telemetry = createReducer({ ticks: 0 }, builder => {
-  builder.addCase(ticked, state => { state.ticks += 1; });
-});
-
-export function createCounterStore(api: CounterApi) {
-  return configureStore({
-    reducer: { counter, preferences, telemetry },
-    middleware: getDefaultMiddleware => getDefaultMiddleware({ thunk: { extraArgument: api } }),
-  });
-}
-export type RootState = ReturnType<ReturnType<typeof createCounterStore>['getState']>;
-export type AppDispatch = ReturnType<typeof createCounterStore>['dispatch'];
-export type AppThunk<Result = void> = ThunkAction<Result, RootState, CounterApi, UnknownAction>;
-
-export const loadIncrement = (): AppThunk<Promise<void>> => async (dispatch, getState, api) => {
-  let value: unknown;
-  try { value = await api.nextDelta(); }
-  catch { throw new Error('Counter service unavailable'); }
-  if (typeof value !== 'number' || !Number.isSafeInteger(value) || Math.abs(value) > 1000) {
-    throw new Error('Invalid counter service result');
-  }
-  if (!Number.isSafeInteger(getState().counter.value + value)) throw new Error('Counter range exceeded');
-  dispatch(incremented(value));
-};
-```
+<<< ../../workbench/engineering/state/counter-store.ts{ts}
 
 The dependency returns unknown at the boundary; TypeScript alone cannot validate a runtime service response. Only a safe integer delta reaches the plain Redux action. No Promise/Error/client object is stored in state. The dispatch promise exposes completion/failure to the owning UI; callers must await/catch it and show an explicit recovery state. This example performs one additive operation and does not pretend to implement a user-profile loading/race/cancellation protocol. Two concurrent additions use the current state after each awaited result rather than a captured stale count.
 
 A reducer's draft mutation is supported because createReducer owns Immer; mutating an ordinary reducer's incoming state is still wrong. Keep nondeterministic work/network/time/randomness outside reducers. Choose RTK Query for server-cache ownership when that is the requirement, listener middleware for action-driven reactions, and Saga/Observable as alternatives when the application's actual orchestration needs justify them. Project size alone does not determine the correct side-effect owner.
 
-**Exercise acceptance:** run the exact store against an injected fake service; prove a valid value changes state once, invalid/failed service results reject without an action/state change, the dependency is called once and the returned promise is observed. Test safe-integer range boundaries and two delayed responses. Explain why adding thunk twice is unnecessary and why a typed `Promise<User>` is not HTTP response validation. Add UI pending/error/cancellation ownership separately and retain actual behavior evidence; learner practice remains required.
 
 Official references: [named export migration](https://redux.js.org/usage/migrations/migrating-rtk-2), [injected thunk dependencies](https://redux.js.org/usage/writing-logic-thunks), [Toolkit defaults](https://redux.js.org/toolkit/api/getDefaultMiddleware), [TypeScript thunk/dispatch contracts](https://redux.js.org/usage/usage-with-TypeScript).
 
 
 ### HTTP and async ownership acceptance
 
-Run the exact adapter with the request-ID store. Cover204/no-body according to this GET contract (rejected), non2xx, missing/wrong/jsonjunk media, valid split UTF-8 JSON, malformed UTF-8/JSON/schema/mismatched ID,4096/4097-byte boundaries and missing Content-Length. Check pre-aborted and mid-request signals, empty-chunk/read budget, body cancellation/reader release and fixed error messages. Repeat B-before-A completion to prove stale data cannot commit, and observe abort/unwrap handling. The injected test response is not a browser network proof; run a real authenticated endpoint/browser navigation exercise separately. Pin browser support for AbortSignal.any or provide an owned equivalent. Node24.18.0 supports the validation baseline; TypeScript5.9.3 source checking uses the documented Toolkit declaration limitation from the debugging note.
+Run the exact adapter with the request-ID store. Cover204/no-body according to this GET contract (rejected), non2xx, missing/wrong/jsonjunk media, valid split UTF-8 JSON, malformed UTF-8/JSON/schema/mismatched ID,4096/4097-byte boundaries and missing Content-Length. Check pre-aborted and mid-request signals, empty-chunk/read budget, body cancellation/reader release and fixed error messages. Repeat B-before-A completion to prove stale data cannot commit, and observe abort/unwrap handling.
+
+The injected test response is not a browser network proof; run a real authenticated endpoint/browser navigation exercise separately. Pin browser support for AbortSignal.any or provide an owned equivalent. Node24.18.0 supports the validation baseline; TypeScript5.9.3 source checking uses the documented Toolkit declaration limitation from the debugging note.
 
 Authoritative references checked2026-10-22: [Fetch/body/status contract](https://fetch.spec.whatwg.org/), [ReadableStream reader/cancellation](https://streams.spec.whatwg.org/#default-reader-class), [Redux async-thunk cancellation](https://redux.js.org/toolkit/api/createAsyncThunk). Real endpoint/browser/timeout integration and learner practice remain required; no automatic write retry is introduced.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/state/What_are_middlewares%2C_how_to_handle_asynchronous_actions.md). All learner practice remains outstanding.
+
+
+The canonical HTTP reference now races both transport and body reads against its abort/deadline owner, and consumes cancellation failures without awaiting indefinitely. This bounds caller waiting even when an injected adapter ignores abort; it cannot stop arbitrary remote work or preempt synchronous parsing. The fixed 4096-byte/read-count limits remain separate bounds.

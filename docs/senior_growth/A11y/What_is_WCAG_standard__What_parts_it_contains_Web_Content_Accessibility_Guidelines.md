@@ -100,7 +100,6 @@ AAA Focus Appearance2.4.13 is distinct from AA Focus Visible2.4.7; a project can
 
 **Worked decision:** a draggable priority list gains Move up/Move down buttons with clear item names. The buttons provide the nondrag pointer path (2.5.7), also support keyboard operation (2.1.1), preserve focus on the moved item and announce the new position (4.1.3). A screen-reader and pointer test must confirm the result; adding button markup alone is insufficient.
 
-**Exercise:** map the form/dialog workflow to these criteria. Acceptance: define page/process scope, target level, technologies and states; write a test for each applicable row, justify exceptions and log unresolved failures. Include contrast/reflow/target-size measurements and auth paste/password-manager checks. Learner testing remains required.
 
 Official normative source: [WCAG2.2](https://www.w3.org/TR/WCAG22/); explanatory guidance: [Understanding WCAG2.2](https://www.w3.org/WAI/WCAG22/Understanding/). Checked2026-10-20.
 
@@ -124,7 +123,6 @@ Qualifying large text for the contrast criterion is at least18pt regular or14pt 
 
 For a wide data table, the table may require horizontal navigation, but search, pagination and row action controls should still reflow/operate. Fixed-height cards/dialogs often fail enlarged text even when font size uses rem. Test long/error/translated content rather than only a short happy-path screenshot. Prefer responsive layout/content fixes over hiding essential text or disabling enlargement.
 
-**Acceptance exercise:** apply this matrix to the course list, native dialog and async profile flow. Record environment/settings/state, expected criterion outcome, actual observation/measurement, defect/fix/retest and any justified exception. Include text-only enlargement, narrow reflow, spacing overrides, both themes/interactive states, sticky overlays, reduced motion and forced colors. Every unexecuted row stays unperformed; a before/after CSS edit is not evidence of the measured result. Criteria applicability needs the complete scoped content/process, beyond these examples.
 
 Normative source checked2026-10-21: [WCAG2.2](https://www.w3.org/TR/WCAG22/). Explanatory sources: [resize text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html), [reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html), [text spacing](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html), [contrast minimum](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). These are study/test procedures, not a completed audit or readiness assessment.
 
@@ -141,3 +139,8 @@ For the [worked HTML-first search](../Other/Cross_Browser_Progressive_Enhancemen
 | 1.4.10 / 1.4.4 narrow/enlarged | Run specified reflow and text-resize checks; no clipped required action | Unperformed; measurements/screenshots plus task result |
 
 Use pass/fail/not-applicable with a reason only after the procedure is executed; unknown/unperformed stays explicit. If a label is removed, first document the observed name/task failure, then restore it and retest the same combination. Do not fill a “pass” cell because source markup looks plausible. Capture defect impact, scope, fix and retest date separately from severity and criterion level. Other criteria, complete-process coverage, non-interference and accessibility-supported usage still need assessment. Native browser/reader/visual checks in this study environment remain unperformed.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/What_is_WCAG_standard__What_parts_it_contains_Web_Content_Accessibility_Guidelines.md). All learner practice remains outstanding; the worked examples above are explanatory material.

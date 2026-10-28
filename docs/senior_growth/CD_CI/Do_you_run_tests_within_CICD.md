@@ -1,6 +1,6 @@
 # 🧪 Running Tests within CI/CD
 
-Yes, running tests is a **core part of the CI/CD pipeline**. Automated testing ensures **code quality, correctness, and stability** before changes reach staging or production.
+Yes, running tests is a **core part of the CI/CD pipeline**. Automated testing checks selected behavior before promotion; missing cases, weak oracles and configuration failures remain possible.
 
 ---
 
@@ -76,7 +76,9 @@ artifact-presence:
     - test -s dist/index.html
 ```
 
-The --run flags assume this client example uses Vitest scripts; Jest already runs once in ordinary CI, so do not transplant that flag into an Autocode Jest template. Node24 image tags move within the major: pin a tested patch/digest plus lockfile for reproducible production CI. A package cache can miss safely; npm ci installs in every job that needs dependencies. Cache .npm downloads rather than treating another job's node_modules as a reliable handoff. Artifacts carry this exact build's dist into the consumer job. needs explicitly selects its producer; do not mix needs and dependencies in one job.
+The --run flags assume this client example uses Vitest scripts; Jest already runs once in ordinary CI, so do not transplant that flag into an Autocode Jest template. Node24 image tags move within the major: pin a tested patch/digest plus lockfile for reproducible production CI. A package cache can miss safely; npm ci installs in every job that needs dependencies.
+
+Cache .npm downloads rather than treating another job's node_modules as a reliable handoff. Artifacts carry this exact build's dist into the consumer job. needs explicitly selects its producer; do not mix needs and dependencies in one job.
 
 The final job checks artifact availability only, not functional UI behavior. A real promotion adds an owned browser/integration smoke test against the same artifact and a documented deployment/rollback contract. Keep build identity/hash with it and promote the tested output rather than rebuild under a different environment. Do not upload environment secrets/private source maps as public artifacts; see the [source-map lifecycle](../React/build_tools.md#source-maps-generate-privately-then-verify-an-actual-mapped-failure). No deployment, account action or remote pipeline run is performed by this note.
 
@@ -99,7 +101,7 @@ The final job checks artifact availability only, not functional UI behavior. A r
 
 ### ✅ Summary
 
-* Running tests in CI/CD ensures **safe integration and deployment**.
+* Running tests in CI/CD supplies evidence for its configured gates; production safety needs additional release controls.
 * Unit, integration, and E2E tests form a **layered safety net**.
 * Test automation reduces **manual effort, errors, and regressions**, improving developer confidence and release speed.
 
@@ -107,9 +109,10 @@ The final job checks artifact availability only, not functional UI behavior. A r
 > Think of tests in CI/CD as a **gatekeeper**: no code passes to staging or production without passing automated validation.
 
 
-
 ## Isolation and failure drill
 
-In a separate local fixture, create a tiny dependency-backed build and run it in a fresh job directory with no node_modules: it must fail until that job installs/restores its dependencies. Copy only the declared artifact into a second fresh directory; an artifact-presence check must pass after transfer and fail when the artifact is absent. Delete the package cache and require the locked install to succeed anyway. Force lint/type/test/build failures one at a time and require a nonzero pipeline outcome; never append `|| true` or lose status through an unchecked pipe. Run the actual configuration through GitLab's CI lint tool in learner practice and retain its result. Local YAML parsing alone does not validate service semantics or remote runners.
+In a separate local fixture, create a tiny dependency-backed build and run it in a fresh job directory with no node_modules: it must fail until that job installs/restores its dependencies. Copy only the declared artifact into a second fresh directory; an artifact-presence check must pass after transfer and fail when the artifact is absent. Delete the package cache and require the locked install to succeed anyway.
+
+Force lint/type/test/build failures one at a time and require a nonzero pipeline outcome; never append `|| true` or lose status through an unchecked pipe. Run the actual configuration through GitLab's CI lint tool in learner practice and retain its result. Local YAML parsing alone does not validate service semantics or remote runners.
 
 References checked2026-10-21: [GitLab artifacts](https://docs.gitlab.com/ci/jobs/job_artifacts/), [needs](https://docs.gitlab.com/ci/yaml/needs/), [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/). Learner runner/deployment checks remain required.

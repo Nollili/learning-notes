@@ -159,7 +159,9 @@ export async function watchProgress(getSnapshot, render, signal, onFailure = con
 }
 ```
 
-Snapshot and feed cursor must share one sequence/epoch contract; the server reads the header in preference to the initial query on automatic reconnect. The reset event closes this EventSource and obtains a fresh snapshot before constructing a new instance. Lost history/process epoch changes need that explicit reset; deduplication cannot recover missing business events. The consumer demonstrates a lifecycle, not a completed UI or authenticated snapshot endpoint. Report protocol/snapshot failures rather than showing a permanent success state. For a side effect instead of a display, use durable idempotency keyed by event identity; an in-memory last ID is insufficient.
+Snapshot and feed cursor must share one sequence/epoch contract; the server reads the header in preference to the initial query on automatic reconnect. The reset event closes this EventSource and obtains a fresh snapshot before constructing a new instance. Lost history/process epoch changes need that explicit reset; deduplication cannot recover missing business events. The consumer demonstrates a lifecycle, not a completed UI or authenticated snapshot endpoint.
+
+Report protocol/snapshot failures rather than showing a permanent success state. For a side effect instead of a display, use durable idempotency keyed by event identity; an in-memory last ID is insufficient.
 
 ## Completion-driven polling with bounded backoff
 
@@ -206,7 +208,9 @@ export function startPolling(load, consume, {
 }
 ```
 
-`retryable` defaults to false: classify transient failures deliberately. Authentication/schema errors should stop and surface action to the user; Retry-After and an overall retry/elapsed budget need an application policy rather than endless retries. This example caps individual backoff but can retry a transient failure indefinitely while its owner remains active; set a finite retry/elapsed budget for bounded jobs. Polling a continuously mounted live view can intentionally run until unmount. Pause/resume on visibility/offline state only if the product defines how stale data and resumption work. Conditional requests with ETag/If-None-Match can reduce unchanged payload bytes;304 is a successful “no new representation” outcome, not malformed JSON to parse.
+`retryable` defaults to false: classify transient failures deliberately. Authentication/schema errors should stop and surface action to the user; Retry-After and an overall retry/elapsed budget need an application policy rather than endless retries. This example caps individual backoff but can retry a transient failure indefinitely while its owner remains active; set a finite retry/elapsed budget for bounded jobs. Polling a continuously mounted live view can intentionally run until unmount.
+
+Pause/resume on visibility/offline state only if the product defines how stale data and resumption work. Conditional requests with ETag/If-None-Match can reduce unchanged payload bytes;304 is a successful “no new representation” outcome, not malformed JSON to parse.
 
 The adapter must settle after abort/deadline; AbortSignal.timeout does not forcibly settle an arbitrary noncooperative promise. A stuck adapter prevents overlap (this scheduler will not start a second request) but still needs transport/resource cancellation. consume and onError are synchronous trusted callbacks in this teaching contract; async processing needs to be awaited and explicitly owned, and error reporting must not throw. Do not blindly retry writes merely because this read-polling scheduler retries classified failures.
 
@@ -254,10 +258,4 @@ Browsers do not expose the same raw HTTP2/trailer interface as a Node gRPC clien
 
 ## Practice and acceptance evidence
 
-**SSE:** use an authorized scratch feed, take a snapshot and stream later IDs; reconnect with Last-Event-ID and require no missing retained events. Expire replay history and verify reset/resnapshot; test malformed/future cursors before headers, duplicate delivery, slow response pressure, disconnect and shutdown cleanup. Observe heartbeat bytes through the actual proxy and native EventSource reconnection. Require listener/timer/subscriber counts return to baseline. Explain in-memory restart/durability and side-effect idempotency limitations. A callback fixture cannot establish browser/proxy behavior.
-
-**Polling:** control the clock and request adapter. Require one active attempt maximum, next schedule only after completion, bounded delay/jitter, selected transient retry, terminal failure stop, disposal during in-flight work and no consume after stop. Test invalid schema,304, timeout and cancellation using the real fetch adapter in the practice app. State whether the owner is a bounded job or a long-lived view and enforce its retry budget accordingly.
-
-**gRPC introductory exercise:** explain both proto methods and four RPC forms; map a not-found/auth/deadline failure to the right gRPC status and external HTTP response; propose a compatible schema addition and unsafe field-number reuse. Acceptance: describe channel/auth/deadline/stream cleanup and browser gateway trade-offs correctly. Running the official Node quickstart and a streaming/load/deployment experiment is optional advanced practice, explicitly not completed here.
-
-References checked2026-10-21: [HTML SSE/EventSource](https://html.spec.whatwg.org/multipage/server-sent-events.html), [Node24 HTTP](https://nodejs.org/download/release/v24.18.0/docs/api/http.html), [gRPC Node basics](https://grpc.io/docs/languages/node/basics/), [gRPC concepts/status](https://grpc.io/docs/what-is-grpc/core-concepts/), [deadlines](https://grpc.io/docs/guides/deadlines/), [gRPC browser FAQ](https://grpc.io/docs/what-is-grpc/faq/), [protobuf schema evolution](https://protobuf.dev/programming-guides/proto3/#updating).
+[Exercises and learner checklist](../practice/node-js/realtime-transports.md).

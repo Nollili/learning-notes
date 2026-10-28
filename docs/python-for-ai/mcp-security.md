@@ -14,7 +14,7 @@ The dated [MCP HTTP authorization specification](https://modelcontextprotocol.io
 
 ## Worked restricted HTTP server
 
-Copy the entire repository folder `docs/python-for-ai/mcp-lab/` into an owned scratch directory. Its lock now explicitly includes httpx2 as well as MCP/Pydantic. Run `uv sync --locked` then `uv run --locked python check_security.py`.
+Copy the entire repository folder `docs/workbench/applied-ai/mcp-lab/` into an owned scratch directory. Its lock now explicitly includes httpx2 as well as MCP/Pydantic. Run `uv sync --locked` then `uv run --locked python check_security.py`.
 
 This uses **public synthetic opaque tokens in a fixture registry**. They are not credentials, a production token design or an implementation of an OAuth authorization server. A real opaque token verifier performs authenticated, bounded issuer introspection and honors active/expiry/audience/scope claims. A JWT verifier checks a trusted key/signature, an explicit algorithm allowlist, expected issuer/resource audience and required lifetime/subject claims before constructing `AccessToken`. Merely decoding a JWT or trusting an unverified `sub`/`aud` is insufficient.
 
@@ -145,7 +145,4 @@ For JWT implementation APIs, use [PyJWT's official usage/claim verification guid
 
 ## Practice acceptance
 
-Reproduce the middleware/ACL checks, then replace only the verifier with your owned issuer integration and retain bad-signature, wrong-issuer/audience, expired, absent-scope and revoked-access results. Add a denied resource/prompt path if they expose private data, not just a tool. Demonstrate that server descriptions, resource text and model arguments cannot widen the current grant or authorize a write. Trace a request without recording credentials/private fields and perform a secret-canary leakage check. Record untested issuer/TLS/consent/revocation-propagation boundaries explicitly. Learner implementation remains **still required**; the worked fixture does not establish secure production operation or professional readiness.
-
-
-For long-running operations, continue with [MCP cancellation and compatibility](./mcp-lifecycle.md). The JSON-response auth fixture above does not establish client-to-handler cancellation; its transport-mode limitation is documented there.
+[Separate learner criteria](../practice/applied-ai/chapters/mcp-security.md).

@@ -107,7 +107,6 @@ test('sum adds numbers correctly', () => {
 > Start with **unit tests for core logic**, then **integration for critical modules**, and **E2E only for essential user journeys**.
 
 
-
 ## Classify tests by boundaries, not the runner's name
 
 | Actual worked material | Boundary exercised | What it cannot establish |
@@ -134,4 +133,7 @@ test('selection survives visiting the next page', async ({page}) => {
 
 A JSDOM test cannot replace this browser check. Keep API/database calls real for the integrated happy path, isolate tenant/test seed data, and add separate cross-tenant denial tests; route interception is useful for controlled failures but changes which boundary is being verified. Use semantic locators and web-first assertions, not arbitrary sleeps. No browser test was run for this sketch because the integrated route/auth/seed application is not supplied by the component fixture.
 
-**Exercise acceptance:** implement the owned route/seed/auth configuration, run the browser journey plus one API/database invariant and one failure case, and state which dependencies were real or controlled. Keep first failures/traces, teardown data/resources and explain the chosen test mix. Learner practice remains required. [Official Playwright test guidance](https://playwright.dev/docs/writing-tests) and [API testing](https://playwright.dev/docs/api-testing) describe the runner boundaries.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/What_is_the_testing_pyramid%28mention_some_tools_for_each%29_what_do_the_different_tests_test%2C_why_each_of_them_is_important.md). All learner practice remains outstanding.

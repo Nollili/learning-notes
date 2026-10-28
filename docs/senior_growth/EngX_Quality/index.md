@@ -1,5 +1,9 @@
 # EngX_Quality
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/design.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Can you please compare SSR and CSR(pros and cons)?](./Can_you_please_compare_SSR_and_CSR%28pros_and_cons%29.md)

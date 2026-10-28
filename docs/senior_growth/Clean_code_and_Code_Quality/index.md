@@ -1,5 +1,9 @@
 # Clean_code_and_Code_Quality
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/quality.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Are you using any tool to enforce it, is it included in hooks as well?](./Are_you_using_any_tool_to_enforce_it%2C_is_it_included_in_hooks_as_well.md)

@@ -1,0 +1,15 @@
+# Prompt Design, Modalities and Adaptation Choices — practice
+
+**Learner status: still required.** These requirements were separated from the textbook. Use the [integrated sequence](../index.md) and shared evidence record; running reference checks is not independent completion.
+
+[Textbook](../../../python-for-ai/prompting-and-modalities.md)
+
+## Practice and acceptance
+
+Run strict typing for the exact builders and inspect actual SDK serialization through the existing offline transport. Acceptance: malicious source strings remain one user-data value; no source changes the developer instruction; prompt version/hash are stable for unchanged instructions; empty/oversize/invalid-Unicode input rejects before I/O; no request uses a source-provided role/URL/tool; image requests contain the typed text+image items and an application-owned reference. This proves wire construction, not resistance to all prompt injection or image-model correctness.
+
+Author the diagram and media fixtures above with expected supported/uncertain outcomes and provenance. Calculate the rectangle/time offsets and add bounds tests; review what each crop/sample discards. Compare zero-shot and few-shot prompts on a separately labeled task set, keeping output validator and model configuration fixed. Record semantic errors as well as formatting. Write the classifier adaptation decision record and a hypothetical fine-tuning dataset split, showing how a duplicated document could leak across naive row splits. **Learner practice remains required**, including any live authorized quality/latency comparison; deterministic fixtures alone prove no real model performance.
+
+**Acceptance for21.05–21.08:** run the existing pipeline, SDK counter, token-budget and provenance fixtures together. Include a source containing fake role delimiters and embedded commands; assert it remains a JSON data string and developer instructions stay application-owned. Test ties/order, duplicate IDs, per-source caps, zero evidence, one-over tokens, multiple recounts, counter outage/cancellation, stale version and permission denial. Demonstrate that a genuine irrelevant quote can pass membership while its answer fails human support review. Wire a generation adapter only after the schema/payload equality and output gates are covered. The tests establish structural/permission/budget boundaries, not immunity to injection or live-model quality.
+
+**Acceptance for21.13–21.16:** execute synthetic_prompt_trial and assert every count/denominator including undefined silent accuracy. For each failure-table row, author a fixture naming the earliest failing stage and one distinguishing observation; show why changing only the prompt would or would not fix it. Compare actual baseline/candidate prompts on a reviewed labeled set with repeated runs, same source snapshot/configuration and predeclared utility/error gates. Record unauthorized-action tests separately from answer fluency and compare no-evidence with outage. Required material is complete once explanations/code/checks are present; real provider comparison, security red-teaming and learner practice are separate unfinished work.

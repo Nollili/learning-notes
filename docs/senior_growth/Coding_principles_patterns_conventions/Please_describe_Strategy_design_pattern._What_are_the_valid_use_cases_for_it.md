@@ -163,4 +163,8 @@ assert.throws(() => quote(100, () => NaN), RangeError);
 
 This is Strategy through functions: checkout owns the calculation boundary and injects one pure algorithm. A map or switch still selects the rule at the application boundary; the pattern does not remove all decisions. Keep a switch if only two stable cases exist and no independent evolution or injection is needed. Do not catch payment failures and silently substitute another gateway: async strategies also need common timeout, cancellation, idempotency and error semantics.
 
-**Validation:** exact example executed with Node24.18.0, all five assertions passed. **Exercise acceptance:** add a pickup rule without editing `quote`, verify boundary/negative/output contracts for every rule, and write a short decision explaining why functions, a switch or classes best fit the actual change. Learner practice remains required. [Official Node assertion API](https://nodejs.org/docs/latest-v24.x/api/assert.html) documents the check primitives.
+**Validation:** exact example executed with Node24.18.0, all five assertions passed.
+
+## Separate practice
+
+Apply the [focused requirements](../../practice/engineering/patterns/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md). All learner practice remains outstanding.

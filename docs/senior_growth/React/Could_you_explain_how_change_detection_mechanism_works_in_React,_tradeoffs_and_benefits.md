@@ -1,5 +1,7 @@
 ### Could you explain how change detection mechanism works in React, tradeoffs and benefits?
 
+This companion owns editable entity identity and reconciliation trade-offs. Study [the canonical render/queue explanation](./Change_Detection_in_React.md) first; stable keys preserve identity rather than automatically skipping renders.
+
 ### React Change Detection Mechanism
 
 React uses a **virtual DOM (VDOM)** and a **reconciliation algorithm** to efficiently detect and apply UI changes.  
@@ -87,6 +89,10 @@ This row initializes a draft once. If item.name later changes remotely, decide w
 
 **Trade-off:** preserving host/state identity improves user continuity but can preserve stale local state if the domain identity is wrong. Memoization cannot repair a bad key. For large lists, measure rendering, windowing/focus behavior and data retention separately.
 
-**Exercise:** edit row B, reverse the list, insert at the beginning and switch an editor entity key. Acceptance: the draft stays with B; stable focus follows the intended record; a deliberate key reset clears only the chosen form; demonstrate the index/random-key failure before repairing it. Record user-visible behavior, not only component call counts.
 
 See [the detailed render/queue lesson](./Change_Detection_in_React.md). Official: [preserving/resetting state](https://react.dev/learn/preserving-and-resetting-state), [list keys](https://react.dev/learn/rendering-lists). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Could_you_explain_how_change_detection_mechanism_works_in_React%2C_tradeoffs_and_benefits.md). All learner practice remains outstanding; the worked examples above are explanatory material.

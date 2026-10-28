@@ -35,6 +35,10 @@ React elements describe desired UI; Fiber stores reconciliation work/state. Neit
 
 A read such as getBoundingClientRect after a style-changing write may force pending layout. Batching React state does not automatically remove that browser cost, nor does a portal isolate CSS. DOM snapshots serialize structure; screenshot tests inspect rendered pixels and have different limitations.
 
-**Exercise:** profile a list update with stable keys and an equivalent direct DOM update. Acceptance: separate JavaScript/render/commit/layout/paint timings, record workload/device/build, and verify the same resulting behavior and focus. Explain one render that produces no DOM mutation. The goal is evidence-based design, not selecting a universal winner.
 
 Continue with [render scheduling and snapshots](./Change_Detection_in_React.md). Official reference: [React render and commit](https://react.dev/learn/render-and-commit). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_is_Virtual_DOM%2C_why_is_it_in_React%2C_why_does__150e8106c24d8025bebfc72f25ab3413.md). All learner practice remains outstanding; the worked examples above are explanatory material.

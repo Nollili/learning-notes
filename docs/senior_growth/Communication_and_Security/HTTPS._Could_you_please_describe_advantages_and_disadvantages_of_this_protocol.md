@@ -84,6 +84,10 @@ A1.1/2 HTTPS example normally negotiates TLS over TCP, whereas HTTP3 uses QUIC's
 
 Keep certificate renewal, chain/hostname/time validation, mixed content, redirects, HSTS and termination-hop policies explicit. Do not disable verification to make a failing request pass. A trusted terminating proxy can read traffic at that boundary; secure the next hop and logs according to the system design. HTTP caches still work over HTTPS at authorized endpoints/CDNs; authorization/cache-key/private response policy determines what may be shared. TLS does not fix XSS, CSRF, object authorization or leaked application secrets.
 
-**Exercise acceptance:** in an allowed controlled endpoint, inspect actual protocol/certificate/ALPN and renewal/termination behavior, diagnose wrong-host/expired/untrusted certificates without bypassing validation, and distinguish signature, key establishment, traffic encryption and resumption. Record exact client/server versions and which hop was observed. No native TLS handshake, certificate deployment or learner test has been performed here; this is corrected study material.
 
 Official sources: [current TLS1.3 RFC9846](https://www.rfc-editor.org/info/rfc9846/), [historical TLS1.3 RFC8446/status](https://www.rfc-editor.org/info/rfc8446/), [early-data policy RFC8470](https://www.rfc-editor.org/info/rfc8470/), [HTTP3 RFC9114](https://www.rfc-editor.org/info/rfc9114/). Checked2026-10-22; review standards status and platform policy when deploying.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/HTTPS._Could_you_please_describe_advantages_and_disadvantages_of_this_protocol.md). All learner practice remains outstanding.

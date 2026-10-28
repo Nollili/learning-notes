@@ -228,7 +228,6 @@ function createLru(maxEntries) {
 
 This bounds entry count, not bytes; a single value can still be huge. Decide maximum response bytes/items, TTL/freshness, user-scoped keys, in-flight cancellation and resource disposal separately. Map access order is explicit here; a read refreshes recency. WeakMap is not enumerable and supplies neither a deterministic size nor an LRU policy. Evicting a JS reference also does not automatically close a WebSocket, timer, worker or object URL; resource owners need teardown.
 
-**Exercise:** compare an infinite-scroll list with DOM virtualization alone versus bounded retained pages. Acceptance: demonstrate the two separate bounds, explain back-scroll/refetch trade-offs, test LRU replacement/refresh/cached-undefined/clear and large-value limits; verify user data does not survive logout in a shared cache. For memory, take comparable snapshots after repeated open/close cycles and inspect retainers; no deterministic GC timing/finalizer assertion is valid. Learner heap measurements remain unperformed.
 
 Official references checked2026-10-20: [Chrome memory diagnosis](https://developer.chrome.com/docs/devtools/memory-problems), [ECMAScript weak collections](https://tc39.es/ecma262/#sec-weakmap-objects), [React Effect cleanup](https://react.dev/reference/react/useEffect).
 
@@ -239,4 +238,7 @@ Warm the exact page/workflow first, record a baseline, then repeat the same open
 
 Avoid accidentally retaining the subject in console variables, logged objects or a selected DevTools node. Use a comparison/dominator/retainer view appropriate to the browser version, identify the owner and remove its strong reference or dispose its resource. Repeat the same cycles and verify useful behavior remains. Do not assert that GC runs by a particular deadline or that a missing finalizer proves a leak. Heap snapshots can contain sensitive application data; keep a minimal synthetic reproduction and the artifact policy appropriate to the project.
 
-**Acceptance:** execute the LRU replacement/read-refresh/cached-undefined/clear cases, then separately collect native before/after retaining-path evidence for one deliberately retained owner. Confirm both mounted DOM and fetched-page/cache bounds for a virtualized list. No native heap/GC result has been performed here; passing cache logic is not heap-profile evidence. [Official memory investigation guidance](https://developer.chrome.com/docs/devtools/memory-problems), checked2026-10-22.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_are_the_usual_source_of_problems_with_memory.md). All learner practice remains outstanding.

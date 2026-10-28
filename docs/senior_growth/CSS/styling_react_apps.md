@@ -1,5 +1,7 @@
 # Styling React applications
 
+Canonical owner: runtime theme inheritance, React style APIs and server/client first-theme agreement. Project layers/migration remain in [CSS architecture](./How_would_you_organize_CSS_on_huge_project.md).
+
 Choose an approach from component ownership, runtime/SSR requirements and the existing build. The comparisons below are options, not an instruction to adopt every tool.
 
 ---
@@ -307,11 +309,12 @@ Unregistered custom properties inherit and participate in the runtime cascade; S
 
 `var(--x, fallback)` handles an absent/invalid custom-property value, not arbitrary type errors after substitution. With `--x:20px; color:var(--x, red)`, the defined token is substituted and the color becomes invalid at computed-value time; red is not selected. The property falls back according to invalid-computed-value rules, often inheritance/initial, rather than reviving a prior declaration. Cycles are invalid. `@property` can add syntax/initial/inheritance constraints where supported; weigh that contract against simpler unregistered tokens.
 
-Theme policy has three preferences: explicit light, explicit dark and system. A small client owner can map system preference to the same root attribute, listen for system changes only while in system mode and remove listeners on disposal. If persisting preference, validate the stored allowlisted value and handle unavailable storage. For SSR, choose a compatible initial server/client policy and deliberate early-theme strategy to avoid a flash or hydration mismatch; do not read window during server render. A theme switch must have an accessible name and communicate its state. React Context is useful for application preference state, but CSS inheritance handles the colors themselves.
+Theme policy has three preferences: explicit light, explicit dark and system. A small client owner can map system preference to the same root attribute, listen for system changes only while in system mode and remove listeners on disposal. If persisting preference, validate the stored allowlisted value and handle unavailable storage. For SSR, choose a compatible initial server/client policy and deliberate early-theme strategy to avoid a flash or hydration mismatch; do not read window during server render.
+
+A theme switch must have an accessible name and communicate its state. React Context is useful for application preference state, but CSS inheritance handles the colors themselves.
 
 **Trade-offs:** global semantic tokens make themes cheap and consistent but form an API requiring ownership/versioning. Component overrides enable embedding but can break paired foreground/background contrast; expose pairs or constrain overrides. CSS Modules scope class names, not inheritance or all selectors. Static extraction reduces runtime style generation; runtime CSS-in-JS can offer dynamic composition with additional integration and performance obligations. Measure the actual product.
 
-**Exercise:** build one theme owner and a reusable Button/Card pair using the primary CSS Modules stack. Acceptance: light/dark/system changes affect all intended roots; nested scopes override semantic tokens correctly; missing-token and wrong-type cases are explained with computed styles; normal/hover/pressed/focus/error colors are measured; text meets applicable4.5:1 (3:1 for qualifying large text) and required UI indicators3:1; meaning is not color alone; forced colors and keyboard focus remain usable. Inactive controls have WCAG contrast exceptions, but usability still matters. Test SSR first paint if SSR is in scope; record browser/version and evidence rather than asserting compliance from palette values.
 
 Official references checked2026-10-20: [custom properties](https://www.w3.org/TR/css-variables-1/), [color adjustment](https://www.w3.org/TR/css-color-adjust-1/), [WCAG2.2](https://www.w3.org/TR/WCAG22/). No theme/contrast browser run has been performed for this material.
 
@@ -328,10 +331,16 @@ export function initialTheme(value: unknown): InitialTheme {
 }
 ```
 
-The server renders Card with a known root html data-theme attribute and serializes the same light/dark value into a nonsecret data-initial-theme attribute on its application host. The client validates that attribute with initialTheme and applies the same root theme before hydrateRoot. Keep Card props, useId identifierPrefix, emitted CSS-module mapping and asset revision identical between server and first client render. Do not guess theme from window/matchMedia during server rendering or use suppressHydrationWarning to hide an avoidable data mismatch. A nonce/hash-based early-theme script, if chosen, must satisfy the deployed CSP; adding unsafe-inline to silence a violation is not the design goal.
+The server renders Card with a known root html data-theme attribute and serializes the same light/dark value into a nonsecret data-initial-theme attribute on its application host. The client validates that attribute with initialTheme and applies the same root theme before hydrateRoot. Keep Card props, useId identifierPrefix, emitted CSS-module mapping and asset revision identical between server and first client render. Do not guess theme from window/matchMedia during server rendering or use suppressHydrationWarning to hide an avoidable data mismatch.
+
+A nonce/hash-based early-theme script, if chosen, must satisfy the deployed CSP; adding unsafe-inline to silence a violation is not the design goal.
 
 **Worked check:** render the exact Card to HTML with its title/child content, install that markup in a host, hydrate the same tree and record recoverable errors. It should retain the section/heading identity and usable content. This checks a controlled hydration contract; it does not prove the production stylesheet is loaded before first paint or that theme contrast/flash is acceptable. Unknown preference fallback and post-hydration system changes need a product policy.
 
-**Acceptance:** strict-typecheck required title/children, render escaped title text and matching IDs, hydrate without recoverable mismatch using one matching artifact and initial theme. Then verify actual CSS delivery, nested themes, system changes, CSP and first paint/contrast/focus in a native browser. The DOM/SSR fixture and Sass/CSS compilation are separate from those unperformed browser/deployment results. Learner implementation remains required.
 
 Official reference checked 2026-10-22: [hydrateRoot matching output and identifierPrefix](https://react.dev/reference/react-dom/client/hydrateRoot), [CSS Modules class contract](https://github.com/css-modules/css-modules).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/styling_react_apps.md). All learner practice remains outstanding; the worked examples above are explanatory material.

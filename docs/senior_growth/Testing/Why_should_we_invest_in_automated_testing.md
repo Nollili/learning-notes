@@ -68,7 +68,9 @@ Investing in automated testing:
 
 ## Invest against an explicit failure risk
 
-For the course catalogue, define a local load experiment before choosing a tool: 50 rows/page, a fixed seeded database of at least 10,000 rows, 10 virtual users, 30 seconds after a separate warmup, known filter/sort mix, recorded machine/container limits and cache state. Proposed acceptance: p95 request duration below 500ms and HTTP request failure rate below 1%, with all failed/time-out requests retained. These are illustrative targets, not measured results or evidence that 10,000 concurrent users are supported. Rate-controlled arrivals may be more appropriate than fixed users when modeling an external request stream; document the choice and saturation behavior.
+For the course catalogue, define a local load experiment before choosing a tool: 50 rows/page, a fixed seeded database of at least 10,000 rows, 10 virtual users, 30 seconds after a separate warmup, known filter/sort mix, recorded machine/container limits and cache state. Proposed acceptance: p95 request duration below 500ms and HTTP request failure rate below 1%, with all failed/time-out requests retained.
+
+These are illustrative targets, not measured results or evidence that 10,000 concurrent users are supported. Rate-controlled arrivals may be more appropriate than fixed users when modeling an external request stream; document the choice and saturation behavior.
 
 Example k6 experiment for a deliberately owned local fixture exposing a public/non-sensitive `/api/courses?limit=50` read. The integrated endpoint is a learner prerequisite; do not run this against third-party systems.
 
@@ -98,4 +100,7 @@ Run only after preparing that fixture: `OWNED_BASE=http://127.0.0.1:3000 k6 run 
 
 For a threat-focused test, seed tenants A/B with distinct private records in an owned API fixture. Authenticate A, request B's known record ID and assert denial with no B fields; repeat anonymously, after access revocation and through any cache/search route. Use server-established tenant identity, not a client tenant field. Add malformed/oversized input and rate-limit recovery checks. These are explicit test cases, not proof that a scanner or encryption alone establishes security; the [authentication/authorization lesson](../../node-js/module-09-authentication-authorization.md) provides the implementation context.
 
-**Exercise acceptance:** choose one load and one authorization threat scenario, state the cost of missing the failure, implement them in the primary project, retain raw failures/results and fix the underlying issue. Compare test maintenance/runtime against risk reduction; no invented monetary ROI or production result. Learner practice remains required. References: [k6 thresholds](https://grafana.com/docs/k6/latest/using-k6/thresholds/), [k6 test options](https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/), [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/Why_should_we_invest_in_automated_testing.md). All learner practice remains outstanding.

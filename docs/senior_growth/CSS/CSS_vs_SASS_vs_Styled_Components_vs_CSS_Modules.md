@@ -1,6 +1,8 @@
 # CSS vs SASS vs Styled Components vs CSS Modules?
 
-Here’s a clear breakdown of **CSS, SASS, CSS Modules, and Styled Components**, with their pros, cons, and use cases. I’ll make it structured so it’s easy to compare — perfect for a senior frontend exam perspective.
+Tool comparison only: Sass transforms syntax, Modules localize names, and styling runtimes add their own delivery costs. Use [architecture and migration](./How_would_you_organize_CSS_on_huge_project.md) for project ownership and [theme integration](./styling_react_apps.md) for runtime/SSR behavior.
+
+
 
 ---
 
@@ -213,7 +215,6 @@ Custom properties participate in inheritance and can change without recompiling.
 
 **Failure cases and choices:** an undefined/invalid variable may invalidate a declaration at computed-value time; `var(--missing, fallback)` does not repair every invalid value. Deep nesting can create fragile specificity. User-selected themes need contrast checks and a stable initial server/client theme to avoid flashes or hydration mismatch. Runtime CSS-in-JS adds injection/SSR ordering and CSP integration considerations; extracted/static CSS reduces runtime styling work but still requires stylesheet delivery. Measure bundle/render costs instead of ranking tools universally.
 
-**Exercise:** implement a themed card with the CSS above, then scope its class using the existing build's CSS Modules support. Acceptance: theme switches without a rebuild; fallback works when a token is absent; styles do not accidentally target unrelated headings; server HTML and first client theme agree; contrast/focus are checked in each theme. Compare compiled CSS before selecting Sass. Learner browser validation remains required.
 
 Official references (checked2026-10-20): [custom properties](https://www.w3.org/TR/css-variables-1/), [native nesting](https://www.w3.org/TR/css-nesting-1/), [CSS Modules contract](https://github.com/css-modules/css-modules), [styled-components SSR](https://styled-components.com/docs/advanced#server-side-rendering).
 
@@ -235,3 +236,8 @@ For normal declarations in the same origin, later layers beat earlier layers bef
 The [typed Card and initial-theme contract](./styling_react_apps.md#server-and-first-client-theme-agreement) turns the shared native-token approach into a concrete SSR/client boundary. It does not require Sass or runtime style generation. **Acceptance:** predict the layered padding, add an unlayered conflicting rule and inspect the actual computed result, then remove the unintended conflict. Verify theme/state/focus and server/client class-map agreement in the production build; stylesheet compilation alone is not native cascade/paint evidence. Learner browser/SSR-deployment work remains required.
 
 Official references checked 2026-10-22: [cascade layers and order](https://www.w3.org/TR/css-cascade-5/), [React hydration contract](https://react.dev/reference/react-dom/client/hydrateRoot).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md). All learner practice remains outstanding; the worked examples above are explanatory material.

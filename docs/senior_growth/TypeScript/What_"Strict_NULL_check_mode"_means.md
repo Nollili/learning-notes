@@ -9,7 +9,7 @@ The **`strictNullChecks`** compiler option in TypeScript is part of **strict mod
 ## 1️⃣ What It Does
 
 - When `strictNullChecks` is **enabled**:
-  - `null` and `undefined` are **not automatically assignable** to any other type.
+  - `null` and `undefined` are distinct types and are not assignable to an ordinary `string` or object type without an appropriate union. `unknown`/`any` and specific contracts such as `void` have different assignability rules.
   - You must explicitly handle or type them.
 - When **disabled** (default in non-strict TS):
   - null and undefined are broadly assignable to ordinary value types, hiding missing-value failures; this does not make the uninhabited `never` type assignable.
@@ -50,7 +50,7 @@ function greet(name: string | null) {
 
 ## 3️⃣ Why It Matters
 
-* **Prevents runtime errors** caused by null/undefined values (e.g., `Cannot read property 'x' of null`).
+* **Detects unsafe typed uses** of null/undefined values (e.g., `Cannot read property 'x' of null`).
 * **Enforces explicit handling** of optional values.
 * Works well with **React props, Redux state, API responses**, and other places where null or undefined might appear.
 
@@ -119,6 +119,10 @@ if (first !== undefined) console.log(first.toUpperCase());
 
 At JSON transport boundaries, undefined object properties disappear during serialization; null survives. Keep PATCH omission separate from clearing a field and from creation defaults. Adding `!` or `as string` hides the compiler diagnostic without changing runtime behavior. Migration may expose many callers: tighten one boundary at a time and preserve behavioral tests instead of mass-asserting.
 
-**Exercise:** implement a profile PATCH function with absent/clear/replace cases and an empty-array lookup. Acceptance: strict typecheck passes; a present undefined key is rejected at compile time; omission leaves the field unchanged; null clears it; empty text follows an explicit domain rule; zero/false are not accidentally replaced. Run the runtime cases as well as compile-time cases. Practice remains required.
 
 Official references: [strictNullChecks](https://www.typescriptlang.org/tsconfig/strictNullChecks.html), [indexed access safety](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html), [exact optional properties](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/What_%22Strict_NULL_check_mode%22_means.md). All learner practice remains outstanding; the worked examples above are explanatory material.

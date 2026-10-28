@@ -1,0 +1,13 @@
+{
+  "name": "quality-gate-study",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test",
+    "build": "tsc -p tsconfig.build.json",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": { "eslint": "10.13.0", "typescript": "5.9.3" }
+}

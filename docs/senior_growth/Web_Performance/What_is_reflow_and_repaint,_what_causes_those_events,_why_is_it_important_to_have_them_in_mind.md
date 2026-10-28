@@ -93,7 +93,6 @@ Frequent reflows and repaints:
 > Both can slow rendering if overused—optimize for smooth UI.
 
 
-
 ## Worked read/write ordering, with explicit ownership
 
 ```js
@@ -118,8 +117,14 @@ function lockMeasuredWidths(boxes) {
 
 This intentionally locks physical widths until teardown; it is not a general responsive-layout recommendation. offsetWidth includes border/padding and ignores transforms, with integer rounding; setting border-box width preserves that particular measurement approximately. Hidden elements can measure0. The function assumes one owner of these inline properties and stable supplied elements; another owner's later writes would be overwritten on restore. Prefer CSS layout when no measurement is needed.
 
-A first geometry read can flush already dirty layout; subsequent reads without intervening invalidation may reuse it. The code's read-before-write order removes its own per-item alternation, not every possible layout in a browser frame. requestAnimationFrame schedules a callback before a rendering opportunity; reads after writes inside it can still force layout, and expensive work still blocks the main thread. DocumentFragment batches insertion semantics but does not make eventual style/layout free or guarantee fewer/faster flushes. Transform/opacity can avoid layout in suitable animations, while layer promotion/raster/memory remain costs; will-change is not a universal acceleration switch.
+A first geometry read can flush already dirty layout; subsequent reads without intervening invalidation may reuse it. The code's read-before-write order removes its own per-item alternation, not every possible layout in a browser frame. requestAnimationFrame schedules a callback before a rendering opportunity; reads after writes inside it can still force layout, and expensive work still blocks the main thread.
 
-**Acceptance:** assert all geometry reads precede the owned writes and teardown restores the original properties once. Then compare a deliberately interleaved variant and this variant in an allowed native browser using the same DOM/data/viewport and trace. Inspect actual layout call stacks, preserved dimensions, hidden/zoomed content and subsequent responsiveness. A DOM simulation/order test cannot measure native layout cost; native trace and learner results remain unperformed.
+DocumentFragment batches insertion semantics but does not make eventual style/layout free or guarantee fewer/faster flushes. Transform/opacity can avoid layout in suitable animations, while layer promotion/raster/memory remain costs; will-change is not a universal acceleration switch.
+
 
 Official guidance checked2026-10-22: [layout/forced-read diagnosis](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing), [React render versus commit](https://react.dev/learn/render-and-commit).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_is_reflow_and_repaint%2C_what_causes_those_events%2C_why_is_it_important_to_have_them_in_mind.md). All learner practice remains outstanding.

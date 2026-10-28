@@ -1,0 +1,659 @@
+{
+  "directory_and_compatibility_moves": [
+    {
+      "from": "docs/node-js/contract-lab/contract.mjs",
+      "to": "docs/workbench/node-js/backend/contract-lab/contract.mjs",
+      "source_sha256": "1bb3fdd37617f3d2bde6d311f0e2e370d68f7cda5d3452eb4a328533aa4870bb",
+      "current_sha256": "1bb3fdd37617f3d2bde6d311f0e2e370d68f7cda5d3452eb4a328533aa4870bb",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/contract-lab/check.mjs",
+      "to": "docs/workbench/node-js/backend/contract-lab/check.mjs",
+      "source_sha256": "bef9a0f9cc084bd274c09b26876870d06fefd13cb6f8b693eb430ab729f679a1",
+      "current_sha256": "bef9a0f9cc084bd274c09b26876870d06fefd13cb6f8b693eb430ab729f679a1",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/contract-lab/app.mjs",
+      "to": "docs/workbench/node-js/backend/contract-lab/app.mjs",
+      "source_sha256": "41ac300397bc9028e05bfeead09c043b156dde5f08435a2d78892de4ddd43f3d",
+      "current_sha256": "41ac300397bc9028e05bfeead09c043b156dde5f08435a2d78892de4ddd43f3d",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/contract-lab/catalogue.openapi.json",
+      "to": "docs/workbench/node-js/backend/contract-lab/catalogue.openapi.json",
+      "source_sha256": "bfb14b7c2a89d6da37d45495be61127179c95e8f6a31bda4e8bceb4e0604ec37",
+      "current_sha256": "bfb14b7c2a89d6da37d45495be61127179c95e8f6a31bda4e8bceb4e0604ec37",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/upload-lab/check.mjs",
+      "to": "docs/workbench/node-js/security/upload-lab/check.mjs",
+      "source_sha256": "0c9c0e9ba06394ce162f66a9fc83cf399dcd06b2a7dce2ca15619ebb6cca8623",
+      "current_sha256": "0c9c0e9ba06394ce162f66a9fc83cf399dcd06b2a7dce2ca15619ebb6cca8623",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/upload-lab/multipart.mjs",
+      "to": "docs/workbench/node-js/security/upload-lab/multipart.mjs",
+      "source_sha256": "ecc287cbfd39131858e8e96a10a207f0e28d9c91cba1f824506eae263cadad34",
+      "current_sha256": "ecc287cbfd39131858e8e96a10a207f0e28d9c91cba1f824506eae263cadad34",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/webhook-lab/webhook.mjs",
+      "to": "docs/workbench/node-js/security/webhook-lab/webhook.mjs",
+      "source_sha256": "2a3df48211decbe325a42315c1366a860a61080ebbc288ff77c48d81e66ab7a4",
+      "current_sha256": "2a3df48211decbe325a42315c1366a860a61080ebbc288ff77c48d81e66ab7a4",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/webhook-lab/check.mjs",
+      "to": "docs/workbench/node-js/security/webhook-lab/check.mjs",
+      "source_sha256": "51b1577edfb0f982a6caf99ac0292f9030e8c61523a6953d20c1e7b9ee7fa2b7",
+      "current_sha256": "51b1577edfb0f982a6caf99ac0292f9030e8c61523a6953d20c1e7b9ee7fa2b7",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/jobs-lab/schedule.mjs",
+      "to": "docs/workbench/node-js/messaging/jobs-lab/schedule.mjs",
+      "source_sha256": "9c1c9aaaa02ca5e92f4cda68191fe6fd1c9e2dcbd49fef5a5d6fad41ad3cedcc",
+      "current_sha256": "9c1c9aaaa02ca5e92f4cda68191fe6fd1c9e2dcbd49fef5a5d6fad41ad3cedcc",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/jobs-lab/rabbit.mjs",
+      "to": "docs/workbench/node-js/messaging/jobs-lab/rabbit.mjs",
+      "source_sha256": "8b2c135b3b6785c877e02fb0e496ff31b4a10e65ec0bd3d2fb4abc61ca389879",
+      "current_sha256": "c1d27e2f4d954dd7f3302fdab780f2b5c5f111953a8fa8b881cd212906c0cbaf",
+      "byte_preserved": false
+    },
+    {
+      "from": "docs/node-js/jobs-lab/check.mjs",
+      "to": "docs/workbench/node-js/messaging/jobs-lab/check.mjs",
+      "source_sha256": "180e16948ac29fab6b1f5feca395497206bcccc7b1270f53f74140a5e056959a",
+      "current_sha256": "180e16948ac29fab6b1f5feca395497206bcccc7b1270f53f74140a5e056959a",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/Dockerfile",
+      "to": "docs/workbench/node-js/deployment/container-lab/Dockerfile",
+      "source_sha256": "f85922b2ba4b635f302c164ac8d350a647ad127fd1ea2a95e54d29e345e9efcc",
+      "current_sha256": "f85922b2ba4b635f302c164ac8d350a647ad127fd1ea2a95e54d29e345e9efcc",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/init.sh",
+      "to": "docs/workbench/node-js/deployment/container-lab/init.sh",
+      "source_sha256": "06da5b1af6f3f16765082a17e7b53740400fd8ba921db0aab5ffc7c5627da454",
+      "current_sha256": "06da5b1af6f3f16765082a17e7b53740400fd8ba921db0aab5ffc7c5627da454",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/verified-images.json",
+      "to": "docs/workbench/node-js/deployment/container-lab/verified-images.json",
+      "source_sha256": "e362adb98facdf364d16cb27961add54b90e15859c10eee1643d89c7ae22866b",
+      "current_sha256": "e362adb98facdf364d16cb27961add54b90e15859c10eee1643d89c7ae22866b",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/.dockerignore",
+      "to": "docs/workbench/node-js/deployment/container-lab/.dockerignore",
+      "source_sha256": "e711f09eb8629ac020faa8f7e0192ea1e587c5dfa029df7efafbb9ad65493deb",
+      "current_sha256": "e711f09eb8629ac020faa8f7e0192ea1e587c5dfa029df7efafbb9ad65493deb",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/.gitignore",
+      "to": "docs/workbench/node-js/deployment/container-lab/.gitignore",
+      "source_sha256": "b710882c0d5a6e0802fd2849ad195c90bb1eb997508f27488c3f5cbccdd107a3",
+      "current_sha256": "b710882c0d5a6e0802fd2849ad195c90bb1eb997508f27488c3f5cbccdd107a3",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/package-lock.json",
+      "to": "docs/workbench/node-js/deployment/container-lab/package-lock.json",
+      "source_sha256": "f4efa4beef1e607b3793f768e070342638d548085e03fe086f957ca4a3a5f7d7",
+      "current_sha256": "f4efa4beef1e607b3793f768e070342638d548085e03fe086f957ca4a3a5f7d7",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/package.json",
+      "to": "docs/workbench/node-js/deployment/container-lab/package.json",
+      "source_sha256": "3267cb34ab63b961301f7783b64ace1f5825f6ba1a64686c30823f19c5f6eea7",
+      "current_sha256": "3267cb34ab63b961301f7783b64ace1f5825f6ba1a64686c30823f19c5f6eea7",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/compose.yaml",
+      "to": "docs/workbench/node-js/deployment/container-lab/compose.yaml",
+      "source_sha256": "9b9ddcf2fe8123bd97feae93cd595bcb094963bcbc27a9212c5e7d14bcd2c017",
+      "current_sha256": "9b9ddcf2fe8123bd97feae93cd595bcb094963bcbc27a9212c5e7d14bcd2c017",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/server.mjs",
+      "to": "docs/workbench/node-js/deployment/container-lab/server.mjs",
+      "source_sha256": "6de1e15068d488bb70cb0784bab467cad290a21d8c919cbbe3a119bed492dd99",
+      "current_sha256": "6de1e15068d488bb70cb0784bab467cad290a21d8c919cbbe3a119bed492dd99",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/.env.example",
+      "to": "docs/workbench/node-js/deployment/container-lab/.env.example",
+      "source_sha256": "4433732f47ab8ccdddf761e4d1e1b08934b1674582139bbbaa7a1719de261ce7",
+      "current_sha256": "4433732f47ab8ccdddf761e4d1e1b08934b1674582139bbbaa7a1719de261ce7",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/container-lab/setup-fixture.py",
+      "to": "docs/workbench/node-js/deployment/container-lab/setup-fixture.py",
+      "source_sha256": "92bd4a711df8290439bf97390dc916e30af3beccaf2fd9bb73e1535a0a04e588",
+      "current_sha256": "92bd4a711df8290439bf97390dc916e30af3beccaf2fd9bb73e1535a0a04e588",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/evidence.json",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/evidence.json",
+      "source_sha256": "6266276b2e49c129d8fb4a8e31d2fe89465501fc765fb27546e69d1e82cae8d6",
+      "current_sha256": "6266276b2e49c129d8fb4a8e31d2fe89465501fc765fb27546e69d1e82cae8d6",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/check.py",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/check.py",
+      "source_sha256": "5cdcc7077d65805fc2111a5bb00b0f604b726aface506247ab34320f2d26f50b",
+      "current_sha256": "5cdcc7077d65805fc2111a5bb00b0f604b726aface506247ab34320f2d26f50b",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/frontend.mjs",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/frontend.mjs",
+      "source_sha256": "a082454912c8e26b250ee28f67e7d76360dbb1cc22e09116ec3f279cde2398c5",
+      "current_sha256": "a082454912c8e26b250ee28f67e7d76360dbb1cc22e09116ec3f279cde2398c5",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/kubernetes.json",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/kubernetes.json",
+      "source_sha256": "02473003438f3d245f6c5b53d10c2cc54806505eef9f1ed0aa5fe36834abb2cd",
+      "current_sha256": "02473003438f3d245f6c5b53d10c2cc54806505eef9f1ed0aa5fe36834abb2cd",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/full-stack.yaml",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/full-stack.yaml",
+      "source_sha256": "e89552966fe6d398e96124fb4f085e1514fe9fa9232fde9a3653539d36c378c7",
+      "current_sha256": "e89552966fe6d398e96124fb4f085e1514fe9fa9232fde9a3653539d36c378c7",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/full-stack-lab/Dockerfile.frontend",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab/Dockerfile.frontend",
+      "source_sha256": "2ec9a06f70e0e83b351408aab5d835ab754391bc566e24aec46326767f77bbaa",
+      "current_sha256": "2ec9a06f70e0e83b351408aab5d835ab754391bc566e24aec46326767f77bbaa",
+      "byte_preserved": true
+    },
+    {
+      "from": "docs/node-js/sql-query-workbench.md",
+      "to": "docs/workbench/node-js/database/sql-queries.md",
+      "source_sha256": "371589aac074161b40c17c9b40dbf59abaf643643d7cd037401fcef5f18132fc",
+      "current_sha256": "cec54cf8a55eefda4a5b11dac83972079e7bdb5ddb478df4950021da59e018bf",
+      "byte_preserved": false
+    },
+    {
+      "from": "docs/node-js/rest-contract-workbench.md",
+      "to": "docs/workbench/node-js/backend/rest-contracts.md",
+      "source_sha256": "c3b2a841fbbfc8848144b5aeeb5294699b389c84bc1087bb2a0b4cf3350b4bc7",
+      "current_sha256": "53b40de86453bcfc128252f6de812ffc37444e43d63fd1f4d571ba19607ff90c",
+      "byte_preserved": false
+    }
+  ],
+  "section_moves": [
+    {
+      "from": "docs/node-js/module-01-nodejs-foundations.md",
+      "section": "## Worked module failures and interoperability lab",
+      "to": "docs/workbench/node-js/runtime/modules.md",
+      "kind": "workbench"
+    },
+    {
+      "from": "docs/node-js/module-01-nodejs-foundations.md",
+      "to": "docs/practice/node-js/module-01-nodejs-foundations.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 12. Final review checklist"
+      ],
+      "paragraphs": [
+        "**Exercise \u2014 module boundaries:**",
+        "**Exercise \u2014 scheduling:**",
+        "**Exercise \u2014 body lifetime:**",
+        "**Exercise \u2014 failure-driven limiter:**",
+        "**Exercise acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/module-02-standard-library.md",
+      "to": "docs/practice/node-js/module-02-standard-library.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 13. Final review checklist",
+        "## 14. Boundary and ownership labs"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-03-events-buffers-streams.md",
+      "to": "docs/practice/node-js/module-03-events-buffers-streams.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 15. Final review checklist",
+        "### Failure-driven practice acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-04-testing.md",
+      "to": "docs/practice/node-js/module-04-testing.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 17. Final review checklist"
+      ],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/module-05-networking.md",
+      "to": "docs/practice/node-js/module-05-networking.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 19. Final review checklist",
+        "## 20. Boundary failure labs"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-06-express-architecture.md",
+      "to": "docs/practice/node-js/module-06-express-architecture.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 16. Final review checklist",
+        "## Correction labs: contracts that the complete API must satisfy"
+      ],
+      "paragraphs": [
+        "**Acceptance drill:**",
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/module-07-mongodb-mongoose.md",
+      "to": "docs/practice/node-js/module-07-mongodb-mongoose.md",
+      "kind": "practice",
+      "sections": [
+        "### Diagnostic exercise",
+        "## 21. Final review checklist",
+        "## Model, lifecycle and update acceptance labs"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-08-postgresql-mikroorm.md",
+      "to": "docs/practice/node-js/module-08-postgresql-mikroorm.md",
+      "kind": "practice",
+      "sections": [
+        "#### Guided practice",
+        "### Diagnostic exercise",
+        "## Graduated practice: persistence and migrations",
+        "## 24. Final review checklist"
+      ],
+      "paragraphs": [
+        "**Guided practice:**",
+        "**Worked failure:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/module-09-authentication-authorization.md",
+      "to": "docs/practice/node-js/module-09-authentication-authorization.md",
+      "kind": "practice",
+      "sections": [
+        "## Graduated practice: identity and access",
+        "## 16. Final review checklist"
+      ],
+      "paragraphs": [
+        "**Check yourself:**",
+        "**Guided exercise:**",
+        "**Guided verification:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/module-10-production-ready-applications.md",
+      "to": "docs/practice/node-js/module-10-production-ready-applications.md",
+      "kind": "practice",
+      "sections": [
+        "### Test shutdown",
+        "## Graduated practice: logging and lifecycle",
+        "## 15. Final review checklist"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-11-performance-diagnostics.md",
+      "to": "docs/practice/node-js/module-11-performance-diagnostics.md",
+      "kind": "practice",
+      "sections": [
+        "## 15. Practice exercises",
+        "## 16. Final review checklist",
+        "## Executable lifecycle and failure checks"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-12-resilient-distributed-systems.md",
+      "to": "docs/practice/node-js/module-12-resilient-distributed-systems.md",
+      "kind": "practice",
+      "sections": [
+        "## 17. Failure-driven exercises",
+        "## 18. Final review checklist"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/module-06-express-architecture.md",
+      "section": "## 11. Complete Products API",
+      "to": "docs/workbench/node-js/backend/products-api.md",
+      "kind": "workbench"
+    },
+    {
+      "from": "docs/node-js/module-07-mongodb-mongoose.md",
+      "section": "### Commands inside `mongosh`",
+      "to": "docs/workbench/node-js/database/mongo-shell.md",
+      "kind": "workbench"
+    },
+    {
+      "from": "docs/node-js/module-09-authentication-authorization.md",
+      "section": "## Complete runnable example: app.ts",
+      "to": "docs/workbench/node-js/backend/session-app.md",
+      "kind": "workbench"
+    },
+    {
+      "from": "docs/node-js/browser-csp.md",
+      "to": "docs/practice/node-js/browser-csp.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/cursor-pagination.md",
+      "to": "docs/practice/node-js/cursor-pagination.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/dates-and-time-zones.md",
+      "to": "docs/practice/node-js/dates-and-time-zones.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and failure diagnosis"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/redis-adapters.md",
+      "to": "docs/practice/node-js/redis-adapters.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/realtime-transports.md",
+      "to": "docs/practice/node-js/realtime-transports.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance evidence"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/retention-and-deletion.md",
+      "to": "docs/practice/node-js/retention-and-deletion.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/container-deployment-lab.md",
+      "to": "docs/practice/node-js/container-deployment-lab.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and cleanup"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/sql-query-workbench.md",
+      "to": "docs/practice/node-js/sql-query-workbench.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and verification"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/rest-contract-workbench.md",
+      "to": "docs/practice/node-js/rest-contract-workbench.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice acceptance"
+      ],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/graphql-basics.md",
+      "to": "docs/practice/node-js/graphql-basics.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": []
+    },
+    {
+      "from": "docs/node-js/database-recovery.md",
+      "to": "docs/practice/node-js/database-recovery.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/release-artifact-compatibility.md",
+      "to": "docs/practice/node-js/release-artifact-compatibility.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/jobs-and-schedules.md",
+      "to": "docs/practice/node-js/jobs-and-schedules.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/signed-webhooks.md",
+      "to": "docs/practice/node-js/signed-webhooks.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/safe-text-uploads.md",
+      "to": "docs/practice/node-js/safe-text-uploads.md",
+      "kind": "practice",
+      "sections": [
+        "## Practice and acceptance"
+      ],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/full-stack-deployment.md",
+      "to": "docs/practice/node-js/full-stack-deployment.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Practice acceptance:**",
+        "**Introductory operator exercise:**",
+        "**Acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/aws-service-slice.md",
+      "to": "docs/practice/node-js/aws-service-slice.md",
+      "kind": "practice",
+      "sections": [],
+      "paragraphs": [
+        "**Practice acceptance:**"
+      ]
+    },
+    {
+      "from": "docs/node-js/contract-lab",
+      "to": "docs/workbench/node-js/backend/contract-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/upload-lab",
+      "to": "docs/workbench/node-js/security/upload-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/webhook-lab",
+      "to": "docs/workbench/node-js/security/webhook-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/jobs-lab",
+      "to": "docs/workbench/node-js/messaging/jobs-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/container-lab",
+      "to": "docs/workbench/node-js/deployment/container-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/full-stack-lab",
+      "to": "docs/workbench/node-js/deployment/full-stack-lab",
+      "kind": "support directory; byte-preserving"
+    },
+    {
+      "from": "docs/node-js/sql-query-workbench.md",
+      "to": "docs/workbench/node-js/database/sql-queries.md",
+      "kind": "reference page; original route retained"
+    },
+    {
+      "from": "docs/node-js/rest-contract-workbench.md",
+      "to": "docs/workbench/node-js/backend/rest-contracts.md",
+      "kind": "reference page; original route retained"
+    }
+  ],
+  "source_extractions": [
+    {
+      "from": "docs/node-js/dates-and-time-zones.md",
+      "file": "docs/workbench/node-js/runtime/dates/date-boundaries.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/dates-and-time-zones.md",
+      "file": "docs/workbench/node-js/runtime/dates/zoned-display.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/dates-and-time-zones.md",
+      "file": "docs/workbench/node-js/runtime/dates/dst-cases.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/redis-adapters.md",
+      "file": "docs/workbench/node-js/database/redis/redis-connection.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/redis-adapters.md",
+      "file": "docs/workbench/node-js/database/redis/product-cache.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/redis-adapters.md",
+      "file": "docs/workbench/node-js/database/redis/shared-limit.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/cursor-pagination.md",
+      "file": "docs/workbench/node-js/database/pagination/order-pages.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/cursor-pagination.md",
+      "file": "docs/workbench/node-js/database/pagination/order-router.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/browser-csp.md",
+      "file": "docs/workbench/node-js/security/csp/csp-app.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/safe-text-uploads.md",
+      "file": "docs/workbench/node-js/security/uploads/text-upload-app.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/module-10-production-ready-applications.md",
+      "file": "docs/workbench/node-js/runtime/operations/listen-ready.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/module-10-production-ready-applications.md",
+      "file": "docs/workbench/node-js/runtime/operations/safe-errors.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/module-11-performance-diagnostics.md",
+      "file": "docs/workbench/node-js/runtime/diagnostics/loop-diagnostics.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/module-11-performance-diagnostics.md",
+      "file": "docs/workbench/node-js/runtime/diagnostics/measured-db.ts",
+      "kind": "canonical fenced source"
+    },
+    {
+      "from": "docs/node-js/module-10-production-ready-applications.md",
+      "file": "docs/workbench/node-js/runtime/operations/shutdown.ts",
+      "kind": "combined dependent close/shutdown source"
+    }
+  ]
+}

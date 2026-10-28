@@ -98,6 +98,10 @@ function mountNotice(root) {
 
 Use a native `<button type="button" data-dismiss>` with an accessible name. This helper owns the listener, not focus movement or persistent preference. Do not hide a currently focused control without a deliberate next focus target in a real product. Calling mount twice creates two owners; dispose the old owner before replacement. For jQuery plugins, use their documented destroy/unbind API and verify it actually releases handlers/resources. jQuery itself does not polyfill every web API or make an application's own CSS/features work in every supported browser.
 
-**Exercise acceptance:** compare existing jQuery and native notice behavior on the agreed browser matrix, including keyboard activation/focus, repeated mount/dispose and missing markup. Measure total bundle/network effect with the real remaining plugins; removing one `$` call does not remove a shared dependency automatically. Use Migrate/upgrade guides for a version upgrade, assess removed APIs/plugins and retain rollback. No native browser, plugin compatibility or universal speed improvement is claimed by a DOM mock. Learner practice remains required.
 
 Official references checked2026-10-22: [jQuery4.0 browser/upgrade contract](https://jquery.com/upgrade-guide/4.0/), [supported branches](https://jquery.com/support/), [browser-support limitations](https://jquery.com/browser-support/). Version4.0.0 release is a concrete major-version reference, not a claim that its exact patch is the newest available.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/Would_you_consider_using_JQuery_nowadaysWhy.md). All learner practice remains outstanding.

@@ -1,6 +1,12 @@
 # React
 
-## Notes
+## Recommended order
+
+Follow [React rendering and ownership](../../frontend/react.md), then [Next.js and UI architecture](../../frontend/next.md). The reference catalogue below retains existing URLs; optional framework comparisons are not prerequisites. Apply [the staged practice](../../practice/frontend/).
+
+<span id="notes"></span>
+
+## Reference catalogue
 
 - [Any disadvantages of React?](./Any_disadvantages_of_React.md)
 - [Are all functional components pure?](./Are_all_functional_components_pure.md)

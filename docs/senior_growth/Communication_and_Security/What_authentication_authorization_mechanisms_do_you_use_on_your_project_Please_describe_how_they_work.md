@@ -188,6 +188,10 @@ If refresh is required, implement the provider's current protected refresh polic
 
 **Worked decision:** the browser sends a cookie-authenticated PATCH to /api/profile with a session-bound CSRF token. The server resolves the session, validates provenance/CSRF/schema, derives the principal and allows only that user's editable profile fields. A role or userId submitted in the body cannot promote the caller or choose another owner. No provider token is required in the browser for this local operation. The adjacent token-storage note shows this transport as runnable JavaScript; the Node module contains the fuller server boundary.
 
-**Exercise acceptance:** draw the cookie and Bearer flows separately, including who stores/reads/sends each credential. Use a provider test tenant and maintained OIDC integration to reject wrong state/nonce/PKCE verifier, issuer/audience/expiry and unregistered redirects as applicable. Verify session rotation/logout/revocation, cross-tenant denial and dependency-outage behavior; prove UI-hidden actions still fail server-side. Record what the integration actually checks rather than treating a checklist as test evidence. No provider login, token lifecycle or learner practice is claimed by this material.
 
 Authoritative references checked2026-10-22: [OIDC Core1.0](https://openid.net/specs/openid-connect-core-1_0.html), [OAuth security BCP RFC9700](https://www.rfc-editor.org/rfc/rfc9700.html), [JWT BCP RFC8725](https://www.rfc-editor.org/rfc/rfc8725.html), [OWASP session lifecycle](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/What_authentication_authorization_mechanisms_do_you_use_on_your_project_Please_describe_how_they_work.md). All learner practice remains outstanding.

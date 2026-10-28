@@ -70,10 +70,16 @@ By adopting these practices, you can not only minimize the risk of failures but 
 
 ## A concrete incident decision
 
-If a renamed database column breaks an old replica, first stop the unsafe rollout/affected intake and assess whether a compatibility view/additive column or a forward fix restores service safely. Do not drop the new column to make an old binary start when new writes already depend on it. If data was deleted, preserve evidence, isolate ongoing damage and follow a tested restore/PITR plan on a separate target with a declared recovery point and reconciliation. A backup existing is not proof it can restore within the required time or preserve later valid writes.
+If a renamed database column breaks an old replica, first stop the unsafe rollout/affected intake and assess whether a compatibility view/additive column or a forward fix restores service safely. Do not drop the new column to make an old binary start when new writes already depend on it.
+
+If data was deleted, preserve evidence, isolate ongoing damage and follow a tested restore/PITR plan on a separate target with a declared recovery point and reconciliation. A backup existing is not proof it can restore within the required time or preserve later valid writes.
 
 Assign an incident lead, one operational change owner and a communication cadence. Record timestamps/observations/actions without credentials or personal payloads. Use reversible mitigation where feasible and verify the user-facing invariant, not only process liveness. Postmortem actions need owners and verification criteria; avoid inventing personal incident experience from this template.
 
-**Exercise acceptance:** run a tabletop for a failed application deploy, a schema-incompatible old artifact and an accidental data deletion. For each choose stop/disable/compatible rollback/forward fix/restore, explain data-loss risk, identify the decision owner and define success/abort criteria. Pair it with the [release compatibility lab](../CD_CI/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md) and the existing PostgreSQL recovery material. Retain a timeline, communications draft and corrective-action test. A tabletop is distinct from an actual recovery drill; both learner activities remain required.
 
 Reference checked2026-10-22: [Google SRE canary release safeguards](https://sre.google/workbook/canarying-releases/). Do not run chaos experiments against production merely because a study checklist mentions them; use an owned isolated lab.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/Did_you_have_some_significant_fails_on_production%2C_crushes%2C_critical_bugs%2C__%26_How_do_you_handle_and_prevent_them.md). All learner practice remains outstanding.

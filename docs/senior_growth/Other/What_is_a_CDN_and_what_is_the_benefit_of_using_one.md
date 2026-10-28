@@ -139,4 +139,7 @@ Adapt and test this header to the actual app; it intentionally blocks inline scr
 
 For releases, upload new content-addressed assets before updating referencing HTML, retain previous assets for the supported rollback/client window and give HTML an appropriate revalidation/freshness policy. Purge mutable paths carefully and observe stale/error behavior; do not promise instant global invalidation or that stale cached private data is safe. CDN failover/security features are configuration-dependent and do not replace a healthy origin or authorization.
 
-**Exercise acceptance:** serve two distinct asset versions in an owned environment, verify exact bytes/hash/header/key behavior, tamper with one and observe actual browser SRI rejection. Test CSP violations without broadening trust, cache miss/revalidation, query variants, auth/cookie/private responses and rollback with an old open client. Record actual provider/browser results separately from the local policy assertions. Learner practice remains required. References: [HTTP caching RFC9111](https://httpwg.org/specs/rfc9111.html), [Subresource Integrity Recommendation](https://www.w3.org/TR/2016/REC-SRI-20160623/), [CSP specification](https://www.w3.org/TR/CSP3/).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/What_is_a_CDN_and_what_is_the_benefit_of_using_one.md). All learner practice remains outstanding.

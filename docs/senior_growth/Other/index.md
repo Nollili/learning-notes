@@ -1,5 +1,9 @@
 # Other
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/design.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Could you compare gulp with webpack?](./Could_you_compare_gulp_with_webpack.md)
@@ -8,8 +12,10 @@
 - [I see from your self presentation you are working with AWS. Could you please provide some examples of Pros & Cons?](./I_see_from_your_self_presentation_you_are_working_with_AWS._Could_you_please_provide_some_examples_of_Pros_%26_Cons.md)
 - [Incremental DOM vs Virtual DOM? Pros and cons](./Incremental_DOM_vs_Virtual_DOM_Pros_and_cons.md)
 - [Please compare one-way and two-way data binding? What are the pros and cons of each approach?](./Please_compare_one-way_and_two-way_data_binding_What_are_the_pros_and_cons_of_each_approach.md)
-- [Please describe quick sort algorithm. What complexity does it have?](./Please_describe_quick_sort_algorithm._What_complexity_does_it_have.md)
-- [What is Big O notation? How can it be used to optimize JS code?](./What_is_Big_O_notation_How_can_it_be_used_to_optimize_JS_code.md)
+- [Sorting and quicksort](../../cs-foundations/sorting.md)
+- [Complexity and cost models](../../cs-foundations/complexity-and-cost.md)
+- [Trees, graphs and traversal](../../cs-foundations/trees-graphs-traversal.md)
+- [CS coverage map](../../cs-foundations/coverage-map.md)
 - [What is RxJS?](./What_is_RxJS.md)
 - [What is a CDN and what is the benefit of using one?](./What_is_a_CDN_and_what_is_the_benefit_of_using_one.md)
 - [What is memoization?](./What_is_memoization.md)

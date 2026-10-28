@@ -1,0 +1,9 @@
+# Query Rewriting, Reranking and Context Assembly — practice
+
+**Learner status: still required.** These requirements were separated from the textbook. Use the [integrated sequence](../index.md) and shared evidence record; running reference checks is not independent completion.
+
+[Textbook](../../../python-for-ai/retrieval-pipeline.md)
+
+**Exercise acceptance:** run the exact fixtures/strict checks and a real SDK offline serialization check, including empty/tied/duplicate/invalid scores and counter outage/cancellation. Add an adversarial retrieved instruction and show it stays a JSON data string, then separately assess model behavior; serialization is not an injection defense proof. Compare original/rewritten search with the same trusted scope, calibrate a learned reranker on non-sensitive labeled fixtures, and evaluate greedy budget/source caps on multi-source questions. Retain exact model/revision/configuration and failure evidence. Live provider/tokenizer/relevance, learned-model execution, complete generation service, durable source lifecycle and learner measurements remain required.
+
+**System exercise acceptance:** connect existing extraction/similarity/resolver/assembler/citation modules with owned adapters, retaining stage IDs/versions and safe timing/count metadata. Test current answer, no hit, contradictory sources, missing evidence, candidate dropped by budget, stale source, changed ACL and source/counter outage. Judge unsupported claims separately from citation membership. Keep approved fixtures and failure-stage labels; do not log raw private evidence by default. Real generation quality, durable update/delete, provider behavior and learner system practice remain unperformed. The executable prior lessons supply the intermediate component contracts, rather than a claimed production deployment.

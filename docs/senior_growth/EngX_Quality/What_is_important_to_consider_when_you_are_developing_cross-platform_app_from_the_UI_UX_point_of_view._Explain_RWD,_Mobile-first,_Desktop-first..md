@@ -1,6 +1,5 @@
 ### What is important to consider when you are developing cross-platform app from the UI/UX point of view? Explain RWD, Mobile-first, Desktop-first.
 
-When developing a **cross-platform app** from a **UI/UX perspective**, it's crucial to design with user experience, consistency, and adaptability in mind. Users interact with apps on a variety of devices (mobile, tablet, desktop), and ensuring a seamless experience across these platforms is key. Below are considerations and an explanation of relevant design concepts:
 
 ---
 
@@ -80,7 +79,7 @@ A **desktop-first** approach begins with designing for larger screens and scales
     - **Overcrowding on Small Screens**: Complex desktop layouts can be difficult to adapt for mobile.
     - Requires **graceful degradation**, where features are simplified or removed for smaller devices.
 - **Best Practices**:
-    - Use **media queries** to progressively hide or simplify elements for smaller screens.
+    - Use responsive layout to reflow/prioritize content; preserve essential actions at every supported width.
     - Ensure essential features remain usable on all devices.
 
 ---

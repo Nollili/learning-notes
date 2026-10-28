@@ -8,41 +8,8 @@ For a study-note classification, the model needs a short permitted excerpt, not 
 
 The following gate requires current tenant/subject access and a trusted unexpired export policy for one provider/purpose/classification. It rejects an oversized note instead of truncating it. The outbound DTO contains a job-local alias and text; actual source identity/version stay in the authorized job's private provenance map. The application's fixed settings select the provider and endpoint, never model text.
 
-```python
-# study_ai/provider_export.py
-from __future__ import annotations
-from dataclasses import dataclass
-from typing import Literal
-from pydantic import BaseModel,ConfigDict,Field
-from .note_tool import StoredNote
-from .vector_search import Principal
+<<< ../workbench/applied-ai/python/study_ai/provider_export.py
 
-@dataclass(frozen=True,slots=True)
-class ExportPolicy:
-    tenant: str
-    provider: Literal['openai-api']
-    purpose: Literal['study-classification']
-    expires_at: int
-    allowed_classes: frozenset[str]
-
-class OutboundExcerpt(BaseModel):
-    model_config=ConfigDict(strict=True,frozen=True,extra='forbid')
-    ref: str=Field(pattern=r'^e[1-8]$',max_length=2)
-    text: str=Field(min_length=1,max_length=500)
-
-
-def prepare_export(note: StoredNote, *, principal: Principal, policy: ExportPolicy,
-                   classification: str, now: int, ref: str) -> OutboundExcerpt:
-    # Classification/policy/current note and clock are trusted service inputs, never model fields.
-    if (type(now) is not int or now<0 or type(policy.expires_at) is not int or policy.expires_at<=now
-            or policy.provider!='openai-api' or policy.purpose!='study-classification'
-            or policy.tenant!=principal.tenant or note.tenant!=principal.tenant
-            or principal.subject not in note.subjects or classification not in policy.allowed_classes):
-        raise ValueError('Export unavailable')
-    if len(note.text)>500 or len(note.text.encode('utf-8',errors='strict'))>2000:
-        raise ValueError('Export unavailable')
-    return OutboundExcerpt(ref=ref,text=note.text)
-```
 
 This is an in-process boundary, not a policy-administration/authentication/DLP service. The source classification, current note/ACL, export policy and clock come from trusted server adapters. A model deciding that its own input is “public” cannot supply that authority. Validate and version those records when loading them; the dataclass does not validate untrusted JSON. The predicate checks a fixture policy, not a real account's provider settings. Policies must be scoped to tenant, purpose, approved service/region/features and review date, with revocation and an owner. Extend the typed contract deliberately before adding another purpose/provider; do not reuse a classification approval for unrelated analysis.
 
@@ -55,6 +22,8 @@ Official OpenAI API data-controls documentation checked2026-10-25 distinguishes 
 Before a real integration, record the approved provider/account/project, endpoint/model/features, opt-in/training policy, abuse/application-state retention, region/transfer requirements, subprocessors/tool destinations, deletion capabilities and operational contacts. Verify the actual account configuration and governing agreements with its authorized owner. Official general documentation cannot prove your project's configuration. Select only features consistent with the data's permitted handling; otherwise use a different approved design or decline the export.
 
 The existing SDK fixture explicitly uses the configured API origin, bounded owned transport, no automatic retries and `store=False`; its offline request test verifies serialization. This is good request hygiene, not certification of provider retention or a complete raw-body byte bound. Do not put source/secret values into metadata, filenames, tracing tags or error logs. A safe main request plus a verbose debug logger still leaks data. Remote tools and tracing/analytics services create additional outbound boundaries.
+
+The official data-controls page was rechecked on 2026-10-27 for this review. Its endpoint/feature exceptions still require actual account-owner verification; no retention setting was changed.
 
 ## Inventory derivatives and define lifecycle owners
 
@@ -81,41 +50,12 @@ Maintain a reconciled artifact inventory: source/job/provider object references,
 
 ## Offline checks and learner acceptance
 
-```python
-# lab_tests/test_provider_export.py
-from dataclasses import replace
-import json
-import pytest
-from study_ai.provider_export import ExportPolicy,prepare_export
-from study_ai.note_tool import StoredNote
-from study_ai.vector_search import Principal
+<<< ../workbench/applied-ai/python/lab_tests/test_provider_export.py
 
-P=Principal('t','alice');POLICY=ExportPolicy('t','openai-api','study-classification',200,frozenset({'public'}))
-NOTE=StoredNote('t',frozenset({'alice'}),'private_catalog_id','a'*64,'React renders components.')
-
-def test_only_alias_and_needed_text_leave_projection():
-    out=prepare_export(NOTE,principal=P,policy=POLICY,classification='public',now=100,ref='e1')
-    assert json.loads(out.model_dump_json())=={'ref':'e1','text':NOTE.text}
-    for value in ['private_catalog_id','alice','subjects','tenant','revision']:
-        assert value not in out.model_dump_json()
-
-@pytest.mark.parametrize('kind',['tenant','subject','policy','expired','classification','large','ref','clock'])
-def test_current_export_policy_and_bounds(kind):
-    note=NOTE;principal=P;policy=POLICY;classification='public';ref='e1';now=100
-    if kind=='tenant':note=replace(note,tenant='other')
-    if kind=='subject':note=replace(note,subjects=frozenset())
-    if kind=='policy':policy=replace(policy,tenant='other')
-    if kind=='expired':now=200
-    if kind=='classification':classification='restricted'
-    if kind=='large':note=replace(note,text='x'*501)
-    if kind=='ref':ref='https://attacker.invalid'
-    if kind=='clock':now=True
-    with pytest.raises(ValueError):prepare_export(note,principal=principal,policy=policy,classification=classification,now=now,ref=ref)
-```
 
 Run strict mypy for provider_export.py and pytest with test_provider_export.py plus the existing test_model_sdk.py. The SDK tests use a fake credential and HTTPX2 MockTransport; they verify store:false, configured origin/body, one-attempt failure handling and safe error categories without external requests.
 
-**Practice acceptance:** create an approved-data fixture and identify every derivative in the table. Verify minimal outbound serialization and current permission/export-policy expiry, including rejected restricted classes and oversized content. Inspect a controlled SDK request for accidental ACL/identity/metadata leakage. Implement a deletion ledger with injected local/remote failure and a restored-backup/tombstone drill; no stage may claim completion from a timeout. Verify an actual approved provider/account/feature policy through its authorized owner before sending real data, recording evidence/limitations without secrets. Keep rejected data local and show a useful fixed recovery message. Learner provider configuration, deletion integration and restore exercise remain required.
+[Related learner criteria](../practice/applied-ai/chapters/provider-data-lifecycle.md).
 
 **Validation performed:** exact export gate passed strict mypy. Twenty offline tests passed:9 projection/policy cases and11 existing real-SDK mock-transport cases. Existing local vector deletion/reopen tests provide the narrower row-lifecycle evidence documented in that lesson. No real sensitive data, provider configuration/deletion, legal compliance assessment, remote object inventory or backup erasure was performed.
 

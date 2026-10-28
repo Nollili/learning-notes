@@ -27,65 +27,8 @@ A local tokenizer is useful for plain-text exploration when its encoding matches
 
 The implementation reuses the SDK lesson's deterministic message/schema builders, then counts and generates with the same model/source/schema. There is no mutable remote conversation, previous-response chain, file URL or tool state in this exercise. If you add those, counting a stale state and generating against a changed state is not a stable admission proof. Snapshot/version the state or serialize its ownership, then count the exact final request again.
 
-```python
-# study_ai/token_budgets.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/token_budgets.py
 
-import asyncio
-from dataclasses import dataclass
-
-from openai import APIConnectionError, APIStatusError, APITimeoutError, AsyncOpenAI
-
-from .model_sdk import (LabelDecision, ModelFailure, label_messages, label_text_format,
-                        propose_label, validate_label_input)
-
-
-class ContextBudgetExceeded(Exception):
-    pass
-
-
-@dataclass(frozen=True, slots=True)
-class TokenBudget:
-    context_window: int
-    model_output_limit: int
-    output_cap: int = 1024
-    margin: int = 128
-
-    def __post_init__(self) -> None:
-        values = (self.context_window, self.model_output_limit, self.output_cap, self.margin)
-        if any(type(value) is not int for value in values):
-            raise ValueError("Token limits must be integers")
-        if not (1 <= self.context_window <= 10000000 and 1 <= self.model_output_limit <= 10000000
-                and 1 <= self.output_cap <= min(32768, self.model_output_limit) and self.margin >= 0
-                and self.output_cap + self.margin < self.context_window):
-            raise ValueError("Invalid token budget")
-
-    def admit(self, input_tokens: int) -> None:
-        if type(input_tokens) is not int or input_tokens < 0:
-            raise ModelFailure("invalid_output")
-        if input_tokens + self.output_cap + self.margin > self.context_window:
-            raise ContextBudgetExceeded("Input exceeds the configured context budget")
-
-
-async def propose_with_budget(client: AsyncOpenAI, *, model: str, source: str,
-                              budget: TokenBudget) -> LabelDecision:
-    validate_label_input(model=model, source=source)
-    try:
-        # One overall deadline includes preflight plus the generation call.
-        async with asyncio.timeout(12.0):
-            counted = await client.responses.input_tokens.count(
-                model=model, input=label_messages(source), text=label_text_format(),
-            )
-            budget.admit(counted.input_tokens)
-            return await propose_label(client, model=model, source=source, output_cap=budget.output_cap)
-    except (APITimeoutError, TimeoutError):
-        raise ModelFailure("timeout") from None
-    except APIConnectionError:
-        raise ModelFailure("provider_unavailable") from None
-    except APIStatusError as error:
-        raise ModelFailure("provider_unavailable" if error.status_code == 429 or error.status_code >= 500
-                           else "provider_rejected") from None
-```
 
 The count endpoint does not accept every generation option; pass the shared context-affecting fields it supports, not an unfiltered create payload. No output cap/store field is sent to the count request. Its truncation parameter is deprecated in the checked reference, so this example omits it there; the generation call still explicitly disables automatic input truncation. Review both endpoint schemas when upgrading.
 
@@ -93,79 +36,8 @@ The dataclass's upper bounds are teaching application caps, not provider limits.
 
 ## Exact-limit and SDK integration checks
 
-```python
-# lab_tests/test_token_budgets.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/lab_tests/test_token_budgets.py
 
-import asyncio
-import json
-
-import httpx2
-import pytest
-
-from study_ai.model_sdk import ModelFailure, open_model_client
-from study_ai.token_budgets import ContextBudgetExceeded, TokenBudget, propose_with_budget
-from lab_tests.test_model_sdk import KEY, MODEL, SOURCE, VALID, envelope, text_item
-
-
-def test_budget_math_and_configuration():
-    budget = TokenBudget(context_window=2048, model_output_limit=1024)
-    budget.admit(896)
-    with pytest.raises(ContextBudgetExceeded):
-        budget.admit(897)
-    for value in [True, -1, 1.5]:
-        with pytest.raises(ModelFailure, match="invalid_output"):
-            budget.admit(value)
-    for values in [dict(context_window=True, model_output_limit=1024),
-                   dict(context_window=2048, model_output_limit=512),
-                   dict(context_window=1024, model_output_limit=1024),
-                   dict(context_window=2048, model_output_limit=1024, margin=-1)]:
-        with pytest.raises(ValueError):
-            TokenBudget(**values)
-
-
-@pytest.mark.parametrize("count,expected_paths", [(896, ["/v1/responses/input_tokens", "/v1/responses"]),
-                                                  (897, ["/v1/responses/input_tokens"])])
-def test_count_and_generate_share_context_and_reject_early(count, expected_paths):
-    requests = []
-    def handler(request):
-        body = json.loads(request.content)
-        requests.append((request.url.path, body))
-        if request.url.path.endswith("/input_tokens"):
-            assert "max_output_tokens" not in body and "store" not in body
-            return httpx2.Response(200, json={"object": "response.input_tokens", "input_tokens": count})
-        count_body = requests[0][1]
-        for key in ["model", "input", "text"]:
-            assert body[key] == count_body[key]
-        assert body["max_output_tokens"] == 1024 and body["truncation"] == "disabled"
-        return httpx2.Response(200, json=envelope([text_item(VALID)]))
-    async def run():
-        async with open_model_client(KEY, transport=httpx2.MockTransport(handler)) as client:
-            if count == 897:
-                with pytest.raises(ContextBudgetExceeded):
-                    await propose_with_budget(client, model=MODEL, source=SOURCE,
-                                              budget=TokenBudget(2048, 1024))
-            else:
-                assert (await propose_with_budget(client, model=MODEL, source=SOURCE,
-                                                  budget=TokenBudget(2048, 1024))).category == "frontend"
-        assert client.is_closed()
-    asyncio.run(run())
-    assert [path for path, body in requests] == expected_paths
-
-
-def test_preflight_failure_never_generates():
-    paths = []
-    def handler(request):
-        paths.append(request.url.path)
-        return httpx2.Response(503, json={"error": {"message": "PRIVATE_COUNT_FAILURE"}})
-    async def run():
-        async with open_model_client(KEY, transport=httpx2.MockTransport(handler)) as client:
-            with pytest.raises(ModelFailure, match="provider_unavailable") as caught:
-                await propose_with_budget(client, model=MODEL, source=SOURCE, budget=TokenBudget(2048, 1024))
-            assert "PRIVATE" not in str(caught.value)
-    asyncio.run(run())
-    assert paths == ["/v1/responses/input_tokens"]
-```
 
 ## Truncation and recovery are product decisions
 
@@ -177,8 +49,6 @@ A "continue" request does not guarantee a model will resume at the exact missing
 
 ## Practice and acceptance
 
-Use the fictional2048/1024/128 budget to show exact acceptance896 and rejection897. Compare a small plain-text sample in a model-appropriate tokenizer with its full structured-request count; include Hungarian text, emoji, code, repeated whitespace, a schema and history. Record actual token counts and model/payload versions; do not substitute estimated character ratios as measurements. No provider count or generation request has been made by the supplied offline tests.
-
-**Acceptance:** strict checking and all tests pass; count/generation payload fields match; one-over input and preflight failure cause zero generation calls; output cap matches the reserved value; private content stays out of errors. Add alternate output-cap assertions, negative provider counts, count-time cancellation/deadline and generated incomplete-result tests. Design a UI/state transition for input-too-large versus output-incomplete and retain user-controlled recovery evidence. Live tokenizer/provider comparison, shared monetary admission, long-context quality measurements, UI implementation and learner practice remain required.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/token-budgets.md).
 
 Official references checked2026-10-21: [provider token counting and non-visible usage](https://developers.openai.com/api/docs/guides/token-counting), [count endpoint fields](https://developers.openai.com/api/reference/python/resources/responses/subresources/input_tokens/methods/count), [conversation/context boundaries](https://developers.openai.com/api/docs/guides/conversation-state), [Responses generation controls](https://developers.openai.com/api/reference/python/resources/responses/methods/create). No context-window number in this lesson represents a current model's specification.

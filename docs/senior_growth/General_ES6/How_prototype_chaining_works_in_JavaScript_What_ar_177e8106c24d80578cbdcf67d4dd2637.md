@@ -196,6 +196,10 @@ Prototype pollution arises when attacker-controlled keys alter shared prototype 
 
 For a real domain, prefer composing a notification service from a message formatter and send adapter when channels vary independently. Inheriting Email/SMS/Push variants can couple transport, formatting and retry behavior. A base class is appropriate when subtypes must preserve a stable behavioral contract; test that substituting one keeps preconditions/results/errors compatible.
 
-**Exercise:** reproduce the shared-tag mutation, repair per-instance ownership, then build a notification function with an injected send adapter. Acceptance: no cross-user mutable data; correct own/inherited checks; null-chain termination explained; failed send propagates; changing transport does not require rewriting formatting. Compare composition and inheritance against actual change scenarios rather than assuming either is always superior.
 
 Official references: [ordinary object internals](https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html), [Object operations](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object-objects). Checked2026-10-20; Node24 baseline.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/How_prototype_chaining_works_in_JavaScript_What_ar_177e8106c24d80578cbdcf67d4dd2637.md). All learner practice remains outstanding; the worked examples above are explanatory material.

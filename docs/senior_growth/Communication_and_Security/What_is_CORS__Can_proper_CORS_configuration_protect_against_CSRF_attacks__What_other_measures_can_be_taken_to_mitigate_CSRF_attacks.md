@@ -114,7 +114,6 @@ fetch('/api/transfer', {
 3. Always combine multiple layers for robust protection in modern web apps.
 
 
-
 ## Read permission and write acceptance are separate decisions
 
 For credentialed CORS responses, allow a specific trusted origin and Access-Control-Allow-Credentials:true, with a client credentials mode that permits cookies. Do not reflect arbitrary Origin. If response headers vary by Origin, merge Vary:Origin on every cacheable origin-dependent variant, including denied/no-origin variants as required by the cache design; do not overwrite existing Vary entries. Preflight policy must agree with the actual method/header/credential contract. A CORS error is not an HTTP authorization response the script can inspect.
@@ -128,6 +127,10 @@ For credentialed CORS responses, allow a specific trusted origin and Access-Cont
 
 Use an existing framework's synchronizer token or signed/session-bound double-submit implementation. Keep tokens out of URLs/logs; bind/rotate them with the authenticated session and compare using the framework's safe validation. Origin/Referer and Fetch Metadata checks can add defense in depth but need an explicit supported-client/missing-header policy. CORS alone and SameSite alone are insufficient blanket policies for every application.
 
-**Exercise acceptance:** in an isolated two-origin HTTPS lab, show a denied response read while a safelisted form request still reaches a harmless test endpoint; verify the protected write rejects it without state change. Test allowed/disallowed/null origins, missing/invalid/session-mismatched CSRF tokens, JSON preflight, credentialed wildcard failure and same-site sibling-origin behavior. Inspect server-side mutation counts, not only browser console errors. Include missing provenance and nonbrowser clients in the policy tests. No browser-network enforcement, production CSRF middleware or learner practice is proven by these request descriptions.
 
 References checked2026-10-22: [Fetch CORS/credentials](https://fetch.spec.whatwg.org/#http-cors-protocol), [OWASP CSRF and signed double-submit](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html). Use the fuller Node networking/authentication material for server implementations and preserve task template configuration.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/What_is_CORS__Can_proper_CORS_configuration_protect_against_CSRF_attacks__What_other_measures_can_be_taken_to_mitigate_CSRF_attacks.md). All learner practice remains outstanding.

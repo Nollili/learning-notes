@@ -1,6 +1,6 @@
 # Task Board learning fixture
 
-Read the [complete HTTP application in Module 9](../../docs/node-js/module-09-authentication-authorization.md#complete-runnable-example-app-ts).
+Read the [complete HTTP application in the Node.js workbench](../../docs/workbench/node-js/backend/session-app.md).
 The source listing is imported directly from `src/app.ts`.
 
 From this directory, use Node 24.18+, `npm ci`, copy `.env.example` to `.env` and supply

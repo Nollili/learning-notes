@@ -534,6 +534,7 @@ Error middleware has four parameters. Keep all four so Express recognizes it.
 import type { ErrorRequestHandler } from 'express';
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+  if (res.headersSent) { next(error); return; }
   console.error({code: 'UNEXPECTED_FAILURE'});
   res.status(500).json({
     error: {
@@ -645,7 +646,9 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 };
 ```
 
-Do not expose stack traces, SQL messages, file paths, secrets, or internal dependency details to clients. Parser errors may carry a body property containing credentials: return the safe classification above and do not dump that raw error into normal logs. The first minimal500 handler illustrates only the required Express signature; the typed handler is the complete lab policy. headersSent errors must pass to next(error) so Express can close an already-started response safely. Wrong JSON Content-Type can cause express.json to skip parsing; explicitly enforce the endpoint media contract when it requires415 rather than expect a parser exception for every mismatch.
+Do not expose stack traces, SQL messages, file paths, secrets, or internal dependency details to clients. Parser errors may carry a body property containing credentials: return the safe classification above and do not dump that raw error into normal logs. The first minimal500 handler illustrates only the required Express signature; the typed handler is the complete lab policy. headersSent errors must pass to next(error) so Express can close an already-started response safely.
+
+Wrong JSON Content-Type can cause express.json to skip parsing; explicitly enforce the endpoint media contract when it requires415 rather than expect a parser exception for every mismatch.
 
 ### 404 handler
 
@@ -994,310 +997,7 @@ Do not create abstractions solely to satisfy a diagram. Small features can use f
 
 ## 11. Complete Products API
 
-The following example shows how the pieces cooperate. It uses an in-memory repository to keep attention on architecture. A database-backed implementation can replace it behind the same interface.
-
-### API contract
-
-| Method and path | Purpose | Success |
-| --- | --- | ---: |
-| `GET /api/products` | List products | `200` |
-| `GET /api/products/:id` | Retrieve one product | `200` |
-| `POST /api/products` | Create a product | `201` |
-| `PATCH /api/products/:id` | Partially update a product | `200` |
-| `DELETE /api/products/:id` | Delete a product | `204` |
-
-### Domain types
-
-```ts
-// products.types.ts
-export interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  description?: string;
-}
-
-export type NewProduct = Omit<Product, 'id'>;
-export type ProductPatch = Partial<Omit<Product, 'id' | 'sku'>>;
-```
-
-For real money, avoid floating-point ambiguity. Store integer minor units such as cents or use a suitable decimal type.
-
-### Schemas
-
-```ts
-// products.schema.ts — Zod4, defaults belong only to creation
-import { z } from 'zod';
-export const productIdSchema = z.string().uuid();
-const editableFields = {
-  name: z.string().trim().min(2).max(100),
-  price: z.number().finite().positive(),
-  stock: z.number().int().nonnegative(),
-  description: z.string().trim().max(1000).optional(),
-};
-export const createProductSchema = z.object({
-  ...editableFields,
-  sku: z.string().trim().regex(/^[A-Z0-9-]{3,30}$/),
-  stock: editableFields.stock.default(0),
-}).strict().transform(({ description, ...required }) =>
-  description === undefined ? required : { ...required, description });
-
-export const updateProductSchema = z.object(editableFields).partial().strict()
-  .refine(patch => Object.keys(patch).length > 0 &&
-    Object.values(patch).every(value => value !== undefined), {
-    error: 'At least one defined editable field is required',
-  }).transform(({ name, price, stock, description }) => ({
-    ...(name !== undefined ? { name } : {}),
-    ...(price !== undefined ? { price } : {}),
-    ...(stock !== undefined ? { stock } : {}),
-    ...(description !== undefined ? { description } : {}),
-  }));
-export type CreateProductInput = z.infer<typeof createProductSchema>;
-export type UpdateProductInput = z.infer<typeof updateProductSchema>;
-```
-
-Zod4 applies defaults even inside optional fields, so partial() of a creation schema containing stock.default(0) can synthesize stock during an unrelated PATCH. Build PATCH from fields without creation defaults. Reject empty/explicit-undefined patches, keep omitted fields absent, preserve explicit stock:0 and reject unknown/immutable id/sku. The transforms project only defined primitive fields, aligning exact optionality with the domain types. Null is not a deletion operation here; define a separate explicit nullable/reset contract if needed. Creation alone defaults stock to0. Test both parsed output keys and the persisted unchanged stock after a name-only update.
-
-
-### Repository
-
-```ts
-// products.repository.ts
-import { randomUUID } from 'node:crypto';
-import { ConflictError } from '../shared/errors/app-errors.js';
-import type { NewProduct, Product, ProductPatch } from './products.types.js';
-
-export interface ProductRepository {
-  findAll(): Promise<Product[]>;
-  findById(id: string): Promise<Product | null>;
-  findBySku(sku: string): Promise<Product | null>;
-  create(input: NewProduct): Promise<Product>;
-  update(id: string, patch: ProductPatch): Promise<Product | null>;
-  delete(id: string): Promise<boolean>;
-}
-
-export class InMemoryProductRepository implements ProductRepository {
-  private readonly products = new Map<string, Product>();
-
-  async findAll(): Promise<Product[]> {
-    return [...this.products.values()].map((product) => ({ ...product }));
-  }
-
-  async findById(id: string): Promise<Product | null> {
-    const product = this.products.get(id);
-    return product ? { ...product } : null;
-  }
-
-  async findBySku(sku: string): Promise<Product | null> {
-    const product = [...this.products.values()].find((item) => item.sku === sku);
-    return product ? { ...product } : null;
-  }
-
-  async create(input: NewProduct): Promise<Product> {
-    // No await between duplicate check and insertion: atomic within this JS isolate.
-    if ([...this.products.values()].some(product => product.sku === input.sku))
-      throw new ConflictError('SKU already exists');
-    const product: Product = { id: randomUUID(), name: input.name, sku: input.sku,
-      price: input.price, stock: input.stock,
-      ...(input.description !== undefined ? { description: input.description } : {}) };
-    this.products.set(product.id, product);
-    return { ...product };
-  }
-
-  async update(id: string, patch: ProductPatch): Promise<Product | null> {
-    const current = this.products.get(id);
-    if (!current) return null;
-
-    const updated = { ...current, ...patch };
-    this.products.set(id, updated);
-    return { ...updated };
-  }
-
-  async delete(id: string): Promise<boolean> {
-    return this.products.delete(id);
-  }
-}
-```
-
-Cloning returned objects prevents callers from accidentally changing repository state without calling update. This model contains only primitive fields, so a shallow copy is sufficient; nested mutable data would need an ownership policy. The service lookup is a friendly early conflict check, not race prevention: create itself checks and inserts without an await. Two concurrent service calls therefore cannot insert the same SKU in this single-process fake. A real database must enforce a unique constraint/index and translate its violation; this in-memory critical section is not cross-process synchronization.
-
-### Service
-
-```ts
-// products.service.ts
-import { ConflictError, NotFoundError } from '../shared/errors/app-errors.js';
-import type { ProductRepository } from './products.repository.js';
-import type { CreateProductInput, UpdateProductInput } from './products.schema.js';
-import type { Product } from './products.types.js';
-
-export function createProductService(repository: ProductRepository) {
-  return {
-    list(): Promise<Product[]> {
-      return repository.findAll();
-    },
-
-    async getById(id: string): Promise<Product> {
-      const product = await repository.findById(id);
-      if (!product) throw new NotFoundError('Product', id);
-      return product;
-    },
-
-    async create(input: CreateProductInput): Promise<Product> {
-      const duplicate = await repository.findBySku(input.sku);
-      if (duplicate) throw new ConflictError(`SKU ${input.sku} already exists`);
-      return repository.create(input);
-    },
-
-    async update(id: string, patch: UpdateProductInput): Promise<Product> {
-      const product = await repository.update(id, patch);
-      if (!product) throw new NotFoundError('Product', id);
-      return product;
-    },
-
-    async remove(id: string): Promise<void> {
-      const deleted = await repository.delete(id);
-      if (!deleted) throw new NotFoundError('Product', id);
-    },
-  };
-}
-```
-
-### Validation middleware
-
-```ts
-// shared/validation/validate.ts
-import type { NextFunction, Request, Response } from 'express';
-import type { ZodType } from 'zod';
-
-type RequestTarget = 'body' | 'params' | 'query';
-
-export function validate(target: RequestTarget, schema: ZodType) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(req[target]);
-
-    if (!result.success) {
-      res.status(400).json({
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: `Request ${target} is invalid`,
-          details: result.error.issues.map((issue) => ({
-            path: issue.path.join('.'),
-            message: issue.message,
-          })),
-        },
-      });
-      return;
-    }
-
-    res.locals[target] = result.data;
-    next();
-  };
-}
-```
-
-### Controller factory
-
-```ts
-// products.controller.ts
-import type { RequestHandler } from 'express';
-import type { createProductService } from './products.service.js';
-
-type ProductService = ReturnType<typeof createProductService>;
-
-export function createProductController(service: ProductService) {
-  const list: RequestHandler = async (_req, res) => {
-    res.json(await service.list());
-  };
-
-  const getById: RequestHandler = async (_req, res) => {
-    res.json(await service.getById(res.locals.params.id));
-  };
-
-  const create: RequestHandler = async (_req, res) => {
-    const product = await service.create(res.locals.body);
-    res.status(201).location(`/api/products/${product.id}`).json(product);
-  };
-
-  const update: RequestHandler = async (_req, res) => {
-    const product = await service.update(res.locals.params.id, res.locals.body);
-    res.json(product);
-  };
-
-  const remove: RequestHandler = async (_req, res) => {
-    await service.remove(res.locals.params.id);
-    res.status(204).end();
-  };
-
-  return { list, getById, create, update, remove };
-}
-```
-
-### Router composition
-
-```ts
-// products.routes.ts
-import { Router } from 'express';
-import { z } from 'zod';
-import { validate } from '../shared/validation/validate.js';
-import { createProductController } from './products.controller.js';
-import { createProductSchema, productIdSchema, updateProductSchema } from './products.schema.js';
-import type { createProductService } from './products.service.js';
-
-export function createProductsRouter(service: ReturnType<typeof createProductService>): Router {
-  const router = Router();
-  const controller = createProductController(service);
-  const paramsSchema = z.object({ id: productIdSchema });
-
-  router.get('/', controller.list);
-  router.get('/:id', validate('params', paramsSchema), controller.getById);
-  router.post('/', validate('body', createProductSchema), controller.create);
-  router.patch(
-    '/:id',
-    validate('params', paramsSchema),
-    validate('body', updateProductSchema),
-    controller.update,
-  );
-  router.delete('/:id', validate('params', paramsSchema), controller.remove);
-
-  return router;
-}
-```
-
-### Composition root
-
-Construct concrete dependencies in one place.
-
-```ts
-// app.ts
-import express from 'express';
-import { errorHandler } from './shared/middleware/error-handler.js';
-import { InMemoryProductRepository } from './products/products.repository.js';
-import { createProductService } from './products/products.service.js';
-import { createProductsRouter } from './products/products.routes.js';
-
-export const app = express();
-
-const repository = new InMemoryProductRepository();
-const service = createProductService(repository);
-
-app.disable('x-powered-by');
-app.use(express.json({ limit: '100kb' }));
-app.use('/api/products', createProductsRouter(service));
-
-app.use((req, res) => {
-  res.status(404).json({
-    error: { code: 'ROUTE_NOT_FOUND', message: 'Route not found' },
-  });
-});
-
-app.use(errorHandler);
-```
-
-This is dependency injection without requiring a dependency-injection framework. Construction is centralized, dependencies are visible, and tests can supply fakes.
-
----
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/backend/products-api.md).
 
 ## 12. Testing and production readiness
 
@@ -1489,7 +1189,9 @@ RETURNING request_key;
 -- If claimed: create order, UPDATE this record to completed with response, COMMIT.
 ```
 
-The claim adapter must implement the documented transaction/isolation behavior, not merely expose this method name. On PostgreSQL concurrent unique-key inserts coordinate with the conflicting transaction; after a conflict use a fresh READ COMMITTED statement/appropriate locking to read its committed result. If retention cleanup can remove the row between conflict and read, retry the entire transaction under a bounded policy or coordinate cleanup; never interpret a missing read as permission to duplicate the business write. A rollback must remove both claim and business changes. A permanently committed processing state requires explicit lease/recovery semantics; the simple same-transaction design commits only completed results.
+The claim adapter must implement the documented transaction/isolation behavior, not merely expose this method name. On PostgreSQL concurrent unique-key inserts coordinate with the conflicting transaction; after a conflict use a fresh READ COMMITTED statement/appropriate locking to read its committed result. If retention cleanup can remove the row between conflict and read, retry the entire transaction under a bounded policy or coordinate cleanup; never interpret a missing read as permission to duplicate the business write.
+
+A rollback must remove both claim and business changes. A permanently committed processing state requires explicit lease/recovery semantics; the simple same-transaction design commits only completed results.
 
 Check fingerprint before any replay. A unique key alone cannot distinguish equivalent retries from a reused key carrying another product/quantity. Keep response retention at least through the supported retry window; after expiry, the API must define whether it can accept a new operation. External payment/email calls do not join this transaction: use the outbox/idempotent-provider workflow. This is a repository contract and SQL implementation outline, not an executed database adapter; actual database claim/concurrency/crash tests belong to the persistence/distributed-systems labs.
 
@@ -1578,66 +1280,11 @@ Ask for every multi-step use case:
 
 ### Diagnostic exercise
 
-Design an order endpoint that reserves stock, records an order, and requests payment.
-
-Explain:
-
-- the database transaction boundary;
-- why the payment call is outside that transaction;
-- how an outbox event is recorded;
-- how duplicate requests are handled;
-- where authorization is checked;
-- what happens after a crash at every step;
-- which failures return immediately and which become asynchronous states.
-
----
+[Exercises and learner checklist](../practice/node-js/module-06-express-architecture.md).
 
 ## 16. Final review checklist
 
-### Use-case reliability
-
-- [ ] Put a transaction around repository operations that share one invariant.
-- [ ] Keep slow external calls outside database transactions.
-- [ ] Explain the outbox pattern and idempotent consumers.
-- [ ] Store an idempotency result atomically with the business change.
-- [ ] Pass actor, tenant, deadline, and cancellation context deliberately.
-- [ ] Enforce critical authorization outside route middleware as well.
-- [ ] Analyze partial success and crash points in a multi-step workflow.
-
-### Express fundamentals
-
-- [ ] Explain what Express adds on top of `node:http`.
-- [ ] Create an application and keep `app` separate from `listen()`.
-- [ ] Read path parameters, queries, headers, and parsed request bodies.
-- [ ] Use appropriate response helpers and status codes.
-- [ ] Define resource-oriented routes and modular routers.
-
-### Middleware and errors
-
-- [ ] Explain why middleware order matters.
-- [ ] Ensure every middleware path continues, responds, or errors.
-- [ ] Distinguish application-, router-, and route-level middleware.
-- [ ] Register 404 and error handlers after routes.
-- [ ] Explain Express 5 and Express 4 async-error behavior.
-- [ ] Return a consistent safe error representation.
-
-### Architecture
-
-- [ ] Keep HTTP logic in routes/controllers.
-- [ ] Keep business rules and orchestration in services.
-- [ ] Keep persistence details in repositories.
-- [ ] Enforce downward dependency flow.
-- [ ] Use interfaces or injected dependencies where substitution helps.
-- [ ] Organize code by feature while preserving layer responsibilities.
-
-### Validation and security
-
-- [ ] Validate runtime input even when TypeScript types exist.
-- [ ] Validate body, params, query, and relevant headers.
-- [ ] Use parsed/validated output rather than the original input.
-- [ ] Reject or strip unknown fields deliberately.
-- [ ] Separate transport validation from business rules.
-- [ ] Use parameterized queries, size limits, authorization, and safe output handling.
+[Exercises and learner checklist](../practice/node-js/module-06-express-architecture.md).
 
 ### One-minute recap
 
@@ -1646,18 +1293,7 @@ Express turns Node's low-level HTTP primitives into an ordered routing and middl
 
 ## Correction labs: contracts that the complete API must satisfy
 
-Baselines checked2026-10-21: Express5.3.0, Zod4.6.7 (defaults inside optional fields), Node24.18.0; the complete extracted Products API also typechecked with TypeScript5.9.3 strict/exact-optional/indexed-access checks. Keep the actual installed package versions/lockfile with results. The scratch validation environment is separate from this notes repository and does not change Autocode templates or src/tests.
-
-**PATCH acceptance:** creation without stock yields0; name-only PATCH output has no stock key and preserves existing stock; explicit stock0 updates correctly; empty/unknown/id/sku/undefined/null-field patches reject according to the stated schema. Normalized parsed output, not raw req.body, reaches the service. Validate returned object keys as well as values.
-
-**Uniqueness acceptance:** launch two service.create calls with the same normalized SKU through one real in-memory repository; require one success, one ConflictError, one stored row. Delete then recreate works. Prove that mutating a returned Product does not mutate stored primitives. Repeat the contract against the real database adapter with its unique constraint; the in-memory no-await section is not a distributed lock.
-
-**Transport acceptance:** malformed JSON→400, oversized entity→413, unsupported charset/encoding→415, schema error→the declared400 policy, and unexpected programmer TypeError→500. Do not expose parser body/stack in responses/logs. Assert headersSent forwards to next once. The fail-closed auth scaffold cannot pass private requests; install and test a real verifier separately. Check safe route logs with a sensitive query and unmatched route; no raw query may be recorded. Exercise startup invalid-port/error/partial-cleanup and bounded shutdown in the lifecycle lesson; this introductory server snippet does not implement all of those yet.
-
-**Idempotency acceptance:** the same scoped key+same normalized input replays only a completed response; different input conflicts; an atomic concurrent claim allows at most one business insertion; rollback/crash-before-commit creates neither partial business state nor a visible completed response. Record actual persistence isolation/retention behavior and replay authorization. A port/fake test cannot establish durable atomicity. Learner implementation and real DB/Express deployment evidence remain required.
-
-Official references: [Zod4 optional defaults](https://zod.dev/v4/changelog#defaults-applied-within-optional-fields), [Express5 errors](https://expressjs.com/en/guide/error-handling/), [body-parser error types](https://expressjs.com/en/resources/middleware/body-parser/#errors), [PostgreSQL INSERT conflict handling](https://www.postgresql.org/docs/current/sql-insert.html).
-
+[Exercises and learner checklist](../practice/node-js/module-06-express-architecture.md).
 
 ## Storage rows, domain states and public DTOs
 
@@ -1721,24 +1357,11 @@ The mapper intentionally strips extra storage columns and then explicitly projec
 
 Readonly constrains TypeScript assignments, not all JavaScript mutation. Values here are primitives, so they do not share a mutable Date/ORM relation across layers; freeze/copy deeper structures if the actual ownership contract requires it. The ISO string follows JavaScript Date millisecond precision and UTC formatting; a microsecond-sensitive cursor needs the dedicated database timestamp contract rather than this projection. Validate API JSON separately: z.date expects a real driver Date, not an arbitrary timestamp string from a request. A storage adapter must match the configured driver conversions.
 
-**Acceptance drill:** strict-typecheck draft/published/outcome narrowing and reject missing publication data or a draft passed to the published DTO mapper. At runtime reject invalid dates, mismatched state/date, unsafe/fractional/negative money and malformed identity. Feed a row/variable containing supplier cost, internal note, tenant and driver metadata; assert the exact public JSON keys contain none of them. Mutate the original Date after mapping and verify the domain ISO string stays unchanged. Assert draft/wrong-tenant/absent all present as404, published as200 and no other status leaks into domain types. Add an outcome and observe a never diagnostic. Then repeat through the real repository/controller with tenant-scoped queries and a simulated database outage. The pure mapping checks do not establish server authorization, transactional storage or learner practice.
+[Related practice](../practice/node-js/module-06-express-architecture.md).
 
 Validated baseline TypeScript5.9.3 strict/exactOptionalPropertyTypes/noUncheckedIndexedAccess, Zod4.6.7 and Node24.18.0. Official references checked2026-10-22: [TypeScript discriminated unions](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions), [Zod object/discriminated-union parsing](https://zod.dev/api#discriminated-unions), [Express JSON response](https://expressjs.com/en/api/). This is a standalone extension lab; preserve Autocode build/test configuration and src/tests restrictions.
 
 
 ## Lifecycle and error evidence reconciliation
 
-The introductory `app.listen` snippet above demonstrates separation of app construction and listening; it is not the production startup owner. Use [module10 startup/listenReady](./module-10-production-ready-applications.md#_5-startup-and-application-lifecycle) and [coordinated shutdown](./module-10-production-ready-applications.md#_9-graceful-shutdown) instead of growing a second inconsistent implementation. Startup must reject both synchronous invalid bind arguments and asynchronous `error` events, and release every resource already handed over. A connection factory owns partially created resources until it returns successfully. Closing a listener is not the same as awaiting jobs, draining active requests or closing a database.
-
-| Requirement | Retained/rechecked evidence | Limit |
-|---|---|---|
-| Known body-parser status mapping | B43 complete extracted Express API checks;2026-10-25 exact current classifier strict-compiled and actual Express malformed400/size413/charset415/encoding415 rechecked | Does not make arbitrary SyntaxError/TypeError a client error; wrong media type may skip the parser |
-| Unexpected application failure | Current actual Express async TypeError returns safe500 without the synthetic private detail | Client projection is separate from an internal redacted diagnostics policy |
-| Startup listener failure | Exact current `listenReady` strict-compiles; actual occupied loopback bind rejects EADDRINUSE and the handed-over resource closes; invalid port rejects synchronously | Database close in this new focused test is an explicit owned port, not a new real-driver run |
-| Listener lifetime | Startup helper removes only its own error/listening listeners on failure | Node's existing `setupConnectionsTracking` listener is preserved; zero total listeners is the wrong assertion |
-| Complete shutdown | Retained B48 real Node slow-response drain/new-connection denial, duplicate-promise ownership, jobs-before-DB ordering, failure matrix and child deadline exit1 | Not re-executed in this batch; no hosted load-balancer/production rollout evidence |
-| Probe/driver boundary | Retained B48 isolated PostgreSQL timeout/slot-release/recovery and B165 actual container database-stall/readiness/liveness/shutdown | Not proof every dependency cancels when an HTTP deadline fires |
-
-The current chapter was reread completely (1726 source lines before these edits) before reconciling the overlapping review finding. Existing substantive parser and lifecycle material supplies the shared requirement; a missing copy in one introductory snippet is not absence across the corpus. Raw error-object logging in the two small error-handler sketches was replaced by a fixed diagnostic code: parser/driver/program errors can carry bodies, credentials or private paths. A production diagnostics adapter can preserve reviewed cause categories and correlation under a declared redaction policy; do not silently dump the original exception.
-
-**Practice acceptance:** build a service using the primary composition owner, inject invalid configuration, occupied-port failure, dependency acquisition failure and a later partial-startup failure. Assert owned cleanup and a nonzero outcome without leaking configuration. Test parser statuses and headersSent delegation, then reproduce the shared shutdown failure/drain/deadline cases in disposable processes. Record exactly which dependencies are real. No `src/tests` changes or remote push are permitted; independent learner practice remains required.
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/backend/lifecycle-evidence.md).

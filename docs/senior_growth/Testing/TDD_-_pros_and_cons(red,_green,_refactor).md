@@ -103,68 +103,11 @@ Create two files in an owned standalone directory, outside restricted `src/tests
 
 `limit.mjs` — final refactored implementation:
 
-```js
-import {readFile} from 'node:fs/promises';
-const invalid = () => new RangeError('Limit must be an integer from 1 to 50');
-export function parseLimit(raw) {
-  if (raw === undefined) return 20;
-  if (typeof raw !== 'string' || raw.trim() !== raw || !/^[1-9][0-9]?$/.test(raw)) throw invalid();
-  const value = Number(raw);
-  if (value > 50) throw invalid();
-  return value;
-}
-export async function readPageLimit(file, load = readFile) {
-  const value = JSON.parse(await load(file, 'utf8'));
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new TypeError('Invalid config');
-  return parseLimit(value.limit);
-}
-```
+<<< ../../workbench/engineering/testing/config-tdd/limit.mjs{js}
 
 `limit.test.mjs` — behavior suite, written before filling in `parseLimit`:
 
-```js
-import {test} from 'node:test';
-import assert from 'node:assert/strict';
-import {mkdtemp,writeFile,rm} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
-import {parseLimit,readPageLimit} from './limit.mjs';
-test('missing limit uses documented default', () => assert.equal(parseLimit(undefined), 20));
-test('accepts both inclusive boundaries', () => {
-  assert.equal(parseLimit('1'), 1); assert.equal(parseLimit('50'), 50);
-});
-test('rejects invalid range and wrong types without coercion', () => {
-  for (const raw of ['0', '51', '-1', 20, null, [], {}]) assert.throws(() => parseLimit(raw), RangeError);
-});
-test('rejects partial numbers, whitespace, decimals and leading zeros', () => {
-  for (const raw of ['20junk', ' 20', '20 ', '20\n', '2.0', '01', '']) assert.throws(() => parseLimit(raw), RangeError);
-});
-test('reads an owned config file and awaits cleanup', async t => {
-  const directory = await mkdtemp(join(tmpdir(), 'limit-fixture-'));
-  t.after(() => rm(directory, {recursive: true, force: true}));
-  const file = join(directory, 'config.json');
-  await writeFile(file, JSON.stringify({limit: '7'}));
-  assert.equal(await readPageLimit(file), 7);
-});
-test('awaits the injected loader and rejects invalid config shapes', async () => {
-  let resolve;
-  const pending = new Promise(r => {resolve = r;});
-  let called = false;
-  const result = readPageLimit('owned.json', async (file, encoding) => {
-    assert.equal(file, 'owned.json'); assert.equal(encoding, 'utf8'); called = true;
-    return pending;
-  });
-  assert.equal(called, true); resolve('{"limit":"3"}'); assert.equal(await result, 3);
-  for (const text of ['null', '[]', '"text"']) await assert.rejects(() => readPageLimit('x', async () => text), TypeError);
-});
-test('preserves a storage failure without pretending a default succeeded', async () => {
-  const failure = new Error('owned fixture error');
-  await assert.rejects(() => readPageLimit('x', async () => {throw failure;}), error => error === failure);
-});
-test('rejects malformed JSON', async () => {
-  await assert.rejects(() => readPageLimit('x', async () => '{'), SyntaxError);
-});
-```
+<<< ../../workbench/engineering/testing/config-tdd/limit.test.mjs{js}
 
 Run `node --test --test-reporter=tap limit.test.mjs` in that owned directory. The deferred loader controls completion explicitly; no arbitrary sleep or real network is needed. The real-file case uses a unique temporary directory and registers awaited cleanup immediately after acquisition. It is a small filesystem integration test; the pure parser and injected-loader cases exercise separate boundaries.
 
@@ -178,4 +121,7 @@ The final source and tests were executed again after adding a trailing-newline c
 
 TDD does not guarantee coverage, correct requirements or the absence of defects. For legacy work, characterization tests preserve observed behavior; confirm which behavior is intended before encoding an existing bug as a permanent contract. A useful test can contain several assertions establishing one coherent behavior, and a use case can involve several functions.
 
-**Exercise acceptance:** reproduce red failure for the documented reason, green, then a behavior-preserving refactor. Add one missing edge case and demonstrate it fails the relevant defective implementation. Retain commands, exit status, failing/passing names and actual diff. Explain parser-unit versus filesystem-integration scope and ensure cleanup runs on failure. Learner practice remains required. References: [Node24 test runner, hooks and async activity](https://nodejs.org/docs/latest-v24.x/api/test.html), [Jest coverage thresholds](https://jestjs.io/docs/configuration#coveragethreshold-object).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/testing/TDD_-_pros_and_cons%28red%2C_green%2C_refactor%29.md). All learner practice remains outstanding.

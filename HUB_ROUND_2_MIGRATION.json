@@ -1,0 +1,840 @@
+[
+  {
+    "source": "docs/senior_growth/Git/GIT_flow_vs_Trunk-based_Development,_Differences,_benefits_each_of_branching_model",
+    "destination": "docs/senior_growth/Git/GIT_flow_vs_Trunk-based_Development,_Differences,_benefits_each_of_branching_model.md",
+    "original_sha256": "272ada1e77c98ec52965fe4047a73b41c4cd9bcb41b9e8a292c3b2d228ce59ec",
+    "reason": "Extensionless lesson was absent from generated navigation; no previously built URL existed."
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Could_you_explain_why_the_concept_of_immutability_is_important_for_redux.md",
+    "practice": "docs/practice/engineering/state/Could_you_explain_why_the_concept_of_immutability_is_important_for_redux.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Do_you_know_other_solutions_for_state_management.md",
+    "practice": "docs/practice/engineering/state/Do_you_know_other_solutions_for_state_management.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Have_you_heard_about_Context_in_React.md",
+    "practice": "docs/practice/engineering/state/Have_you_heard_about_Context_in_React.md",
+    "paragraph_count": 3
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Have_you_heard_about_Context_in_React.md",
+    "workbench": "docs/workbench/engineering/state/theme-context.tsx",
+    "original_sha256": "b449722e898933babbd585d22bf15ed7bbd60911f3ebd21dc627dbfc0614c33a",
+    "final_sha256": "b449722e898933babbd585d22bf15ed7bbd60911f3ebd21dc627dbfc0614c33a"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Have_you_heard_about_Context_in_React.md",
+    "workbench": "docs/workbench/engineering/state/locale-context.tsx",
+    "original_sha256": "0956981fb57bf23574e1abef8ea670267566b8d6c44307bf43a5aed3c87802ed",
+    "final_sha256": "0956981fb57bf23574e1abef8ea670267566b8d6c44307bf43a5aed3c87802ed"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Have_you_heard_about_Context_in_React.md",
+    "workbench": "docs/workbench/engineering/state/locale-demo.tsx",
+    "original_sha256": "693a6c0a1274eb4b999380973bbef64acb506f581313553a3a19c7e63eb55dbb",
+    "final_sha256": "693a6c0a1274eb4b999380973bbef64acb506f581313553a3a19c7e63eb55dbb"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_does_Redux_work.md",
+    "practice": "docs/practice/engineering/state/How_does_Redux_work.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_does_Redux_work.md",
+    "workbench": "docs/workbench/engineering/state/counter-selectors.tsx",
+    "original_sha256": "4ecffe60bb999e15503995a208ea23e690ab27a643a9d81746e2795acb6430fc",
+    "final_sha256": "4ecffe60bb999e15503995a208ea23e690ab27a643a9d81746e2795acb6430fc"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_would_you_debug_an_application_using_Redux.md",
+    "practice": "docs/practice/engineering/state/How_would_you_debug_an_application_using_Redux.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_would_you_debug_an_application_using_Redux.md",
+    "workbench": "docs/workbench/engineering/state/profile-race.ts",
+    "original_sha256": "282aa04b35ee5cb32482e96683ce53e4cd73d4606eed1930e01d5e6e99f1e434",
+    "final_sha256": "282aa04b35ee5cb32482e96683ce53e4cd73d4606eed1930e01d5e6e99f1e434"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_would_you_introduce_centralized_store_management_(f.e._REDUX)_on_a_project_which_does_not_use_it.md",
+    "practice": "docs/practice/engineering/state/How_would_you_introduce_centralized_store_management_(f.e._REDUX)_on_a_project_which_does_not_use_it.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/How_would_you_introduce_centralized_store_management_(f.e._REDUX)_on_a_project_which_does_not_use_it.md",
+    "workbench": "docs/workbench/engineering/state/relational-state.ts",
+    "original_sha256": "f2b6f2eed914bd2b589c1ff544135fbe581007c2a431e95280d4311807222fb7",
+    "final_sha256": "f2b6f2eed914bd2b589c1ff544135fbe581007c2a431e95280d4311807222fb7"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Is_still_valid_to_use_Redux_in_a_new_project_nowadays.md",
+    "practice": "docs/practice/engineering/state/Is_still_valid_to_use_Redux_in_a_new_project_nowadays.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Is_still_valid_to_use_Redux_in_a_new_project_nowadays.md",
+    "workbench": "docs/workbench/engineering/state/normalized-records.ts",
+    "original_sha256": "8ee542fa09989c6fb59f1915b4eca96f23d114bf7382c8ea061b117b1cf63df1",
+    "final_sha256": "8ee542fa09989c6fb59f1915b4eca96f23d114bf7382c8ea061b117b1cf63df1"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/What_are_middlewares,_how_to_handle_asynchronous_actions.md",
+    "practice": "docs/practice/engineering/state/What_are_middlewares,_how_to_handle_asynchronous_actions.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/What_are_middlewares,_how_to_handle_asynchronous_actions.md",
+    "workbench": "docs/workbench/engineering/state/profile-http.ts",
+    "original_sha256": "10a198e50c389884384e71ccfa948f77d6f34b497579850a52bdbfe7a79ce78a",
+    "final_sha256": "727da8601088b681066a375a506c93813770290499422e71b7e378d1edcbc792",
+    "adaptation": "Canonical assembly/import/ownership correction or compound-module split; original digest retained."
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/What_are_middlewares,_how_to_handle_asynchronous_actions.md",
+    "workbench": "docs/workbench/engineering/state/counter-store.ts",
+    "original_sha256": "7e1262e16c0b84647ebaf9f2855694d2ef5707b992e7840077ed43b261e1d0b3",
+    "final_sha256": "7e1262e16c0b84647ebaf9f2855694d2ef5707b992e7840077ed43b261e1d0b3"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/What_are_the_main_differences_between_REDUX_and_FLUX.md",
+    "practice": "docs/practice/engineering/state/What_are_the_main_differences_between_REDUX_and_FLUX.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/When_should_we_use-not_use_centralized_stores.md",
+    "practice": "docs/practice/engineering/state/When_should_we_use-not_use_centralized_stores.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/When_should_we_use-not_use_centralized_stores.md",
+    "workbench": "docs/workbench/engineering/state/cache-confirmation.ts",
+    "original_sha256": "18767f585c94bf247b461db01fc385e12f6a228f1acee0db5b7c217938d732cc",
+    "final_sha256": "50f1f27fe190b0695ac0de75c7c72bed09ea465450e8071e8ac0da8ff459b097",
+    "adaptation": "Canonical assembly/import/ownership correction or compound-module split; original digest retained."
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_SSR_improve_first_render.md",
+    "practice": "docs/practice/engineering/performance/Can_SSR_improve_first_render.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_SSR_improve_first_render.md",
+    "workbench": "docs/workbench/engineering/performance/app/articles/page.tsx",
+    "original_sha256": "d4afdf17fe699e089e73f8f42fee68a1651bd57c93a2942b36720bde9d8a8246",
+    "final_sha256": "d4afdf17fe699e089e73f8f42fee68a1651bd57c93a2942b36720bde9d8a8246"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md",
+    "practice": "docs/practice/engineering/performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md",
+    "workbench": "docs/workbench/engineering/performance/debounce.ts",
+    "original_sha256": "f858792c6c0cf13b49f3b59b65c34e4c185e6402e14b36d65f8ebf5730f04646",
+    "final_sha256": "f858792c6c0cf13b49f3b59b65c34e4c185e6402e14b36d65f8ebf5730f04646"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md",
+    "workbench": "docs/workbench/engineering/performance/search-owner.ts",
+    "original_sha256": "8ead83482059fdda068c79093f8fc37556faa313448bac99c87a8e1da5fb59de",
+    "final_sha256": "8ead83482059fdda068c79093f8fc37556faa313448bac99c87a8e1da5fb59de"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md",
+    "workbench": "docs/workbench/engineering/performance/use-debounced-search.tsx",
+    "original_sha256": "d8e687eee488a9c01a9323e9849734f626139729716013ae6ec7f44cfaaf65ca",
+    "final_sha256": "d8e687eee488a9c01a9323e9849734f626139729716013ae6ec7f44cfaaf65ca"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Can_you_describe_the_process_from_time_you_type_appliaction_url,_to_it_finished_state_on_your_screen.md",
+    "practice": "docs/practice/engineering/performance/Can_you_describe_the_process_from_time_you_type_appliaction_url,_to_it_finished_state_on_your_screen.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "practice": "docs/practice/engineering/performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/dom-ready.ts",
+    "original_sha256": "a1072a75e5e6ca27548c374c15b529740da904a6a9855c56fb0de9764064c317",
+    "final_sha256": "a1072a75e5e6ca27548c374c15b529740da904a6a9855c56fb0de9764064c317"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/classic-a.js",
+    "original_sha256": "7cb8fb7aeb23d2ea8a3409e58e9406e526f2a1c05c72092000391b520a79eb17",
+    "final_sha256": "7cb8fb7aeb23d2ea8a3409e58e9406e526f2a1c05c72092000391b520a79eb17"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/classic-b.js",
+    "original_sha256": "90721a9a84d75d89645eaec118544aee94373220bc329d3713348f560e2a8ca3",
+    "final_sha256": "90721a9a84d75d89645eaec118544aee94373220bc329d3713348f560e2a8ca3"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/dependency.js",
+    "original_sha256": "8baa5d5fa69bae86a15f42bbd7a084e1619590ba9b90307dc47f9281058381e1",
+    "final_sha256": "8baa5d5fa69bae86a15f42bbd7a084e1619590ba9b90307dc47f9281058381e1"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/entry.js",
+    "original_sha256": "283e44df161e0101140c187819e621739d11b1373a42a49ed35a65b3513b3f53",
+    "final_sha256": "283e44df161e0101140c187819e621739d11b1373a42a49ed35a65b3513b3f53"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md",
+    "workbench": "docs/workbench/engineering/performance/integrity-fixture.js",
+    "original_sha256": "8e25f721f93f7e9820b300277f07c7a7b8e48e6d858976a48922ab1ea45fff5b",
+    "final_sha256": "8e25f721f93f7e9820b300277f07c7a7b8e48e6d858976a48922ab1ea45fff5b"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Do_you_know_some_ways_to_measure_and_improve_initial_load.md",
+    "practice": "docs/practice/engineering/performance/Do_you_know_some_ways_to_measure_and_improve_initial_load.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/From_performance_perspective_why_immutability_is_important.md",
+    "practice": "docs/practice/engineering/performance/From_performance_perspective_why_immutability_is_important.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/How_would_you_start_the_investigation,_what_are_your_steps_after_the_customer's_feedback_is_that_the_application_is_really_slow.md",
+    "practice": "docs/practice/engineering/performance/How_would_you_start_the_investigation,_what_are_your_steps_after_the_customer's_feedback_is_that_the_application_is_really_slow.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking,_code_splitting_and_bundling,_minimizing,_data_caching..md",
+    "practice": "docs/practice/engineering/performance/What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking,_code_splitting_and_bundling,_minimizing,_data_caching..md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking,_code_splitting_and_bundling,_minimizing,_data_caching..md",
+    "workbench": "docs/workbench/engineering/performance/vite.config.ts",
+    "original_sha256": "893af278b9e6fdb89e1fec3231f0c776523d9b691bc422c8fa156073ae7e3e4e",
+    "final_sha256": "893af278b9e6fdb89e1fec3231f0c776523d9b691bc422c8fa156073ae7e3e4e"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_are_the_usual_source_of_problems_with_memory.md",
+    "practice": "docs/practice/engineering/performance/What_are_the_usual_source_of_problems_with_memory.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_if_we_are_facing_performance_issues_because_we_have_lots_of_requests.md",
+    "practice": "docs/practice/engineering/performance/What_if_we_are_facing_performance_issues_because_we_have_lots_of_requests.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_if_you_have_to_create_an_app_with_some_pretty_sophisticated_UI_(views,_animations,_etc)._What_are_the_pitfalls_(UI_interractions,_60fps,_split_into_chunks,_workers_etc)._Stages_to_build_frame.md",
+    "practice": "docs/practice/engineering/performance/What_if_you_have_to_create_an_app_with_some_pretty_sophisticated_UI_(views,_animations,_etc)._What_are_the_pitfalls_(UI_interractions,_60fps,_split_into_chunks,_workers_etc)._Stages_to_build_frame.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_TTFI_(Time_to_first_interaction)._How_can_we_improve_TTFI.md",
+    "practice": "docs/practice/engineering/performance/What_is_TTFI_(Time_to_first_interaction)._How_can_we_improve_TTFI.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_reflow_and_repaint,_what_causes_those_events,_why_is_it_important_to_have_them_in_mind.md",
+    "practice": "docs/practice/engineering/performance/What_is_reflow_and_repaint,_what_causes_those_events,_why_is_it_important_to_have_them_in_mind.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_the_best,_most_efficient_way_of_performing_animations_in_webpages.md",
+    "practice": "docs/practice/engineering/performance/What_is_the_best,_most_efficient_way_of_performing_animations_in_webpages.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_the_critical_rendering_path,_how_to_measure_and_optimize.md",
+    "practice": "docs/practice/engineering/performance/What_is_the_critical_rendering_path,_how_to_measure_and_optimize.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_the_memory_leak._Any_real_world_example_How_would_you_find_memory_leaks.md",
+    "practice": "docs/practice/engineering/performance/What_is_the_memory_leak._Any_real_world_example_How_would_you_find_memory_leaks.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/What_is_the_memory_leak._Any_real_world_example_How_would_you_find_memory_leaks.md",
+    "workbench": "docs/workbench/engineering/performance/route-projects.tsx",
+    "original_sha256": "32f061c5d1099074a808d988c8a64fd7a103719bbe3ad7f78aa2e2f83c6d1bff",
+    "final_sha256": "32f061c5d1099074a808d988c8a64fd7a103719bbe3ad7f78aa2e2f83c6d1bff"
+  },
+  {
+    "source": "docs/senior_growth/Web_Performance/Which_tools_and_metrics_would_you_use_to_profile_and_measure_performance.md",
+    "practice": "docs/practice/engineering/performance/Which_tools_and_metrics_would_you_use_to_profile_and_measure_performance.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Advantages_and_disadvantages_of_local_and_session_storage.md",
+    "practice": "docs/practice/engineering/security/Advantages_and_disadvantages_of_local_and_session_storage.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Advantages_and_disadvantages_of_local_and_session_storage.md",
+    "workbench": "docs/workbench/engineering/security/course-draft.js",
+    "original_sha256": "462ddbc003fea0954a8544d301186640687ed7e76586b569a619e713e2ac5f17",
+    "final_sha256": "462ddbc003fea0954a8544d301186640687ed7e76586b569a619e713e2ac5f17"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Can_you_provide_several_examples_of_Web_Security_related_issues__like_types_of_attack__and_how_can_we_prevent_them__OWASP_10.md",
+    "practice": "docs/practice/engineering/security/Can_you_provide_several_examples_of_Web_Security_related_issues__like_types_of_attack__and_how_can_we_prevent_them__OWASP_10.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Can_you_provide_several_examples_of_Web_Security_related_issues__like_types_of_attack__and_how_can_we_prevent_them__OWASP_10.md",
+    "workbench": "docs/workbench/engineering/security/rename-plan.ts",
+    "original_sha256": "398400b6357e70e22a7a67fccd710f8d2009301be729e822a0c76af3bcc95874",
+    "final_sha256": "398400b6357e70e22a7a67fccd710f8d2009301be729e822a0c76af3bcc95874"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Could_you_compare_V1_and_V2_of_HTTP_Other_protocols.md",
+    "practice": "docs/practice/engineering/security/Could_you_compare_V1_and_V2_of_HTTP_Other_protocols.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Could_you_please_provide_me_a_detailed_explanation_about_HTTP_verbs.md",
+    "practice": "docs/practice/engineering/security/Could_you_please_provide_me_a_detailed_explanation_about_HTTP_verbs.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Could_you_please_provide_me_a_detailed_explanation_about_HTTP_verbs.md",
+    "workbench": "docs/workbench/engineering/security/patch-semantics.mjs",
+    "original_sha256": "c385deb2ca7fe37e68b781fbf8854e83fdccb3c1e3a150d2f38ee81b7eed692b",
+    "final_sha256": "c385deb2ca7fe37e68b781fbf8854e83fdccb3c1e3a150d2f38ee81b7eed692b"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Do_you_remember_any_security_headers.md",
+    "practice": "docs/practice/engineering/security/Do_you_remember_any_security_headers.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Do_you_remember_any_security_headers.md",
+    "workbench": "docs/workbench/engineering/security/nonce-document.mjs",
+    "original_sha256": "8626cdadc724cacf1c8b7250554addcef760cf79081f6e0e352067ce0896d674",
+    "final_sha256": "8626cdadc724cacf1c8b7250554addcef760cf79081f6e0e352067ce0896d674"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/HTTPS._Could_you_please_describe_advantages_and_disadvantages_of_this_protocol.md",
+    "practice": "docs/practice/engineering/security/HTTPS._Could_you_please_describe_advantages_and_disadvantages_of_this_protocol.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/RESTful_API_HTTP__and_WebSockets_-_why_and_when_we_need_them._Limitations.md",
+    "practice": "docs/practice/engineering/security/RESTful_API_HTTP__and_WebSockets_-_why_and_when_we_need_them._Limitations.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/RESTful_API_HTTP__and_WebSockets_-_why_and_when_we_need_them._Limitations.md",
+    "workbench": "docs/workbench/engineering/security/progress-socket.ts",
+    "original_sha256": "1a48809cb3c14b55743b829bf8d416f715e57117314693c061c50de91fc2be57",
+    "final_sha256": "1a48809cb3c14b55743b829bf8d416f715e57117314693c061c50de91fc2be57"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/What_authentication_authorization_mechanisms_do_you_use_on_your_project_Please_describe_how_they_work.md",
+    "practice": "docs/practice/engineering/security/What_authentication_authorization_mechanisms_do_you_use_on_your_project_Please_describe_how_they_work.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/What_is_CORS__Can_proper_CORS_configuration_protect_against_CSRF_attacks__What_other_measures_can_be_taken_to_mitigate_CSRF_attacks.md",
+    "practice": "docs/practice/engineering/security/What_is_CORS__Can_proper_CORS_configuration_protect_against_CSRF_attacks__What_other_measures_can_be_taken_to_mitigate_CSRF_attacks.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/What_is_REST.md",
+    "practice": "docs/practice/engineering/security/What_is_REST.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/What_is_REST.md",
+    "workbench": "docs/workbench/engineering/security/user-contract.ts",
+    "original_sha256": "88b493d1ef5a891413e0d23275c031c8e305e21fd38c7966e963cd445cf2a3b0",
+    "final_sha256": "88b493d1ef5a891413e0d23275c031c8e305e21fd38c7966e963cd445cf2a3b0"
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Where_do_you_prefer_to_store_auth_token__Where_is_it_most_secure.md",
+    "practice": "docs/practice/engineering/security/Where_do_you_prefer_to_store_auth_token__Where_is_it_most_secure.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Where_do_you_prefer_to_store_auth_token__Where_is_it_most_secure.md",
+    "workbench": "docs/workbench/engineering/security/cookie-profile.mjs",
+    "original_sha256": "164600e379871cf8da3c01cc64acdaa75677097b09257e65d9b86e3b295588ec",
+    "final_sha256": "164600e379871cf8da3c01cc64acdaa75677097b09257e65d9b86e3b295588ec"
+  },
+  {
+    "source": "docs/senior_growth/Testing/FIRST_principles_-_how_a_good_unit_test_looks_like.md",
+    "practice": "docs/practice/engineering/testing/FIRST_principles_-_how_a_good_unit_test_looks_like.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/TDD_-_pros_and_cons(red,_green,_refactor).md",
+    "practice": "docs/practice/engineering/testing/TDD_-_pros_and_cons(red,_green,_refactor).md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_do_you_think,_who_is_responsible_for_write_unit_tests.md",
+    "practice": "docs/practice/engineering/testing/What_do_you_think,_who_is_responsible_for_write_unit_tests.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_code_coverage,_how_do_you_measure_it,_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md",
+    "practice": "docs/practice/engineering/testing/What_is_code_coverage,_how_do_you_measure_it,_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_code_coverage,_how_do_you_measure_it,_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md",
+    "workbench": "docs/workbench/engineering/testing/coverage-counterexample/arithmetic.mjs",
+    "original_sha256": "e58eaaf382c808b11a9ee08699a2726c59e47c675941a4d5fd254732485f444e",
+    "final_sha256": "e58eaaf382c808b11a9ee08699a2726c59e47c675941a4d5fd254732485f444e"
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_code_coverage,_how_do_you_measure_it,_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md",
+    "workbench": "docs/workbench/engineering/testing/coverage-counterexample/weak.test.mjs",
+    "original_sha256": "a2cee7c7997ad7ee85864b41525853e973bf5eeff158b85804360ffd8cc36f6d",
+    "final_sha256": "a2cee7c7997ad7ee85864b41525853e973bf5eeff158b85804360ffd8cc36f6d"
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_code_coverage,_how_do_you_measure_it,_what_kinds_do_you_know_What_do_you_think_is_the_ideal_amount.md",
+    "workbench": "docs/workbench/engineering/testing/coverage-counterexample/strong.test.mjs",
+    "original_sha256": "8169d593afd0cd2b3e6debc984e56f27f440ebcc77b918b6c42163833336e386",
+    "final_sha256": "8169d593afd0cd2b3e6debc984e56f27f440ebcc77b918b6c42163833336e386"
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_snapshot_testing_When_should_we_avoid_using_it.md",
+    "practice": "docs/practice/engineering/testing/What_is_snapshot_testing_When_should_we_avoid_using_it.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/What_is_the_testing_pyramid(mention_some_tools_for_each)_what_do_the_different_tests_test,_why_each_of_them_is_important.md",
+    "practice": "docs/practice/engineering/testing/What_is_the_testing_pyramid(mention_some_tools_for_each)_what_do_the_different_tests_test,_why_each_of_them_is_important.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/Why_should_we_invest_in_automated_testing.md",
+    "practice": "docs/practice/engineering/testing/Why_should_we_invest_in_automated_testing.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/Are_you_using_any_tool_to_enforce_it,_is_it_included_in_hooks_as_well.md",
+    "practice": "docs/practice/engineering/quality/Are_you_using_any_tool_to_enforce_it,_is_it_included_in_hooks_as_well.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_does_clean_code,_code_quality_mean_to_you_Why_do_you_think_it's_important.md",
+    "practice": "docs/practice/engineering/quality/What_does_clean_code,_code_quality_mean_to_you_Why_do_you_think_it's_important.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_does_quality_gate_mean_for_you_\u2013_an_ideal_set_up_of_quality_gates.md",
+    "practice": "docs/practice/engineering/quality/What_does_quality_gate_mean_for_you_\u2013_an_ideal_set_up_of_quality_gates.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_a_style_guide.md",
+    "practice": "docs/practice/engineering/quality/What_is_a_style_guide.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "practice": "docs/practice/engineering/quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/eslint.config.mjs",
+    "original_sha256": "dfd67c291ff1a5839dd30047cd6aa76c530d7955970f9f31d247b150fb973bd9",
+    "final_sha256": "dfd67c291ff1a5839dd30047cd6aa76c530d7955970f9f31d247b150fb973bd9"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/src/add.js",
+    "original_sha256": "c59aea59950749c58f23c2d7f7d5e02c42d840c9b0114137011533bb18a548fe",
+    "final_sha256": "c59aea59950749c58f23c2d7f7d5e02c42d840c9b0114137011533bb18a548fe"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/test/add.test.js",
+    "original_sha256": "b6b03c0a24512aed6c313bbf64acc9cd59f0ce50c3cf2bf724c70884d096fba8",
+    "final_sha256": "b6b03c0a24512aed6c313bbf64acc9cd59f0ce50c3cf2bf724c70884d096fba8"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_practices,_approaches_do_you_know_which_helps_to_improve_code_quality_(style_guides,_coding_principles).md",
+    "practice": "docs/practice/engineering/quality/What_practices,_approaches_do_you_know_which_helps_to_improve_code_quality_(style_guides,_coding_principles).md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_practices,_approaches_do_you_know_which_helps_to_improve_code_quality_(style_guides,_coding_principles).md",
+    "workbench": "docs/workbench/engineering/quality/typed-gates/eslint.config.mjs",
+    "original_sha256": "ab13b287ad6714ebdb5346b1fb01ebe99c7e474b0bbf649f46d6c6108fedc301",
+    "final_sha256": "ab13b287ad6714ebdb5346b1fb01ebe99c7e474b0bbf649f46d6c6108fedc301"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/Which_metrics_do_you_use_to_measure_quality_of_your_code.md",
+    "practice": "docs/practice/engineering/quality/Which_metrics_do_you_use_to_measure_quality_of_your_code.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/Why_code_review_is_important_and_how_does_it_work_on_your_project,_what_is_your_own_work_flow_for_it.md",
+    "practice": "docs/practice/engineering/quality/Why_code_review_is_important_and_how_does_it_work_on_your_project,_what_is_your_own_work_flow_for_it.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/Can_you_decipher_SOLID_acronym_What_is_\"L\".md",
+    "practice": "docs/practice/engineering/patterns/Can_you_decipher_SOLID_acronym_What_is_\"L\".md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/Composition_vs_inheritance_Shared_state_vs_immutability.md",
+    "practice": "docs/practice/engineering/patterns/Composition_vs_inheritance_Shared_state_vs_immutability.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/Please_describe_what_is_KISS,_DRY,_YAGNI.md",
+    "practice": "docs/practice/engineering/patterns/Please_describe_what_is_KISS,_DRY,_YAGNI.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_are_the_common_pitfalls_when_applying_a_design_pattern.md",
+    "practice": "docs/practice/engineering/patterns/What_are_the_common_pitfalls_when_applying_a_design_pattern.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_design_patterns_do_you_use_on_daily_basis_in_JS,_why_are_they_useful.md",
+    "practice": "docs/practice/engineering/patterns/What_design_patterns_do_you_use_on_daily_basis_in_JS,_why_are_they_useful.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_design_patterns_do_you_use_on_daily_basis_in_JS,_why_are_they_useful.md",
+    "workbench": "docs/workbench/engineering/patterns/local-signal.ts",
+    "original_sha256": "a011c306365f6b9b017e83a1af97ba256f1206626e0246384124fea0bf282c33",
+    "final_sha256": "a011c306365f6b9b017e83a1af97ba256f1206626e0246384124fea0bf282c33"
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_design_patterns_do_you_use_on_daily_basis_in_JS,_why_are_they_useful.md",
+    "workbench": "docs/workbench/engineering/patterns/text-history.ts",
+    "original_sha256": "9e506cc38a7c5848049c1579d7067e2f3069608b0a88cc1e28b42f3e7668a92a",
+    "final_sha256": "9e506cc38a7c5848049c1579d7067e2f3069608b0a88cc1e28b42f3e7668a92a"
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it's_used.md",
+    "practice": "docs/practice/engineering/patterns/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it's_used.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/What_kind_of_creational_design_patterns_do_you_know.md",
+    "practice": "docs/practice/engineering/patterns/What_kind_of_creational_design_patterns_do_you_know.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Git/Please_explain_the_git_strategy_in_your_project.md",
+    "practice": "docs/practice/engineering/git/Please_explain_the_git_strategy_in_your_project.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Git/What's_the_difference_between_merge_and_rebase_in_git_What's_prefferable.md",
+    "practice": "docs/practice/engineering/git/What's_the_difference_between_merge_and_rebase_in_git_What's_prefferable.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Git/What_is_GIT_hooks_Which_git_hooks_you_are_using_on_your_current_project_and_why.md",
+    "practice": "docs/practice/engineering/git/What_is_GIT_hooks_Which_git_hooks_you_are_using_on_your_current_project_and_why.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/CD_CI/Could_you_please_describe_CI_CD_process_on_your_project_Do_you_see_any_options_how_it_could_be_improved.md",
+    "practice": "docs/practice/engineering/delivery/Could_you_please_describe_CI_CD_process_on_your_project_Do_you_see_any_options_how_it_could_be_improved.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/CD_CI/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md",
+    "practice": "docs/practice/engineering/delivery/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/CD_CI/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md",
+    "workbench": "docs/workbench/engineering/delivery/schema-model/release-compatibility.mjs",
+    "original_sha256": "1eb555d28781721388fae1653470744688d8e420d66c4765f17f8792aad6f120",
+    "final_sha256": "1eb555d28781721388fae1653470744688d8e420d66c4765f17f8792aad6f120"
+  },
+  {
+    "source": "docs/senior_growth/CD_CI/What_is_Continuous_Integration,_Continous_Delivery,_Continous_Deployment.md",
+    "practice": "docs/practice/engineering/delivery/What_is_Continuous_Integration,_Continous_Delivery,_Continous_Deployment.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Can_you_please_compare_SSR_and_CSR(pros_and_cons).md",
+    "practice": "docs/practice/engineering/design/Can_you_please_compare_SSR_and_CSR(pros_and_cons).md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Could_you_suggest_architectural_approaches_for_showing_thousands_of_data_sets_on_UI.md",
+    "practice": "docs/practice/engineering/design/Could_you_suggest_architectural_approaches_for_showing_thousands_of_data_sets_on_UI.md",
+    "paragraph_count": 4
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Did_you_have_some_significant_fails_on_production,_crushes,_critical_bugs,__&_How_do_you_handle_and_prevent_them.md",
+    "practice": "docs/practice/engineering/design/Did_you_have_some_significant_fails_on_production,_crushes,_critical_bugs,__&_How_do_you_handle_and_prevent_them.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Do_you_know_some_of_the_differences_of_non_relational_databases_and_relational_databases.md",
+    "practice": "docs/practice/engineering/design/Do_you_know_some_of_the_differences_of_non_relational_databases_and_relational_databases.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/How_would_you_approach_significant_refactoring.md",
+    "practice": "docs/practice/engineering/design/How_would_you_approach_significant_refactoring.md",
+    "paragraph_count": 2
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/How_would_you_approach_significant_refactoring.md",
+    "workbench": "docs/workbench/engineering/design/refactor/title-seam.ts",
+    "original_sha256": "c00ce6e86ab7556bce4e441e009ef94657ce3f26709bbb6dae990e9fdc90f637",
+    "final_sha256": "c00ce6e86ab7556bce4e441e009ef94657ce3f26709bbb6dae990e9fdc90f637"
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/How_would_you_onboard_new_people_on_a_project,_What_kind_of_documentation,_style_guide_would_you_use.md",
+    "practice": "docs/practice/engineering/design/How_would_you_onboard_new_people_on_a_project,_What_kind_of_documentation,_style_guide_would_you_use.md",
+    "paragraph_count": 3
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities,_differences_against_Promise._When_to_use_which.md",
+    "practice": "docs/practice/engineering/design/What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities,_differences_against_Promise._When_to_use_which.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities,_differences_against_Promise._When_to_use_which.md",
+    "workbench": "docs/workbench/engineering/design/observables/bounded-observable-promises.ts",
+    "original_sha256": "0104ed551b0f119a01cb29c9521a533057994131458a11af2c024e7be4a6b424",
+    "final_sha256": "0104ed551b0f119a01cb29c9521a533057994131458a11af2c024e7be4a6b424"
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities,_differences_against_Promise._When_to_use_which.md",
+    "workbench": "docs/workbench/engineering/design/observables/owned-observable.ts",
+    "original_sha256": "70fd5cfe86e3fd9edd0909034d9719203e59a2c189a2a14f115918c1c9b3fc63",
+    "final_sha256": "70fd5cfe86e3fd9edd0909034d9719203e59a2c189a2a14f115918c1c9b3fc63"
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/What_is_SEO,_Why_is_important_to_have_a_good_SEO._How_can_we_improve_it_(like_SSR)_in_different_applications.md",
+    "practice": "docs/practice/engineering/design/What_is_SEO,_Why_is_important_to_have_a_good_SEO._How_can_we_improve_it_(like_SSR)_in_different_applications.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/What_is_an_opinionated_framework_How_does_it_compa_181e8106c24d80ada728f61b3a22d5ef.md",
+    "practice": "docs/practice/engineering/design/What_is_an_opinionated_framework_How_does_it_compa_181e8106c24d80ada728f61b3a22d5ef.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/Could_you_compare_gulp_with_webpack.md",
+    "practice": "docs/practice/engineering/specialists/Could_you_compare_gulp_with_webpack.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/Could_you_compare_gulp_with_webpack.md",
+    "workbench": "docs/workbench/engineering/specialists/webpack/webpack.config.cjs",
+    "original_sha256": "c13ae462ea7ce9d3715e17aada945c9d22c18223b8e87464229691831c0264af",
+    "final_sha256": "c13ae462ea7ce9d3715e17aada945c9d22c18223b8e87464229691831c0264af"
+  },
+  {
+    "source": "docs/senior_growth/Other/Could_you_please_describe_Web_Workers_in_details.md",
+    "practice": "docs/practice/engineering/specialists/Could_you_please_describe_Web_Workers_in_details.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/Incremental_DOM_vs_Virtual_DOM_Pros_and_cons.md",
+    "practice": "docs/practice/engineering/specialists/Incremental_DOM_vs_Virtual_DOM_Pros_and_cons.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/Please_compare_one-way_and_two-way_data_binding_What_are_the_pros_and_cons_of_each_approach.md",
+    "practice": "docs/practice/engineering/specialists/Please_compare_one-way_and_two-way_data_binding_What_are_the_pros_and_cons_of_each_approach.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_RxJS.md",
+    "practice": "docs/practice/engineering/specialists/What_is_RxJS.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_RxJS.md",
+    "workbench": "docs/workbench/engineering/specialists/rxjs/latest-results.ts",
+    "original_sha256": "ec4af8c636d7f761acab6597e6e79ec419e89b40e544bf4d021da3d57aa27f2b",
+    "final_sha256": "c0bfe6c5c8289a67eba51c181c20c298d1fb8dcdbd1caeed8b491580bfeabbaf",
+    "adaptation": "Canonical assembly/import/ownership correction or compound-module split; original digest retained."
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_a_CDN_and_what_is_the_benefit_of_using_one.md",
+    "practice": "docs/practice/engineering/specialists/What_is_a_CDN_and_what_is_the_benefit_of_using_one.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_memoization.md",
+    "workbench": "docs/workbench/engineering/specialists/memoization/bounded-memo.mjs",
+    "original_sha256": "8ceda3744e78f668d64e59ffcc2dad91dfdb1ffd7c607493bd9ecb92c824f790",
+    "final_sha256": "8ceda3744e78f668d64e59ffcc2dad91dfdb1ffd7c607493bd9ecb92c824f790"
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "practice": "docs/practice/engineering/specialists/What_is_module_How_to_build_communication_between_modules.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/moduleA.js",
+    "original_sha256": "a8819e4cfa69dcc5b0683b81a69a8b93a1068cd8b0ee331ee8b727af2e3cbd6f",
+    "final_sha256": "4f2921cdcd3ca30db3d8ee77201fc74dfdaf67c7d702cd7d26e5e46f3c4652b6",
+    "adaptation": "Canonical assembly/import/ownership correction or compound-module split; original digest retained."
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/moduleC.js",
+    "original_sha256": "70c9ed077e309aac01e2e6a8bcfe19067f3cf8564a74413692ff3c39ca7eb12d",
+    "final_sha256": "57d7f9ffa878f9e07204948f2527269481ff0a042b821d358b673d6a0944c226",
+    "adaptation": "Canonical assembly/import/ownership correction or compound-module split; original digest retained."
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/eventBus.mjs",
+    "original_sha256": "2b860ab3a98ff0ee69a1bb4ce1e7df8460ea5ac10589ee813874af87944fffce",
+    "final_sha256": "2b860ab3a98ff0ee69a1bb4ce1e7df8460ea5ac10589ee813874af87944fffce"
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/app.mjs",
+    "original_sha256": "de56ac7e82e88ed480174d95f7ba5c193d414f4bb00b8a06df16ecc107d87c8e",
+    "final_sha256": "de56ac7e82e88ed480174d95f7ba5c193d414f4bb00b8a06df16ecc107d87c8e"
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_the_callback_hell_How_can_you_avoid_it.md",
+    "practice": "docs/practice/engineering/specialists/What_is_the_callback_hell_How_can_you_avoid_it.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_the_callback_hell_How_can_you_avoid_it.md",
+    "workbench": "docs/workbench/engineering/specialists/callbacks/callback-workflow.ts",
+    "original_sha256": "1eb4e6214c675038b2adfbded50237e408d4b0ac254a646d8f310c40bb366e41",
+    "final_sha256": "1eb4e6214c675038b2adfbded50237e408d4b0ac254a646d8f310c40bb366e41"
+  },
+  {
+    "source": "docs/senior_growth/Other/Would_you_consider_using_JQuery_nowadaysWhy.md",
+    "practice": "docs/practice/engineering/specialists/Would_you_consider_using_JQuery_nowadaysWhy.md",
+    "paragraph_count": 1
+  },
+  {
+    "source": "docs/senior_growth/Testing/TDD_-_pros_and_cons(red,_green,_refactor).md",
+    "workbench": "docs/workbench/engineering/testing/config-tdd/limit.mjs",
+    "original_sha256": "826f0d100c23d1fb4eef4198810d2e754c4e935378a1429a01b0c47c87ca772e",
+    "final_sha256": "826f0d100c23d1fb4eef4198810d2e754c4e935378a1429a01b0c47c87ca772e"
+  },
+  {
+    "source": "docs/senior_growth/Testing/TDD_-_pros_and_cons(red,_green,_refactor).md",
+    "workbench": "docs/workbench/engineering/testing/config-tdd/limit.test.mjs",
+    "original_sha256": "dc61e078738bc75cd6376e1741bffca7786146423eaf2d437f95419209a430e8",
+    "final_sha256": "dc61e078738bc75cd6376e1741bffca7786146423eaf2d437f95419209a430e8"
+  },
+  {
+    "source": "docs/ai-assisted-engineering/issue-to-reviewed-change.md",
+    "workbench": "docs/workbench/engineering/ai-engineering/retry/src/retry-read.ts",
+    "original_sha256": "e64741d964c117fb69d61761d3265c1968d41aa3d60c07e4cf9efd56c6a6bf33",
+    "final_sha256": "e64741d964c117fb69d61761d3265c1968d41aa3d60c07e4cf9efd56c6a6bf33"
+  },
+  {
+    "source": "docs/ai-assisted-engineering/issue-to-reviewed-change.md",
+    "workbench": "docs/workbench/engineering/ai-engineering/retry/checks/retry-read.test.mjs",
+    "original_sha256": "4db818855dc8f5cd57dca9b538d95cbc5bbef53384a51c89b3c642ded7e900be",
+    "final_sha256": "4db818855dc8f5cd57dca9b538d95cbc5bbef53384a51c89b3c642ded7e900be"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/package.json",
+    "setup": true,
+    "final_sha256": "af073d146fdd8e81fe3507f3139b4f135216f02b3cf4361be0263284b590f80f"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/tsconfig.json",
+    "setup": true,
+    "final_sha256": "49c037f486080d2989e2d08b4a77d2b5564eedceda96d82f7daa8a2b0ca8b874"
+  },
+  {
+    "source": "docs/senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md",
+    "workbench": "docs/workbench/engineering/quality/standard/tsconfig.build.json",
+    "setup": true,
+    "final_sha256": "71c5cb6ddfb2f9321baf2291dde766affe7d40f46118381d2341c9b75ca0c644"
+  },
+  {
+    "source": "docs/senior_growth/State_management_and_Redux/Have_you_heard_about_Context_in_React.md",
+    "workbench": "docs/workbench/engineering/state/locale-layout.css",
+    "companion": true,
+    "final_sha256": "3e8699744eb1ca8ee5968fd2284416e3a9b7d182092f9ab23301dcb7e58748a0"
+  },
+  {
+    "source": "docs/ai-assisted-engineering/issue-to-reviewed-change.md",
+    "workbench": "docs/workbench/engineering/ai-engineering/retry/package.json",
+    "setup": true,
+    "final_sha256": "bd4058a52ef9ede4f3566e25d7f65d58f92e06e7b380fef58f1853c31f0fe6ad"
+  },
+  {
+    "source": "docs/ai-assisted-engineering/issue-to-reviewed-change.md",
+    "workbench": "docs/workbench/engineering/ai-engineering/retry/tsconfig.json",
+    "setup": true,
+    "final_sha256": "e21da7436bbed39f6a55ec8f26501c6b74f49d74080b40cf30f7d3de213f7c2f"
+  },
+  {
+    "source": "docs/ai-assisted-engineering/local-workflow-and-git.md",
+    "practice": "docs/practice/engineering/ai-engineering/local-workflow-and-git.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/ai-assisted-engineering/issue-to-reviewed-change.md",
+    "practice": "docs/practice/engineering/ai-engineering/issue-to-reviewed-change.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/ai-assisted-engineering/verification-and-permissions.md",
+    "practice": "docs/practice/engineering/ai-engineering/verification-and-permissions.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/ai-assisted-engineering/traceability-and-evaluation.md",
+    "practice": "docs/practice/engineering/ai-engineering/traceability-and-evaluation.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/senior_growth/Communication_and_Security/Advantages_and_disadvantages_of_local_and_session_storage.md",
+    "practice": "docs/practice/engineering/security/Advantages_and_disadvantages_of_local_and_session_storage.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md",
+    "practice": "docs/practice/engineering/patterns/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/senior_growth/Coding_principles_patterns_conventions/OOP_vs_FP.md",
+    "practice": "docs/practice/engineering/patterns/OOP_vs_FP.md",
+    "inline_or_remaining_paragraphs": 1
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/moduleB.js",
+    "adaptation": "Compound explanatory fence split into its two declared module files.",
+    "final_sha256": "1e9900734485785eea996634c8fd9312d2e39e9fab8e4952225446ce95322c9e"
+  },
+  {
+    "source": "docs/senior_growth/Other/What_is_module_How_to_build_communication_between_modules.md",
+    "workbench": "docs/workbench/engineering/specialists/modules/moduleD.js",
+    "adaptation": "Compound explanatory fence split into its two declared module files.",
+    "final_sha256": "b4eb651f178e33781cf25d9b87e89cd15c7fd62347e7cc836d4e339a22f78c44"
+  }
+]

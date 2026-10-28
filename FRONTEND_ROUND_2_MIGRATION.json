@@ -1,0 +1,891 @@
+[
+  {
+    "source": "docs/senior_growth/A11y/Can_we_test,_measure_a11y_somehow.md",
+    "practice": "docs/practice/frontend/a11y/Can_we_test,_measure_a11y_somehow.md",
+    "paragraphs": 3,
+    "before_sha256": "e7a24dafcca844bc23bd2baf3fa7f2f2a749ede4c73ef60a1172b94b778c843c"
+  },
+  {
+    "source": "docs/senior_growth/A11y/Can_you_provide_some_examples_for_a11y.md",
+    "practice": "docs/practice/frontend/a11y/Can_you_provide_some_examples_for_a11y.md",
+    "paragraphs": 3,
+    "before_sha256": "e4812f2990a53d1cd9227b8cf73b87849558f6f1ae1c287755da137ff1a08b66"
+  },
+  {
+    "source": "docs/senior_growth/A11y/What_is_WCAG_standard__What_parts_it_contains_Web_Content_Accessibility_Guidelines.md",
+    "practice": "docs/practice/frontend/a11y/What_is_WCAG_standard__What_parts_it_contains_Web_Content_Accessibility_Guidelines.md",
+    "paragraphs": 2,
+    "before_sha256": "3b1bea9ad22725df15f203e6c15d3753767035db80e8acba72d2046088e4566c"
+  },
+  {
+    "source": "docs/senior_growth/A11y/What_is_a11y.md",
+    "practice": "docs/practice/frontend/a11y/What_is_a11y.md",
+    "paragraphs": 1,
+    "before_sha256": "d6369a109a6869fe7248ffc94a92e51a257c9067b79bd72231d4ae2058ab6895"
+  },
+  {
+    "source": "docs/senior_growth/A11y/What_is_semantic_HTML.md",
+    "practice": "docs/practice/frontend/a11y/What_is_semantic_HTML.md",
+    "paragraphs": 3,
+    "before_sha256": "b37a53576e61d8dbe579ef7a5047a93d7bd512c91ca09de3baa6985235365b6a"
+  },
+  {
+    "source": "docs/senior_growth/A11y/Which_tags_did_HTML_5_introduce.md",
+    "practice": "docs/practice/frontend/a11y/Which_tags_did_HTML_5_introduce.md",
+    "paragraphs": 1,
+    "before_sha256": "ff6fa7e2e19179e722a24b0c72de38267483bd3502bd2edd47c14eb9e80e0de4"
+  },
+  {
+    "source": "docs/senior_growth/A11y/Why_a11y_matters.md",
+    "practice": "docs/practice/frontend/a11y/Why_a11y_matters.md",
+    "paragraphs": 1,
+    "before_sha256": "3d5c31da0555c15ab6ee6173bccf2e15fa3576ece3643e0cd25cb144d531b587"
+  },
+  {
+    "source": "docs/senior_growth/CSS/CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md",
+    "practice": "docs/practice/frontend/css/CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md",
+    "paragraphs": 1,
+    "before_sha256": "39d0446232db99072b767b1335619b5d09918b34749c0610ad8f3962e54caceb"
+  },
+  {
+    "source": "docs/senior_growth/CSS/Can_you_describe_what_is_CSS_Specificity.md",
+    "practice": "docs/practice/frontend/css/Can_you_describe_what_is_CSS_Specificity.md",
+    "paragraphs": 2,
+    "before_sha256": "0f5ebeb71e2ec314277e7f76751ac9f65e1e5a7fa41008235794316ef3d4dc06"
+  },
+  {
+    "source": "docs/senior_growth/CSS/Difference_between_pixels,_ems_or_rems_Which_one_we_should_use.md",
+    "practice": "docs/practice/frontend/css/Difference_between_pixels,_ems_or_rems_Which_one_we_should_use.md",
+    "paragraphs": 1,
+    "before_sha256": "b80997d550138690941896cd898ec53d412b078439f89c0fbc254a1d3d238f9c"
+  },
+  {
+    "source": "docs/senior_growth/CSS/Do_you_still_think_BEM_style_is_valid_nowadays_Main_benefits.md",
+    "practice": "docs/practice/frontend/css/Do_you_still_think_BEM_style_is_valid_nowadays_Main_benefits.md",
+    "paragraphs": 1,
+    "before_sha256": "642658720db9b4d46c4e1595713889dd6368930a9b5cae7cb134b7836c3b1eb3"
+  },
+  {
+    "source": "docs/senior_growth/CSS/Do_you_use_any_CSS_methodology_or_have_any_guidelines_for_it_on_your_project.md",
+    "practice": "docs/practice/frontend/css/Do_you_use_any_CSS_methodology_or_have_any_guidelines_for_it_on_your_project.md",
+    "paragraphs": 1,
+    "before_sha256": "79d530536e7c7c8aff831a565f83c3a679311f06f532bbc164114cb89ceebeb2"
+  },
+  {
+    "source": "docs/senior_growth/CSS/How_can_you_fit_your_website_for_different_screen_sizes_(css_media_queries,_breakpoints).md",
+    "practice": "docs/practice/frontend/css/How_can_you_fit_your_website_for_different_screen_sizes_(css_media_queries,_breakpoints).md",
+    "paragraphs": 1,
+    "before_sha256": "b256612f0f01512e334b79a7248ab7ae1d7a4bda4ccc705d02177c3332df8845"
+  },
+  {
+    "source": "docs/senior_growth/CSS/How_would_you_organize_CSS_on_huge_project.md",
+    "practice": "docs/practice/frontend/css/How_would_you_organize_CSS_on_huge_project.md",
+    "paragraphs": 1,
+    "before_sha256": "1e3becd8c64aecfe9344fe00bd0e2ee2cd4fa1d0acd26779a7657cfeba52deff"
+  },
+  {
+    "source": "docs/senior_growth/CSS/What_are_your_suggestions_to_someone_who_is_hesitating_to_use_SASS_What_are_the_key_feature_that_should_use.md",
+    "practice": "docs/practice/frontend/css/What_are_your_suggestions_to_someone_who_is_hesitating_to_use_SASS_What_are_the_key_feature_that_should_use.md",
+    "paragraphs": 2,
+    "before_sha256": "dc5473f763265dd3e0e2b5dddab48f7e973c66a303a95778908480cde53d80c4"
+  },
+  {
+    "source": "docs/senior_growth/CSS/layout-and-responsive-design.md",
+    "practice": "docs/practice/frontend/css/layout-and-responsive-design.md",
+    "paragraphs": 6,
+    "before_sha256": "0b34979cc4cd8eda7e3ecaacf033fbae47dbb64b242f7f1ba4bb5742f2518647"
+  },
+  {
+    "source": "docs/senior_growth/CSS/styling_react_apps.md",
+    "practice": "docs/practice/frontend/css/styling_react_apps.md",
+    "paragraphs": 2,
+    "before_sha256": "e03fa536d9111c92eab4734797c70a44c239d725f3333b01d96fff9364cf022b"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/search-app.mjs",
+    "sha256": "7547fd7ce1cf104fffa523911bf17a668d5575b5cc059551163b4b222b73225b",
+    "final_sha256": "7547fd7ce1cf104fffa523911bf17a668d5575b5cc059551163b4b222b73225b"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/search.css",
+    "sha256": "3b747f356bdfd0e212a793c86e30505d6112ad2bf7785893895f09cf9ae8d773",
+    "final_sha256": "3b747f356bdfd0e212a793c86e30505d6112ad2bf7785893895f09cf9ae8d773"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/search-ui.mjs",
+    "sha256": "58e6edced2069c2ad2bb7659fc779679af309efcbf0c445a8c69a3f49e82fbfa",
+    "final_sha256": "58e6edced2069c2ad2bb7659fc779679af309efcbf0c445a8c69a3f49e82fbfa"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/server.mjs",
+    "sha256": "50506cea50ecff7ad9d9f6b5e888a9b4652abb40719cf5123563b1ac5ca6edb9",
+    "final_sha256": "50506cea50ecff7ad9d9f6b5e888a9b4652abb40719cf5123563b1ac5ca6edb9"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/playwright.config.ts",
+    "sha256": "0b28141f53fb9e171fccdb35d149e2b4a71334f2e615a346f0945032c177684d",
+    "final_sha256": "0b28141f53fb9e171fccdb35d149e2b4a71334f2e615a346f0945032c177684d"
+  },
+  {
+    "source": "docs/senior_growth/Other/Cross_Browser_Progressive_Enhancement.md",
+    "workbench": "docs/workbench/frontend/browser/e2e/search.spec.ts",
+    "sha256": "39fb2d0a1157a89e8ed03d975c64025176e7572bbbbb7bce70f662c99652fbe2",
+    "final_sha256": "39fb2d0a1157a89e8ed03d975c64025176e7572bbbbb7bce70f662c99652fbe2"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Browser_Storage_and_Offline_Drafts.md",
+    "practice": "docs/practice/frontend/general_es6/Browser_Storage_and_Offline_Drafts.md",
+    "paragraphs": 1,
+    "before_sha256": "a76d10a1da276af9827cb614be8213b95948fb558974728ca464d6db344a0d91"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Can_you_explain_to_me_what_arrow_functions_are_and_177e8106c24d802c83c5d9951499fa84.md",
+    "practice": "docs/practice/frontend/general_es6/Can_you_explain_to_me_what_arrow_functions_are_and_177e8106c24d802c83c5d9951499fa84.md",
+    "paragraphs": 1,
+    "before_sha256": "59009205864feace25f8a689d8fa32bc4144f27d387d7d4fc2364222f652eaa0"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Could_you_please_describe_with_which_Browser_APIs__177e8106c24d802caa88e9916f01fc53.md",
+    "practice": "docs/practice/frontend/general_es6/Could_you_please_describe_with_which_Browser_APIs__177e8106c24d802caa88e9916f01fc53.md",
+    "paragraphs": 3,
+    "before_sha256": "c5f838ec0a1134fc4e844fc969fea0e82bc281a7c7c46074a419431df043e37d"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Difference_between_object_creation_using_new_opera_177e8106c24d80a0b5dcc47f05ba651e.md",
+    "practice": "docs/practice/frontend/general_es6/Difference_between_object_creation_using_new_opera_177e8106c24d80a0b5dcc47f05ba651e.md",
+    "paragraphs": 1,
+    "before_sha256": "6ef263a22b7acce4d97b8829d1fa5f5f45c930fe1d08687bca8692e05b221414"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/ES12_(2021),_ES13_(2022),_ES14_(2023),_and_ES15_(2_177e8106c24d803ba7ffde204edd5b18.md",
+    "practice": "docs/practice/frontend/general_es6/ES12_(2021),_ES13_(2022),_ES14_(2023),_and_ES15_(2_177e8106c24d803ba7ffde204edd5b18.md",
+    "paragraphs": 1,
+    "before_sha256": "24f62571b70e71674940428122dad9b049531319ad4e77c4f7eb66798ee63497"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Explain_Read_Eval_Print_Loop_in_NodeJS_177e8106c24d803babd4caa58acdfd5b.md",
+    "practice": "docs/practice/frontend/general_es6/Explain_Read_Eval_Print_Loop_in_NodeJS_177e8106c24d803babd4caa58acdfd5b.md",
+    "paragraphs": 1,
+    "before_sha256": "0ef0027788b57069d7e438d40846cd38c6ee2234dbdc7a1a9f20831312450d93"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Explain_asynchronousity_event_loop_in_JS_to_a_newc_177e8106c24d80a2ae55e9f5b8e91cf0.md",
+    "practice": "docs/practice/frontend/general_es6/Explain_asynchronousity_event_loop_in_JS_to_a_newc_177e8106c24d80a2ae55e9f5b8e91cf0.md",
+    "paragraphs": 1,
+    "before_sha256": "811e1b13a142b7428c629082f5db9af3599ba01a923dd1d513ed2c8eb62bf8c7"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Explain_history_API_from_Browser_API_177e8106c24d80fcbc17edb92f747483.md",
+    "practice": "docs/practice/frontend/general_es6/Explain_history_API_from_Browser_API_177e8106c24d80fcbc17edb92f747483.md",
+    "paragraphs": 1,
+    "before_sha256": "637253bcb2c3903a27db95e0abcba62ad9be17eaf69a17e086f6188094b1549b"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/How_prototype_chaining_works_in_JavaScript_What_ar_177e8106c24d80578cbdcf67d4dd2637.md",
+    "practice": "docs/practice/frontend/general_es6/How_prototype_chaining_works_in_JavaScript_What_ar_177e8106c24d80578cbdcf67d4dd2637.md",
+    "paragraphs": 1,
+    "before_sha256": "a2be75fd8455e2c6438f049069bda06ffad4575858d0a9b84ccb8f3e9d63b39f"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Major_Benefits_and_Drawbacks_of_JavaScript_as_a_Pr_177e8106c24d80d1b728c729f3964a75.md",
+    "practice": "docs/practice/frontend/general_es6/Major_Benefits_and_Drawbacks_of_JavaScript_as_a_Pr_177e8106c24d80d1b728c729f3964a75.md",
+    "paragraphs": 1,
+    "before_sha256": "ac5bf97ee265d7b0331b1823938773ffaa7a3fba4b0695eeb073cd5565542ebc"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/People_usually_say_JS_is_fast_language_Do_you_agre_177e8106c24d80ffb378d1793d66982f.md",
+    "practice": "docs/practice/frontend/general_es6/People_usually_say_JS_is_fast_language_Do_you_agre_177e8106c24d80ffb378d1793d66982f.md",
+    "paragraphs": 1,
+    "before_sha256": "5402ba0aa062803964695d4c6a1f3d66190cc7c5fac3c8bf0b1b32c17f7b874f"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Please_compare_JS_inheritance_mehanisms_and_classi_177e8106c24d800d8f10dc65127d722c.md",
+    "practice": "docs/practice/frontend/general_es6/Please_compare_JS_inheritance_mehanisms_and_classi_177e8106c24d800d8f10dc65127d722c.md",
+    "paragraphs": 1,
+    "before_sha256": "ae93a2e8d8ea0cb33af08f18bf144a89244b8d159dbbf8933070df0984ac982e"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Significant_features_introduced_in_ES9_(2018),_ES1_177e8106c24d80cbab6bddd5aaa88bad.md",
+    "practice": "docs/practice/frontend/general_es6/Significant_features_introduced_in_ES9_(2018),_ES1_177e8106c24d80cbab6bddd5aaa88bad.md",
+    "paragraphs": 2,
+    "before_sha256": "b1f8a41785c67548ee4582171ed4a2da1d1e349133fe131eddf7c2bf844bfd3b"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Understanding_async_await_in_JavaScript_177e8106c24d806fb457f53520e2c087.md",
+    "practice": "docs/practice/frontend/general_es6/Understanding_async_await_in_JavaScript_177e8106c24d806fb457f53520e2c087.md",
+    "paragraphs": 1,
+    "before_sha256": "de92b5b33c966c1b04f30823caffd7443c5e13bb4646232c7dc9b5db416fd9ab"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_are_pure_impure_functions_177e8106c24d80d19ebde80bcd1b5b50.md",
+    "practice": "docs/practice/frontend/general_es6/What_are_pure_impure_functions_177e8106c24d80d19ebde80bcd1b5b50.md",
+    "paragraphs": 1,
+    "before_sha256": "78600ec5aa40f9a82cfec993b2e7c147e28fa771138d3263fb9ec051f6c8e591"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_are_the_tasks_microtasks_177e8106c24d804f94a8c0f84060cdf2.md",
+    "practice": "docs/practice/frontend/general_es6/What_are_the_tasks_microtasks_177e8106c24d804f94a8c0f84060cdf2.md",
+    "paragraphs": 1,
+    "before_sha256": "1f1ffa9e553401efe3eac2f1f161f764128afc1fa83728ec80586e356e4fb2f6"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_is_a_JavaScript_class_under_the_hood_177e8106c24d80019723e427afd629f4.md",
+    "practice": "docs/practice/frontend/general_es6/What_is_a_JavaScript_class_under_the_hood_177e8106c24d80019723e427afd629f4.md",
+    "paragraphs": 1,
+    "before_sha256": "e74414f16b6165eb26e6a5897b6f1cf3418933b9adcfc0027ad7ad61e3404ddc"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_is_a_Promise_177e8106c24d80b3989df334146152f6.md",
+    "practice": "docs/practice/frontend/general_es6/What_is_a_Promise_177e8106c24d80b3989df334146152f6.md",
+    "paragraphs": 1,
+    "before_sha256": "df58c61dbc4357ff6d3ae4036c51965473bd0218ef9ba23189a61f5bc9acbda5"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_is_the_difference_between_'null'_and_'undefin_177e8106c24d80f98ff8c802efb7ff70.md",
+    "practice": "docs/practice/frontend/general_es6/What_is_the_difference_between_'null'_and_'undefin_177e8106c24d80f98ff8c802efb7ff70.md",
+    "paragraphs": 1,
+    "before_sha256": "44197a091b3e9b64cfc6836a935b0b6cbfd4d372061e52cb60c8ef4c91756af4"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_is_the_significance,_and_what_are_the_benefit_177e8106c24d80e4ad82da2f259c18c5.md",
+    "practice": "docs/practice/frontend/general_es6/What_is_the_significance,_and_what_are_the_benefit_177e8106c24d80e4ad82da2f259c18c5.md",
+    "paragraphs": 1,
+    "before_sha256": "4a81ab1ca820f4380212f82351faffcdd4ca6db6af50773f8737b398d421737f"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_is_the_temporal_dead_zone_Why_is_this_happeni_177e8106c24d80d991b7caa84eaad6b6.md",
+    "practice": "docs/practice/frontend/general_es6/What_is_the_temporal_dead_zone_Why_is_this_happeni_177e8106c24d80d991b7caa84eaad6b6.md",
+    "paragraphs": 1,
+    "before_sha256": "c17666201249f982c061dff68b0a3a36089ec94ecd599a39da217db39aec9aa7"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Would_you_recommend_javascript_as_first_language_t_177e8106c24d80fc8c30fa8e0f3f2add.md",
+    "practice": "docs/practice/frontend/general_es6/Would_you_recommend_javascript_as_first_language_t_177e8106c24d80fc8c30fa8e0f3f2add.md",
+    "paragraphs": 1,
+    "before_sha256": "ca00f97773f4579f4ef45fdd9cae5b3e9241083f4d717f16521bcb6e89238a16"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/key_features_introduced_in_ES6_(2015),_ES7_(2016),_177e8106c24d808aa357dc7c02c8c467.md",
+    "practice": "docs/practice/frontend/general_es6/key_features_introduced_in_ES6_(2015),_ES7_(2016),_177e8106c24d808aa357dc7c02c8c467.md",
+    "paragraphs": 1,
+    "before_sha256": "c6ddb3b9954dc4891abdf5034eef3a7aad89acfca17e29774953e18efa2c4307"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Can_we_write_code_in_TS_if_we_would_like_to_support_older_browsers.md",
+    "practice": "docs/practice/frontend/typescript/Can_we_write_code_in_TS_if_we_would_like_to_support_older_browsers.md",
+    "paragraphs": 1,
+    "before_sha256": "93bc922a85eef5969aa78aec8c09339acc6dc3e1fe5b2ba28228c1224db25ab5"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Explain_the_purpose_of_the_\"never\"_type_in_TypeScript_How_it's_different_from_\"void\".md",
+    "practice": "docs/practice/frontend/typescript/Explain_the_purpose_of_the_\"never\"_type_in_TypeScript_How_it's_different_from_\"void\".md",
+    "paragraphs": 1,
+    "before_sha256": "1f26e388841c93556b3d99c0a18857f6557610539e419db9d27d4b44ac0f9c5f"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Generics.md",
+    "practice": "docs/practice/frontend/typescript/Generics.md",
+    "paragraphs": 3,
+    "before_sha256": "805c44a512ddd49659536f573e8edddb8cb7609df1a428612dd58f2b4bbdf45f"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/How_would_you_introduce_TS_on_a_project.md",
+    "practice": "docs/practice/frontend/typescript/How_would_you_introduce_TS_on_a_project.md",
+    "paragraphs": 1,
+    "before_sha256": "33b17a444ab92bb22f60838558b644fea09034a4d746d3e8754caece7261ffcb"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Prop_Types_or_typescript.md",
+    "practice": "docs/practice/frontend/typescript/Prop_Types_or_typescript.md",
+    "paragraphs": 2,
+    "before_sha256": "1853b79a770a9fbc5f8fa8a1d188041b4d85b793c196b188c9520ac50ce2fca6"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Pros_and_cons_of_TS_When_should_we_use_or_avoid_it.md",
+    "practice": "docs/practice/frontend/typescript/Pros_and_cons_of_TS_When_should_we_use_or_avoid_it.md",
+    "paragraphs": 1,
+    "before_sha256": "be3d3a82dd276947278442a1fd92f2607da841e118fb90917d18064d777ab92a"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/What_\"Strict_NULL_check_mode\"_means.md",
+    "practice": "docs/practice/frontend/typescript/What_\"Strict_NULL_check_mode\"_means.md",
+    "paragraphs": 1,
+    "before_sha256": "4b475ebf9eb32073af1473db32adf9868bfe6c36740621fb6bf91d07b3e9b603"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/What_are_the_different_types_of_TypeScript_(Built-in_&_User-defined).md",
+    "practice": "docs/practice/frontend/typescript/What_are_the_different_types_of_TypeScript_(Built-in_&_User-defined).md",
+    "paragraphs": 3,
+    "before_sha256": "7945961a8af357240f33cf6f13824bc70ae7bdaef254b7077ce7ba6b05385cae"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/What_do_you_think_about_typescript.md",
+    "practice": "docs/practice/frontend/typescript/What_do_you_think_about_typescript.md",
+    "paragraphs": 1,
+    "before_sha256": "f6ccacbce5f82d5a8b7b0a8c8a3ceef1bfd92cbdcb729d44dffaf2fc39d06ab2"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/What_is_TS.md",
+    "practice": "docs/practice/frontend/typescript/What_is_TS.md",
+    "paragraphs": 1,
+    "before_sha256": "815cc9f1857cbdd2aa76815537f85f164ee7f9c5479f3becb936955e3422e60f"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/What_kind_of_problems_could_be_solved_by_using_TS.md",
+    "practice": "docs/practice/frontend/typescript/What_kind_of_problems_could_be_solved_by_using_TS.md",
+    "paragraphs": 1,
+    "before_sha256": "39f0dcfd8bf95a08d5c6d71b7d924c8918b040d766d57b20467a2f0683cf9ef1"
+  },
+  {
+    "source": "docs/senior_growth/TypeScript/Generics.md",
+    "workbench": "docs/workbench/frontend/typescript/keyed-contract.ts",
+    "sha256": "4f17d90a75b394c2117d590c8bb9506f828eb8fac7fbe0afbf995c429710778e",
+    "final_sha256": "4f17d90a75b394c2117d590c8bb9506f828eb8fac7fbe0afbf995c429710778e"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Browser_Storage_and_Offline_Drafts.md",
+    "workbench": "docs/workbench/frontend/javascript/offline-drafts.ts",
+    "sha256": "47773d7cd272e97a5723f2b02766f86165e6e805e1029059bf0f5c51c67d83aa",
+    "final_sha256": "47773d7cd272e97a5723f2b02766f86165e6e805e1029059bf0f5c51c67d83aa"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Explain_JavaScript_Code_Execution_177e8106c24d80a0817df62da9bac253.md",
+    "workbench": "docs/workbench/frontend/javascript/bindings.mjs",
+    "original_block_sha256": "23252bc1e9d9d0520f9ba177fb23015358f9e0baa8733b62956b36c55944292e",
+    "adaptation": "Added exports for executable reference checks.",
+    "final_sha256": "41b9593c324f644f9c05d5f820e944b6796c61a137a9b2eda4bb688bab4159a1"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/What_are_the_tasks_microtasks_177e8106c24d804f94a8c0f84060cdf2.md",
+    "workbench": "docs/workbench/frontend/javascript/checkpoints.mjs",
+    "original_block_sha256": "d8b81f98c81ccedecc557f594fb260e1bbf724b97715f3c9a4d6f21be6b6a907",
+    "adaptation": "Added exports for executable reference checks.",
+    "final_sha256": "b11fbc8a41ce9e71d7a8c136ab699aa164d385f005bb3524f1fcd970157d064e"
+  },
+  {
+    "source": "docs/senior_growth/General_ES6/Explain_asynchronousity_event_loop_in_JS_to_a_newc_177e8106c24d80a2ae55e9f5b8e91cf0.md",
+    "workbench": "docs/workbench/frontend/javascript/lifetime.mjs",
+    "original_block_sha256": "38a7b6538f257a24c1e57dea088e6cb3aea375e50c23ae455c6017184e1fa6fb",
+    "adaptation": "Added exports for executable reference checks.",
+    "final_sha256": "fa323fa275824c4aeb18e910e0cb101c2dcd39c5dfb750efcb5f898d8d170de7"
+  },
+  {
+    "source": "docs/senior_growth/React/Any_disadvantages_of_React.md",
+    "practice": "docs/practice/frontend/react/Any_disadvantages_of_React.md",
+    "paragraphs": 1,
+    "before_sha256": "732eb3483bc58e6d9a8d151c079ce4963bad0fc409c0b43f04d2769d636af887"
+  },
+  {
+    "source": "docs/senior_growth/React/Are_all_functional_components_pure.md",
+    "practice": "docs/practice/frontend/react/Are_all_functional_components_pure.md",
+    "paragraphs": 1,
+    "before_sha256": "e70ba6dc219fa756a71634488d6c53d72369d12f604eac9920e14bb2bd2a11f6"
+  },
+  {
+    "source": "docs/senior_growth/React/Are_there_design_patterns_in_react.md",
+    "practice": "docs/practice/frontend/react/Are_there_design_patterns_in_react.md",
+    "paragraphs": 2,
+    "before_sha256": "ded2eb81664b4b394e506113cc9ee19eea69a6a5aa233707ee1b5636fba9d2ee"
+  },
+  {
+    "source": "docs/senior_growth/React/Change_Detection_in_React.md",
+    "practice": "docs/practice/frontend/react/Change_Detection_in_React.md",
+    "paragraphs": 1,
+    "before_sha256": "95089dc030ec556e5027ce326e8ad41a356f3663435f083337ec52df9ecd6090"
+  },
+  {
+    "source": "docs/senior_growth/React/Common_Performance_Issues_in_React.md",
+    "practice": "docs/practice/frontend/react/Common_Performance_Issues_in_React.md",
+    "paragraphs": 1,
+    "before_sha256": "107c287b84f10eecb7093f92dbb4fa2824822828df2c686f82aebe4f87dbdeb2"
+  },
+  {
+    "source": "docs/senior_growth/React/Composition_and_Higher-Order_Components_(HOCs)_in.md",
+    "practice": "docs/practice/frontend/react/Composition_and_Higher-Order_Components_(HOCs)_in.md",
+    "paragraphs": 2,
+    "before_sha256": "02147217e062cb90a341150e0674f36df36ae8e5e0c48b641ff487eefe97ef06"
+  },
+  {
+    "source": "docs/senior_growth/React/Could_you_explain_how_change_detection_mechanism_works_in_React,_tradeoffs_and_benefits.md",
+    "practice": "docs/practice/frontend/react/Could_you_explain_how_change_detection_mechanism_works_in_React,_tradeoffs_and_benefits.md",
+    "paragraphs": 1,
+    "before_sha256": "bead2d2c7c607550a8cad71e1dc777f0e8c913360953b338f7bae07333037965"
+  },
+  {
+    "source": "docs/senior_growth/React/Data_Binding_in_React_and_Comparison_to_Other_Majo.md",
+    "practice": "docs/practice/frontend/react/Data_Binding_in_React_and_Comparison_to_Other_Majo.md",
+    "paragraphs": 1,
+    "before_sha256": "acc7d604ee1d1611574efccdfccc1bcd3cd018ba92b85aadb67e1e7114a79254"
+  },
+  {
+    "source": "docs/senior_growth/React/Does_React_provide_any_solutions_for_security_issue.md",
+    "practice": "docs/practice/frontend/react/Does_React_provide_any_solutions_for_security_issue.md",
+    "paragraphs": 1,
+    "before_sha256": "1333990bc53ca26253e424afd243e2098c74fdd380f3dbbc8d2f22d6e880da52"
+  },
+  {
+    "source": "docs/senior_growth/React/HOC,_what_is_it,_when_to_use.md",
+    "practice": "docs/practice/frontend/react/HOC,_what_is_it,_when_to_use.md",
+    "paragraphs": 1,
+    "before_sha256": "d90f687cfbbaae19610ac5b696553f38b7f6e672bd69056aaa950c12913fd5f2"
+  },
+  {
+    "source": "docs/senior_growth/React/Have_you_used_React_with_TypeScript.md",
+    "practice": "docs/practice/frontend/react/Have_you_used_React_with_TypeScript.md",
+    "paragraphs": 2,
+    "before_sha256": "e2509d665721e67792bd6da618032ddd11c455cdb3d0b72513cf2c1f5a72f626"
+  },
+  {
+    "source": "docs/senior_growth/React/How_do_you_start_a_REACT_project_from_scratch.md",
+    "practice": "docs/practice/frontend/react/How_do_you_start_a_REACT_project_from_scratch.md",
+    "paragraphs": 1,
+    "before_sha256": "ec66bba0c195f0159cc6fd1290d873d5bad0559b594b75416b540e8e20b6a863"
+  },
+  {
+    "source": "docs/senior_growth/React/Lifecycle_Methods_and_the_Virtual_DOM.md",
+    "practice": "docs/practice/frontend/react/Lifecycle_Methods_and_the_Virtual_DOM.md",
+    "paragraphs": 1,
+    "before_sha256": "352b23501a256360718614c0f1d4910a48778cabb4bf23448397c0b0117589bf"
+  },
+  {
+    "source": "docs/senior_growth/React/Modals_in_react,_portal_or_not.md",
+    "practice": "docs/practice/frontend/react/Modals_in_react,_portal_or_not.md",
+    "paragraphs": 2,
+    "before_sha256": "17a7465d0399164803806603d0677582735a0af86288594ffb681f24a39db692"
+  },
+  {
+    "source": "docs/senior_growth/React/Practical_Tips_for_Front-End_Optimization.md",
+    "practice": "docs/practice/frontend/react/Practical_Tips_for_Front-End_Optimization.md",
+    "paragraphs": 1,
+    "before_sha256": "caadc1db4cccb248d781344c3f2c54b47c72a14489f3371625d631850fad0065"
+  },
+  {
+    "source": "docs/senior_growth/React/React_-_Vue_-_Angular_comparsion.md",
+    "practice": "docs/practice/frontend/react/React_-_Vue_-_Angular_comparsion.md",
+    "paragraphs": 1,
+    "before_sha256": "1bbde81e7b7c951ed936bb6b618d1ac77995c6f62e9fcdd45dcec40dc6cce843"
+  },
+  {
+    "source": "docs/senior_growth/React/React_state_management_and_tools.md",
+    "practice": "docs/practice/frontend/react/React_state_management_and_tools.md",
+    "paragraphs": 1,
+    "before_sha256": "99c41ef6a762c868827455347d8289ce929ae1840bd6042b6e889d7a38285a06"
+  },
+  {
+    "source": "docs/senior_growth/React/React_testing.md",
+    "practice": "docs/practice/frontend/react/React_testing.md",
+    "paragraphs": 2,
+    "before_sha256": "30f9eac0a842c91ef8f7dcbe580aff3f8fbde0859672873fb731c28e8417e2c4"
+  },
+  {
+    "source": "docs/senior_growth/React/Submission_Idempotency.md",
+    "practice": "docs/practice/frontend/react/Submission_Idempotency.md",
+    "paragraphs": 1,
+    "before_sha256": "0b99736256e277c6b7bac95d874a9884ac63a80690bf146d0bbf57b6d590566d"
+  },
+  {
+    "source": "docs/senior_growth/React/What_Are_React_Hooks_Good_For_Rules_of_Hooks.md",
+    "practice": "docs/practice/frontend/react/What_Are_React_Hooks_Good_For_Rules_of_Hooks.md",
+    "paragraphs": 3,
+    "before_sha256": "bc92f79e4ef59cfdc028b6df97691558ab126e3c98505f75e869984621f23127"
+  },
+  {
+    "source": "docs/senior_growth/React/What_is_JSX_Can_browsers_use_it_directly.md",
+    "practice": "docs/practice/frontend/react/What_is_JSX_Can_browsers_use_it_directly.md",
+    "paragraphs": 1,
+    "before_sha256": "87f756362133301cc2f8d159008944c47c348ae761e5906ee41afc0408be7de0"
+  },
+  {
+    "source": "docs/senior_growth/React/What_is_Virtual_DOM,_why_is_it_in_React,_why_does__150e8106c24d8025bebfc72f25ab3413.md",
+    "practice": "docs/practice/frontend/react/What_is_Virtual_DOM,_why_is_it_in_React,_why_does__150e8106c24d8025bebfc72f25ab3413.md",
+    "paragraphs": 1,
+    "before_sha256": "113ca7cde364998c36c11cdb4fa3b286bd4897c1f93b41c26df4b4dc146c9f04"
+  },
+  {
+    "source": "docs/senior_growth/React/What_is_memoization_and_how_to_achieve_it_in_React.md",
+    "practice": "docs/practice/frontend/react/What_is_memoization_and_how_to_achieve_it_in_React.md",
+    "paragraphs": 1,
+    "before_sha256": "ad8aad890d3c830a567d3e881f6553a9668a69c6a76b3ac1ae893bb7691fb5ca"
+  },
+  {
+    "source": "docs/senior_growth/React/What_kind_of_components_can_we_define_in_React,_wh_153e8106c24d807ebd2ad61208930546.md",
+    "practice": "docs/practice/frontend/react/What_kind_of_components_can_we_define_in_React,_wh_153e8106c24d807ebd2ad61208930546.md",
+    "paragraphs": 1,
+    "before_sha256": "c30102ab2bb46dbe1849753a633fe58a4f882919495168e82b93f7c74e29d38f"
+  },
+  {
+    "source": "docs/senior_growth/React/What_tools_do_you_use_in_a_typical_React_app_(rout_16fe8106c24d8097a0c5ccc154925913.md",
+    "practice": "docs/practice/frontend/react/What_tools_do_you_use_in_a_typical_React_app_(rout_16fe8106c24d8097a0c5ccc154925913.md",
+    "paragraphs": 1,
+    "before_sha256": "77d3c4e349267b11fc566adc1b36d5cd276d35853c464bd7fc8a63d9db51e182"
+  },
+  {
+    "source": "docs/senior_growth/React/What_unidirectional_dataflow_means_Why_immutabilit_166e8106c24d8080ab3ce9dc309b32a3.md",
+    "practice": "docs/practice/frontend/react/What_unidirectional_dataflow_means_Why_immutabilit_166e8106c24d8080ab3ce9dc309b32a3.md",
+    "paragraphs": 2,
+    "before_sha256": "289b8064ff167d0ffdd1b012b61b4f1982b11f522afa18fa44a9e6f731d69ee7"
+  },
+  {
+    "source": "docs/senior_growth/React/Would_you_introduce_centralized_state_management_i_164e8106c24d8038b616c7e2e368c6a9.md",
+    "practice": "docs/practice/frontend/react/Would_you_introduce_centralized_state_management_i_164e8106c24d8038b616c7e2e368c6a9.md",
+    "paragraphs": 1,
+    "before_sha256": "c4f212a3c066956e872e6948d2660941568455feea277e87e948fd9c6b94b466"
+  },
+  {
+    "source": "docs/senior_growth/React/application_struvture.md",
+    "practice": "docs/practice/frontend/react/application_struvture.md",
+    "paragraphs": 1,
+    "before_sha256": "ed7fd67f09af37a2e19dab1155111d91ccfcb6ed1d1b04ba738e4d147406725e"
+  },
+  {
+    "source": "docs/senior_growth/React/build_tools.md",
+    "practice": "docs/practice/frontend/react/build_tools.md",
+    "paragraphs": 1,
+    "before_sha256": "77cf3e362020af2375a924daab4120780d191ec60bdadbcbcc51103b2eceebb4"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "practice": "docs/practice/frontend/react/complex-forms-and-data.md",
+    "paragraphs": 6,
+    "before_sha256": "66bad0c006325c2de791bc5b6c0b08b68a9e77e5d86a1a323ea4872c655ecad9"
+  },
+  {
+    "source": "docs/senior_growth/React/next-deployment-and-assets.md",
+    "practice": "docs/practice/frontend/react/next-deployment-and-assets.md",
+    "paragraphs": 3,
+    "before_sha256": "d7ccde34fe821247a4c584d9c1231ad0ad9a62497f6ea821e389a00d23ddc361"
+  },
+  {
+    "source": "docs/senior_growth/React/performance_potimization.md",
+    "practice": "docs/practice/frontend/react/performance_potimization.md",
+    "paragraphs": 1,
+    "before_sha256": "4cbf0c8510c94c4c21fea1a2e5bb3d75a4c833a94cfa9d82619742b6028892b1"
+  },
+  {
+    "source": "docs/senior_growth/React/react_memo.md",
+    "practice": "docs/practice/frontend/react/react_memo.md",
+    "paragraphs": 1,
+    "before_sha256": "f82f91e4761c27cae0bf258199dbf8aaeab6ab14b0d1437dceebc078422c542d"
+  },
+  {
+    "source": "docs/senior_growth/React/routing_in_react.md",
+    "practice": "docs/practice/frontend/react/routing_in_react.md",
+    "paragraphs": 1,
+    "before_sha256": "65bfdf807f734e34dfaba987b54263fb71ced37792fac9dd1b07567be2f7abc7"
+  },
+  {
+    "source": "docs/senior_growth/React/state_stateless_stateful.md",
+    "practice": "docs/practice/frontend/react/state_stateless_stateful.md",
+    "paragraphs": 1,
+    "before_sha256": "642c8a06ad1e1a5239a50b59245c9534f729bbcf3cfeb7c3c85a36911fe015cc"
+  },
+  {
+    "source": "docs/senior_growth/React/Composition_and_Higher-Order_Components_(HOCs)_in.md",
+    "workbench": "docs/workbench/frontend/react/composition/composition-contracts.tsx",
+    "original_sha256": "369e18247fb54eef5aab372985445f7a0747c184ebffaf1c5c31a947fd176596",
+    "adapted": false,
+    "final_sha256": "369e18247fb54eef5aab372985445f7a0747c184ebffaf1c5c31a947fd176596"
+  },
+  {
+    "source": "docs/senior_growth/React/Composition_and_Higher-Order_Components_(HOCs)_in.md",
+    "workbench": "docs/workbench/frontend/react/composition/action-adapter.tsx",
+    "original_sha256": "b9e8bc393e46b66958a5fa69b879c7249cde35018826831394e5c85874df1d8c",
+    "adapted": false,
+    "final_sha256": "b9e8bc393e46b66958a5fa69b879c7249cde35018826831394e5c85874df1d8c"
+  },
+  {
+    "source": "docs/senior_growth/React/Composition_and_Higher-Order_Components_(HOCs)_in.md",
+    "workbench": "docs/workbench/frontend/react/composition/action-adapter-types.tsx",
+    "original_sha256": "3daee136001cee50e29b3de3c0293265a3033907260f1b249153bcf311c57950",
+    "adapted": false,
+    "final_sha256": "3daee136001cee50e29b3de3c0293265a3033907260f1b249153bcf311c57950"
+  },
+  {
+    "source": "docs/senior_growth/React/design-system-contracts.md",
+    "workbench": "docs/workbench/frontend/react/design-system/Button.tsx",
+    "original_sha256": "eb96439783a1c42aaff3e9b83b15be0235f35614d91bfc6077ab969fc6b1cfef",
+    "adapted": false,
+    "final_sha256": "eb96439783a1c42aaff3e9b83b15be0235f35614d91bfc6077ab969fc6b1cfef"
+  },
+  {
+    "source": "docs/senior_growth/React/design-system-contracts.md",
+    "workbench": "docs/workbench/frontend/react/design-system/Button.module.css",
+    "original_sha256": "4a5fb550038cc21798cff277c79062567d6c72e40d935b277d736d67da48a8a3",
+    "adapted": false,
+    "final_sha256": "4a5fb550038cc21798cff277c79062567d6c72e40d935b277d736d67da48a8a3"
+  },
+  {
+    "source": "docs/senior_growth/React/design-system-contracts.md",
+    "workbench": "docs/workbench/frontend/react/design-system/tokens.mjs",
+    "original_sha256": "4ab81b25b697ce16b500d1bc4d9dced57de823575e42274e68146a9359801104",
+    "adapted": false,
+    "final_sha256": "4ab81b25b697ce16b500d1bc4d9dced57de823575e42274e68146a9359801104"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/note-contract.ts",
+    "original_sha256": "5566186c1533ee4d8acdb834292539007634fe45609e6ff0f6ce3d504ca4fe77",
+    "adapted": false,
+    "final_sha256": "5566186c1533ee4d8acdb834292539007634fe45609e6ff0f6ce3d504ca4fe77"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/note-api.ts",
+    "original_sha256": "36cd1e9bf6c8fc15b35d3900f1fc752d8724d6e32627eb9884c3f491011d75c6",
+    "adapted": false,
+    "final_sha256": "3c97ea37b4d5fdf39962b80004c4728805d9c48f20fac471a323a955b5ac04e2"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/note-projection.ts",
+    "original_sha256": "87e50e12ac91a1d7b396c6f19eab2073855f664a6d128dd4f395c6de241af83f",
+    "adapted": false,
+    "final_sha256": "87e50e12ac91a1d7b396c6f19eab2073855f664a6d128dd4f395c6de241af83f"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/use-note-edit.ts",
+    "original_sha256": "0eecead7a388f1fcfbbbcbfc67a05a2d03e19af020587eac60b49b26d7a7c677",
+    "adapted": true,
+    "final_sha256": "12696a2a3a2a6b02bca3361d58ecb23800924afba33d5c99c47a7acedc393257"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/use-note-query.ts",
+    "original_sha256": "0e4c9416faa3c213f5a595aeedd99a2bd9f9d5d5313af1707c2dae8eadf201e8",
+    "adapted": false,
+    "final_sha256": "0e4c9416faa3c213f5a595aeedd99a2bd9f9d5d5313af1707c2dae8eadf201e8"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/NoteTitleForm.tsx",
+    "original_sha256": "213c762892ea75b62cc49b3fdcc4223e0a5b062bfddc065a8df81cdfca507d7c",
+    "adapted": false,
+    "final_sha256": "213c762892ea75b62cc49b3fdcc4223e0a5b062bfddc065a8df81cdfca507d7c"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/schedule.ts",
+    "original_sha256": "1a40210439102fe4c5d2bf829cacf5db9a801f3a6900aa132470d9f4b44c3808",
+    "adapted": false,
+    "final_sha256": "1a40210439102fe4c5d2bf829cacf5db9a801f3a6900aa132470d9f4b44c3808"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/latest-validation.js",
+    "original_sha256": "34957b2ba9ac436e9cb6749eb2c28b146d993f021edf33797009d97ccbf77fdc",
+    "adapted": false,
+    "final_sha256": "34957b2ba9ac436e9cb6749eb2c28b146d993f021edf33797009d97ccbf77fdc"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/wizard.ts",
+    "original_sha256": "6fdfb049e650045fdd7eda85004036e3af31a01e6d7fc77cb15d8991174031f0",
+    "adapted": true,
+    "final_sha256": "7ebf2c96d9f7c0b5ee7ccba7b710a0aab38fdd4c3e0ee66cc64198af1bb98154"
+  },
+  {
+    "source": "docs/senior_growth/React/complex-forms-and-data.md",
+    "workbench": "docs/workbench/frontend/react/forms/CourseWizard.tsx",
+    "original_sha256": "b7a16e73d7a0edc58629a85712b6625ca8ec37bd1229dc87a5cb5bd7afe6d6e5",
+    "adapted": true,
+    "final_sha256": "36de3a34b78fb4f777642e4de68bfa19c43cc7732357dbc1ba815350e6aec3c5"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/next.config.ts",
+    "sha256": "dd6f116e73f2ceb1c1fb08917c6f8ccf7cabbeb2df0f0678ad1f72f997b449b9",
+    "final_sha256": "dd6f116e73f2ceb1c1fb08917c6f8ccf7cabbeb2df0f0678ad1f72f997b449b9"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/layout.tsx",
+    "sha256": "877b627f97b3cc7f282825ee03f23328c535d535572ce0d50c271cebe4c8d807",
+    "final_sha256": "877b627f97b3cc7f282825ee03f23328c535d535572ce0d50c271cebe4c8d807"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/layout.tsx",
+    "sha256": "d21994454a4db0cb03f1aaeea125a7afb00219f3a8b4da85164ad10bc6dd8613",
+    "final_sha256": "d21994454a4db0cb03f1aaeea125a7afb00219f3a8b4da85164ad10bc6dd8613"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/lib/courses.ts",
+    "sha256": "d7a2dd172d2f0033ae6a0904949a782ca4b795d4f0d64e588f4567638371b28a",
+    "final_sha256": "d7a2dd172d2f0033ae6a0904949a782ca4b795d4f0d64e588f4567638371b28a"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/page.tsx",
+    "sha256": "a83d939daf68702b83c7bb41c4bb6c55084b2a25e8ff4e49ee37d269139f6c9b",
+    "final_sha256": "a83d939daf68702b83c7bb41c4bb6c55084b2a25e8ff4e49ee37d269139f6c9b"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/course-filter.tsx",
+    "sha256": "93d36e3b43bcde1a25f6da1ee039cca14545dd7e4a536884e586866296c4da9f",
+    "final_sha256": "c17ff62c3dfc820c4373117098ff7ae1e55073c0eecf90c5552893925c4b28a9"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/loading.tsx",
+    "sha256": "65f71890db01fbb7726a8a32c0016c1c5f12e1e857d9338299acab5f421fd7ca",
+    "final_sha256": "65f71890db01fbb7726a8a32c0016c1c5f12e1e857d9338299acab5f421fd7ca"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/[id]/page.tsx",
+    "sha256": "8b4d2ff724ac928c39f64af88f1336dd387d89e1e0a653a0537345dd8ac04aa5",
+    "final_sha256": "8b4d2ff724ac928c39f64af88f1336dd387d89e1e0a653a0537345dd8ac04aa5"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/not-found.tsx",
+    "sha256": "805a05a4210102d69fe37e2e370b9bcdfb61053080d00da9b4602c6d6006d89e",
+    "final_sha256": "805a05a4210102d69fe37e2e370b9bcdfb61053080d00da9b4602c6d6006d89e"
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "workbench": "docs/workbench/frontend/next/read-only/app/courses/error.tsx",
+    "sha256": "a3e18ab061b1afe37dd21a1c95315218db565f980d112de53aa61109e276f65b",
+    "final_sha256": "a3e18ab061b1afe37dd21a1c95315218db565f980d112de53aa61109e276f65b"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/lib/db.ts",
+    "sha256": "458cb6b2d4eef10c6f15e93196150658740a079962df06729f2683739fc775af",
+    "final_sha256": "458cb6b2d4eef10c6f15e93196150658740a079962df06729f2683739fc775af"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/lib/session.ts",
+    "sha256": "2dd6206b1bffda4b36ba14a607698d03af9357471688b5f54841b54b7c6be025",
+    "final_sha256": "2dd6206b1bffda4b36ba14a607698d03af9357471688b5f54841b54b7c6be025"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/lib/note-input.ts",
+    "sha256": "958b6ca1ea8aaa59113b658a1d213b8661da535c35e34e3de3c6697128e0a779",
+    "final_sha256": "958b6ca1ea8aaa59113b658a1d213b8661da535c35e34e3de3c6697128e0a779"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/lib/notes.ts",
+    "sha256": "0192d6c120cd6548b7ce029901b130a2bf17a81f99f8814d28cee3017b1e878d",
+    "final_sha256": "0192d6c120cd6548b7ce029901b130a2bf17a81f99f8814d28cee3017b1e878d"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/lib/http-input.ts",
+    "sha256": "69c5ad6458dc49be2fd1253d5e59161e742c11bc66848d64342405815d09295b",
+    "final_sha256": "14978fa7af80ab802b0815fe71ed8a9c2ea5b02dde3d211db2f5a607f31720a5"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/app/api/notes/route.ts",
+    "sha256": "07faeddf2a1b05d679a31572c7b0c435e53554251f42b08e27b390f90b4a9270",
+    "final_sha256": "07faeddf2a1b05d679a31572c7b0c435e53554251f42b08e27b390f90b4a9270"
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "workbench": "docs/workbench/frontend/next/security-fragments/app/notes/actions.ts",
+    "sha256": "8d2630935fe5b6dd825696b4913493d00c8fdf64add44af6b3e6757d489bd525",
+    "final_sha256": "8d2630935fe5b6dd825696b4913493d00c8fdf64add44af6b3e6757d489bd525"
+  },
+  {
+    "source": "docs/senior_growth/A11y/Can_you_provide_some_examples_for_a11y.md",
+    "practice": "docs/practice/frontend/a11y/Can_you_provide_some_examples_for_a11y.md",
+    "section": "Manual evidence record: fill with actual observations",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/design-system-contracts.md",
+    "practice": "docs/practice/frontend/react/design-system-contracts.md",
+    "section": "Contract lab and acceptance evidence",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/Common_Performance_Issues_in_React.md",
+    "practice": "docs/practice/frontend/react/Common_Performance_Issues_in_React.md",
+    "section": "**Performance Checklist**",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/next-app-router.md",
+    "practice": "docs/practice/frontend/react/next-app-router.md",
+    "section": "Practical implementation and debugging acceptance",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/design-system-release.md",
+    "practice": "docs/practice/frontend/react/design-system-release.md",
+    "section": "Practice and acceptance",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/build_tools.md",
+    "practice": "docs/practice/frontend/react/build_tools.md",
+    "section": "Acceptance and failure drill",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/next-server-security.md",
+    "practice": "docs/practice/frontend/react/next-server-security.md",
+    "section": "Practice and acceptance evidence",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/React/How_do_you_start_a_REACT_project_from_scratch.md",
+    "practice": "docs/practice/frontend/react/How_do_you_start_a_REACT_project_from_scratch.md",
+    "section": "Reproducible setup and production acceptance",
+    "preserved_anchor_heading": true
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Large_Data_Workflow.md",
+    "workbench": "docs/workbench/frontend/architecture/course-screen.tsx",
+    "sha256": "9f288443ab51195c619aecb0fd29fc4d721eaa6f022db005a7ed159d408244bb",
+    "final_sha256": "9f288443ab51195c619aecb0fd29fc4d721eaa6f022db005a7ed159d408244bb"
+  },
+  {
+    "source": "docs/senior_growth/EngX_Quality/Large_Data_Workflow.md",
+    "workbench": "docs/workbench/frontend/architecture/behavior.test.tsx",
+    "sha256": "db957a3f405c9d40f975aa74c42729675f5e247699acdb1548836e390513beb3",
+    "final_sha256": "db957a3f405c9d40f975aa74c42729675f5e247699acdb1548836e390513beb3"
+  },
+  {
+    "source": "docs/senior_growth/React/React_testing.md",
+    "workbench": "docs/workbench/frontend/react/component-testing/SaveButton.tsx",
+    "sha256": "7e9bff336eb72edaa3631cfc90449cbd60f23869628960553dfdf9a0de8b0f6c",
+    "final_sha256": "7e9bff336eb72edaa3631cfc90449cbd60f23869628960553dfdf9a0de8b0f6c"
+  },
+  {
+    "source": "docs/senior_growth/React/React_testing.md",
+    "workbench": "docs/workbench/frontend/react/component-testing/vitest.config.ts",
+    "sha256": "e9a413db590484f1de0b2e935d2686205989eab5b4eb2008d4a35791b99f3468",
+    "final_sha256": "e9a413db590484f1de0b2e935d2686205989eab5b4eb2008d4a35791b99f3468"
+  },
+  {
+    "source": "docs/senior_growth/React/React_testing.md",
+    "workbench": "docs/workbench/frontend/react/component-testing/lab_tests/setup.ts",
+    "sha256": "593149217285955760a2d41f56fc3005395b161a51777caa7e129e90b891843a",
+    "final_sha256": "593149217285955760a2d41f56fc3005395b161a51777caa7e129e90b891843a"
+  },
+  {
+    "source": "docs/senior_growth/React/React_testing.md",
+    "workbench": "docs/workbench/frontend/react/component-testing/lab_tests/SaveButton.test.tsx",
+    "sha256": "1e9dcf6098824591beb224f399e4e10b8436f6103760f2024f8aaad525ec469d",
+    "final_sha256": "1e9dcf6098824591beb224f399e4e10b8436f6103760f2024f8aaad525ec469d"
+  },
+  {
+    "source": "docs/senior_growth/React/Modals_in_react,_portal_or_not.md",
+    "workbench": "docs/workbench/frontend/react/composition/native-dialog.tsx",
+    "sha256": "9f47c1e06a1de7bc1d34af6bdab6b1bc81e374bfef4bae9012ebd1edab40e087",
+    "final_sha256": "c07aa432c0796082f8f705648d94a6732e18a7313f0d4b0e50fb70698375ec23"
+  }
+]

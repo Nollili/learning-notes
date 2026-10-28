@@ -21,59 +21,8 @@ Read a protected graph snapshot only as an authorized diagnostic. It can contain
 
 The following recorder deliberately accepts no prompt, arguments, raw result, URL, error object, source title, token or model-generated free-form message. It is a tiny local bounded buffer, not an audit store or a complete monitoring backend. Its safe categories are chosen by the application from validated outcomes.
 
-```python
-# study_ai/workflow_trace.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/workflow_trace.py
 
-import re
-from collections import deque
-from typing import Literal
-
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
-
-Stage = Literal["lookup", "answer", "persist"]
-Outcome = Literal["ok", "invalid_arguments", "unavailable", "temporary_failure",
-                  "conflict", "invalid_output", "stopped"]
-
-
-class SafeEvent(BaseModel):
-    model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
-    run_id: str = Field(pattern=r"^[a-f0-9]{32}$")
-    sequence: int = Field(ge=1, le=1000000)
-    stage: Stage
-    outcome: Outcome
-    attempt: int = Field(ge=1, le=6)
-    duration_ms: float = Field(ge=0, le=600000, allow_inf_nan=False)
-
-
-class SafeTrace:
-    def __init__(self, run_id: str, *, capacity: int = 50) -> None:
-        if (re.fullmatch(r"[a-f0-9]{32}", run_id) is None
-                or type(capacity) is not int or not 1 <= capacity <= 100):
-            raise ValueError("Invalid trace configuration")
-        self._run_id = run_id
-        self._events: deque[SafeEvent] = deque(maxlen=capacity)
-        self._sequence = 0
-        self.dropped = 0
-
-    def record(self, *, stage: Stage, outcome: Outcome, attempt: int, duration_ms: float) -> None:
-        try:
-            event = SafeEvent(run_id=self._run_id, sequence=self._sequence + 1,
-                              stage=stage, outcome=outcome, attempt=attempt, duration_ms=duration_ms)
-        except ValidationError:
-            # Validation errors may include rejected values; do not expose/log them here.
-            raise ValueError("Invalid trace event") from None
-        if len(self._events) == self._events.maxlen:
-            self.dropped += 1
-        self._events.append(event)
-        self._sequence += 1
-
-    def snapshot(self) -> tuple[SafeEvent, ...]:
-        return tuple(self._events)
-
-    def json_lines(self) -> str:
-        return "\n".join(event.model_dump_json() for event in self._events)
-```
 
 Use an application-generated run ID such as uuid4().hex, not a secret, raw source identifier or user-supplied trace label. Record measured monotonic elapsed duration for the stage, not fabricated timings. A run ID/count/timing can still reveal activity, so protect access and retention; a projection is not universal anonymization. The buffer drops oldest events at capacity and exposes dropped count. It must not serve as a security audit requiring complete durable evidence. Flush/retain approved events under a separately defined policy and handle exporter failure without exposing payloads or hanging a job.
 
@@ -89,8 +38,6 @@ For an end-to-end runner, correlate the transition and its checked artifact/vers
 
 ## Practice and acceptance
 
-Run strict typing and event tests: only declared fields/categories, finite bounded durations, integer/non-bool attempts, capacity eviction/dropped count, stable sequence, immutable snapshots, fixed error on invalid/sensitive values, no raw payload field, JSON round-trip. Feed a real fake-store dispatcher result through an application-owned category mapping and verify the event contains only the projection. These tests do not establish a production exporter or complete audit trail.
-
-Rerun the actual state/SQLite/graph tests, then inject an unknown tool, a private source ID, a stale save, a blocked store and an interrupted write receipt. Retain the earliest failing stage and expected transition as an approved fixture; exclude raw private text/credentials from routine events. For a real provider adapter add malformed call items, mismatched call IDs, partial arguments, budget exhaustion and output validator failure. Acceptance: failures remain distinct, no silent success/retry reset, redaction/projection negative controls pass and transitions match their checked artifacts. Hosted traces/alerts, real incidents, provider loop debugging and learner operational practice remain required.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/workflow-diagnostics.md).
 
 References checked2026-10-25: [OWASP logging guidance](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html), [Pydantic strict validation](https://docs.pydantic.dev/latest/concepts/strict_mode/), [bounded workflow state](./tool-workflow-state.md), [graph memory and diagnostic scope](./graph-memory.md). The recorder uses Python3.13/Pydantic2.14.1 and performs no network export.

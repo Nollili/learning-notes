@@ -22,140 +22,8 @@ The source_id is a server-assigned opaque ID, not a user filename or URL contain
 
 Limits here are deliberately small:256KiB raw input,1000 physical lines,1000 extracted segments and a bounded chunk count. Memory is proportional to those caps; this is a bounded eager extractor, not a constant-memory streaming claim. The CSV parser's default global field limit remains unchanged; its failures become a fixed extraction error. Do not mutate csv.field_size_limit per request because it is process-wide state.
 
-```python
-# study_ai/extraction.py
-from __future__ import annotations
+<<< ../workbench/applied-ai/python/study_ai/extraction.py
 
-import csv
-import hashlib
-import io
-import json
-import re
-from dataclasses import dataclass
-from typing import Literal
-
-MAX_BYTES = 262144
-MAX_LINES = 1000
-MAX_SEGMENTS = 1000
-MAX_CHUNKS = 4096
-
-
-class ExtractionError(ValueError):
-    pass
-
-
-@dataclass(frozen=True, slots=True)
-class Segment:
-    locator: str
-    text: str
-
-
-@dataclass(frozen=True, slots=True)
-class Extracted:
-    source_id: str
-    source_sha256: str
-    extractor_version: str
-    segments: tuple[Segment, ...]
-
-
-@dataclass(frozen=True, slots=True)
-class Chunk:
-    source_id: str
-    source_sha256: str
-    extractor_version: str
-    locator: str
-    start: int
-    end: int
-    text: str
-
-
-def _decode(raw: bytes) -> str:
-    if len(raw) > MAX_BYTES:
-        raise ExtractionError("Source byte limit exceeded")
-    try:
-        text = raw.decode("utf-8", errors="strict")
-    except UnicodeDecodeError:
-        raise ExtractionError("Source must be UTF-8") from None
-    # UTF-8 BOM is explicitly supported here, unlike the NDJSON contract.
-    if text.startswith("\ufeff"):
-        text = text[1:]
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-    if "\x00" in text:
-        raise ExtractionError("Unsupported source character")
-    if text.count("\n") + (not text.endswith("\n")) > MAX_LINES:
-        raise ExtractionError("Source line limit exceeded")
-    return text
-
-
-def extract(raw: bytes, *, source_id: str, kind: Literal["text", "csv"]) -> Extracted:
-    if re.fullmatch(r"[A-Za-z0-9_-]{1,64}", source_id) is None:
-        raise ExtractionError("Invalid source id")
-    text = _decode(raw)
-    segments: list[Segment] = []
-    if kind == "text":
-        # Split only normalized LF; offsets below refer to this extracted text.
-        for number, line in enumerate(text.split("\n"), start=1):
-            if line.strip():
-                segments.append(Segment(f"line:{number}", line))
-    elif kind == "csv":
-        # newline='' preserves embedded CSV newlines for the CSV parser.
-        reader = csv.reader(io.StringIO(text, newline=""), delimiter=",", quotechar='"', strict=True)
-        try:
-            if next(reader, None) != ["id", "text"]:
-                raise ExtractionError("CSV header must be id,text")
-            ids: set[str] = set()
-            for row_number, row in enumerate(reader, start=1):
-                if len(row) != 2 or re.fullmatch(r"[A-Za-z0-9_-]{1,64}", row[0]) is None:
-                    raise ExtractionError("Invalid CSV row")
-                identity, body = row
-                if identity in ids or not body.strip():
-                    raise ExtractionError("Duplicate or empty CSV row")
-                ids.add(identity)
-                # Logical record number is distinct from physical reader.line_num.
-                segments.append(Segment(f"record:{row_number};id:{identity}", body))
-                if len(segments) > MAX_SEGMENTS:
-                    raise ExtractionError("Source segment limit exceeded")
-        except csv.Error:
-            raise ExtractionError("Invalid CSV encoding or structure") from None
-    else:
-        raise ExtractionError("Unsupported source format")
-    if not segments:
-        raise ExtractionError("Source contains no extractable text")
-    if len(segments) > MAX_SEGMENTS:
-        raise ExtractionError("Source segment limit exceeded")
-    return Extracted(source_id, hashlib.sha256(raw).hexdigest(), "text-csv-v1", tuple(segments))
-
-
-def chunk(source: Extracted, *, size: int = 600, overlap: int = 80) -> tuple[Chunk, ...]:
-    if type(size) is not int or type(overlap) is not int or not 1 <= size <= 2000 or not 0 <= overlap < size:
-        raise ExtractionError("Invalid chunk configuration")
-    result: list[Chunk] = []
-    for segment in source.segments:
-        start = 0
-        while start < len(segment.text):
-            end = min(start + size, len(segment.text))
-            if len(result) >= MAX_CHUNKS:
-                raise ExtractionError("Chunk count limit exceeded")
-            result.append(Chunk(source.source_id, source.source_sha256, source.extractor_version,
-                                segment.locator, start, end, segment.text[start:end]))
-            if end == len(segment.text):
-                break
-            start = end - overlap
-    return tuple(result)
-
-
-def chunk_identity(item: Chunk, *, tenant_id: str) -> str:
-    # Accept chunks produced by this extractor, plus a server-owned tenant namespace.
-    if re.fullmatch(r"[A-Za-z0-9_-]{1,64}", tenant_id) is None:
-        raise ExtractionError("Invalid tenant namespace")
-    payload = {"identity_version": "chunk-id-v1", "tenant": tenant_id,
-               "source_id": item.source_id, "source_sha256": item.source_sha256,
-               "extractor_version": item.extractor_version, "locator": item.locator,
-               "start": item.start, "end": item.end,
-               "text_sha256": hashlib.sha256(item.text.encode("utf-8", errors="strict")).hexdigest()}
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-    return hashlib.sha256(canonical.encode("ascii")).hexdigest()
-```
 
 This preserves whitespace inside a retained segment; blank plain-text lines are omitted but their line numbers still affect subsequent locators. CSV order is preserved, IDs remain strings, duplicate IDs fail, and quoted commas/newlines stay within their logical record. No partial result is returned on extraction failure. A caller must still stage/commit external writes atomically or idempotently; returning a tuple does not roll back writes made elsewhere.
 
@@ -165,62 +33,10 @@ Do not index all formats with one arbitrary chunk size and call the result accur
 
 ## Executable examples and failure evidence
 
-```python
-# lab_tests/test_extraction.py
-import hashlib
-
-import pytest
-
-from study_ai.extraction import ExtractionError, MAX_BYTES, chunk, extract
+<<< ../workbench/applied-ai/python/lab_tests/test_extraction.py
 
 
-def test_text_provenance_and_normalization():
-    raw = "\ufeffFirst\r\n\r\nárvíztűrő\rLast".encode("utf-8")
-    source = extract(raw, source_id="s1", kind="text")
-    assert source.source_sha256 == hashlib.sha256(raw).hexdigest()
-    assert [(s.locator, s.text) for s in source.segments] == [
-        ("line:1", "First"), ("line:3", "árvíztűrő"), ("line:4", "Last")]
-    assert source.extractor_version == "text-csv-v1"
-
-
-def test_csv_multiline_and_leading_zero_id():
-    raw = b'id,text\r\n001,"a,b\r\nnext"\r\n002,=SUM(A1:A2)\r\n'
-    source = extract(raw, source_id="s2", kind="csv")
-    assert source.segments[0].locator == "record:1;id:001"
-    assert source.segments[0].text == "a,b\nnext"
-    assert source.segments[1].text == "=SUM(A1:A2)"
-
-
-@pytest.mark.parametrize("raw,kind", [
-    (b"\xff", "text"), (b"a\x00b", "text"), (b" \n", "text"),
-    (b"x" * (MAX_BYTES + 1), "text"), (b"x\n" * 1001, "text"),
-    (b"text,id\nx,1", "csv"), (b'id,text\na,"unterminated', "csv"),
-    (b"id,text\na,x,extra", "csv"), (b"id,text\na,x\na,y", "csv"),
-    (b"id,text\na, ", "csv"), (b"id,text\n../private,x", "csv"),
-])
-def test_rejection_does_not_echo_source(raw, kind):
-    with pytest.raises(ExtractionError) as caught:
-        extract(raw, source_id="fixture", kind=kind)
-    assert "../private" not in str(caught.value)
-    assert "unterminated" not in str(caught.value)
-
-
-def test_chunk_offsets_overlap_tail_and_budget():
-    source = extract(b"abcdefghij", source_id="s3", kind="text")
-    chunks = chunk(source, size=4, overlap=1)
-    assert [(c.start, c.end, c.text) for c in chunks] == [
-        (0, 4, "abcd"), (3, 7, "defg"), (6, 10, "ghij")]
-    for item in chunks:
-        assert source.segments[0].text[item.start:item.end] == item.text
-        assert item.source_sha256 == source.source_sha256
-    for size, overlap in [(0, 0), (3, 3), (4, -1), (True, 0)]:
-        with pytest.raises(ExtractionError):
-            chunk(source, size=size, overlap=overlap)
-    with pytest.raises(ExtractionError, match="Chunk count"):
-        chunk(extract(b"x" * 5000, source_id="s4", kind="text"), size=1, overlap=0)
-```
-
-Run the existing strict package check and pytest suite. Add exact byte/line/chunk-limit acceptance and one-over cases, Unicode slicing assertions and synthetic secrets in malformed records. Test unsupported runtime format values even though type checking rejects their use. These checks prove this extractor's contract; they do not prove retrieval relevance or faithful PDF extraction.
+The displayed tests verify the bounded extractor contract, not retrieval relevance or faithful PDF extraction. [Additional cases](../practice/applied-ai/chapters/document-processing.md) remain separate learner work.
 
 ## Normalization, identity and ingestion metadata
 
@@ -234,41 +50,8 @@ A minimal ingestion manifest should retain tenant/source ID, raw-source version/
 
 A deterministic hash is not authorization, authenticity or a confidentiality mechanism. Do not use it as a public bearer capability. Low-entropy private text may be guessable even when only its digest is exposed. Store these keys privately under the same data policy; apply source deletion to every manifest/chunk/vector/cache derivative. The helper does not implement storage transactions, ACL lookup or deletion. Idempotent identity makes retry/upsert design possible, but only a durable uniqueness constraint and owned commit workflow can establish exactly what was stored.
 
-```python
-# lab_tests/test_chunk_identity.py
-from dataclasses import replace
-import unicodedata
+<<< ../workbench/applied-ai/python/lab_tests/test_chunk_identity.py
 
-import pytest
-
-from study_ai.extraction import ExtractionError, chunk, chunk_identity, extract
-
-
-def test_identity_is_stable_scoped_and_versioned():
-    item = chunk(extract(b"First\r\nSecond", source_id="source1", kind="text"))[0]
-    identity = chunk_identity(item, tenant_id="tenant1")
-    assert len(identity) == 64 and identity == chunk_identity(item, tenant_id="tenant1")
-    assert identity != chunk_identity(item, tenant_id="tenant2")
-    for changed in [replace(item, source_id="source2"), replace(item, source_sha256="0" * 64),
-                    replace(item, extractor_version="text-csv-v2"), replace(item, locator="line:2"),
-                    replace(item, start=1), replace(item, end=2), replace(item, text="Changed")]:
-        assert chunk_identity(changed, tenant_id="tenant1") != identity
-    lf = chunk(extract(b"First\nSecond", source_id="source1", kind="text"))[0]
-    assert lf.text == item.text
-    assert chunk_identity(lf, tenant_id="tenant1") != identity  # Raw source version differs.
-    with pytest.raises(ExtractionError, match="tenant namespace"):
-        chunk_identity(item, tenant_id="../PRIVATE_NAMESPACE")
-
-
-def test_normalization_preserves_meaning_and_records_composition():
-    raw = "  Name = 'e\u0301'\r\n    return Name\r\n".encode("utf-8")
-    source = extract(raw, source_id="code", kind="text")
-    assert source.segments[0].text == "  Name = 'e\u0301'"
-    assert source.segments[1].text == "    return Name"
-    nfc = unicodedata.normalize("NFC", source.segments[0].text)
-    assert nfc != source.segments[0].text
-    assert len(nfc) + 1 == len(source.segments[0].text)
-```
 
 These tests compare versions and preserve original code meaning; they do not establish that arbitrary normalization improves retrieval. The source hash intentionally distinguishes CRLF/LF source versions even when extracted visible text is equal. An application that wants a separate normalized-content deduplication key must add one explicitly without replacing the exact-source provenance key.
 
@@ -284,9 +67,7 @@ Prefer one maintained adapter per required format over accumulating document fra
 
 ## Practice and acceptance
 
-Build an authorized ingestion job around the text/CSV implementation: bounded read before extract, source/tenant authorization, staging, stable source-version key, versioned chunk settings and idempotent index replacement. Preserve exact-source hash, segment locator and chunk offsets; fetch a chunk by its ID and show its supporting original line/record. Deleting a source must remove every chunk and derived index record. Reject unsupported formats before any model call. Keep model credentials out of extraction workers and logs.
-
-**Acceptance:** all examples and edge cases pass; document byte/line/segment/chunk bounds and ownership; prove CSV quoting/leading-zero/multiline behavior and deterministic chunk offsets; explain code points versus tokens. Add a reviewed PDF/OCR or HTML adapter only when your project's formats require it, with corpus-based fidelity and process-isolation evidence. That advanced adapter implementation, a real index, end-to-end ingestion and learner practice remain unperformed. The supplied material covers the intermediate extraction boundary and format decision process; it does not claim a general secure document conversion service.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/document-processing.md).
 
 References checked2026-10-21: [Python3.13 CSV dialect/newline handling](https://docs.python.org/3.13/library/csv.html), [HTMLParser behavior](https://docs.python.org/3.13/library/html.parser.html), [pypdf text extraction and OCR limitations](https://pypdf.readthedocs.io/en/stable/user/extract-text.html), [OWASP file upload controls](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html). [Unicode normalization forms](https://docs.python.org/3.13/library/unicodedata.html), [hash digests](https://docs.python.org/3.13/library/hashlib.html). Python3.13.11 is the executable baseline; current3.13 documentation may describe later patch-level additions that this code does not use.
 
@@ -298,4 +79,4 @@ For requirement20.20, a document is an application input with a format/authoriza
 
 For a large document, select/retrieve relevant authorized fragments and use the answer-context/citation pipeline instead of silently truncating it into the classifier. PDF/OCR and image interpretation are different adapters: a text-only scan may need OCR, while a diagram question may need reviewed image input. The [worked multimodal examples](./prompting-and-modalities.md#multimodality-changes-both-evidence-and-failure-modes) cover image coordinates, crop uncertainty and timestamp provenance; input support and extraction accuracy require task-specific evidence. Native document/file provider inputs are an alternative provider contract with upload, permission, retention and token costs, not implemented by this text/CSV lab.
 
-**Acceptance:** execute the CSV→segment→chunk→prompt trace, require exact identity/quote provenance and no permission expansion; run unsupported/empty/invalid-encoding/oversize cases with zero provider calls. Review a source-version change and a misleading quote separately from parse success. For20.21, author the diagram/audio fixtures and input serialization tests already provided; do not claim vision/audio accuracy from typed request construction. Full ingestion/storage/update/delete, live multimodal quality and learner independent practice remain required.
+[Separate learner criteria](../practice/applied-ai/chapters/document-processing.md).

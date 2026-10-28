@@ -93,7 +93,9 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
-The deployment must serve the matching worker/assets and an accessible offline page; the sample does not silently invent them. Change cache/versioned asset names as a coherent release. It intentionally avoids `skipWaiting`/`clients.claim`: force-activating a new worker against old pages can mix incompatible assets. Default waiting/activation needs a documented user-update flow. Clean only your own namespace, and coordinate cleanup with any explicitly supported old clients. Do not add broad cache-first handling for authenticated responses or write requests. Network HTTP401/404/500 is not automatically an offline exception; handle those statuses according to the page's contract.
+The deployment must serve the matching worker/assets and an accessible offline page; the sample does not silently invent them. Change cache/versioned asset names as a coherent release. It intentionally avoids `skipWaiting`/`clients.claim`: force-activating a new worker against old pages can mix incompatible assets. Default waiting/activation needs a documented user-update flow. Clean only your own namespace, and coordinate cleanup with any explicitly supported old clients.
+
+Do not add broad cache-first handling for authenticated responses or write requests. Network HTTP401/404/500 is not automatically an offline exception; handle those statuses according to the page's contract.
 
 **Actual local check:** a Node24.18 VM with controlled Cache/fetch/event adapters passed credential-free public precache, namespace cleanup, POST/cross-origin/private-API/query bypass, generic navigation fallback without runtime storage and failed-install cleanup. This checks policy branches, not native install/activation/eviction or a deployed offline application. Native browser registration, updates, offline/reconnect and storage eviction remain practice. [The service-worker specification](https://www.w3.org/TR/service-workers/) defines lifecycle and fetch/cache behavior; check supported browser APIs for your target devices.
 

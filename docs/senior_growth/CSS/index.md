@@ -1,6 +1,20 @@
 # CSS
 
-## Notes
+## Recommended order
+
+Prerequisite: [documents and browser behavior](../../frontend/html-browser.md).
+
+1. [Box model, flex/grid, positioning and layout shifts](./layout-and-responsive-design.md)
+2. [Cascade before specificity](./Can_you_describe_what_is_CSS_Specificity.md)
+3. [Relative and viewport units](./Difference_between_pixels%2C_ems_or_rems_Which_one_we_should_use.md)
+4. [Themes and React styling](./styling_react_apps.md)
+5. [Large-project architecture](./How_would_you_organize_CSS_on_huge_project.md)
+
+Apply [the staged practice](../../practice/frontend/) after each explanation.
+
+<span id="notes"></span>
+
+## Reference catalogue
 
 - [CSS vs SASS vs Styled Components vs CSS Modules?](./CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md)
 - [Can you describe what is CSS Specificity?](./Can_you_describe_what_is_CSS_Specificity.md)

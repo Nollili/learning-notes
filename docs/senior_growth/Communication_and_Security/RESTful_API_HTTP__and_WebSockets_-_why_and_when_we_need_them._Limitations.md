@@ -114,7 +114,9 @@ Example: fetch an authorized, schema-validated snapshot over HTTP, then subscrib
 
 ## 🔒 Security Considerations
 
-Use HTTPS/WSS in production. The server authenticates the handshake, allows only exact trusted browser Origins and authorizes each message/resource subscription. Origin is a browser cross-site defense, not proof of identity for non-browser clients. Cookie-authenticated sockets can suffer cross-site WebSocket hijacking; WSS does not prevent it. Choose a session/CSRF strategy deliberately, expire/revoke sessions and close affected connections. Browser WebSocket cannot set arbitrary Authorization headers; avoid long-lived tokens in URLs/logs. Apply schema, message-size, rate and concurrent-connection limits server-side. Keep logs to safe event codes/identifiers rather than raw messages or credentials.
+Use HTTPS/WSS in production. The server authenticates the handshake, allows only exact trusted browser Origins and authorizes each message/resource subscription. Origin is a browser cross-site defense, not proof of identity for non-browser clients. Cookie-authenticated sockets can suffer cross-site WebSocket hijacking; WSS does not prevent it. Choose a session/CSRF strategy deliberately, expire/revoke sessions and close affected connections. Browser WebSocket cannot set arbitrary Authorization headers; avoid long-lived tokens in URLs/logs.
+
+Apply schema, message-size, rate and concurrent-connection limits server-side. Keep logs to safe event codes/identifiers rather than raw messages or credentials.
 
 Both HTTP and sockets accept untrusted input and require validation. A client check improves behavior; it cannot enforce server authorization. TLS protects transport, not application permissions. See the authoritative [OWASP WebSocket security checklist](https://cheatsheetseries.owasp.org/cheatsheets/WebSocket_Security_Cheat_Sheet.html).
 
@@ -137,69 +139,20 @@ Both HTTP and sockets accept untrusted input and require validation. A client ch
 > As a senior developer, understanding both — and when to combine them — is essential for building modern, efficient systems.
 
 
-
 ## An owned browser socket
 
 This browser TypeScript example accepts only progress messages and sends only a fixed refresh command. It does not implement the server, automatic reconnect, durable delivery or full UI. The owner renders connection state and explicitly chooses whether/when to reconnect with a fresh snapshot. It deliberately stops on a protocol error rather than retrying malformed data forever. Callbacks are synchronous, must not throw and must not return promises.
 
-```ts
-// progress-socket.ts
-export function openProgressSocket(url: string, consume: (completed: number) => undefined,
-  status: (state: 'open' | 'closed' | 'error') => undefined,
-  create: (url: string) => WebSocket = url => new WebSocket(url)) {
-  const endpoint = new URL(url);
-  if (endpoint.protocol !== 'wss:' || endpoint.username || endpoint.password || endpoint.hash)
-    throw new TypeError('Expected credential-free WSS URL');
-  const socket = create(endpoint.href);
-  let stopped = false;
-  const dispose = () => {
-    if (stopped) return;
-    stopped = true;
-    socket.removeEventListener('open', opened);
-    socket.removeEventListener('message', message);
-    socket.removeEventListener('error', error);
-    socket.removeEventListener('close', closed);
-    if (socket.readyState < 2) socket.close(1000, 'Owner disposed');
-  };
-  const opened = () => { if (!stopped) status('open'); };
-  const error = () => { if (!stopped) { dispose(); status('error'); } };
-  const closed = () => { if (!stopped) { dispose(); status('closed'); } };
-  const message = (event: MessageEvent<unknown>) => {
-    if (stopped) return;
-    let completed: number;
-    try {
-      if (typeof event.data !== 'string' || event.data.length > 4096)
-        throw new TypeError('Unsupported message');
-      const value: unknown = JSON.parse(event.data);
-      if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError();
-      const record = value as Record<string, unknown>;
-      if (Object.keys(record).length !== 2 || record.type !== 'progress' ||
-          typeof record.completed !== 'number' || !Number.isSafeInteger(record.completed) ||
-          record.completed < 0) throw new TypeError('Invalid progress');
-      completed = record.completed;
-    } catch { error(); return; }
-    consume(completed);
-  };
-  socket.addEventListener('open', opened);
-  socket.addEventListener('message', message);
-  socket.addEventListener('error', error);
-  socket.addEventListener('close', closed);
-  return {
-    dispose,
-    refresh(): boolean {
-      if (stopped || socket.readyState !== 1) return false;
-      const frame = '{"type":"refresh"}';
-      // This ASCII frame's character count equals its UTF-8 byte count.
-      if (socket.bufferedAmount + frame.length > 16_384) { error(); return false; }
-      try { socket.send(frame); return true; }
-      catch { error(); return false; }
-    },
-  };
-}
-```
+<<< ../../workbench/engineering/security/progress-socket.ts{ts}
 
-Checking bufferedAmount prevents this owner from adding unbounded outbound frames. It is not receiver backpressure: the classic WebSocket API cannot pause incoming delivery, and the 4096-character check runs after a message has already been received. The server/library must bound message bytes, decompression and rates before application processing; browser memory can still grow under a flood. A production progress UI can coalesce validated updates, enforce subscription limits or fall back to a snapshot. Keep long-running processing out of the message handler. URL validation above rejects embedded credentials but is not a host allowlist; choose the endpoint from trusted application configuration.
+Checking bufferedAmount prevents this owner from adding unbounded outbound frames. It is not receiver backpressure: the classic WebSocket API cannot pause incoming delivery, and the 4096-character check runs after a message has already been received. The server/library must bound message bytes, decompression and rates before application processing; browser memory can still grow under a flood.
 
-**Acceptance:** fake the socket constructor for deterministic ownership tests: open/valid message, invalid JSON/schema/binary/oversize, send while connecting, send failure, queued-byte overflow, close/error, repeated dispose and late events. Require fixed commands only, no consume after stop, removed listeners and at most one close. Then run a real authenticated server/browser exercise: reject hostile Origin and unauthorized subscriptions, expire the session, test slow consumers, queue limits, proxy timeout, reconnect with a cursor and duplicate/gap handling. Retain evidence; fake socket tests do not establish any of these server/browser protections.
+A production progress UI can coalesce validated updates, enforce subscription limits or fall back to a snapshot. Keep long-running processing out of the message handler. URL validation above rejects embedded credentials but is not a host allowlist; choose the endpoint from trusted application configuration.
+
 
 References checked2026-10-22: [WebSockets standard](https://websockets.spec.whatwg.org/), [bufferedAmount](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/bufferedAmount), [HTTP connection management](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Connection_management_in_HTTP_1.x). Browser API feature support must be checked against the practice app's supported browsers; no browser run is implied here.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/RESTful_API_HTTP__and_WebSockets_-_why_and_when_we_need_them._Limitations.md). All learner practice remains outstanding.

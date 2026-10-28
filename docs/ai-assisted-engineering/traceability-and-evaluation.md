@@ -86,6 +86,11 @@ A concise final local handoff for this case is: explicit zero no longer selects 
 
 Keep learner practice status separate from material checks. The supplied fixture and documentation can pass while the learner has not yet reproduced, explained or extended them. A real practice record should include the learner's own diagnosis, independent implementation, reviewed evidence and corrections; never mark it complete because an assistant generated the exercise.
 
-**Practice acceptance:** build a requirement matrix for a different local issue, demonstrate at least one test fails on the actual defective baseline, and retain candidate identity with final check output. Find one plausible wrong patch that the checks reject and one limitation the suite does not establish. Have an independent reviewer inspect the actual diff and record their real outcome if available. Compare two workflow variants only under declared comparable conditions, reporting failures and uncertainty. Update documentation and checkpoint so another engineer can resume without assuming unrun work passed. Learner practice remains required.
+
 
 References checked2026-10-25: [Node test runner/reporters](https://nodejs.org/api/test.html), [TypeScript strict checks](https://www.typescriptlang.org/tsconfig/strict.html), [Git diff evidence](https://git-scm.com/docs/git-diff), [existing task-evaluation concepts](../python-for-ai/evaluation-lab.md). Local hashes/counts above were read from the executed fixture; they are not external benchmark results.
+
+
+## Separate practice
+
+Apply the [focused requirements](../practice/engineering/ai-engineering/traceability-and-evaluation.md). All learner practice remains outstanding.

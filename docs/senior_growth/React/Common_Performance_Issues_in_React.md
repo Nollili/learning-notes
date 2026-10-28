@@ -2,7 +2,7 @@
 
 Subjects: React
 
-React applications can encounter performance issues if not optimized properly, especially as the application scales. Understanding common performance pitfalls and applying best practices can significantly improve performance. Here's a detailed breakdown:
+Measure the slow interaction before choosing an optimization; network, JavaScript, React rendering and browser layout can dominate different workloads.
 
 ### **Common Performance Issues in React**
 
@@ -194,17 +194,7 @@ https://medium.com/@balaji59321/maximizing-efficiency-with-tree-shaking-in-react
 
 ### **Performance Checklist**
 
-| **Issue** | **Optimization** |
-| --- | --- |
-| Unnecessary re-renders | Use `React.memo`, `useCallback`, `useMemo`. |
-| State updates | Minimize state updates; avoid deeply nested state. |
-| Large lists | Use virtualization (`react-window`). |
-| Heavy initial load | Implement lazy loading and code-splitting. |
-| Context overuse | Memoize context values and avoid excessive usage. |
-| Frequent event updates | Throttle or debounce event handlers. |
-| Deep component trees | Split into smaller components to isolate updates. |
-
----
+Use the [separate practice requirements and observation ledger](../../practice/frontend/react/Common_Performance_Issues_in_React.md). All learner work remains outstanding.
 
 ### **Conclusion**
 
@@ -217,6 +207,10 @@ Use React DevTools Profiler to inspect why a subtree rendered and its durations;
 
 **Trade-offs:** memo comparisons cost CPU and retain values; virtualization can complicate keyboard focus/measurement; splitting chunks can add waterfalls; a debounce adds latency and can lose a final event if cancelled rather than flushed. Choose cancel versus flush by domain: do not flush an autosave after its entity/user scope has changed. Server writes still need authorization/idempotency; client timing is not duplicate prevention.
 
-**Exercise:** profile one slow management-screen interaction, change exactly one hypothesis-driven bottleneck, then repeat. Acceptance: attach trace/config/data/version and a before/after table; verify behavior/a11y unchanged; record regressions and uncertainty; remove a memo that costs more than it saves. Include same-id field changes, stale callback behavior and unmount-time timer cancellation in correctness tests. Material does not supply measured results.
 
 Official references: [memo](https://react.dev/reference/react/memo), [useCallback](https://react.dev/reference/react/useCallback), [Profiler](https://react.dev/reference/react/Profiler), [react-window](https://github.com/bvaughn/react-window). React19 baseline; checked2026-10-20. Historical react-window1.x snippet is explicitly versioned; no need to master multiple virtualization libraries.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Common_Performance_Issues_in_React.md). All learner practice remains outstanding; the worked examples above are explanatory material.

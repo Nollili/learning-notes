@@ -96,10 +96,14 @@ HTML is maintained as a Living Standard; “HTML5 introduced” is a historical 
 
 Native details/summary already provides disclosure behavior; do not add competing click/key handlers or modal focus containment. Native email validation improves feedback but does not replace server validation. `type="tel"` hints at an input mode; it does not universally validate phone formats. Canvas needs an accessible equivalent for meaningful visual content. Headings and landmarks require a coherent document structure, not merely replacing every div with a section.
 
-**Exercise:** replace a clickable-div disclosure with details/summary and implement the labeled email control. Acceptance: keyboard toggling works; accessible names/states match visible purpose; invalid email is identified; no obsolete keygen/presentational elements remain; spelling annotation is distinguishable from a link. Record browser/assistive-technology behavior rather than assuming support from tag names.
 
 Official references: [WHATWG u](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-u-element), [obsolete elements](https://html.spec.whatwg.org/multipage/obsolete.html), [details](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element), [input](https://html.spec.whatwg.org/multipage/input.html). Checked2026-10-20.
 
 ### Follow the historical list into a real workflow
 
 The labeled email/details snippet above is valid markup, unlike treating several input type names as one type value. Continue with the [native form and table examples](./What_is_semantic_HTML.md#native-form-workflow-before-enhancement) for successful controls, validation, names and scoped table headers. For a complete server path rather than an isolated tag snippet, use the [HTML-first search fixture](../Other/Cross_Browser_Progressive_Enhancement.md). Native disclosure/email validity can be partially checked in a DOM simulation; keyboard disclosure behavior, native validation feedback and assistive output require the actual browser/reader. Keep those practice results distinct from source validation.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/Which_tags_did_HTML_5_introduce.md). All learner practice remains outstanding; the worked examples above are explanatory material.

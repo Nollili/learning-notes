@@ -65,7 +65,7 @@ A **release strategy** defines **how and when new versions of software are deliv
 ---
 
 ### 1.5 Rolling Release
-- Gradually update users to the new version in **batches**.
+- A rolling deployment replaces application instances in batches while old/new versions coexist; this differs from a rolling-release version/support policy.
 - Common in **SaaS platforms**.
 
 **Pros:**  
@@ -172,38 +172,18 @@ Close the old-reader rollback window **before V4-only writes begin**, even if th
 
 Backfill in bounded resumable batches with a concurrency/version guard or a database-specific ownership protocol, then verify nulls, equality and invariants under real concurrent writes. A read of name followed later by an unguarded write to display_name can overwrite newer data. Do not switch canonical reads until old-only writers are prevented from returning and the final reconciliation succeeds. Review background jobs, consumers and scripts as writers too.
 
-```js
-// release-compatibility.mjs — a model of column contracts, not a database driver
-function required(row, field) {
-  if (!Object.hasOwn(row, field)) throw new Error(`Missing column: ${field}`);
-  return row[field];
-}
-export function readLabel(version, row) {
-  return required(row, version <= 2 ? 'name' : 'display_name');
-}
-export function writeLabel(version, row, value) {
-  const fields = version === 1 ? ['name'] : version === 4 ? ['display_name'] : ['name', 'display_name'];
-  for (const field of fields) required(row, field);
-  const result = { ...row };
-  for (const field of fields) result[field] = value;
-  return result;
-}
-export function backfillWithoutConcurrentWriters(row) {
-  return { ...row, display_name: required(row, 'name') };
-}
-export function contract(row) {
-  required(row, 'display_name');
-  const { name, ...remaining } = row;
-  return remaining;
-}
-```
+<<< ../../workbench/engineering/delivery/schema-model/release-compatibility.mjs{js}
 
 This pure model intentionally does not implement migrations, atomic dual writes, locking, background jobs or deployment infrastructure. Its backfill is safe only under the stated no-concurrent-writers condition; the real migration needs the database-specific guard. Versions1–4 are the fixed lab fixtures, not user-provided API values. Show the compatibility matrix before running a rollback command, and enforce a tested allowlist of rollback artifacts in a real pipeline.
 
-**Exercise acceptance:** show a V1 write leaves the expanded shadow stale, V2 still reads the correct canonical value, final backfill plus V3 dual write preserves V2 rollback, a V4-only write makes V2 stale even before contract, and V4 survives contract while V1/V2 reads and V3 writes fail. Then run the corresponding primary PostgreSQL migrations/old-new artifacts in an isolated integration lab, including a concurrent writer and a failed/restarted backfill. Require zero lost updates, verified constraints, bounded lock/statement time and an explicit point after which forward repair replaces old-artifact rollback. Keep the immutable build artifact/version, migration state, smoke results and recovery limits. The JavaScript model proves none of the database/deployment properties by itself; learner integration/recovery practice remains required.
 
 References checked2026-10-22: [PostgreSQL16 isolation](https://www.postgresql.org/docs/16/transaction-iso.html), [SRE canary analysis](https://sre.google/workbook/canarying-releases/). Primary lab uses PostgreSQL16.13/MikroORM7.2.5; do not assume a generic down method is data-safe.
 
 ## Packaged-artifact and real database checkpoint
 
 Continue with the [artifact/schema compatibility lab](../../node-js/release-artifact-compatibility.md). It packages four actual Node storage contracts and tests the matrix against PostgreSQL16, including old-role write rejection, stale-backfill protection and the point where V4-only writes make an old reader stale. The local experiment complements the pure model above; no hosted pipeline/traffic deployment or backup restore is claimed. Complete the integration exercise before claiming rollback capability.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/delivery/Release_strategies._What_strategy_do_you_use_on_project_How_will_you_build_a_release_strategy_for_open_source_project.md). All learner practice remains outstanding.

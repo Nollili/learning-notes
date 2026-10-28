@@ -1,5 +1,7 @@
 # React.Memo and Performance Optimization
 
+Companion owner: comparator correctness and callback behavior. Start with [memoization mechanisms](./What_is_memoization_and_how_to_achieve_it_in_React.md), then measure an actual workload. These examples are retained for their distinct failure cases.
+
 ### **1. React.memo**
 
 * **Purpose:** `React.memo` is a **Higher-Order Component (HOC)** used to **memoize functional components**. It can skip parent-driven work when props compare equal; state/context updates can still render it. This is an optimization, not a correctness guarantee.
@@ -37,7 +39,7 @@
 
 ### **2. Performance Optimization in React**
 
-You can structure this part around **common causes of slowness** and **tools/techniques to fix them**:
+First identify the measured slow interaction, then compare the cost of rendering, comparison, network and browser work.
 
 #### **A. Avoid unnecessary re-renders**
 
@@ -58,7 +60,7 @@ You can structure this part around **common causes of slowness** and **tools/tec
 #### **D. Avoid expensive calculations on each render**
 
 * Use `useMemo` for heavy computations.
-* Don’t do side effects in the render body — use `useEffect`.
+* Keep render pure. User-triggered writes belong in event handlers; Effects synchronize with external systems and own cleanup.
 
 #### **E. Profiling**
 
@@ -119,6 +121,10 @@ export const ValueCell = memo(function ValueCell({ id, value, onSelect }) {
 
 The arrow inside ValueCell is created when that component renders; it does not undermine its own memo boundary. A fresh wrapper created by the parent and passed as onSelect can defeat a boundary. Do not omit a dependency or callback comparison merely to suppress rendering.
 
-**Exercise:** change data.value while retaining id, change callback behavior without changing visible text, then update local state/context. Acceptance: every change behaves correctly; unchanged primitive props can skip parent-driven work; a stale comparator test fails before the fix. Profile comparison versus render cost under representative rows. No speed improvement is claimed until measured.
 
 Official references: [memo/custom comparator pitfalls](https://react.dev/reference/react/memo), [Profiler](https://react.dev/reference/react/Profiler). React19 baseline; checked2026-10-20. React Compiler can apply automatic memoization when enabled; these manual examples teach identity/contracts and should not be layered on blindly.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/react_memo.md). All learner practice remains outstanding; the worked examples above are explanatory material.

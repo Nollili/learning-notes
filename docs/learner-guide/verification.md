@@ -1,0 +1,38 @@
+# Verification, gaps and limits
+
+[Guide home](./) · [Screenshots and captions](./ui.md) · [Current reference verification](../review/verification.md)
+
+## Scope and provenance
+
+Prepared 2026-10-28 against the current files, navigation configuration and locally rendered application. Sources included `CURRENT_LEARNING_SUMMARY.md`, the current progress ledger and historical round-two audit, the complete `ROUND_2_INVENTORY.json`, current track indexes/coverage maps, workbench boundaries and staged/shared practice specifications. Historical reports remain historical; no curriculum expansion or new homework implementation is introduced.
+
+The two mapping pages account for **302 substantive textbook/reading-guide entries + 775 supporting entries = all 1,077 baseline inventory files**. The baseline is dated 2026-10-27; new guide pages/screenshots are later additions, not silently inserted into that preserved inventory. Each substantive row retains its source title, practice mapping and material scope. Supporting rows retain exact paths, roles and teaching owners. Mapping accounts for existence and placement, not a new correctness review of every implementation.
+
+## Exact gaps and ambiguities discovered
+
+| Item | Exact location / impact | Treatment |
+|---|---|---|
+| Menu order differs from study order | `docs/.vitepress/config.mjs`: frontend/CS precede Node; numbered module history and P-331-first project layout can imply the wrong starting route | Explicit Node quick start and roadmap; no menu redesign |
+| Inventory practice links vary in specificity | `ROUND_2_INVENTORY.json`: 306 entries say only `outstanding`, including practice/fixtures; broad lesson mappings often name a parent project | Exact support crosswalk plus track/stage tables; matching focused specifications linked where present; broad mapping is not a new per-file dependency claim |
+| New orientation outside historical inventory | This `docs/learner-guide/` tree was created after the baseline | Separate later addition, preserved baseline counts/hashes untouched |
+| Specialist depth is deliberately bounded | `docs/engineering/design.md`, `docs/python-for-ai/index.md`, coverage maps | Optional-after-primary placements; no claim of a complete cloud/cluster/graph-training curriculum |
+| External contents unknown | `docs/materials.md`, `docs/assessment.md`, `docs/knowledge_testing.md` | External-resource role retained; linked course contents not fetched/certified |
+| No learner completion evidence | All N/F/CS/E/P/RAG/WF/N8N practice | Outstanding by default; separate progress template |
+
+No missing essential practice specification was identified in the inspected staged paths. Matching chapter assignments and shared projects are reused. This is not proof that every specification has an explicit machine-readable dependency edge: where sources give capability prerequisites rather than assignment IDs, the track page labels a recommended sequence and does not invent a hard dependency. The inventory is a file crosswalk, not an executable prerequisite graph.
+
+## Checks performed for this guide
+
+- `npm run docs:build -- --outDir /tmp/learner-guide-site`: passed after creating the verification page and correcting the analyzer N-01 anchor (its actual generated ID contains an em dash). The existing large-chunk advisory remains.
+- Built HTML validation covered all nine guide pages plus Home and Hub map, checking local destinations, image paths and fragment IDs. Exact totals/results are retained in [link results](/learner-guide/evidence/link-results.json).
+- Baseline mapping reconciliation: 302 substantive rows and 775 supporting rows, 1,077 distinct inventory paths. No baseline entry omitted. This is baseline coverage, not a new count of skills.
+- Chrome navigation: captured Home, Hub map, Node overview, streams lesson, workbench and analyzer practice; clicked Learning paths, mobile global navigation open/close, mobile topic Menu and On this page. Clicked the streams article's Backpressure contents link and observed `#_9-backpressure`. Other destination pages were opened directly rather than claiming an end-to-end click through every link.
+- Seven guide pages inspected in Chrome at 1440 × 1000; quick start, roadmap, topics, support and walkthrough additionally checked at 390 × 844. No document-width overflow observed on those pages. The exact measurements are retained in [browser results](/learner-guide/evidence/browser-results.json). The initial diagram-specific selector matched no elements; a follow-up confirmed **two article SVGs**, captured them separately and inspected both visually.
+- All nine initial application screenshots, both diagram captures and the mobile outline capture were visually inspected. Desktop text/menu states are readable. The drawer capture intentionally clips a long scrollable course list. Diagram labels shrink on narrow screens; full-size image links and prose/table alternatives are provided. Browser image zoom itself was not interaction-tested.
+- Scoped whitespace checks passed. Production code, package scripts, dependency locks, restricted tests and historical assessments were not edited. Existing author runtime/database/model checks were not rerun or credited as learner practice.
+
+The root package defines `docs:build` rather than `build`, `test` or `coverage`. This task changes documentation only, so Autocode submission build/Jest/Module 4 coverage are not applicable to this repository change. The learner guide preserves those requirements for future submitted implementations.
+
+## Limits
+
+No screen-reader, keyboard accessibility audit, zoom, physical mobile device, cross-engine, live provider, n8n installation/publication, cloud deployment, paid activation or production traffic check is claimed. Responsive captures use the same installed Chrome engine at two viewport sizes. No homework solution, `src/tests` change, dependency/configuration change, remote push or published workflow is part of this work. Existing generated `dist` changes are preserved; the new build uses a temporary output directory.

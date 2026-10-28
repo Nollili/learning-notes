@@ -169,6 +169,10 @@ function capabilities(host) {
 
 `total` is portable domain code for a specified numeric input contract. Capability detection above is only a diagnostic hint; a Node version string does not grant filesystem permissions and an object could fake those properties. Real adapters should import/check required APIs and fail explicitly under the selected host. A browser sandbox, Node permission settings, ESM/CJS resolution and an edge runtime can change what is actually available. Transpilation rewrites supported syntax, polyfills supply some missing APIs, and neither can generally reproduce every host capability or security boundary.
 
-**Acceptance:** run the same numeric fixture in the agreed runtimes, keep DOM/filesystem code behind separate adapters, and explain one unavailable API and one syntax-vs-polyfill difference. Compile a small typed arithmetic function and inspect its emitted JavaScript; types add checks before execution, not an automatic speed optimization. Compare runtime behavior/validation separately. Browser/edge execution and learner practice remain required; a Node or VM diagnostic is not cross-runtime compatibility proof.
 
 References checked2026-10-22: [TypeScript type erasure](https://www.typescriptlang.org/docs/handbook/2/basic-types.html), [Node globals and host APIs](https://nodejs.org/api/globals.html). No universal connection count or language speed ranking is asserted.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Major_Benefits_and_Drawbacks_of_JavaScript_as_a_Pr_177e8106c24d80d1b728c729f3964a75.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -66,7 +66,6 @@ Bundle/request budgets are **project decisions**, not universal250KB/50-request 
 
 **Example budget contract:** product-search route, fixed1,000-item fixture, mobile test profile, cold-cache production build; track compressed first-route script bytes and repeated load LCP/TBT plus a scripted interaction trace. Choose numeric limits only after baseline measurement; document owner, tolerance, tool version and exception expiry. This is a template, not a claimed passing result.
 
-**Exercise:** instrument a representative route and produce a baseline/change report with raw traces, scenario/config, at least several repeated lab runs, variance, causal finding and regression guard. Acceptance: correctly distinguish lab versus field, INP versus TBT, transfer size versus parsed bytes, React render versus browser paint; no invented p75 or readiness conclusion. Record missing API support and telemetry privacy constraints. Learner measurement remains required.
 
 ## 🧠 Best Practices for Senior-Level Understanding
 
@@ -94,4 +93,7 @@ Official references checked2026-10-20: [Core Web Vitals](https://web.dev/article
 
 Use the [investigation ledger](./How_would_you_start_the_investigation,_what_are_your_steps_after_the_customer%27s_feedback_is_that_the_application_is_really_slow.md#an-evidence-ledger-for-one-reported-task) and [read/write layout fixture](./What_is_reflow_and_repaint,_what_causes_those_events,_why_is_it_important_to_have_them_in_mind.md#worked-read-write-ordering-with-explicit-ownership). A renderer label, one render count, unused-code percentage or bundle-size change cannot substitute for a task outcome and causal trace. The same request may look fast in a warm lab run while field input waits behind unrelated main-thread work.
 
-**Acceptance:** select the relevant outcome/diagnostic and explain its scope, units and missing-data behavior; retain baseline/change traces and the artifact/environment/cohort contract above. Show how the same code-level read/write ordering could have negligible or material impact depending on dirty state, DOM complexity and device. Native/field measurements remain explicitly unperformed until collected. Do not declare a renderer/library universally faster from these study examples.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/Which_tools_and_metrics_would_you_use_to_profile_and_measure_performance.md). All learner practice remains outstanding.

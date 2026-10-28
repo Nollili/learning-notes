@@ -174,7 +174,9 @@ myDog.bark();   // Output: Woof! (defined in Dog)
 JavaScript’s **ES6 classes** are an improvement over the old prototype-based inheritance system, but they are still built on the same underlying concept of **prototypes**.
 ## Class semantics are more than a mechanical constructor rewrite
 
-Class code is strict, class declarations have lexical initialization/TDZ behavior and the constructor cannot be called without new. Prototype methods are non-enumerable; static methods belong to the constructor; instance fields belong to instances. `#private` fields enforce branded access, unlike a conventionally named `_private` property. An object with the same visible shape is not automatically an instance with that private brand. `extends` links both the instance-prototype chain and constructor chain; super property access uses its method's home-object relationship. A class field arrow allocates per instance and captures this, while a prototype method needs a receiver at the call site. Do not infer those semantics from a simplistic “just syntax sugar” slogan.
+Class code is strict, class declarations have lexical initialization/TDZ behavior and the constructor cannot be called without new. Prototype methods are non-enumerable; static methods belong to the constructor; instance fields belong to instances. `#private` fields enforce branded access, unlike a conventionally named `_private` property. An object with the same visible shape is not automatically an instance with that private brand. `extends` links both the instance-prototype chain and constructor chain; super property access uses its method's home-object relationship.
+
+A class field arrow allocates per instance and captures this, while a prototype method needs a receiver at the call site. Do not infer those semantics from a simplistic “just syntax sugar” slogan.
 
 ```js
 class Counter {
@@ -222,6 +224,10 @@ console.log(delivered); // ['c1: 3 completed']
 
 The render contract is synchronous and returns text; delivery is async and must honor cancellation if promised by its adapter. ThrowIfAborted before delivery does not forcibly stop a noncooperative transport. Do not silently retry a non-idempotent delivery: define deduplication/retry semantics at the adapter/service boundary. This example performs no network delivery. Rendering plain text here is not safe HTML templating; escape/validate according to the actual output sink. Input projection prevents a renderer receiving unrelated caller fields, but full course authorization and business bounds remain the service's responsibility.
 
-**Exercise acceptance:** inject two renderers and two in-memory delivery adapters without creating four subclasses. Assert correct payloads, input validation, no delivery after a render failure, pre-aborted signal and delivery rejection propagation. Explain resource cleanup/cancel ownership for a real adapter. Separately verify chain termination, enumerable versus non-enumerable methods and private-brand failure; compare a prototype method and per-instance arrow identity. Learner practice remains required.
 
 References checked2026-10-21: [ECMAScript classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions), [Object.getPrototypeOf](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.getprototypeof), [AbortSignal](https://dom.spec.whatwg.org/#interface-abortsignal).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Please_compare_JS_inheritance_mehanisms_and_classi_177e8106c24d800d8f10dc65127d722c.md). All learner practice remains outstanding; the worked examples above are explanatory material.

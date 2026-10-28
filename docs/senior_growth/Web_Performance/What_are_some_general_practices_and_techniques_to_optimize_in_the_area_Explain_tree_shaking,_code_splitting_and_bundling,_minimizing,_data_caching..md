@@ -121,9 +121,13 @@ A module's import-time side effects include CSS application, polyfill installati
 }
 ```
 
-The package must actually build every declared artifact. Consumers import `@acme/ui/register` explicitly when registration is needed; the sideEffects metadata preserves a side-effect-only import but does not cause the file to load automatically. Test both ESM and CJS consumers and CSS retention in production. Keep the declaration condition compatible with the actual dual-package type design; this small fragment is not a complete dual ESM/CJS publication recipe. Separate instances of package state across entry points can also surprise consumers. A single ESM package is simpler when CJS support is unnecessary.
+The package must actually build every declared artifact. Consumers import `@acme/ui/register` explicitly when registration is needed; the sideEffects metadata preserves a side-effect-only import but does not cause the file to load automatically. Test both ESM and CJS consumers and CSS retention in production. Keep the declaration condition compatible with the actual dual-package type design; this small fragment is not a complete dual ESM/CJS publication recipe.
 
-Conditional exports are selected by the host's active conditions and their ordered matching keys; `types` is for tooling, `import`/`require` select different runtime entry points, and browser conditions require bundler support/configuration. Inspect the resolved file in the build output; importing a named function is not proof an ESM entry was chosen. Export maps also define allowed public subpaths—do not bypass them with a private `dist` path. Do not disable side-effect handling globally or add a PURE annotation to an effectful call just to reduce bytes. Regression tests should verify styling/registration still occur, not only that a bundle became smaller.
+Separate instances of package state across entry points can also surprise consumers. A single ESM package is simpler when CJS support is unnecessary.
+
+Conditional exports are selected by the host's active conditions and their ordered matching keys; `types` is for tooling, `import`/`require` select different runtime entry points, and browser conditions require bundler support/configuration. Inspect the resolved file in the build output; importing a named function is not proof an ESM entry was chosen. Export maps also define allowed public subpaths—do not bypass them with a private `dist` path.
+
+Do not disable side-effect handling globally or add a PURE annotation to an effectful call just to reduce bytes. Regression tests should verify styling/registration still occur, not only that a bundle became smaller.
 
 ### 2. Eager versus on-demand code: a reproducible fixture
 
@@ -167,19 +171,14 @@ Read `results.json` output edges: the eager entry statically owns report code, w
 
 ### 3. Primary Vite8 configuration and request waterfalls
 
-```ts
-// vite.config.ts — Vite8; preserve the rest of the application's configuration
-import { defineConfig } from 'vite';
-export default defineConfig({
-  build: { manifest: true, sourcemap: 'hidden' }
-});
-```
+<<< ../../workbench/engineering/performance/vite.config.ts{ts}
 
 A source-level `import()` is sufficient to request an async boundary; begin with automatic chunking and inspect the manifest/generated import graph. Vite8's advanced output controls live under `build.rolldownOptions.output.codeSplitting`; Webpack's `optimization.splitChunks` belongs only in Webpack configuration. Older Vite used Rollup and its manualChunks interface; migrate by installed major rather than copying names between tools. This note intentionally does not force a vendor group without evidence. Reuse the [typecheck/resolution/private-map lab](../React/build_tools.md#worked-lab-typechecking-host-resolution-and-private-source-maps).
 
-A small entry can still produce a slow chain: HTML → entry → lazy route → route data → nested widget. Identify which dependency becomes discoverable only after the previous stage executes. Move independent fetching/discovery earlier, flatten avoidable sequential awaits, or preload an actually likely next resource using the framework's supported mechanism. Preloading all chunks defeats on-demand delivery and competes with critical resources. Dynamic import promises are not automatically canceled by navigation; ensure late results do not update an obsolete view. A failed import needs an error/retry/reload policy; deleting old immutable chunks immediately can strand open tabs after deployment. Retain compatible assets across the supported release window and test the framework's stale-chunk recovery.
+A small entry can still produce a slow chain: HTML → entry → lazy route → route data → nested widget. Identify which dependency becomes discoverable only after the previous stage executes. Move independent fetching/discovery earlier, flatten avoidable sequential awaits, or preload an actually likely next resource using the framework's supported mechanism. Preloading all chunks defeats on-demand delivery and competes with critical resources.
 
-**Exercise acceptance:** reproduce the fixture and inspect output edges; verify sentinel removal and equivalent click output. In a real Vite8 consumer, retain the production manifest/bundle analysis before/after one route split, confirm CSS and registration survive, check both supported export conditions, and measure initial plus feature-open cold/warm traces under recorded conditions. Deliberately break sideEffects metadata and observe the regression; restore it before acceptance. Confirm a failed chunk and an old open tab have a recovery path. Set a project-specific regression budget after collecting a baseline; a single >500kB warning is a diagnostic, not a universal readiness threshold. Real browser/network/consumer evidence remains learner practice.
+Dynamic import promises are not automatically canceled by navigation; ensure late results do not update an obsolete view. A failed import needs an error/retry/reload policy; deleting old immutable chunks immediately can strand open tabs after deployment. Retain compatible assets across the supported release window and test the framework's stale-chunk recovery.
+
 
 References checked 2026-10-21: [Webpack tree shaking/sideEffects](https://webpack.js.org/guides/tree-shaking/), [Node package exports](https://nodejs.org/docs/latest-v24.x/api/packages.html#conditional-exports), [Vite8 production builds](https://vite.dev/guide/build), [Vite build options](https://vite.dev/config/build-options), [esbuild analysis/metafile](https://esbuild.github.io/api/#metafile).
 
@@ -187,3 +186,8 @@ References checked 2026-10-21: [Webpack tree shaking/sideEffects](https://webpac
 ### Reconcile the checklist with actual evidence
 
 The worked fixture, not a bundler name or named import alone, establishes sentinel removal and an eager/lazy graph for its pinned version. Source maps, compression, cache scope and module side effects remain independent contracts. Reuse the [bounded cache and retention lesson](./What_are_the_usual_source_of_problems_with_memory.md#bounded-cache-identity-eviction-and-limitations): storing state is not automatically a correct freshness or memory policy. Do not adopt competing query stores just to cover a list of tools. A production acceptance record still needs scoped private/public cache behavior and actual route/feature-open traces.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking%2C_code_splitting_and_bundling%2C_minimizing%2C_data_caching..md). All learner practice remains outstanding.

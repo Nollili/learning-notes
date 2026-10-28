@@ -241,6 +241,14 @@ node hello.js
 
 Node.js loads the entry file, evaluates it, performs pending work, and exits when there are no active handles, requests, or scheduled callbacks keeping the process alive.
 
+### JavaScript examples and TypeScript examples
+
+Fences marked `js` can run as JavaScript with the indicated `.mjs` or `.cjs` extension. Fences marked `ts` use TypeScript annotations for contracts. For the course application, compile them with its existing TypeScript configuration and run the emitted JavaScript; do not paste a typed function into a `.js` file.
+
+Node 24 can also strip **erasable** TypeScript syntax when running supported `.ts` files. That does not type-check, read `tsconfig.json`, resolve path aliases or transform every TypeScript feature. Parameter properties and some other constructs in these notes require compilation. Runtime validation is still needed for unknown input even after a successful type check.
+
+Use the fixture's pinned runtime and lockfile for reproduction. A compatibility example on Node 22 and a checked fixture on Node 24 are distinct baselines, not an instruction to change an Autocode template. [Node 24 TypeScript support](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html).
+
 ### Command-line arguments
 
 `process.argv` contains the command that launched the program:
@@ -546,7 +554,7 @@ console.log(count); // 1; importing code cannot assign to count
 
 Cycles have different failure modes. ESM can access an uninitialized imported binding and throw a ReferenceError; CJS can observe partially initialized exports. Move shared contracts into an independent module or inject dependencies. A module singleton is shared only within its module graph/process; it is unsuitable as an implicit per-request user store.
 
-**Exercise — module boundaries:** create the two files above and equivalent CJS files. Acceptance: observe the live count, reproduce and explain one cycle failure, demonstrate an inaccessible package subpath, and retain the runtime version and corrected explicit manifest. Transpiling syntax does not grant unavailable runtime APIs.
+[Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
 ### Built-in modules and the `node:` prefix
 
@@ -1161,9 +1169,9 @@ The callback cannot run at 10 ms because JavaScript is busy. A timer becomes eli
 
 ## 8. Event loop deep dive
 
-![Node.js event loop architecture](assets/nodejs-event-loop-deep-dive.png)
+> The older event-loop illustration (`assets/nodejs-event-loop-deep-dive.png` in the source tree) is retained as a historical aid. Its uniform next-tick-first checkpoint and timer routing are simplified; use the context-specific rules and diagrams below as the scheduling reference.
 
-The deep-dive model connects four ideas:
+Four mechanisms explain the runtime behavior:
 
 1. The reactor pattern describes delegation and notification.
 2. libuv provides a cross-platform event loop and worker pool.
@@ -1308,7 +1316,7 @@ nextTick
 
 Promise and queueMicrotask entries share FIFO ordering in this example. Reversing their registration reverses their relative order. Browser scheduling also includes rendering opportunities; Node phases do not define browser paint timing.
 
-**Exercise — scheduling:** run both files, then schedule the three queues inside an I/O callback and inside a promise reaction. Acceptance: record context and runtime, explain each output, and leave timer/immediate races unconstrained. Never run the infinite starvation example in a test without a child-process timeout.
+[Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
 The relative order of the zero-delay timer and `setImmediate()` should not be treated as universally fixed from top-level code. It depends on runtime context and timing.
 
@@ -1382,7 +1390,7 @@ Mitigations include:
 
 ### When a Node.js process exits
 
-A Node.js process normally exits when no active work remains that keeps the event loop alive. Examples of active work include a listening server, referenced timer, open socket, or pending operation.
+A Node.js process normally exits when no active work remains that keeps the event loop alive. **A pending promise alone does not keep it running**; a referenced timer, socket or another active resource must own the work. Unsettled top-level `await` is a distinct module-entry failure condition. Examples of active work include a listening server, referenced timer, open socket, or pending operation.
 
 ```ts
 const timer = setInterval(() => {
@@ -1439,7 +1447,7 @@ try {
 
 **What it does:** budgets both headers and body reading for two seconds. A fetch promise can fulfill after headers while its body is still arriving; clearing the timer then would leave the body unbounded in time. The caller must handle rejection. `finally` releases the timer on every path. A deadline does not limit payload size or interrupt synchronous JSON parsing: use bounded streaming for large or untrusted responses.
 
-**Exercise — body lifetime:** use a local server that sends headers immediately and delays its body beyond the deadline. Acceptance: body consumption rejects, the timer is removed, the connection closes, and an HTTP error body is cancelled. Also test a fast valid response and invalid JSON.
+[Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
 **When to use it:** add a time budget to network calls, stream pipelines, long-running calculations, and work tied to a client request.
 
@@ -1484,61 +1492,7 @@ That is safe only when the collection is known to be small and the downstream sy
 
 ### Small concurrency limiter
 
-```ts
-async function mapWithConcurrency<T, R>(
-  values: readonly T[],
-  limit: number,
-  mapper: (value: T, signal: AbortSignal) => Promise<R>,
-  signal?: AbortSignal,
-  maxItems = 10_000,
-): Promise<R[]> {
-  if (!Number.isInteger(limit) || limit < 1) {
-    throw new RangeError('limit must be a positive integer');
-  }
-  if (!Number.isSafeInteger(maxItems) || maxItems < 1 || maxItems > 10_000 || values.length > maxItems) {
-    throw new RangeError('Batch item budget exceeded');
-  }
-  for (let index = 0; index < values.length; index++) {
-    if (!Object.hasOwn(values, index)) throw new RangeError('Dense owned input required');
-  }
-  const controller = new AbortController();
-  let failed = false;
-  let failure: unknown;
-  const fail = (error: unknown): void => {
-    if (!failed) {
-      failed = true;
-      failure = error; // Keep even falsy rejection reasons such as undefined.
-      controller.abort(error);
-    }
-  };
-  const onAbort = (): void => fail(signal!.reason);
-  if (signal?.aborted) onAbort();
-  else signal?.addEventListener('abort', onAbort, { once: true });
-
-  const results = new Array<R>(values.length);
-  let nextIndex = 0;
-  async function worker(): Promise<void> {
-    while (!failed) {
-      const index = nextIndex++;
-      if (index >= values.length) return;
-      try {
-        results[index] = await mapper(values[index]!, controller.signal);
-      } catch (error) {
-        fail(error);
-      }
-    }
-  }
-  try {
-    await Promise.all(Array.from(
-      { length: Math.min(limit, values.length) }, () => worker(),
-    )); // Workers catch errors; this waits for all active work to drain.
-    if (failed) throw failure;
-    return results;
-  } finally {
-    signal?.removeEventListener('abort', onAbort);
-  }
-}
-```
+<<< ../workbench/node-js/runtime/limiter.ts
 
 **What it does:** runs at most `limit` mapper calls at one time. Results remain in input order.
 
@@ -1546,9 +1500,11 @@ async function mapWithConcurrency<T, R>(
 
 A shared failure flag stops new assignments once a worker observes failure. The first failure aborts cooperative in-flight operations; the function drains all workers before rejecting with the original reason. `Promise.all` alone would reject early while the other workers continued consuming the queue. The mapper must honor its signal and have a finite deadline: cancellation cannot force an arbitrary promise to settle. Side effects completed before abort are not rolled back.
 
-**Trade-offs:** draining prevents detached work but delays rejection until active work settles. Collect-all mode would store a result union for each input and continue intentionally; fail-fast mode suits batches whose remaining results are useless. This array implementation retains all inputs/results but rejects above its explicit maxItems budget (default10,000, configurable lower). That bounds the batch waiting population, not bytes per input/result. It does not implement streaming admission or per-tenant fairness. Dense application-owned inputs are required; sparse arrays reject rather than passing an undeclared undefined value. For huge sources, use a bounded producer queue or async iterator and stream results.
+**Trade-offs:** draining prevents detached work but delays rejection until active work settles. Collect-all mode would store a result union for each input and continue intentionally; fail-fast mode suits batches whose remaining results are useless. This array implementation retains all inputs/results but rejects above its explicit maxItems budget (default10,000, configurable lower). That bounds the batch waiting population, not bytes per input/result. It does not implement streaming admission or per-tenant fairness.
 
-**Exercise — failure-driven limiter:** use controllable promises, not timing guesses. Acceptance: peak concurrency never exceeds the limit; output order equals input order; empty input returns `[]`; invalid limits reject; after an observed failure no new item starts; active mappers receive abort; rejection occurs only after they drain; external/pre-aborted signals work; rejection with `undefined` remains a failure. Verify non-cooperative work requires its own timeout. Add exact maxItems/beyond-limit and sparse-array cases; over-budget batches must start zero mapper calls.
+Dense application-owned inputs are required; sparse arrays reject rather than passing an undeclared undefined value. For huge sources, use a bounded producer queue or async iterator and stream results.
+
+[Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
 ### Choose a concurrency number
 
@@ -1606,65 +1562,17 @@ Measure heap, external/Buffer memory, queue depth, and active operations separat
 
 ### Diagnostic exercise
 
-Build a program that fetches 10,000 URLs from a controlled local server.
-
-Requirements:
-
-- never run more than 20 requests concurrently;
-- abort the entire batch after a total deadline;
-- preserve input order in the result;
-- record successes, HTTP failures, and cancellations separately;
-- prove that all timers and sockets close.
-
-This exercise combines promises, cancellation, resource ownership, and event-loop reasoning.
-
----
+[Exercises and learner checklist](../practice/node-js/module-01-nodejs-foundations.md).
 
 ## 12. Final review checklist
 
-You should be able to explain and demonstrate the following:
-
-- Propagate an `AbortSignal` through a complete asynchronous operation.
-- Explain why a timeout does not prove that a remote write failed.
-- Bound concurrency according to the capacity of the constrained dependency.
-- Diagnose event-loop delay, a process that will not exit, and batch memory growth.
-- Node.js is a runtime, not a programming language or framework.
-- V8 executes JavaScript, while Node.js and libuv provide runtime and asynchronous I/O capabilities.
-- “Single-threaded” refers primarily to normal JavaScript execution on the main thread.
-- Non-blocking I/O allows operations to overlap without creating a JavaScript thread per request.
-- CPU-heavy synchronous work still blocks the event loop.
-- A version manager makes it easier to install, switch, and pin Node.js versions.
-- `process.argv[2]` is normally the first user-supplied command-line argument.
-- `process.env` values must be converted and validated.
-- `__dirname` and `__filename` belong to CommonJS; Node.js 22 ESM uses `import.meta.dirname` and `import.meta.filename`.
-- CommonJS uses `require()` and `module.exports`.
-- ES modules use `import` and `export`, support top-level `await`, and are preferred for new projects.
-- `.cjs` always selects CommonJS and `.mjs` always selects ESM.
-- The `node:` prefix identifies a standard-library module.
-- `package.json` describes project metadata, scripts, and dependency intent.
-- `package-lock.json` records the resolved dependency graph and should be committed.
-- Runtime packages belong in `dependencies`; development tools belong in `devDependencies`.
-- `npm ci` provides a clean lockfile-based installation suitable for CI.
-- Project scripts make local and CI commands consistent.
-- Error-first callbacks place the error in the first callback argument.
-- `promisify()` converts compatible legacy callback functions, but native promise APIs are preferable.
-- An async function always returns a promise.
-- `await` pauses only its current async function and throws when the promise rejects.
-- Independent operations can use `Promise.all()`; dependent operations remain sequential.
-- `Promise.all()` does not automatically cancel work after a rejection.
-- Async callbacks passed to `forEach()` are not awaited by `forEach()`.
-- The event loop executes ready callbacks one at a time on the JavaScript thread.
-- Network I/O commonly uses OS facilities; several filesystem, DNS, crypto, and zlib operations use libuv's worker pool.
-- The major phases are timers, pending callbacks, idle/prepare, poll, check, and close callbacks.
-- Compare ordinary callback next-tick priority with top-level ESM microtask ordering; explain the context before predicting output.
-- Both next ticks and endless microtask chains can starve later event-loop work.
-- Timer delays are thresholds, not guaranteed execution times.
-- Top-level ordering between `setImmediate()` and `setTimeout(..., 0)` is not universally deterministic.
-- Open servers, connections, timers, workers, and child processes can keep Node.js running.
+[Exercises and learner checklist](../practice/node-js/module-01-nodejs-foundations.md).
 
 ### One-minute recap
 
-Node.js executes JavaScript outside the browser by combining V8 with runtime APIs and libuv. Its event-driven, non-blocking I/O model lets one JavaScript thread coordinate many concurrent operations, but long synchronous work still blocks every other callback. Projects organize code with CommonJS or, preferably for new work, ES modules. npm records dependencies and shared commands in `package.json`, while the lockfile makes the resolved dependency tree reproducible. Modern asynchronous code uses promises and `async`/`await`, starts independent operations concurrently when appropriate, and handles every rejection. The event loop then coordinates timers, I/O, immediates, close callbacks, next ticks, and promise microtasks according to their queues and checkpoints.
+Node.js executes JavaScript outside the browser by combining V8 with runtime APIs and libuv. Its event-driven, non-blocking I/O model lets one JavaScript thread coordinate many concurrent operations, but long synchronous work still blocks every other callback. Projects organize code with CommonJS or, preferably for new work, ES modules. npm records dependencies and shared commands in `package.json`, while the lockfile makes the resolved dependency tree reproducible.
+
+Modern asynchronous code uses promises and `async`/`await`, starts independent operations concurrently when appropriate, and handles every rejection. The event loop then coordinates timers, I/O, immediates, close callbacks, next ticks, and promise microtasks according to their queues and checkpoints.
 
 
 ## Official references and verification scope
@@ -1680,89 +1588,11 @@ The examples illustrate contracts; completing the exercises and retaining measur
 
 ## Worked module failures and interoperability lab
 
-Use a dedicated scratch project under Node24.18.0 with explicit extensions/type markers. These small files complement the live counter example in section4. A cycle itself is not automatically forbidden: the failure depends on which bindings/exports are observed before initialization. Keep import-time effects and per-request data out of shared module singletons.
-
-```js
-// cycle-a.mjs
-import { observed } from './cycle-b.mjs';
-export const value = 1;
-console.log(observed);
-```
-
-```js
-// cycle-b.mjs
-import { value } from './cycle-a.mjs';
-export const observed = value; // ReferenceError while value is still uninitialized.
-```
-
-```js
-// cycle-a.cjs
-exports.ready = false;
-const peer = require('./cycle-b.cjs');
-exports.observed = peer.observed;
-exports.ready = true;
-```
-
-```js
-// cycle-b.cjs
-const peer = require('./cycle-a.cjs');
-exports.observed = peer.ready; // false: partially initialized but already assigned export.
-```
-
-Refactor an unwanted cycle by moving a shared value/contract to a third independent module or by injecting a dependency after construction. Do not fix a temporal-dead-zone error by blindly turning every binding into var and accepting undefined. A CJS primitive copied by destructuring is not a live ESM binding; mutating the exported object can be observed through that object, while replacing it later does not rewrite references already retained by consumers.
-
-Create a tiny local package at `node_modules/fixture-boundary/` in the scratch project; no registry installation is required:
-
-```json
-// node_modules/fixture-boundary/package.json
-{ "name": "fixture-boundary", "version": "1.0.0", "type": "module", "exports": { ".": "./public.js" } }
-```
-
-```js
-// node_modules/fixture-boundary/public.js
-export const publicValue = 42;
-```
-
-```js
-// node_modules/fixture-boundary/private.js
-export const privateValue = 99;
-```
-
-`import('fixture-boundary')` exposes42; `import('fixture-boundary/private.js')` rejects ERR_PACKAGE_PATH_NOT_EXPORTED even though the file exists. This is a public module-interface boundary, not a sandbox that makes files unreadable through filesystem authority. A relative ESM import missing its extension can reject ERR_MODULE_NOT_FOUND; fix the actual specifier/package contract rather than suppress type errors or add arbitrary compiler flags.
-
-```js
-// legacy-counter.cjs
-exports.count = 0;
-exports.increment = () => { exports.count += 1; };
-```
-
-```js
-// legacy-consumer.mjs
-import legacy from './legacy-counter.cjs';
-const { count: snapshot } = legacy;
-legacy.increment();
-console.log(snapshot, legacy.count); // 0,1; default import observes the CJS exported object.
-```
-
-Named CJS exports detected by Node use static analysis and are not a universal substitute for this explicit object interface. For a CJS caller, dynamic import can load an asynchronous ESM graph. Node24 can synchronously require suitable ESM graphs without top-level await; adding await to that graph can produce ERR_REQUIRE_ASYNC_MODULE. Treat that as a versioned compatibility condition, not permission to assume every package is require-compatible. createRequire(import.meta.url) provides an intentional CJS resolution bridge from ESM. Do not mix module-cache resets with per-request isolation; create a request-owned object instead.
-
-**Additional lab acceptance:** run exact ESM live-count, CJS object/snapshot, ESM TDZ cycle and CJS partial-cycle fixtures; assert package public import/private rejection and missing-extension failure. Compare CJS/ESM top-level scheduling prefixes in section8 while leaving timer/immediate order unconstrained. Demonstrate require of a synchronous ESM module and rejection of a TLA graph on the pinned runtime. Test limiter queue cap, first failure with falsy reason, abort/drain and external/pre-aborted signals using controllable gates. The learner must reproduce/explain these outcomes independently; passing supplied fixtures does not prove application readiness.
-
-References rechecked2026-10-22: [Node packages/exports/type detection](https://nodejs.org/api/packages.html), [ESM interoperability](https://nodejs.org/api/esm.html), [event loop and timer-version qualification](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick). The chapter's22.7+baseline does not imply every24-only interop behavior is identical on an older patch; pin/test the deployed version.
-
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/runtime/modules.md).
 
 ## Pinned runtime verification and boundary practice
 
-The version22 setup demonstrates a compatibility baseline, not the newest release. The local checks below use Node24.18.0; official version24 documentation may display a later patch. Retain the actual runtime in evidence and test the deployment version rather than assuming every patch has identical interoperability behavior.
-
-**Rechecked 2026-10-25:** exact current limiter source strict-compiles; the existing module lab passes live ESM bindings, CJS snapshot/object behavior, ESM temporal-dead-zone and CJS partial cycles, public exports/private-subpath denial, missing relative extension, synchronous require(ESM), TLA rejection, and CJS/ESM queue prefixes. A separate fresh ambiguous-package fixture confirms syntax detection, explicit commonjs rejection of ESM syntax and dynamic import inside CJS. Timer/immediate relative order is deliberately unconstrained. Promise adoption remains pending until the adopted promise settles; later rejection cannot override it. These local fixture checks are distinct from learner practice.
-
-When debugging, first record the nearest package type, extension, runtime, call context and exact thrown error. Then reduce the failing case. Do not change module settings merely to silence a symptom. For callbacks, catch parsing errors in the callback and propagate once; for promise handlers, return the promise so rejection stays in the chain. A passing import/scheduling fixture does not prove application authorization, bounded input or network cancellation.
-
-**Exercise acceptance:** run the existing module lab and add an ambiguous `.js` fixture in an owned package with no type; compare with explicit commonjs/module. Show dynamic import alone does not force ESM. Use a controlled promise to show adoption versus fulfillment and a malformed configuration to compare callback-local handling with a promise `.catch`. Preserve the real Autocode template scripts and restricted tests. For frontend stale-query/cancellation/focus behavior, continue with [the tested large-data workflow](../senior_growth/EngX_Quality/Large_Data_Workflow.md). Learner execution/explanation remains required.
-
-Official references checked2026-10-25: [Node package syntax detection](https://nodejs.org/api/packages.html#syntax-detection), [nextTick versus microtask context](https://nodejs.org/docs/latest-v24.x/api/process.html#when-to-use-queuemicrotask-vs-processnexttick), [HTML event-loop/rendering model](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops). Browser rendering opportunities are not Node event-loop phases.
-
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/runtime/historical-verification.md).
 
 ## Cross-layer cancellation and optional API continuation
 

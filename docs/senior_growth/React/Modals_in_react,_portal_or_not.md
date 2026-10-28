@@ -87,54 +87,11 @@ And in `index.html`:
 ---
 
 
-
 ## Controlled native dialog: one owner for modality and recovery
 
 React19 baseline, checked2026-10-21. This primary example deliberately supports **one active modal** and a stable fallback focus ref. A multi-dialog application needs coordinated stack/scroll/focus ownership or a tested library; don't copy a single boolean body lock into many independent overlays.
 
-```tsx
-import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
-export function NativeDialog({ open, title, onRequestClose, fallbackFocus, children }: {
-  open: boolean; title: string; onRequestClose: () => void;
-  fallbackFocus: RefObject<HTMLElement | null>; children: ReactNode
-}) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  const heading = useRef<HTMLHeadingElement>(null);
-  const id = useId();
-  useEffect(() => {
-    if (!open || !dialog.current) return;
-    const element = dialog.current;
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const root = document.documentElement;
-    const previousOverflow = root.style.overflow;
-    if (!element.open) element.showModal();
-    root.style.overflow = 'hidden';
-    heading.current?.focus(); // Long/structured-content policy; short forms may choose their first control.
-    return () => {
-      if (element.open) element.close();
-      root.style.overflow = previousOverflow;
-      const target = opener?.isConnected ? opener : fallbackFocus.current;
-      if (target?.isConnected && document.activeElement !== target) target.focus();
-    };
-  }, [open, fallbackFocus]);
-  return <dialog ref={dialog} aria-labelledby={id}
-    onCancel={event => { event.preventDefault(); onRequestClose(); }}
-    onClose={event => { if (open && !event.currentTarget.open) onRequestClose(); }}>
-    <h2 id={id} ref={heading} tabIndex={-1}>{title}</h2>
-    {children}
-    <button type="button" onClick={onRequestClose}>Close dialog</button>
-  </dialog>;
-}
-export function DialogDemo() {
-  const [open, setOpen] = useState(false);
-  const fallback = useRef<HTMLHeadingElement>(null);
-  return <><h1 ref={fallback} tabIndex={-1}>Contact workspace</h1>
-    <button type="button" onClick={() => setOpen(true)}>Open contact instructions</button>
-    <NativeDialog open={open} title="Contact instructions" fallbackFocus={fallback} onRequestClose={() => setOpen(false)}>
-      <p>Review the requested contact details. This demonstration does not save data.</p>
-    </NativeDialog></>;
-}
-```
+<<< ../../workbench/frontend/react/composition/native-dialog.tsx{tsx}
 
 ```css
 dialog { max-inline-size: min(90vw, 40rem); max-block-size: 80dvh; overflow: auto; }
@@ -149,7 +106,6 @@ React events still bubble through the React owner tree across a portal, and cont
 
 For an async form inside the dialog, keep pending/server errors visible and close only after confirmed persistence. Cancelling UI/request does not necessarily undo a committed server write; preserve/reconcile the draft and use the mutation contract. A disclosure, navigation dropdown or nonmodal panel should not trap the user in a modal loop. Prefer native controls/semantics to a custom div trap; complex library alternatives still need acceptance testing rather than a blanket accessibility guarantee.
 
-**Exercise acceptance:** open/Tab/Shift+Tab/Escape/Close, click inside versus backdrop, remove the trigger before close, long/translated content, repeated mount/StrictMode, SSR first paint/hydration and zoom400%. Verify name, focus entry/containment/return, inert background, scroll lock restoration and no stale async success after route change. Retain browser/OS/screen-reader versions and actual results; this code has not received a manual accessibility pass. Test a missing/changed portal host and theme inheritance explicitly. No library installation or browser verification is implied by syntax checks.
 
 Official references: [React portal ownership/events](https://react.dev/reference/react-dom/createPortal), [HTML dialog](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element), [WAI modal focus pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), [React Effect cleanup](https://react.dev/reference/react/useEffect). Checked2026-10-21.
 
@@ -158,4 +114,10 @@ Official references: [React portal ownership/events](https://react.dev/reference
 
 The controlled native example above is the complete primary focus/semantics/keyboard workflow for this lesson; OverlayHost is only the placement alternative. Native close events can be queued. During StrictMode effect cleanup/setup or a fast close/reopen, an old close event can arrive after showModal has reopened the element. The onClose handler checks the element's current open state before requesting owner closure, avoiding that stale event closing the new modal. A genuine native close leaves open=false and still reconciles the controlled owner.
 
-**Focused regression acceptance:** simulate showModal/close and queued close-event delivery to prove that reopening survives an old event, a genuine current close requests closure, controlled cleanup restores owned overflow and the heading/opener/fallback policy is followed. These are control-flow tests only; a DOM shim does not implement the top layer, actual focus trapping, inertness, native Escape or mobile scrolling. Complete the existing native browser/reader matrix separately. For a mutation form, use the [worked async form/dialog contracts](./complex-forms-and-data.md) and preserve pending/errors/drafts until confirmed server success. Learner/browser practice remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Modals_in_react%2C_portal_or_not.md). All learner practice remains outstanding; the worked examples above are explanatory material.
+
+
+The checked reference explicitly cycles Tab/Shift+Tab at the edges of its visible, enabled light-DOM controls. This avoids leaving the document through browser chrome after the last control in the observed Chromium run. Its bounded policy excludes positive tabindex, iframe and shadow-root widgets; use a reviewed focus-management library/integration for those cases. Native modality still supplies top-layer/background-inert behavior; the cycle is not a general DOM focusability algorithm.

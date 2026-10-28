@@ -94,4 +94,7 @@ The [executed pagination workflow](../EngX_Quality/Large_Data_Workflow.md) separ
 
 Angular's `[(ngModel)]` is an alternative template binding example and requires the relevant forms setup; it is not a runnable standalone Angular application. No need to learn another framework to perform this exercise.
 
-**Exercise acceptance:** build one labeled controlled field, show draft versus applied value and a server validation error without losing the draft. Test empty input, async out-of-order responses, reset, account change and unmount. Inspect a render profile only if performance is a concern, retaining workload/device evidence. Explain state ownership and avoid deriving professional readiness from generated tests. Learner practice remains required. Official references: [React controlled inputs](https://react.dev/reference/react-dom/components/input), [Angular two-way binding](https://angular.dev/guide/templates/two-way-binding).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/Please_compare_one-way_and_two-way_data_binding_What_are_the_pros_and_cons_of_each_approach.md). All learner practice remains outstanding.

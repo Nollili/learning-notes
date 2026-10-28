@@ -80,6 +80,11 @@ If an automated permission review rejects an operation, preserve its stated reas
 
 For this fixture a suitable title is “Respect explicit zero retry limits.” Describe the trigger (maxRetries0 made3 attempts), the new undefined-only default and runtime invalid-input behavior, the one-expression scope, and the actual baseline/final/mutation evidence. List untested transport/backoff/whole-request deadlines and state that review is local with no separate human approval. Include the base/patch reference and AC mapping. Do not claim a linked issue was closed, CI passed or a PR exists when none does.
 
-**Practice acceptance:** run the same local exercise in a disposable repo, prove main/user changes remain intact, inspect exact scope, preserve patch/evidence and demonstrate Git's dirty-worktree refusal. Reuse a checkpoint after intentionally changing the fixture base and explain which assumptions/checks must be revisited. Prepare a factual local PR description with blockers/limitations. No push is part of acceptance. Learner independent practice remains required.
+
 
 Official references checked2026-10-25: [git-worktree](https://git-scm.com/docs/git-worktree), [git-switch](https://git-scm.com/docs/git-switch), [git-diff](https://git-scm.com/docs/git-diff), [git-status](https://git-scm.com/docs/git-status). Commands were actually tested with the stated local Git version; the fixture's base/path assumptions must be adapted deliberately elsewhere.
+
+
+## Separate practice
+
+Apply the [focused requirements](../practice/engineering/ai-engineering/local-workflow-and-git.md). All learner practice remains outstanding.

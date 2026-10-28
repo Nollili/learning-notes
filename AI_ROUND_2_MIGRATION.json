@@ -1,0 +1,806 @@
+{
+  "canonical_source_extractions": [
+    {
+      "from": "docs/python-for-ai/bounded-document-streams.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/document_streams.py",
+      "sha256": "e6030c048a4ee4ba45d69a38280f5e1af141727d4ea31f6b86b3f931f76b450a"
+    },
+    {
+      "from": "docs/python-for-ai/bounded-document-streams.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_document_streams.py",
+      "sha256": "afacc96236646f4e7729258935ff36af49847f9b6747aedf2c5232ee259cd602"
+    },
+    {
+      "from": "docs/python-for-ai/prompt-injection-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/task_scope.py",
+      "sha256": "85b3059eb7e1147b065a59d146d5489de540fde7f660b7ace4dcc5cbb9955c22"
+    },
+    {
+      "from": "docs/python-for-ai/prompt-injection-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_task_scope.py",
+      "sha256": "d90b271a7ea7d351c99ced6d1b34e37516aacf1989ccbd7bbb6f9ea2eccc1ab1"
+    },
+    {
+      "from": "docs/python-for-ai/workflow-diagnostics.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/workflow_trace.py",
+      "sha256": "275ed7f5110726aacc0c40d6959da53d04a650bee446a24b9539be647ce06401"
+    },
+    {
+      "from": "docs/python-for-ai/source-and-output-security.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/secure_note_reader.py",
+      "sha256": "2be53a21a37bcf58463babb14fa652ea2f48fa065693f02ded98fa68d94de5ec"
+    },
+    {
+      "from": "docs/python-for-ai/source-and-output-security.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_secure_note_reader.py",
+      "sha256": "2f140ded407bcc0e5422c195846122f2e0df9aa8e4872f81b536933169465565"
+    },
+    {
+      "from": "docs/python-for-ai/provenance-and-oversight.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/audit_record.py",
+      "sha256": "caefa48f124ae3c828c3fff8186367d680eade31b675bd1af0cea87d48818878"
+    },
+    {
+      "from": "docs/python-for-ai/provenance-and-oversight.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_audit_record.py",
+      "sha256": "359dbd5dc9dc0fed8750a17b3338cd7e7ec9d7bece1a6cc75c327ef0725ec63c"
+    },
+    {
+      "from": "docs/python-for-ai/model-sdk.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/model_sdk.py",
+      "sha256": "59122d2f68a0eaa8321dc37a09decba32e91b5e116f645990714dfe7d8bb9d10"
+    },
+    {
+      "from": "docs/python-for-ai/model-sdk.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_model_sdk.py",
+      "sha256": "4fae834577750c09247878e376459593ff9d91caf6915dc28fd2739e4a233b64"
+    },
+    {
+      "from": "docs/python-for-ai/model-sdk.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_model_sdk_edges.py",
+      "sha256": "2d1b819821712a3aeca6bc74f8ca120dcde94a8865ccd47b940404293ac07988"
+    },
+    {
+      "from": "docs/python-for-ai/model-streaming.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/model_streaming.py",
+      "sha256": "6215cb63a5775a33b7be4dc7f812bcc57a2cb7f7d48ab9be7012b83c842c34ba"
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-measurements.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/eval_measurements.py",
+      "sha256": "a631687798c6d0d769d60077a781effff93e92c283a48528a53d94af0ab8a72b"
+    },
+    {
+      "from": "docs/python-for-ai/model-economics.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/spend_ledger.py",
+      "sha256": "b3603d146b918ee4e224bd790722a09baea1eb736838b7d516a48ff3c1a0f588"
+    },
+    {
+      "from": "docs/python-for-ai/model-economics.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_spend_ledger.py",
+      "sha256": "165ab630f800289c82afc221fc21441539ecec95f319c7ead67f3355b83453fa"
+    },
+    {
+      "from": "docs/python-for-ai/model-work-budgets.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/work_admission.py",
+      "sha256": "acbd0a630079564ecbf8ea291371bdab21bca0476fdb9bd121616c4dfab4bf03"
+    },
+    {
+      "from": "docs/python-for-ai/model-work-budgets.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/work_retries.py",
+      "sha256": "f4a96cc12d6e85c1f1f94d9c9ccb2ea7cc8a7f2b1392a92b953c9c672b947d7d"
+    },
+    {
+      "from": "docs/python-for-ai/async-http.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/http_documents.py",
+      "sha256": "7f6dc91cc1cb9ef85a3a302c4293749345388de433e4a6237c12ed5a945999f9"
+    },
+    {
+      "from": "docs/python-for-ai/async-http.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_http_documents.py",
+      "sha256": "0e55958d54e4e9e293c596ac7ce3bf1dd04f1a9a917f74c4d4c990f8154d2435"
+    },
+    {
+      "from": "docs/python-for-ai/async-http.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_http_native.py",
+      "sha256": "f598c97f5e07df55f7d6bfd6bc407f340690100a947727d1807c74ab7938f01c"
+    },
+    {
+      "from": "docs/python-for-ai/tool-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/note_tool.py",
+      "sha256": "a59b8ecf976c7f9a38ca548390b90780d0b957b0d0b444408de21c0329128b59"
+    },
+    {
+      "from": "docs/python-for-ai/model-foundations.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/model_basics.py",
+      "sha256": "47b24ab02f34a5bfaecc9e6c999db83ac524c58e556bdeea1413e3dcc0cfa89d"
+    },
+    {
+      "from": "docs/python-for-ai/model-foundations.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_model_basics.py",
+      "sha256": "554392ab767a431fc539410987e6f39a28f5741446fb92bff132390e1ce220fe"
+    },
+    {
+      "from": "docs/python-for-ai/model-foundations.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/selection_eval.py",
+      "sha256": "8df14cfb09c7c3eaa053b8fca192875bcc455aa437a79696257fd951f1f3ec49"
+    },
+    {
+      "from": "docs/python-for-ai/graph-memory.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/lookup_graph.py",
+      "sha256": "4fdf2a36501f63708da1ec147e7451200f56cb0401774db175825750c3fc9ca2"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-debugging.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/retrieval_debugging.py",
+      "sha256": "a454db771d1891c9d360461bef0b563f48cf1bc84439874b51ad381b23ff3024"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-debugging.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_retrieval_debugging.py",
+      "sha256": "7f30a1e05c85218a381222148a05e11d3f29ae16816ce890ff14da230d509645"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-pipeline.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/retrieval_pipeline.py",
+      "sha256": "abcc30ef66c5a1f1929a5df8c0bd8db1d92c3ff5c6149d2e0b68422ef1c2ea73"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-pipeline.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/context_counter.py",
+      "sha256": "37d6ef59f50d455296d3287c30b98f3dc6c5edcb7ad7f0d7dc7dc4aaf239d8bc"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-pipeline.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_retrieval_pipeline.py",
+      "sha256": "9214ab52a977069b0d38a02e85eda38cb103e6aeab31b66d64c93f4ee1d191c1"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-pipeline.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_context_counter.py",
+      "sha256": "19564f3a2bf74641d53cbad4465511e7bb16cc2f8279c869676e654d1fe0fcce"
+    },
+    {
+      "from": "docs/python-for-ai/vector-storage-lifecycle.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/vector_store.py",
+      "sha256": "536fa6b1c4e4f95bdd66fd46bb9ced3d664b36c9fc8922be08dbecd7b854aca6"
+    },
+    {
+      "from": "docs/python-for-ai/vector-storage-lifecycle.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_vector_store.py",
+      "sha256": "21c551c01e55fa3f356f255bd0e118cb1cb4fe7be353a06b291145d4c348d05f"
+    },
+    {
+      "from": "docs/python-for-ai/setup-and-basics.md",
+      "to": "docs/workbench/applied-ai/python/basics.py",
+      "sha256": "fbe0d49df3dca7cb95b6f97c51e08fe5fadb7594cc25d11a1abd37fe3a8f0515"
+    },
+    {
+      "from": "docs/python-for-ai/setup-and-basics.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_basics.py",
+      "sha256": "381fe33680b27a41be02d6a6acaa8c90aa754f16654d0e58d2076903e8bcf8a0"
+    },
+    {
+      "from": "docs/python-for-ai/prompting-and-modalities.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/prompt_design.py",
+      "sha256": "de5d6283a988f3c0df54a4f1faf5f048d2f2ee6c83f6207c7900149b5997e339"
+    },
+    {
+      "from": "docs/python-for-ai/prompting-and-modalities.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/prompt_trial.py",
+      "sha256": "6114518da69d6b5023fe0c5049dffe2bdf8333d934eb2d32b373b8f68aaf2649"
+    },
+    {
+      "from": "docs/python-for-ai/configuration-and-logging.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/settings.py",
+      "sha256": "2f70a8ec51ec8d45d18ddd4eb79946b8bcce186bec5c9c1033e42e83657bf524"
+    },
+    {
+      "from": "docs/python-for-ai/configuration-and-logging.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/safe_logging.py",
+      "sha256": "70d86cac2aedacc93d0e275ba10b0215d8058d0ccbf104aa30b023c61319253c"
+    },
+    {
+      "from": "docs/python-for-ai/configuration-and-logging.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_settings_and_logging.py",
+      "sha256": "510e7807c9046b50d7ab1e4b05ef782071968ab1496f43aaa61bc9895ee9046a"
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/extraction.py",
+      "sha256": "1e0dbe69bf8ab9e336d7a3ea0633bc1654ab1051a1c2e3e7d9cb1308258e5454"
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_extraction.py",
+      "sha256": "86d6c8bea80286b8a4b0e477f8d2db6bd33c99663676cbb2fea400e996c04e4e"
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_chunk_identity.py",
+      "sha256": "ea86d96594313f3f55dd3bb6eab11f0799b5516d409d4f32d02be33efb2d720c"
+    },
+    {
+      "from": "docs/python-for-ai/history-and-workflows.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/history.py",
+      "sha256": "57e56c8d5de3596c7c065702575992edf4c93331456b0dbc3bebe55b6d28f402"
+    },
+    {
+      "from": "docs/python-for-ai/deployment.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/deployment.py",
+      "sha256": "43658367b16f412fee5c71e2e385df302036530ad367f495ddf06cb1e319dc6a"
+    },
+    {
+      "from": "docs/python-for-ai/deployment.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_deployment.py",
+      "sha256": "c57d356981f843bbc2cdd02bbaa5b386efce45a28b0a5e05fa4457e8557b8df2"
+    },
+    {
+      "from": "docs/python-for-ai/embeddings-and-similarity.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/vector_search.py",
+      "sha256": "6330bde713a84f1b7d19203211798c49a23c9d6b7790c51828dcdcad27d33745"
+    },
+    {
+      "from": "docs/python-for-ai/embeddings-and-similarity.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_vector_search.py",
+      "sha256": "62998583f86ce1c7d69c0e4d4bd6ef8e9350cf966a6b84e1377ebf666feca93e"
+    },
+    {
+      "from": "docs/python-for-ai/embeddings-and-similarity.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/hybrid_search.py",
+      "sha256": "141d4a951ba5f592e63dc5846988cec04bf0e92d1dbb6e5d7ac05705d5093a13"
+    },
+    {
+      "from": "docs/python-for-ai/embeddings-and-similarity.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_hybrid_search.py",
+      "sha256": "75b1f26bb0bc013ca198a077bf3c29b202bd564abfe56674f703066542ff983c"
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-lab.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/eval_cases.py",
+      "sha256": "477780b501b863c6107f05b1bdf2b288815a44781c84375661b0aaf3946fe186"
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-lab.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/retrieval_metrics.py",
+      "sha256": "aa50930a8363945816278b614bf497095b32234d50e4fe2524d97ce610593d1d"
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-lab.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/judge_checks.py",
+      "sha256": "38aee5d241c26c548241118647c2b50562d29c39f3f98b01ecaa8378af1c7129"
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/api_models.py",
+      "sha256": "d7ac00d9d4b603ea2274f978d989a3ab05b7f02ebe533b4b4140b7c6f298e380"
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/api_transport.py",
+      "sha256": "dd0ebba9b8216e3fd9aead984033c6dafa25d89842f6222ed063c216eab5e51d"
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/api.py",
+      "sha256": "1ef74a1e1f84597aae45fd037120522c59ce26ad5fc288ff3646cf97c0531c9e"
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_api.py",
+      "sha256": "a5d3dbcf52240b7e7d3e4a2991a5a5c401993ff30e400d9ec05a524683f62b09"
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_api_edges.py",
+      "sha256": "94ee928465f91d623750a0149129712a6b4ce5e38b94598ec534a78a33e62c89"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-context.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/evidence.py",
+      "sha256": "2281574b1d35d5273bf2dc4b16a71dc469b1c609e5883f17e7d8247ca5a79f76"
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-context.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_evidence.py",
+      "sha256": "b40390af8a4214a15f641f0e5009edc98ea0e86fd8064e795c9705c3e343f4fb"
+    },
+    {
+      "from": "docs/python-for-ai/token-budgets.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/token_budgets.py",
+      "sha256": "ca614b54585445c3d07b80a36e9e5d493ef4b4f3df7a97bd0421e2493b9e5375"
+    },
+    {
+      "from": "docs/python-for-ai/token-budgets.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_token_budgets.py",
+      "sha256": "e2c600a57335619473ef6fd73e1c37244c336de3af258126a63be178f6e1f2e4"
+    },
+    {
+      "from": "docs/python-for-ai/approved-writes.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/approved_write.py",
+      "sha256": "d21461df6cf45f32bf0d3f932e9cecf6b8ad84578029389dd9b9f1af5d1ed017"
+    },
+    {
+      "from": "docs/python-for-ai/attention-and-sampling.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/attention_math.py",
+      "sha256": "08b5172d23a25cc2b09bee736e7bc9eaf3a62ba74aff3fa42f3618b2972599c5"
+    },
+    {
+      "from": "docs/python-for-ai/attention-and-sampling.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_attention_math.py",
+      "sha256": "02cf24e6159adb8780566effcdbce3c07f0c10c1fc228ca81d5bfaf6a66d0d5b"
+    },
+    {
+      "from": "docs/python-for-ai/provider-data-lifecycle.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/provider_export.py",
+      "sha256": "e24a309edb9f5d59c001ee02e02dc2a4c4423e291e4537ac834305948658b8b8"
+    },
+    {
+      "from": "docs/python-for-ai/provider-data-lifecycle.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_provider_export.py",
+      "sha256": "0955b3cdfdf569ce8962249e14c16922ec3aa90ebe9db0745163e67050882fd3"
+    },
+    {
+      "from": "docs/python-for-ai/tool-workflow-state.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/tool_state.py",
+      "sha256": "919c712149a3c2c7c527644f8d00033315520c434bcbc2a38289b7769e4f47ec"
+    },
+    {
+      "from": "docs/python-for-ai/tool-workflow-state.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/workflow_budget.py",
+      "sha256": "a40022e8c6d3157e116a08870944e9033397db3c8ae92d830fbb3db5ad56cfa6"
+    },
+    {
+      "from": "docs/python-for-ai/cache-and-batch.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/cache_batch.py",
+      "sha256": "1fc341ea48c56acadb73f3001c61407f61d3e801501ab4a23bb89f6ca90d06a0"
+    },
+    {
+      "from": "docs/python-for-ai/cache-and-batch.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_cache_batch.py",
+      "sha256": "f7664ee459d33689a366dc1ec6af37b68ab5d7e6c294ea5774ffe60169b03589"
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/domain.py",
+      "sha256": "2dfe866eb1081311533af09f0b0a8117e6e1bc9051e53ce01456327f3b00eb33"
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/service.py",
+      "sha256": "71d837f418b5b5e699d919c4a92b18c796b267c9a95c99f86b33d83c97f3fc6a"
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/cli.py",
+      "sha256": "beba9ab5e018d279319cdc878c331d7c80d6ed742905c7d78d09355a45811b30"
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/workbench/applied-ai/python/study_ai/__main__.py",
+      "sha256": "9d1c2b39f3fac0ef7c816f77cce7cbe82d6f4a4a2ea4dcf2e219bda10c2383a6"
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_typed_boundary.py",
+      "sha256": "46bfe271c202f4f1b4018a92fa47b72f742e1481fbd7bdacef378194b485771b"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_prompt_design.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_prompt_design.py",
+      "sha256": "4d095163c2c96baa8341e894d531637e863a3e6ab798e19584e5b80bf0416ec3"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_work_budgets.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_work_budgets.py",
+      "sha256": "95be38219b23f522ac8c25905e972c8d5235523d80e1f09549f315c5b1be0064"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_tool_state.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_tool_state.py",
+      "sha256": "b8fd1dcfad2f4b1e5e1bc2f3758d2cade83c02269dbe79b13695c744acf0b5fd"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_note_tool.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_note_tool.py",
+      "sha256": "6247d93ba1e8cfdc81173e1fc94227606836a392c95051d1f947320ba8428753"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_workflow_budget.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_workflow_budget.py",
+      "sha256": "228f7de4d0e6d97002cbad1ad90f290fbda868f2f8b6598c06a3fce41a02538d"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_evidence_messages.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_evidence_messages.py",
+      "sha256": "77b254835a726ab33511e6eb9de18c6b53cd9cad0ba12e576f049b8c28f70e94"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_eval_measurements.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_eval_measurements.py",
+      "sha256": "483f2826f2c6f2c66e55f0b5a310b1da1f2ac4dac528afdb5b2367b2d249d7f6"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_retrieval_metrics.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_retrieval_metrics.py",
+      "sha256": "e712e20b5d24c89b0a2dc5f82ce4e32915ed022e3dab274580b3d781a4ffb831"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_workflow_trace.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_workflow_trace.py",
+      "sha256": "ae618da9c6a35eef687f5dc38aa721f3f6b8eb30ee2407951684113e9acc629c"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_judge_checks.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_judge_checks.py",
+      "sha256": "4f0a4fe8c5041234db2796fa1f332b6e003219adc4941b85c00961ab9c27c3dd"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_prompt_trial.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_prompt_trial.py",
+      "sha256": "dcbc49d184269da4de211df9b7bc45284528f98dfd38bca7ab0bd914848a881b"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_selection_eval.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_selection_eval.py",
+      "sha256": "f0b7b10459b2387826c4dfacd2b1f2e00900c8049b77f0b4185edbe6f19765d3"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_history.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_history.py",
+      "sha256": "ce7e5f040ee5ddd2bd7d67f27dd5078e8d656605bb851aa34a9c87f116374317"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_lookup_graph.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_lookup_graph.py",
+      "sha256": "a73fd107fad4902b01caeb3b1701fc2b338b7fddf0623b15982387cc87009e93"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_model_streaming.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_model_streaming.py",
+      "sha256": "2be6a0da869995dfc93d917abbf9fcabe9ce2e0ef6247870bd230f6e22a1e9ef"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_approved_write.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_approved_write.py",
+      "sha256": "65cdd6f889cee1fe6665916d2cc75aaf9174d67868ae4e6ff81cf5bbaf93c81f"
+    },
+    {
+      "from": "retained local authored fixture: /private/tmp/learning-notes-python-b54/lab_tests/test_eval_cases.py",
+      "to": "docs/workbench/applied-ai/python/lab_tests/test_eval_cases.py",
+      "sha256": "681a3fcf1cdd246795861c14f93712937b6d03d1a02c8ea22c3824907181521d"
+    },
+    {
+      "from": "docs/python-for-ai/model-streaming.md",
+      "to": "docs/workbench/applied-ai/ui/generation-panel.tsx",
+      "kind": "retained React port source"
+    }
+  ],
+  "path_strategy": "Existing lesson URLs retained; grouped topic indexes and dedicated workbench; code displayed by canonical includes.",
+  "practice_sections": [
+    {
+      "from": "docs/python-for-ai/bounded-document-streams.md",
+      "to": "docs/practice/applied-ai/chapters/bounded-document-streams.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/prompt-injection-boundaries.md",
+      "to": "docs/practice/applied-ai/chapters/prompt-injection-boundaries.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/workflow-diagnostics.md",
+      "to": "docs/practice/applied-ai/chapters/workflow-diagnostics.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/model-sdk.md",
+      "to": "docs/practice/applied-ai/chapters/model-sdk.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/model-streaming.md",
+      "to": "docs/practice/applied-ai/chapters/model-streaming.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-measurements.md",
+      "to": "docs/practice/applied-ai/chapters/evaluation-measurements.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/model-economics.md",
+      "to": "docs/practice/applied-ai/chapters/model-economics.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/model-work-budgets.md",
+      "to": "docs/practice/applied-ai/chapters/model-work-budgets.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/tool-boundaries.md",
+      "to": "docs/practice/applied-ai/chapters/tool-boundaries.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/model-foundations.md",
+      "to": "docs/practice/applied-ai/chapters/model-foundations.md",
+      "headings": [
+        "Practice and acceptance",
+        "Practice: outcome gates rather than persuasive answers"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/mcp-primitives.md",
+      "to": "docs/practice/applied-ai/chapters/mcp-primitives.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/graph-memory.md",
+      "to": "docs/practice/applied-ai/chapters/graph-memory.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/graphs-and-adaptation.md",
+      "to": "docs/practice/applied-ai/chapters/graphs-and-adaptation.md",
+      "headings": [],
+      "extra_paragraphs": 3
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-debugging.md",
+      "to": "docs/practice/applied-ai/chapters/retrieval-debugging.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-pipeline.md",
+      "to": "docs/practice/applied-ai/chapters/retrieval-pipeline.md",
+      "headings": [],
+      "extra_paragraphs": 2
+    },
+    {
+      "from": "docs/python-for-ai/vector-storage-lifecycle.md",
+      "to": "docs/practice/applied-ai/chapters/vector-storage-lifecycle.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/setup-and-basics.md",
+      "to": "docs/practice/applied-ai/chapters/setup-and-basics.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/prompting-and-modalities.md",
+      "to": "docs/practice/applied-ai/chapters/prompting-and-modalities.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 2
+    },
+    {
+      "from": "docs/python-for-ai/configuration-and-logging.md",
+      "to": "docs/practice/applied-ai/chapters/configuration-and-logging.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/practice/applied-ai/chapters/document-processing.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/history-and-workflows.md",
+      "to": "docs/practice/applied-ai/chapters/history-and-workflows.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/deployment.md",
+      "to": "docs/practice/applied-ai/chapters/deployment.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/embeddings-and-similarity.md",
+      "to": "docs/practice/applied-ai/chapters/embeddings-and-similarity.md",
+      "headings": [
+        "Practice for hybrid search",
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-lab.md",
+      "to": "docs/practice/applied-ai/chapters/evaluation-lab.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/operations-and-data.md",
+      "to": "docs/practice/applied-ai/chapters/operations-and-data.md",
+      "headings": [],
+      "extra_paragraphs": 3
+    },
+    {
+      "from": "docs/python-for-ai/fastapi-boundaries.md",
+      "to": "docs/practice/applied-ai/chapters/fastapi-boundaries.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/retrieval-context.md",
+      "to": "docs/practice/applied-ai/chapters/retrieval-context.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/token-budgets.md",
+      "to": "docs/practice/applied-ai/chapters/token-budgets.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/approved-writes.md",
+      "to": "docs/practice/applied-ai/chapters/approved-writes.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/attention-and-sampling.md",
+      "to": "docs/practice/applied-ai/chapters/attention-and-sampling.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/provider-data-lifecycle.md",
+      "to": "docs/practice/applied-ai/chapters/provider-data-lifecycle.md",
+      "headings": [],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/tool-workflow-state.md",
+      "to": "docs/practice/applied-ai/chapters/tool-workflow-state.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/typed-modules-and-errors.md",
+      "to": "docs/practice/applied-ai/chapters/typed-modules-and-errors.md",
+      "headings": [
+        "Practice and acceptance"
+      ],
+      "extra_paragraphs": 0
+    },
+    {
+      "from": "docs/python-for-ai/source-and-output-security.md",
+      "to": "docs/practice/applied-ai/chapters/source-and-output-security.md",
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/provenance-and-oversight.md",
+      "to": "docs/practice/applied-ai/chapters/provenance-and-oversight.md",
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/async-http.md",
+      "to": "docs/practice/applied-ai/chapters/async-http.md",
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/model-foundations.md",
+      "to": "docs/practice/applied-ai/chapters/model-foundations.md",
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/practice/applied-ai/chapters/document-processing.md",
+      "extra_paragraphs": 1
+    },
+    {
+      "from": "docs/python-for-ai/evaluation-lab.md",
+      "to": "docs/practice/applied-ai/chapters/evaluation-lab.md",
+      "extra_paragraphs": 2
+    },
+    {
+      "from": "docs/python-for-ai/cache-and-batch.md",
+      "to": "docs/practice/applied-ai/chapters/cache-and-batch.md",
+      "extra_paragraphs": 1
+    }
+  ],
+  "supporting_file_moves": {
+    "docs/python-for-ai/mcp-lab/server.py": "docs/workbench/applied-ai/mcp-lab/server.py",
+    "docs/python-for-ai/mcp-lab/uv.lock": "docs/workbench/applied-ai/mcp-lab/uv.lock",
+    "docs/python-for-ai/mcp-lab/check_primitives.py": "docs/workbench/applied-ai/mcp-lab/check_primitives.py",
+    "docs/python-for-ai/mcp-lab/pyproject.toml": "docs/workbench/applied-ai/mcp-lab/pyproject.toml",
+    "docs/python-for-ai/mcp-lab/check_lifecycle.py": "docs/workbench/applied-ai/mcp-lab/check_lifecycle.py",
+    "docs/python-for-ai/mcp-lab/secure_server.py": "docs/workbench/applied-ai/mcp-lab/secure_server.py",
+    "docs/python-for-ai/mcp-lab/check_security.py": "docs/workbench/applied-ai/mcp-lab/check_security.py",
+    "docs/python-for-ai/mcp-lab/check_connections.py": "docs/workbench/applied-ai/mcp-lab/check_connections.py",
+    "docs/python-for-ai/mcp-lab/.python-version": "docs/workbench/applied-ai/mcp-lab/.python-version",
+    "docs/python-for-ai/secondary-lab/etl.py": "docs/workbench/applied-ai/secondary-lab/etl.py",
+    "docs/python-for-ai/secondary-lab/check.py": "docs/workbench/applied-ai/secondary-lab/check.py",
+    "docs/python-for-ai/secondary-lab/uv.lock": "docs/workbench/applied-ai/secondary-lab/uv.lock",
+    "docs/python-for-ai/secondary-lab/pyproject.toml": "docs/workbench/applied-ai/secondary-lab/pyproject.toml",
+    "docs/python-for-ai/secondary-lab/ops.py": "docs/workbench/applied-ai/secondary-lab/ops.py",
+    "docs/python-for-ai/secondary-lab/app.py": "docs/workbench/applied-ai/secondary-lab/app.py",
+    "docs/python-for-ai/adaptation-lab/check.py": "docs/workbench/applied-ai/adaptation-lab/check.py",
+    "docs/python-for-ai/adaptation-lab/concepts.py": "docs/workbench/applied-ai/adaptation-lab/concepts.py"
+  },
+  "additional_assignment_moves": [
+    {
+      "from": "docs/python-for-ai/mcp-security.md",
+      "to": "docs/practice/applied-ai/chapters/mcp-security.md"
+    },
+    {
+      "from": "docs/python-for-ai/mcp-lifecycle.md",
+      "to": "docs/practice/applied-ai/chapters/mcp-lifecycle.md"
+    },
+    {
+      "from": "docs/python-for-ai/document-processing.md",
+      "to": "docs/practice/applied-ai/chapters/document-processing.md"
+    },
+    {
+      "from": "docs/python-for-ai/graphs-and-adaptation.md",
+      "to": "docs/practice/applied-ai/chapters/graphs-and-adaptation.md"
+    }
+  ],
+  "canonical_assets": [
+    "docs/workbench/applied-ai/python/eval-fixture-v1.json",
+    "docs/workbench/applied-ai/python/safe-log.json"
+  ]
+}

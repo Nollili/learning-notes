@@ -170,6 +170,10 @@ A shallow root copy alone still aliases nested objects. Object.freeze is shallow
 
 If search A starts before B but resolves after B, both responses can use immutable setters and A can still overwrite B. Cancel obsolete work and/or verify request identity before committing; use server-side version/conditional writes for shared mutation conflicts. A functional updater addresses stale state derivation, not arbitrary request freshness.
 
-**Exercise:** implement rename plus an independent settings change and a delayed A/B search fixture. Acceptance: untouched branches preserve identity; previous snapshots remain unchanged; no-op returns original state; the newest search wins under reversed response order; stale callbacks/dependency errors are explained; profiling compares actual calculation/component cost rather than merely rerender counts. Retain learner implementation/evidence separately. Runtime validation uses a separate scratch environment; this note does not add dependencies to the project.
 
 Official references checked2026-10-20: [React object updates](https://react.dev/learn/updating-objects-in-state), [useMemo](https://react.dev/reference/react/useMemo), [memo](https://react.dev/reference/react/memo), [Immer produce](https://immerjs.github.io/immer/produce/).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/From_performance_perspective_why_immutability_is_important.md). All learner practice remains outstanding.

@@ -78,6 +78,10 @@ For a product list, put shareable filter/sort/page in the validated URL, open-di
 
 Optimistic updates are a speculative UI technique: cancel/coordinate conflicting reads, snapshot or record a patch, apply an expected result, rollback only the failed operation's contribution and reconcile with server truth. A single old snapshot rollback can erase a later successful edit. Serialization/version checks or an operation log may be needed for overlapping mutations; invalidation alone does not define conflict policy. The subsequent mutation/form lesson supplies the worked implementation; this overview does not claim it is already executed.
 
-**Exercise acceptance:** draw an ownership/lifetime map for a filterable editable list; justify local/context/shared/query boundaries and demonstrate one intentionally wrong duplicate owner causing stale data. Record a correction and user-visible loading/error/stale behavior; add two overlapping writes with reversed responses to the practical backlog. Complete the shared persistence exercise before claiming storage/hydration competence. No learner work is marked done.
 
 References checked2026-10-21: [TanStack Query server-state model](https://tanstack.com/query/latest/docs/framework/react/overview), [optimistic updates](https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates), [Zustand](https://github.com/pmndrs/zustand), [Recoil status](https://github.com/facebookexperimental/Recoil).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/state/Do_you_know_other_solutions_for_state_management.md). All learner practice remains outstanding.

@@ -1,0 +1,10 @@
+# Tenant-Scoped Sources and Safe Output Sinks — practice
+
+**Learner status: still required.** Use the [integrated sequence](../index.md).
+
+[Textbook](../../../python-for-ai/source-and-output-security.md)
+
+
+**Practice acceptance:** reproduce the same-ID two-tenant case, revoked subject, pending/quarantined source, self-review rejection, changed bytes without new review and read-only write/drop denial. Wire the reader through actual authenticated routes and prove model owner fields cannot select identity. Feed hostile script/image/Markdown/code strings to the real UI and verify text rendering, keyboard/citation behavior and no unexpected network fetch. Build an authenticated publisher/reviewer workflow and prove a changed revision needs a new review; a fabricated model approval must fail. Record a poisoning threat case and which controls enforce integrity versus factual judgment. Retain source/cache/checkpoint isolation tests and evidence of cleanup.
+
+Learner integration and browser/security review remain required.

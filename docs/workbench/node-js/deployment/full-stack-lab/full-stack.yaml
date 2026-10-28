@@ -1,0 +1,23 @@
+services:
+  frontend:
+    image: ${FRONTEND_IMAGE:?Provide owned image}
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:?Provide digest}
+    depends_on:
+      api:
+        condition: service_healthy
+    secrets: [tls_key, tls_cert]
+    ports: ["127.0.0.1:0:8443"]
+    networks: [edge]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 5s
+secrets:
+  tls_key:
+    file: ./secrets/tls_key
+  tls_cert:
+    file: ./secrets/tls_cert

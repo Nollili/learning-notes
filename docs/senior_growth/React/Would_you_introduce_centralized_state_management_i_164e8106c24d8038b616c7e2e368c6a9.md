@@ -248,8 +248,12 @@ The examples set a display-only demo user; they do not verify credentials or gra
 
 Zustand5 uses named create; calling the bound hook without a selector subscribes to the entire state. Select a primitive or stable action as above. A new object/array returned on every snapshot is not a stable selection; use individual selectors or the documented useShallow/custom-equality API deliberately. Do not copy an old second comparator argument onto the v5 create hook. The module-level toy store is one client singleton; SSR/test/user-session isolation requires a per-request/scoped store factory and deliberate reset/disposal.
 
-**Acceptance:** verify the current named export in a pinned scratch app; a setUser action updates selected user while the action reference remains stable; unrelated state changes do not change selected primitives. Test independent store instances before adopting SSR. Start with one feature and compare before/after render traces, race behavior and ownership, rather than migrate every local state variable. The [versioned safe preference adapter](./React_state_management_and_tools.md#versioned-persistence-is-a-boundary-not-a-dump-of-the-store) supplies storage validation/migration/disposal; do not persist a full store. Learner browser/profile measurements remain required.
 
 References checked2026-10-22: [Zustand5 migration](https://zustand.docs.pmnd.rs/reference/migrations/migrating-to-v5), [official selector guidance](https://github.com/pmndrs/zustand/blob/main/README.md), [Recoil archive](https://github.com/facebookexperimental/Recoil).
 
 For normalized entities, use the [worked Toolkit adapter](../State_management_and_Redux/Is_still_valid_to_use_Redux_in_a_new_project_nowadays.md#normalize-identity-persist-only-a-reviewed-subset). Keep server mutations with the [pending-overlay/versioned-confirmation workflow](./complex-forms-and-data.md#worked-optimistic-policy-pending-overlay-instead-of-stale-snapshot-rollback): a failed earlier mutation must not restore a stale snapshot over later success; pending intent, confirmed cache and server transaction are distinct owners. Test overlapping failure/success and uncertain commits rather than copy remote records into another global store.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Would_you_introduce_centralized_state_management_i_164e8106c24d8038b616c7e2e368c6a9.md). All learner practice remains outstanding; the worked examples above are explanatory material.

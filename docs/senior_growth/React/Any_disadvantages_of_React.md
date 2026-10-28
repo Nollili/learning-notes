@@ -108,6 +108,10 @@ For a small same-origin profile form, native labeled controls, controlled state/
 
 For a content-heavy public page, compare static/server rendering, caching and hydration costs against a client-only shell. SSR can improve content delivery but does not guarantee SEO, interaction latency or secrecy; never serialize server secrets into browser props. For a slow dashboard, capture a reproducible profiler/network trace before blaming the virtual DOM or comparing frameworks by reputation. Local state placement, expensive algorithms, overfetching and CSS layout can dominate framework overhead.
 
-**Exercise acceptance:** implement the same small accessible form with native APIs first; record pending, validation, cancellation/uncertain-write handling and safe error behavior. Identify a concrete limitation before adding one library, then compare retained code, bundle/interaction cost and maintenance policy. Explain why supported classes are different from deprecated APIs, why error boundaries need a class/library boundary, and why SSR/memoization alone cannot prove the app is fast or secure. Use measured target-device evidence; writing this comparison is not learner completion.
 
 Official references checked2026-10-22: [supported Component API/error boundaries](https://react.dev/reference/react/Component), [CRA deprecation](https://react.dev/blog/2025/02/14/sunsetting-create-react-app), [React form](https://react.dev/reference/react-dom/components/form), [React state](https://react.dev/learn/state-a-components-memory). Primary path remains React/TypeScript; other frameworks are alternatives, not additional mastery requirements.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Any_disadvantages_of_React.md). All learner practice remains outstanding; the worked examples above are explanatory material.

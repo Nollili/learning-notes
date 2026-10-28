@@ -98,4 +98,7 @@ Start with component ownership, the existing build and a documented browser supp
 
 The [BEM naming/collision/migration fixture](./Do_you_still_think_BEM_style_is_valid_nowadays_Main_benefits.md#executable-naming-policy) supplies an exact Stylelint configuration, a valid stylesheet and negative cases. Its policy is checked in a separate lab, not installed into this notes site's build or an Autocode template. Pair source linting with the [shared theme/cascade lesson](./CSS_vs_SASS_vs_Styled_Components_vs_CSS_Modules.md) and the browser support evidence matrix; a green lint result does not mean the theme is accessible or that no global selector leaks.
 
-**Exercise acceptance:** write a brief decision explaining local/global ownership, token naming, permitted modifiers and exceptional selectors. Execute the valid and three invalid lint cases; migrate one component as described in the BEM lesson and review computed/visual/focus results. Keep the diff scoped and record the actual configuration, changed consumers, failures and retest evidence. Distinguish a proposed guideline, an automated source check and an implemented/migrated project. Learner project implementation remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/Do_you_use_any_CSS_methodology_or_have_any_guidelines_for_it_on_your_project.md). All learner practice remains outstanding; the worked examples above are explanatory material.

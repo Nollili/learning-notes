@@ -97,7 +97,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
     - **PostgreSQL**: Known for its strong consistency and extensibility, used in analytics, geospatial data, and more.
     - **Oracle Database**: Enterprise-level RDBMS widely used for business applications with complex requirements.
 - **Non-relational Databases (NoSQL)**:
-    - **MongoDB**: A document store that is easy to scale and provides a flexible schema for JSON-like data.
+    - **MongoDB**: A document store with explicit document/index/distribution and read/write-concern choices.
     - **Cassandra**: A distributed, wide-column store designed for high availability and massive scalability.
     - **Redis**: A fast, in-memory key-value store often used for caching, session storage, and real-time analytics.
     - **Neo4j**: A graph database used to store data in a graph format (e.g., for social networks, fraud detection).
@@ -114,7 +114,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 | **Scalability** | Product/topology/partition/query dependent | Product/topology/partition/query dependent |
 | **Consistency** | Isolation/read-replica choices matter | Read/write concerns and topology matter |
 | **Transactions** | Usually multi-row/table transactions; check isolation | Some support ACID multi-record transactions; check scope/settings |
-| **Best Use Case** | Structured, transactional data | Large-scale, unstructured data |
+| **Selection** | Choose invariant/query/isolation/topology fit | Choose invariant/query/isolation/topology fit |
 | **Examples** | MySQL, PostgreSQL, Oracle | MongoDB, Cassandra, Redis, Neo4j |
 
 ---
@@ -127,6 +127,10 @@ For the primary inventory learning app, PostgreSQL16 is a coherent default: expl
 
 **Worked decision:** stock for a tenant/SKU must never become negative and duplicate SKUs must be rejected. Write the invariant, choose a unique tenant/SKU constraint and an atomic conditional update inside the required transaction boundary, then verify two simultaneous decrements. A product catalog page may tolerate a deliberately stale read/cache; checkout cannot silently reuse that weaker contract. A different data model does not remove either invariant or its concurrency test.
 
-**Exercise acceptance:** compare PostgreSQL and one documented MongoDB deployment using the same invariants, failure cases and access pattern. Record isolation/read/write concerns, primary-versus-replica path, transaction scope, retry policy and measured latency; distinguish a duplicate-write conflict from an outage. Predict behavior during an unavailable primary/network partition without calling a single-process test a partition simulation. Use the existing [PostgreSQL lab](../../node-js/module-08-postgresql-mikroorm.md) and [MongoDB chapter](../../node-js/module-07-mongodb-mongoose.md); advanced multi-node fault injection remains separate practice. No database benchmark/partition or learner evidence is claimed here.
 
 References checked2026-10-22: [MongoDB transactions](https://www.mongodb.com/docs/manual/core/transactions/), [MongoDB read concern](https://www.mongodb.com/docs/manual/reference/read-concern/), [Neo4j transactions](https://neo4j.com/docs/operations-manual/current/database-internals/transaction-management/), [PostgreSQL16 isolation](https://www.postgresql.org/docs/16/transaction-iso.html), [Gilbert/Lynch CAP model](https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer6.pdf).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/design/Do_you_know_some_of_the_differences_of_non_relational_databases_and_relational_databases.md). All learner practice remains outstanding.

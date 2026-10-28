@@ -142,39 +142,18 @@ function App() {
 > Learn to **combine Redux with modern patterns** like Redux Toolkit + slices to reduce boilerplate while keeping state predictable.
 
 
-
 ## Selector result equality: choose the actual contract
 
 React Redux9.3.0 useSelector uses strict === comparison of its selected result by default. It does not automatically shallow-compare each field of every returned object. A selector returning ({ count, theme }) allocates a fresh result on each call; an unrelated dispatch can therefore produce a changed reference. Select primitives/stable references separately, memoize a derived result, or pass shallowEqual deliberately when its field-wise behavior matches the contract.
 
 Use the store types from counter-store.ts in the middleware lesson. A selector should be pure, tolerate the state's actual lifecycle and avoid mutating/sorting the store's arrays in place. Store subscriptions do not mean all application state belongs in Redux.
 
-```tsx
-// counter-selectors.tsx
-import { createSelector } from '@reduxjs/toolkit';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from './counter-store.js';
+<<< ../../workbench/engineering/state/counter-selectors.tsx{tsx}
 
-export const useAppSelector = useSelector.withTypes<RootState>();
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
-export const selectCount = (state: RootState) => state.counter.value;
-export const selectTheme = (state: RootState) => state.preferences.theme;
-export const selectFreshSummary = (state: RootState) => ({ count: selectCount(state), theme: selectTheme(state) });
-export const selectMemoSummary = createSelector([selectCount, selectTheme], (count, theme) => ({ count, theme }));
+This component reads state only. The exported useAppDispatch hook supplies thunk-aware typing to an event owner; that owner must await/catch the dispatch promise and expose pending/error/retry state for asynchronous actions. Declare the memoized selector outside the component so rerenders use one selector instance.
 
-export function CounterSummary() {
-  const count = useAppSelector(selectCount);
-  const summary = useAppSelector(selectMemoSummary);
-  const fieldCompared = useAppSelector(selectFreshSummary, shallowEqual);
-  return <section aria-label="Counter summary">
-    <p>{count} / {summary.theme} / {fieldCompared.theme}</p>
-  </section>;
-}
-```
+Memoization observes input-selector results: after telemetry.ticks changes, count/theme are unchanged and selectMemoSummary can return the same object; after count/theme changes it produces a new result. shallowEqual ignores object identity only when own field values compare equal; it does not deeply compare arbitrary nested data or make mutation safe.
 
-This component reads state only. The exported useAppDispatch hook supplies thunk-aware typing to an event owner; that owner must await/catch the dispatch promise and expose pending/error/retry state for asynchronous actions. Declare the memoized selector outside the component so rerenders use one selector instance. Memoization observes input-selector results: after telemetry.ticks changes, count/theme are unchanged and selectMemoSummary can return the same object; after count/theme changes it produces a new result. shallowEqual ignores object identity only when own field values compare equal; it does not deeply compare arbitrary nested data or make mutation safe.
-
-**Exercise acceptance:** with the actual store, compare fresh/memoized selector references before/after an unrelated telemetry update and a count/theme update; assert shallowEqual separately. Verify typed dispatch accepts the thunk and its failure is shown to users. Add real component subscription/render-count and user-interaction tests; selector-unit and SSR checks do not prove those behaviors. Learner practice remains required.
 
 Official references: [useSelector default equality and shallowEqual](https://redux.js.org/react-redux/api/hooks), [derived selectors](https://redux.js.org/usage/deriving-data-selectors), [typed hooks/dispatch](https://redux.js.org/usage/usage-with-TypeScript). Checked2026-10-21 with Toolkit2.13.0/React Redux9.3.0.
 
@@ -182,4 +161,7 @@ Official references: [useSelector default equality and shallowEqual](https://red
 
 The createStore counter above explains the underlying flow using a legacy core API. Use Redux Toolkit2.13 configureStore/createSlice for new examples in this path; do not infer that a reducer must deep-clone unchanged data or that every dispatch changes its result. The [normalized project/user fixture](./How_would_you_introduce_centralized_store_management_%28f.e._REDUX%29_on_a_project_which_does_not_use_it.md#normalize-shared-relationships-before-migrating-consumers) gives the substantive atomic snapshot, rename, cascade and selector walkthrough beyond a counter. Its store factory also avoids sharing one mutable server-side store across requests.
 
-**Acceptance:** dispatch a no-op, an entity rename and a removal; inspect previous snapshots, selected references and derived owner labels. Explain separately store notification, selector equality, React render and browser paint. Run the shared fixture's rejection/isolation cases and the selector-reference exercise above. Component render-count and browser behavior require their own tests; material completion and unit/SSR evidence do not establish them.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/state/How_does_Redux_work.md). All learner practice remains outstanding.

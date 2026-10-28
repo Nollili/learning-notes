@@ -37,6 +37,10 @@ Create React App is deprecated; it is not the default recommendation for a new R
 
 For this study project, keep React/TypeScript as the primary front end with explicit component contracts, owned server state and accessible native controls. If the team already operates a Vue3/Pinia or Angular signals/services application, transfer the underlying state ownership, cleanup, semantic HTML and request-race principles while adapting the framework mechanisms. Do not migrate a stable application solely because a generic comparison table assigns another framework a higher performance label.
 
-**Exercise acceptance:** trace one counter update, one asynchronous stale-response race and one shared dependency in the primary React implementation. Explain the corresponding Vue and zoneless Angular mechanisms using official docs. For a framework-selection brief, list project constraints and a reproducible equivalent-feature measurement plan; identify which facts are verified and which are assumptions. A second/third implementation and performance benchmark remain optional learner work; no cross-framework measurement has been run for this note.
 
 Official references: [React state](https://react.dev/learn/state-a-components-memory), [React app setup](https://react.dev/learn/installation), [CRA deprecation](https://react.dev/blog/2025/02/14/sunsetting-create-react-app), [Vue provide/inject](https://vuejs.org/guide/components/provide-inject), [Vue store guidance](https://vuejs.org/guide/scaling-up/state-management.html), [Vue tooling](https://vuejs.org/guide/scaling-up/tooling.html), [Angular zoneless](https://angular.dev/guide/zoneless), [Angular DI](https://angular.dev/guide/di). Version-sensitive behavior checked2026-10-21.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/React_-_Vue_-_Angular_comparsion.md). All learner practice remains outstanding; the worked examples above are explanatory material.

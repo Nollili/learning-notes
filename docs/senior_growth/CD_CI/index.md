@@ -1,5 +1,9 @@
 # CD_CI
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/delivery.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Could you please describe CI/CD process on your project? Do you see any options how it could be improved?](./Could_you_please_describe_CI_CD_process_on_your_project_Do_you_see_any_options_how_it_could_be_improved.md)

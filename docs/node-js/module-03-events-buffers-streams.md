@@ -240,7 +240,9 @@ job.on('error', (error) => console.error('Failed:', error));
 await job.run();
 ```
 
-This historical Job example chooses **event-reported task failure**: if performJob fails and the error listener returns normally, run resolves after emitting error. A thrown complete listener is caught in the same block and reported as an error too; a thrown start listener occurs before that try and rejects run. A throwing/missing error listener can also reject. That mixed behavior is important when maintaining this exact example: await job.run alone is not evidence of job success. For a new API prefer a promise that rejects on job failure and define notification-listener failures separately, or expose a discriminated result; do not silently combine promise-success and event-failure contracts. Test each outcome and document which layer logs it.
+This historical Job example chooses **event-reported task failure**: if performJob fails and the error listener returns normally, run resolves after emitting error. A thrown complete listener is caught in the same block and reported as an error too; a thrown start listener occurs before that try and rejects run. A throwing/missing error listener can also reject. That mixed behavior is important when maintaining this exact example: await job.run alone is not evidence of job success.
+
+For a new API prefer a promise that rejects on job failure and define notification-listener failures separately, or expose a discriminated result; do not silently combine promise-success and event-failure contracts. Test each outcome and document which layer logs it.
 
 Document event names, argument types, whether they can repeat, their order, and error behavior. Events are a public interface even though they are strings or symbols.
 
@@ -344,7 +346,9 @@ for await (const [message] of on(emitter, 'message', {
 }
 ```
 
-Provide cancellation, such as an AbortSignal, so the loop has a defined end and its listener is cleaned up. This illustrative controller must be connected to an owner timeout/shutdown action; merely constructing it does not stop the loop. Async iteration serializes the consumer body but does not stop a plain EventEmitter producing events: events.on can queue while the consumer awaits. Node24 highWaterMark/lowWaterMark can pause/resume an emitter that actually implements those methods; a plain emitter has no such backpressure. For a non-pausable source choose bounded admission/drop/disconnect policy at the producer/adapter or a real stream/queue rather than allow an unlimited event backlog. Catch expected AbortError at the owner boundary and verify listeners are removed after abort/break.
+Provide cancellation, such as an AbortSignal, so the loop has a defined end and its listener is cleaned up. This illustrative controller must be connected to an owner timeout/shutdown action; merely constructing it does not stop the loop. Async iteration serializes the consumer body but does not stop a plain EventEmitter producing events: events.on can queue while the consumer awaits.
+
+Node24 highWaterMark/lowWaterMark can pause/resume an emitter that actually implements those methods; a plain emitter has no such backpressure. For a non-pausable source choose bounded admission/drop/disconnect policy at the producer/adapter or a real stream/queue rather than allow an unlimited event backlog. Catch expected AbortError at the owner boundary and verify listeners are removed after abort/break.
 
 ### Removing listeners correctly
 
@@ -1681,61 +1685,7 @@ One TCP chunk may contain:
 
 ### Newline-delimited JSON
 
-```ts
-// json-lines.ts — byte chunks in, nonnull JSON object records out
-export function jsonLines({
-  maxRecordBytes = 1024 * 1024,
-  maxChunkBytes = 64 * 1024,
-  maxRecords = 100_000,
-}: { maxRecordBytes?: number; maxChunkBytes?: number; maxRecords?: number } = {}) {
-  for (const limit of [maxRecordBytes, maxChunkBytes, maxRecords])
-    if (!Number.isSafeInteger(limit) || limit < 1) throw new RangeError('Positive limits required');
-  return async function* parse(source: AsyncIterable<Uint8Array>,
-    { signal }: { signal?: AbortSignal } = {}): AsyncGenerator<Record<string, unknown>> {
-    // Fixed frame storage avoids quadratic concat and retained slices of old chunks.
-    const frame = Buffer.alloc(maxRecordBytes);
-    const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
-    let used = 0;
-    let line = 1;
-    let records = 0;
-    const decode = (): Record<string, unknown> | undefined => {
-      let text: string;
-      try { text = decoder.decode(frame.subarray(0, used)); }
-      catch (error) { throw new Error(`Invalid UTF-8 on line ${line}`, { cause: error }); }
-      if (!text.trim()) return undefined; // Explicit policy: ignore blank/whitespace lines.
-      let value: unknown;
-      try { value = JSON.parse(text); }
-      catch (error) { throw new Error(`Invalid JSON on line ${line}`, { cause: error }); }
-      if (value === null || typeof value !== 'object' || Array.isArray(value))
-        throw new TypeError(`Expected an object record on line ${line}`);
-      records += 1;
-      if (records > maxRecords) throw new RangeError('Record-count limit exceeded');
-      return value as Record<string, unknown>; // Proven JSON object; fields still unknown.
-    };
-    try {
-      for await (const chunk of source) {
-        signal?.throwIfAborted();
-        if (!(chunk instanceof Uint8Array)) throw new TypeError('Expected byte chunks');
-        if (chunk.byteLength > maxChunkBytes) throw new RangeError('Input chunk too large');
-        for (const byte of chunk) {
-          if (byte === 10) { // LF; JSON whitespace handling also accepts a preceding CR.
-            const record = decode(); used = 0; line += 1;
-            if (record !== undefined) { signal?.throwIfAborted(); yield record; }
-          } else {
-            if (used === maxRecordBytes) throw new RangeError(`Record too large on line ${line}`);
-            frame[used++] = byte;
-          }
-        }
-      }
-      signal?.throwIfAborted();
-      if (used) { const record = decode(); if (record !== undefined) yield record; }
-    } finally {
-      // Drop sensitive remainder even when a consumer breaks or a destination fails.
-      frame.fill(0);
-    }
-  };
-}
-```
+<<< ../workbench/node-js/runtime/json-lines.ts
 
 **Contract:** JSON Lines here contains nonnull objects, not every JSON value. JSON null is valid JSON, but `Readable.push(null)` is stream EOF even in object mode. The generator therefore rejects null, arrays and primitives before producing records, and yields one object at a time instead of pushing an entire chunk's fanout. A generic JSON-value protocol could wrap values (`{value:null}`) instead. The assertion at the return is limited to the checked object shape; it does not claim any domain fields are validated. Add a schema/projection stage for those.
 
@@ -1814,82 +1764,17 @@ try {
 
 ### Diagnostic exercise
 
-Process a large newline-delimited file with bounded memory.
-
-Requirements:
-
-- reject a record larger than 1 MB;
-- preserve multibyte UTF-8 characters across chunks;
-- report the line number for malformed JSON;
-- stop the whole pipeline when output fails;
-- support cancellation;
-- demonstrate that a slow destination does not cause unbounded memory growth.
-
----
+[Exercises and learner checklist](../practice/node-js/module-03-events-buffers-streams.md).
 
 ## 15. Final review checklist
 
-You should be able to explain and demonstrate each point:
-
-### Framing and diagnosis
-
-- Treat stream chunks as arbitrary boundaries, not application messages.
-- Preserve multibyte text across chunks.
-- Bound every delimiter- or length-based frame.
-- Diagnose ignored backpressure, unfinished callbacks, missing end signals, and partial output.
-- Use `pipeline()` as one error, cleanup, completion, and cancellation boundary.
-
-### EventEmitter
-
-- `on()` registers a persistent listener; `once()` registers a one-use listener.
-- `emit()` calls listeners synchronously in registration order.
-- The listener must be registered on the same emitter instance before the event occurs.
-- A listener added after an event does not receive that past event.
-- An unhandled `'error'` event throws.
-- A listener's thrown exception is not automatically converted to an `'error'` event.
-- `emit()` does not await async listeners or propagate their rejections as promise results.
-- `off()` needs the same listener function reference used by `on()`.
-- Listener-count warnings usually indicate missing lifecycle cleanup.
-- Events suit repeated fan-out notifications; promises suit one result or error.
-
-### Buffer
-
-- A buffer is a fixed-length byte sequence used for binary data.
-- `Buffer.from()` converts existing data; `Buffer.alloc()` creates initialized storage.
-- `Buffer.allocUnsafe()` can expose stale memory unless every byte is overwritten.
-- UTF-8 string length and byte length can differ.
-- Base64 and hex are encodings, not encryption.
-- `toString()` decodes bytes using an encoding.
-- Numeric reads/writes must use the correct offset, size, signedness, and endianness.
-- `Buffer.from(buffer)` copies, while `subarray()` and `Buffer.slice()` share memory.
-- Stream chunks may split characters, lines, and application records.
-- Repeated concatenation can cause unnecessary allocations and copying.
-
-### Streams
-
-- A readable produces data; a writable consumes it.
-- A duplex has independent readable and writable sides.
-- A transform converts writable input into readable output.
-- Streams extend `EventEmitter` and emit lifecycle and error events.
-- Readable completion uses `'end'`; writable completion uses `'finish'`; resource closure uses `'close'`.
-- Async iteration is a clean, backpressure-aware way to consume a readable.
-- Avoid mixing flowing, paused, piped, and async-iterator consumption styles.
-- Chunks have arbitrary boundaries.
-- `.write()` returning `false` means wait for `'drain'`; it does not mean the write failed.
-- `pipeline()` coordinates backpressure, failure propagation, destruction, and completion.
-- Application code must still clean up partial domain artifacts after pipeline failure.
-- `highWaterMark` is a threshold, not a universal memory limit.
-- Object-mode thresholds count objects, regardless of each object's size.
-- Connected stages must agree about whether chunks are bytes/strings or objects.
-- Custom stream callbacks must be called exactly once.
-- Custom readables stop pushing when `push()` returns `false` and end with `push(null)`.
-- Custom transforms preserve incomplete records between chunks and flush remaining state.
-- Streams do not make CPU-heavy JavaScript non-blocking.
-- Open streams and underlying resources must be closed or destroyed on every lifecycle path.
+[Exercises and learner checklist](../practice/node-js/module-03-events-buffers-streams.md).
 
 ### One-minute recap
 
-`EventEmitter` provides synchronous named notifications for repeated, loosely coupled interactions. Buffers represent raw bytes and require deliberate encoding, bounds, and memory-ownership choices. Streams move buffers, strings, or objects incrementally through readable, writable, duplex, and transform interfaces. Async iteration is a strong default for directly consuming a readable, while promise-based `pipeline()` is the safest default for connecting stages. Backpressure keeps producer speed aligned with consumer capacity, and custom streams must honor it through `write()` callbacks and `push()` results. Robust stream code treats chunk boundaries as arbitrary, handles every error, cleans up partial resources, and avoids unbounded queues or synchronous CPU work.
+`EventEmitter` provides synchronous named notifications for repeated, loosely coupled interactions. Buffers represent raw bytes and require deliberate encoding, bounds, and memory-ownership choices. Streams move buffers, strings, or objects incrementally through readable, writable, duplex, and transform interfaces. Async iteration is a strong default for directly consuming a readable, while promise-based `pipeline()` is the safest default for connecting stages.
+
+Backpressure keeps producer speed aligned with consumer capacity, and custom streams must honor it through `write()` callbacks and `push()` results. Robust stream code treats chunk boundaries as arbitrary, handles every error, cleans up partial resources, and avoids unbounded queues or synchronous CPU work.
 
 ## 16. Iterator and serialization contracts
 
@@ -1944,10 +1829,4 @@ This is an explicit projection from an internal/parsed value, not a general seri
 
 ### Failure-driven practice acceptance
 
-Baseline: Node24.18.0. Run the JSONL stage through pipeline with a compatible bounded byte source and a slow object-mode writable (highWaterMark1). Feed split UTF-8, split CRLF, multiple records in one chunk, final record without LF, whitespace, malformed JSON with line number, invalid UTF-8, null followed by an object, arrays/primitives, excessive frame/chunk/count and empty input. Acceptance: valid objects survive exactly once; invalid input rejects the pipeline; source/destination are destroyed on failure; no push-after-EOF; parsing pauses with downstream demand rather than preproducing all records. Abort a blocked pipeline and fail the destination; verify generator/source cleanup. Observe bounded queue/pull counts and a realistic memory trend separately; a tiny fixture does not prove constant RSS.
-
-For countErrorLines, test a missing file and an input that errors after a valid line; both must reject and release the input. On normal EOF require the expected count and resource closure. For UppercaseTransform, decoded strings succeed and Buffer input fails through the callback. Compare finished listener counts with cleanup:true on an owned stream. Exercise Job task/listener failure contracts and abort an events.on loop, checking listeners return to their initial count.
-
-Run the delegated iterator break and explicit return cases and retain cleanup evidence. Run the serialization table, then serializeProgress with unknown/invalid/cyclic-extra/BigInt-required/secret-extra inputs and require the documented projection/errors. Learner exercises and service-scale memory/platform validation remain required even when example checks pass.
-
-References checked2026-10-21: [Node24 streams](https://nodejs.org/download/release/v24.18.0/docs/api/stream.html), [Node24 readline](https://nodejs.org/download/release/v24.18.0/docs/api/readline.html), [Node24 events](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [ECMAScript iteration](https://tc39.es/ecma262/multipage/control-abstraction-objects.html), [JSON algorithms](https://tc39.es/ecma262/multipage/structured-data.html#sec-json-object).
+[Exercises and learner checklist](../practice/node-js/module-03-events-buffers-streams.md).

@@ -1,75 +1,68 @@
 ---
-title: Node.js — Zero to Strong Medior
-description: A structured Node.js backend learning path from runtime foundations to production diagnostics and distributed systems.
+title: Node.js — runtime to backend services
+description: A Node.js runtime course with explicit backend, database and deployment continuations.
 outline: deep
 ---
 
-# Node.js: Zero to Strong Medior
+# Node.js: runtime to backend services
 
-This learning path starts with the Node.js runtime and gradually builds toward independent ownership of production backend services.
+**Start with the runtime course.** Express, databases, authentication and deployment are continuations, so you can learn Node.js without first building a complete full-stack product.
 
-The modules explain four sides of each important concept:
+The material targets independent intermediate Node.js work: explain the runtime, implement a bounded program, diagnose common failures and own its resources. Selected service chapters go deeper into security and reliability. Finalized material and ready-to-use specifications do not establish completed learner practice or professional mastery.
 
-- **Mechanics:** what the API or pattern does.
-- **Selection:** when it is appropriate and what the alternatives are.
-- **Failure modes:** how it breaks and how to diagnose it.
-- **Production consequences:** how it affects performance, security, reliability, and maintenance.
+## Prerequisites and boundaries
 
-The chapters are designed to be read in order. Experienced developers can also use them as standalone references.
+You need JavaScript functions, scope/closures, arrays/objects, modules, basic promises and `try`/`catch`; basic terminal and package-manager use is enough to begin. TypeScript annotations describe contracts in many examples. See [running the examples](./module-01-nodejs-foundations.md#javascript-examples-and-typescript-examples) before executing them.
 
-## Learning path
+The [shared JavaScript references](./prerequisites-and-boundaries.md) fill specific prerequisite needs. Read them when needed rather than repeat a whole frontend track. Browser rendering, DOM workers and browser CORS enforcement are different host concerns; Node output is not evidence of a browser paint or cookie decision.
 
-### Foundations
+| Scope | Includes | Does not have to come first |
+|---|---|---|
+| Core Node.js | Modules/npm/process, async execution, errors, files, bytes/streams, raw HTTP, cancellation/cleanup, testing and runtime diagnostics | Express, ORM, database, cloud or broker |
+| Backend service continuation | Express/use cases, current authorization, API schemas, application lifecycle | Microservices or multiple alternative frameworks |
+| Persistence continuation | PostgreSQL/SQL/MikroORM; constraints, transactions, migrations and query diagnosis | MongoDB or Redis |
+| Delivery/distribution continuation | Containers, restore/rollback, durable jobs, operational failure boundaries | AWS/Kubernetes administration or a deployed multi-service system |
 
-1. [Node.js Foundations](./module-01-nodejs-foundations.md) — the runtime, modules, npm, asynchronous JavaScript, and the event loop.
-2. [Node.js Standard Library](./module-02-standard-library.md) — processes, files, child processes, clustering, and worker threads.
-3. [EventEmitter, Buffers, and Streams](./module-03-events-buffers-streams.md) — events, binary data, streaming, backpressure, cancellation, and cleanup.
-4. [Testing Node.js Applications](./module-04-testing.md) — test design, Jest, isolation, integration tests, concurrency, and flaky-test diagnosis.
+## Recommended reading order
 
-### Building backend services
+### 1. Runtime foundations
 
-5. [Networking in Node.js](./module-05-networking.md) — HTTP, REST, TLS, clients, WebSockets, timeouts, retries, and idempotency.
-   - [SSE, Bounded Polling and gRPC](./realtime-transports.md) — replay, heartbeat, slow consumers, cancellation and transport selection.
-6. [Express and Layered Architecture](./module-06-express-architecture.md) — controllers, services, repositories, dependency boundaries, transactions, and request context.
-7. [MongoDB and Mongoose](./module-07-mongodb-mongoose.md) — document modeling, indexes, aggregation, transactions, concurrency, and schema evolution.
-8. [PostgreSQL and MikroORM](./module-08-postgresql-mikroorm.md) — relational modeling, SQL, transactions, locking, migrations, and query diagnosis.
+1. [Foundations](./module-01-nodejs-foundations.md): runtime, CJS/ESM, npm, scheduling, promises and bounded concurrency.
+2. [Standard library](./module-02-standard-library.md): errors, process/CLI, files/handles/paths, crypto and subprocess/worker ownership. Worker pools and cluster are later depth.
+3. [Events, buffers and streams](./module-03-events-buffers-streams.md): notifications, bytes/encoding, framing, backpressure, iteration and cleanup.
+4. [Testing](./module-04-testing.md): awaitable checks, useful assertions, controlled failures and open handles. Its database/E2E sections become relevant with a service.
+5. [Networking](./module-05-networking.md): raw HTTP, request/response streams, bounded clients, TLS/DNS, deadlines and security boundaries. REST architecture and real-time alternatives can follow your first server.
+6. [Diagnostics](./module-11-performance-diagnostics.md): measure event-loop behavior, resource ownership, memory categories and one reproducible bottleneck. Database pool diagnosis belongs with persistence.
+7. [Lifecycle](./module-10-production-ready-applications.md): use configuration, startup, safe diagnostics, readiness and shutdown for your first long-running server. Its deployment-specific sections are a continuation.
 
-   - [SQL Query Workbench](./sql-query-workbench.md) — parameterized CRUD, reporting grain, grouping, subqueries, CTEs and window functions.
+Apply these in the [small log-analyzer project](../practice/node-js/core-project.md), then deepen failure handling with [P-332](../practice/backend-project.md#p-332). The [chapter exercises](../practice/node-js/index.md) are separate from the explanations; every learner task remains outstanding until independently performed.
 
-   - [Deterministic Cursor Pagination](./cursor-pagination.md) — scoped signed cursors, microsecond precision and live-feed consistency.
+### 2. One backend and persistence path
 
-   - [Dates and Time Zones](./dates-and-time-zones.md) — strict boundaries, calendar versus elapsed arithmetic, DST and Intl.
+8. [Express and architecture](./module-06-express-architecture.md): ordered middleware, validation, use cases and persistence boundaries.
+9. [PostgreSQL and MikroORM](./module-08-postgresql-mikroorm.md): learn SQL/constraints before ORM behavior. The [SQL workbench](../workbench/node-js/database/sql-queries.md) supplies one coherent fixture.
+10. [Authentication and authorization](./module-09-authentication-authorization.md): sessions, CSRF, passwords, tokens and current owner/tenant policy. Its [runnable application reference](../workbench/node-js/backend/session-app.md) reuses existing source.
+11. Return to [production lifecycle](./module-10-production-ready-applications.md) and the database sections of [diagnostics](./module-11-performance-diagnostics.md) for the integrated service.
 
-   - [Database Recovery](./database-recovery.md) — logical restore, PITR, recovery verification and RPO/RTO.
+[P-331](../practice/backend-project.md#p-331) is the ready-to-use integration specification. PostgreSQL/REST is the primary path; [MongoDB/Mongoose](./module-07-mongodb-mongoose.md) is an optional document-model comparison.
 
-### Security and production ownership
+### 3. Delivery and distributed failure
 
-9. [Authentication and Authorization](./module-09-authentication-authorization.md) — passwords, sessions, tokens, OAuth/OIDC, permissions, browser security, and application attack surfaces.
-10. [Production-Ready Node.js Applications](./module-10-production-ready-applications.md) — configuration, logging, health checks, graceful shutdown, error handling, and API hardening.
-11. [Performance and Diagnostics](./module-11-performance-diagnostics.md) — latency, saturation, event-loop health, memory, profiling, database pools, and load testing.
-12. [Resilient Architecture and Distributed Systems](./module-12-resilient-distributed-systems.md) — messaging, idempotency, retries, outbox workflows, sagas, caching, circuit breakers, and distributed consistency.
+12. [Resilient/distributed systems](./module-12-resilient-distributed-systems.md): unknown outcomes, duplicates, outbox, queues, caching and recovery. A modular monolith remains the starting point.
+13. [Container deployment](./container-deployment-lab.md), [backup/recovery](./database-recovery.md), [release compatibility](./release-artifact-compatibility.md) and [whole-stack local deployment](./full-stack-deployment.md) prepare [P-333](../practice/backend-project.md#p-333). A fixture run is distinct from an authenticated hosted deployment.
 
-## Worked boundary labs and alternatives
+## Supplements by requirement
 
-These complement the primary modules; links are navigation, not additional completion evidence.
+| Requirement | Reading/reference |
+|---|---|
+| Public API contract and drift | [REST/OpenAPI workbench](../workbench/node-js/backend/rest-contracts.md) |
+| Ordered database feeds and calendar data | [Cursor pagination](./cursor-pagination.md), [dates/time zones](./dates-and-time-zones.md) |
+| Private bounded text ingress | [Uploads and multipart variant](./safe-text-uploads.md), [expiry/deletion](./retention-and-deletion.md) |
+| Provider callbacks | [Signed webhooks](./signed-webhooks.md) |
+| Browser document/login boundaries | [CSP](./browser-csp.md), [OIDC/CSRF alternatives](./oidc-and-csrf-lab.md) |
+| Real-time updates or alternative APIs | [SSE/polling/gRPC](./realtime-transports.md), [GraphQL](./graphql-basics.md) |
+| Shared cache/abuse limits | [Redis adapters](./redis-adapters.md) |
+| Durable work and schedules | [Jobs/scheduling](./jobs-and-schedules.md) |
+| Cloud architecture awareness | [AWS slice](./aws-service-slice.md); Kubernetes awareness remains in the deployment continuation |
 
-- [REST contract workbench](./rest-contract-workbench.md) — generated OpenAPI/runtime schemas with actual endpoint/error/permission and drift checks.
-- [GraphQL catalogue](./graphql-basics.md) — a bounded alternative API with actual schema/query/authorization-scope and batched-loading checks; REST remains primary.
-- [Release artifact compatibility](./release-artifact-compatibility.md) — exact package identities and real PostgreSQL expand/contract/rollback boundaries.
-- [Container deployment lab](./container-deployment-lab.md) — actual image/Compose/database/readiness/shutdown/persistence checks.
-- [AWS service slice](./aws-service-slice.md) — scoped infrastructure/IAM/cost-model material with static validation, not a claimed cloud deployment.
-- [React query ownership](../senior_growth/EngX_Quality/Large_Data_Workflow.md) — the frontend counterpart to complete-body deadlines and stale-response protection.
-
-Use PostgreSQL/MikroORM as the primary relational path; MongoDB, GraphQL and other tools are alternatives to compare when the requirement justifies them. Keep Autocode's supplied build/Jest scripts, database settings and restricted test directory unchanged. Only the user may push repository changes.
-
-## How to study
-
-For each chapter:
-
-1. Read the concept and restate it in your own words.
-2. Run or rewrite the small examples.
-3. Complete the failure-driven exercises without copying the suggested approach.
-4. Explain why your solution is appropriate and when you would choose another design.
-5. Return to the final checklist and identify anything you cannot yet explain clearly.
-
-Reading creates recognition. Independent implementation, failure diagnosis and defended design decisions require separate practice/evidence; completed learning material does not establish professional readiness.
+All substantial collections have a [workbench home](../workbench/node-js/index.md). It distinguishes runnable fixtures, composable source examples and adaptation templates with additional environment requirements. Project requirements, acceptance criteria and learner checklists live in [practice](../practice/node-js/index.md). Preserve any Autocode task's supplied build/Jest/database/coverage configuration and restricted tests. Only the user may push repository changes.

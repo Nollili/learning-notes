@@ -24,7 +24,7 @@ Keep tool arguments, resource identity and prompt arguments conceptually separat
 
 ## Run the locked worked example
 
-Copy the repository folder `docs/python-for-ai/mcp-lab/`, including `pyproject.toml`, `uv.lock`, `server.py` and `check_primitives.py`, into an owned writable scratch directory. The implementation and check are also printed below. Do not run a copied stdio server with your usual credentials or private files attached. This example needs none. In that copy:
+Copy the repository folder `docs/workbench/applied-ai/mcp-lab/`, including `pyproject.toml`, `uv.lock`, `server.py` and `check_primitives.py`, into an owned writable scratch directory. The implementation and check are also printed below. Do not run a copied stdio server with your usual credentials or private files attached. This example needs none. In that copy:
 
 ```sh
 uv sync --locked
@@ -128,12 +128,4 @@ Use direct imports for one-process domain logic; expose a narrow MCP adapter aro
 
 ## Practice and acceptance
 
-1. Reproduce the locked SDK checks and explain which object acts as client/server and what the host still must decide. Retain versions and command output.
-2. Add one bounded public resource and one user-selected prompt; verify listing versus actual reading/rendering and prove rendering makes no provider/tool call.
-3. Add a missing-ID and malformed-input case, inspect `is_error`, and reject an unexpected output shape at the client. Do not expose raw exception details or credentials.
-4. Explain when a direct function is preferable to MCP, and write the principal/data/action policy needed before changing the fixture from public to private data.
-
-Learner implementation and independent explanation remain **still required**. Passing the supplied protocol fixture does not establish secure deployment, successful model behavior or professional readiness.
-
-
-Next: [schema, discovery and real stdio connection ownership](./mcp-connections.md). The later lesson records actual subprocess checks separately from this chapter's original in-memory evidence.
+[Separate exercises and acceptance criteria](../practice/applied-ai/chapters/mcp-primitives.md).

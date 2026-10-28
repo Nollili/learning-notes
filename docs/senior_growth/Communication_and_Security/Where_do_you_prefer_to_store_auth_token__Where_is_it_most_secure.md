@@ -88,27 +88,18 @@ Set-Cookie: __Host-session=<opaque-random-session-id>; HttpOnly; Secure; SameSit
 
 No location makes an application immune to XSS. Keep token values out of Redux/devtools persistence, URLs, analytics and error logs. A cookie-session boundary reduces JavaScript token exposure but requires session/CSRF lifecycle management. A memory Bearer design avoids persisting the token across reloads but still trusts executing origin scripts. Choose one documented primary flow instead of copying pieces from both.
 
-```js
-// cookie-profile.mjs
-export async function updateDisplayName({ displayName, csrfToken, signal }, send = fetch) {
-  if (typeof displayName !== 'string' || displayName.trim().length < 1 || displayName.length > 80
-    || typeof csrfToken !== 'string' || csrfToken.length < 1 || csrfToken.length > 512) {
-    throw new TypeError('Invalid profile command');
-  }
-  const response = await send('/api/profile', {
-    method: 'PATCH', credentials: 'same-origin', redirect: 'error', cache: 'no-store', signal,
-    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-    body: JSON.stringify({ displayName }),
-  });
-  await response.body?.cancel(); // This endpoint contract returns204, no representation.
-  if (response.status !== 204) throw new Error('Profile update failed');
-}
-```
+<<< ../../workbench/engineering/security/cookie-profile.mjs{js}
 
-The session cookie is attached by the browser; this function neither reads document.cookie nor creates an Authorization header. Obtain the session-bound CSRF token through the application's trusted bootstrap/framework flow and keep it out of logs/URLs. The request owner supplies an AbortSignal/deadline and handles errors; canceling a request does not undo a server write. A204 is the expected endpoint contract, not proof from client code that authorization/CSRF checks happened. The server must enforce every rule independently. Do not automatically retry after a timeout or401 without reconciling the mutation/session state.
+The session cookie is attached by the browser; this function neither reads document.cookie nor creates an Authorization header. Obtain the session-bound CSRF token through the application's trusted bootstrap/framework flow and keep it out of logs/URLs. The request owner supplies an AbortSignal/deadline and handles errors; canceling a request does not undo a server write. A204 is the expected endpoint contract, not proof from client code that authorization/CSRF checks happened.
+
+The server must enforce every rule independently. Do not automatically retry after a timeout or401 without reconciling the mutation/session state.
 
 For a separately designed cross-origin API, credentials:include alone is insufficient: eligible cookie attributes, exact credentialed CORS policy and browser third-party-cookie restrictions also apply. SameSite=None requires Secure in modern browsers, but does not override browser blocking/partitioning. A same-origin backend-for-frontend can avoid some cross-site cookie dependencies, at the cost of owning session storage/proxy security. Memory tokens and refresh cookies still create two distinct transport/lifecycle boundaries.
 
-**Exercise acceptance:** inspect the helper's outgoing method/path/body/credentials/CSRF header/signal and confirm no Bearer/Cookie token is synthesized by JavaScript. Mock204/failure/abort without raw diagnostic leakage. In an HTTPS browser/server lab confirm the HttpOnly cookie is absent from document.cookie yet accompanies an eligible request; then prove an invalid CSRF token/cross-tenant body fails with no mutation. Test logout/server invalidation, reload, cookie scope and cross-origin settings separately. A mock RequestInit check does not prove browser cookie sending or a secure server; learner practice remains required.
 
 References checked2026-10-22: [OWASP browser storage](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html), [session lifecycle/cookies](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [Fetch credentials/CORS](https://fetch.spec.whatwg.org/#http-cors-protocol). Applicable browser versions/policies must be included in the hands-on evidence.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/Where_do_you_prefer_to_store_auth_token__Where_is_it_most_secure.md). All learner practice remains outstanding.

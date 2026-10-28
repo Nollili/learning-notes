@@ -95,7 +95,6 @@ Start from complete user processes, not only URLs: load, search, empty/error res
 
 Do not claim a test was run because a tool is listed. An issue can fail multiple criteria, while several rule hits may describe one root cause. Prioritize user impact and repeatable reproduction over violation counts. Accessibility-tree inspection does not replace listening to a screen reader. Automated checks cannot decide whether alternative text communicates the correct meaning.
 
-**Exercise:** audit the worked form/dialog in the examples note. Acceptance: retain a state-by-state table with keyboard and screen-reader observations, criterion IDs, defects, fixes and rerun results; include at least one manual defect an automated scan missed. No result is recorded as passed until actually executed. Use the WAI evaluation guidance to define scope and limitations.
 
 Official references: [WAI evaluation overview](https://www.w3.org/WAI/test-evaluate/), [APG keyboard interface](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/), [modal interaction pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/). Verified2026-10-20.
 
@@ -153,7 +152,6 @@ For keyboard/manual tests, specify task and starting focus; compare actual Tab/S
 
 Use the [criterion-specific matrix](./What_is_WCAG_standard__What_parts_it_contains_Web_Content_Accessibility_Guidelines.md) for text enlargement/reflow/spacing/contrast/focus/motion/targets and the [worked form/dialog record](./Can_you_provide_some_examples_for_a11y.md) for state announcements. The [compound tabs](../React/Are_there_design_patterns_in_react.md), native table and navigation disclosure each need their own interaction contract; a generic “all controls respond to arrows” test is wrong.
 
-**Audit exercise acceptance:** execute this automated flow in an actual app, retain full results including incomplete checks, then add at least one meaningful manual-only finding, a scoped correction and recorded retest across the relevant states. Include slow/error/cancelled actions, a removed trigger, keyboard-only use, reader announcements, zoom/reflow/preferences and both themes. Distinguish authored tests, executed tests, observed pass/fail and unperformed work in the evidence ledger. No Playwright/axe/browser/screen-reader execution was performed for these notes; the snippet has only syntax validation here.
 
 Official references checked2026-10-21: [Playwright accessibility testing](https://playwright.dev/docs/accessibility-testing), [WAI evaluation methods](https://www.w3.org/WAI/test-evaluate/), [WCAG-EM](https://www.w3.org/WAI/test-evaluate/conformance/wcag-em/), [APG keyboard practices](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/). Evaluation scope and real learner evidence remain separate from completed study material.
 
@@ -164,4 +162,7 @@ Begin with the [configured public-search projects](../Other/Cross_Browser_Progre
 
 Use [the snapshot comparison lesson](../Testing/What_is_snapshot_testing_When_should_we_avoid_using_it.md#concrete-browser-screenshot-comparison) to keep serialized DOM and browser pixels distinct. Define a fixed baseline environment, review the initial expected appearance, investigate each difference and accept only intentional changes. A local DOM check for a role/name or activeElement is useful evidence within its simulation; no manual reader, native focus-trap, visual baseline or WCAG-conformance result follows from it.
 
-**Acceptance:** retain a checklist separating authored versus executed checks and browser/OS/reader/fixture revisions. Complete keyboard and reader task observations, visual baseline review and scoped failure/fix/retest rather than replace them with a percentage score. These native/manual steps remain unperformed here; the learning material includes their procedures and expected evidence.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/Can_we_test%2C_measure_a11y_somehow.md). All learner practice remains outstanding; the worked examples above are explanatory material.

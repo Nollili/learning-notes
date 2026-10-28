@@ -136,7 +136,6 @@ For a real previous value, next !== previous and next.counter !== previous.count
 
 Object.is differs from === for NaN and signed zero; do not casually replace every framework comparator with one universal rule. A fresh derived object can cause a subscription update even when all visible fields match, while mutating a reused object can hide a change from a reference-based observer. Correct immutable ownership comes before memoization; deep equality cannot repair corrupted historical snapshots.
 
-**Exercise acceptance:** assert previous/next values and changed/unchanged branch identities using the actual produce implementation, verify a no-op result, then demonstrate why mutating a nested object after only a root spread corrupts previous state. Distinguish state-setter, memo-prop and useSelector-result equality. Browser render counts/profiling and learner practice remain required.
 
 Official references: [Immer produce/structural sharing](https://immerjs.github.io/immer/produce/), [React state snapshots](https://react.dev/learn/state-as-a-snapshot), [useState equality](https://react.dev/reference/react/useState), [React memo](https://react.dev/reference/react/memo), [React Redux selectors](https://redux.js.org/react-redux/api/hooks). Checked2026-10-21.
 
@@ -145,4 +144,7 @@ Official references: [Immer produce/structural sharing](https://immerjs.github.i
 
 The named-produce helper above is the primary implementation for the ownership/equality exercise, not a guarantee of a particular render count. Connect it to the [selector contracts](../State_management_and_Redux/How_does_Redux_work.md#selector-result-equality-choose-the-actual-contract) and [server-cache confirmation/invalidation lab](../State_management_and_Redux/When_should_we_use-not_use_centralized_stores.md#one-owner-for-client-state-another-for-server-cache). Immutability preserves previous snapshots; query cancellation/versioning, error recovery and server authorization solve separate problems. A child callback communicates intent; it must not mutate its received props or create a competing writable remote record.
 
-**Acceptance:** execute actual Immer structural sharing/no-op checks, then compare a client-owned state update with a confirmed remote mutation and a pending overlay. Explain who owns each value, which equality rule observes it and how stale/error outcomes are reconciled. Learner UI/API practice and browser profiling remain required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_unidirectional_dataflow_means_Why_immutabilit_166e8106c24d8080ab3ce9dc309b32a3.md). All learner practice remains outstanding; the worked examples above are explanatory material.

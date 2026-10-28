@@ -138,6 +138,10 @@ The let loop creates per-iteration bindings; an IIFE/factory can provide similar
 
 **Debugging:** distinguish name not found, binding uninitialized, and initialized undefined. Pause at the failing read, inspect the innermost matching declaration and its initialization path; check shadowing/default parameters/module cycles before changing let to var. Replacing let with var can hide a defect by returning undefined instead of fixing ordering.
 
-**Exercise:** predict both callback arrays, build two independent counters, and reproduce both typeof cases. Acceptance: results match above; counters do not share state across factory calls; explain a real listener's closure lifetime and cleanup; reproduce a TDZ caused by shadowing without mislabelling the out-of-loop example. Retain isolated failing cases and corrected versions.
 
 Official references: [ECMAScript environment records](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records), [declarations](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html). Checked2026-10-20; Node24.18.0 runtime baseline.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_is_the_temporal_dead_zone_Why_is_this_happeni_177e8106c24d80d991b7caa84eaad6b6.md). All learner practice remains outstanding; the worked examples above are explanatory material.

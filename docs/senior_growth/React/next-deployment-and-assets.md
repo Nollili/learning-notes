@@ -1,6 +1,6 @@
 # Next.js Metadata, Assets and Deployment Decisions
 
-Target: senior frontend delivery reasoning and intermediate full-stack troubleshooting. Baseline Next.js16.4.2 App Router/React19, Node runtime; official docs checked2026-10-20. Continue [route foundations](./next-app-router.md) and [server security](./next-server-security.md). These are study fixtures/runbooks, not an application deployed from this notes repository.
+Target: senior frontend delivery reasoning and intermediate full-stack troubleshooting. Baseline Next.js16.4.3 App Router/React19, Node runtime; official docs checked2026-10-27. Continue [route foundations](./next-app-router.md) and [server security](./next-server-security.md). These are study fixtures/runbooks, not an application deployed from this notes repository.
 
 ## Metadata belongs to the route's content contract
 
@@ -36,7 +36,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 The image is an exercise asset that must actually exist and be public. Metadata exports are server-side APIs; do not export them from a use-client file. Nested metadata merging is not arbitrary recursive merging; inspect the final output when overriding openGraph/title fields. Data fetched independently by page/metadata can duplicate work; understand per-render memoization and keep the same authorized DAL, not a separate less-secure metadata query. Dynamic metadata/streaming and bot handling depend on framework version; test rendered head/status for the relevant crawlers rather than asserting all tags arrive before first byte.
 
-**Exercise:** test known/missing/private courses, direct links and social preview fetches. Acceptance: final title/canonical/OG resource is correct, no duplicate/conflicting canonical tags, preview and production policies are distinct, no sensitive title in unauthenticated HTML/RSC/metadata. Retain output/status/asset evidence, not only the source object.
 
 ## Images and fonts: optimizations have runtime and accessibility contracts
 
@@ -51,7 +50,9 @@ export function CourseHero() {
 }
 ```
 
-Supply the real dimensions/asset and match sizes to the rendered slot. Next Image defaults to lazy; do not carry that default into an identified LCP hero blindly. Current Next16 deprecates priority in favor of explicit preload; this example instead uses eager/high priority. Preload is a different discovery choice and should not be piled onto loading/fetchPriority without following the versioned API. More high-priority resources can compete with the one that matters. Remote image sources require a narrow remotePatterns allowlist; arbitrary hosts/paths can create proxy/security/cost problems. Decorative images need empty alt; a meaningful diagram needs a useful description, sometimes longer adjacent prose.
+Supply the real dimensions/asset and match sizes to the rendered slot. Next Image defaults to lazy; do not carry that default into an identified LCP hero blindly. Current Next16 deprecates priority in favor of explicit preload; this example instead uses eager/high priority. Preload is a different discovery choice and should not be piled onto loading/fetchPriority without following the versioned API. More high-priority resources can compete with the one that matters.
+
+Remote image sources require a narrow remotePatterns allowlist; arbitrary hosts/paths can create proxy/security/cost problems. Decorative images need empty alt; a meaningful diagram needs a useful description, sometimes longer adjacent prose.
 
 ```tsx
 // app/font.ts — local asset supplied by learner with suitable license/coverage.
@@ -66,7 +67,6 @@ export const studyFont = localFont({
 
 The local font file is relative to its module; public image URLs are rooted at public/. next/font can self-host font assets and handle integration, but does not guarantee zero shift for arbitrary typography. Verify script/diacritic coverage, weight/style matching, fallback metrics, narrow/zoomed layouts and actual request bytes. next/font/google can require network access during build; choose local fonts or a controlled build strategy for isolated CI. Preload only the fonts needed by the relevant routes. A system font stack is a valid lower-complexity alternative.
 
-**Exercise:** inspect generated srcset/currentSrc, sizes, reserved geometry and font requests in cold/warm loads; block images/fonts and verify fallback meaning/readability. Acceptance: no lazy critical hero, no oversized candidate due to wrong sizes, no missing accents, sensible fallback and actual LCP/CLS trace comparison. No images/font binaries or browser scores are supplied here.
 
 ## Rendering/build modes and freshness
 
@@ -97,7 +97,6 @@ export async function generateStaticParams() {
 
 This is not a cron job firing every60seconds. Observe build generation and request-triggered stale/revalidation behavior in production mode; a local unchanged array cannot demonstrate freshness. A no-store read changes the rendering policy; do not combine mutually contradictory “always fresh” and cached-route expectations. On-demand tag/path invalidation requires authorization and appropriate scope; updateTag/read-your-own-writes differs from stale-while-revalidate. A failed regeneration can retain previously generated content; test upstream failure and recovery against the declared freshness policy. Do not claim Edge/static export support for Node ISR.
 
-**Acceptance:** retain build route output, upstream call counts and content versions across first/cached/stale/invalidation/failure requests. Test two app instances: default local caches may diverge unless coordinated with a shared cache handler/invalidation design. Check what changes on a new build/deployment. Learner execution remains required.
 
 ## Deploy the architecture that was actually built
 
@@ -135,4 +134,9 @@ No deployment is performed by this lesson. Actual Next typecheck/build/start, as
 
 ## Official references
 
-Verified2026-10-20 against docs showing Next16.4.2: [metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [Image API](https://nextjs.org/docs/app/api-reference/components/image), [fonts](https://nextjs.org/docs/app/getting-started/fonts), [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration), [static export limitations](https://nextjs.org/docs/app/guides/static-exports), [self-hosting](https://nextjs.org/docs/app/guides/self-hosting). Revalidate version/platform-sensitive claims when implementing or upgrading.
+Verified2026-10-20 against docs showing Next16.4.3: [metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [Image API](https://nextjs.org/docs/app/api-reference/components/image), [fonts](https://nextjs.org/docs/app/getting-started/fonts), [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration), [static export limitations](https://nextjs.org/docs/app/guides/static-exports), [self-hosting](https://nextjs.org/docs/app/guides/self-hosting). Revalidate version/platform-sensitive claims when implementing or upgrading.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/next-deployment-and-assets.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -202,7 +202,6 @@ console.log(blockingPortions([20, 70, 120])); // 90ms; only within an explicitly
 
 Reproduce a product-filter interaction under a known dataset/device. Distinguish input queued behind other tasks, excessive filter work and expensive DOM/layout presentation. Compare chunked/off-main-thread computation against reducing dataset/DOM work; workers incur message/serialization/ownership cost and cannot update DOM. Debouncing may reduce repeated work but also delays feedback; it does not repair an indivisible expensive calculation.
 
-**Acceptance:** retain baseline and changed production traces under the same scenario; identify a causal stack/rendering cost; test rapid inputs, cancellation, slow network and keyboard focus; show correctness of the resulting data; compare repeated lab distributions and record field collection/cohort/sample-size plans. A lower TBT alone does not prove lower field INP. No learner trace or field improvement is claimed here.
 
 Official references checked2026-10-20: [Lighthouse10 TTI removal](https://developer.chrome.com/blog/lighthouse-10-0), [INP](https://web.dev/articles/inp), [TBT](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time), [INP replacement date](https://developers.google.com/search/blog/2023/05/introducing-inp).
 
@@ -211,4 +210,7 @@ Official references checked2026-10-20: [Lighthouse10 TTI removal](https://develo
 
 The one-small-idle-chunk snippet is a scheduling illustration; it does not implement a whole job, deadline or disposer. Use the [bounded/cancellable processChunks example](./What_if_you_have_to_create_an_app_with_some_pretty_sophisticated_UI_%28views,_animations,_etc%29._What_are_the_pitfalls_%28UI_interractions,_60fps,_split_into_chunks,_workers_etc%29._Stages_to_build_frame.md) when a job must progress across turns. Its item cap bounds units per turn, not the duration of one expensive unit; reduce or offload that unit when needed. Workers require their own message/cancellation/ownership policy and cannot mutate DOM.
 
-**Acceptance:** explain why moving a full heavy job to one idle callback or async script still stalls input. Execute the chunk/cancel control-flow tests, then measure the actual browser interaction and correctness under the same scenario before/after. Keep the pure blocking-portions arithmetic, lab TBT, visit-level INP and navigation-to-custom-ready milestone distinct. Browser traces/field/learner evidence remains unperformed.
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_is_TTFI_%28Time_to_first_interaction%29._How_can_we_improve_TTFI.md). All learner practice remains outstanding.

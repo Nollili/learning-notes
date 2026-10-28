@@ -510,6 +510,10 @@ The earlier ScrollToTop is a simple example, not complete restoration: back/forw
 
 Unsaved drafts need a data-mode blocker plus an accessible confirm/discard flow, and a separate browser-unload policy where applicable. useBlocker covers supported SPA navigation, not every document/external exit; beforeunload is limited/unreliable on some mobile paths and cannot guarantee data retention. Persist drafts with version/user/expiry rules when justified. Do not invent a synchronous browser-confirm workflow as complete accessibility. See the subsequent complex-form lesson for draft state ownership.
 
-**Exercise:** build nested user/movie routes, a search query and edit draft using the pinned router. Acceptance: direct links/refresh/back/forward work; both declared params are validated; invalid/missing/401/403/500/slow/cancelled cases show correct safe states; rapid navigation cannot render stale movie data; loading auth does not flash a login redirect; server rejects unauthorized direct calls; draft stay/discard and external-exit limitations are tested; title/focus/scroll and keyboard announcements remain usable. Retain real browser/router tests and distinguish a loader contract check from full navigation behavior. Router/React packages are not installed or executed in this notes repository.
 
 Official references checked2026-10-21: [v7.18.4 modes](https://reactrouter.com/7.18.4/start/modes), [data loading](https://reactrouter.com/7.18.4/start/data/data-loading), [useBlocker](https://reactrouter.com/7.18.4/api/hooks/useBlocker), [React client root](https://react.dev/reference/react-dom/client/createRoot).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/routing_in_react.md). All learner practice remains outstanding; the worked examples above are explanatory material.

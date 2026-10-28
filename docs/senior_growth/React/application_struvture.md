@@ -98,7 +98,6 @@ Folder layouts express ownership; they do not enforce dependencies or establish 
 * Emphasize **containers vs presentational components** in domain-based structure.
 
 
-
 ## A proposed decision with an executable boundary
 
 **ADR-STUDY-01 — UI uses an application port. Status: proposed learner fixture.** Context: catalog UI imports concrete storage/network modules, making UI tests and migrations depend on infrastructure. Decision: the UI consumes an application service/port; composition at the application edge chooses the concrete adapter. Start with one feature, preserving public entry points. Alternatives: keep the direct import for a tiny isolated script, or introduce a broader graph tool when direct rules are insufficient. Costs: another explicit interface and migration ownership. Risks: barrels/aliases/dynamic imports can bypass a string-pattern rule; a folder rename can break the configured scope. Revisit when a real exception or dependency cycle appears, rather than add folders speculatively.
@@ -121,6 +120,10 @@ export default [{
 
 In src/features/catalog/ui/card.js, importing ../application/catalog.js should pass; importing ../infra/catalog.js or @infra/catalog should fail. Run eslint src/features/catalog/ui/card.js in the lab and retain actual results. The rule checks configured direct static import/re-export spellings; it does not resolve an entire graph, validate exports or block a runtime network request. Test the known aliases/barrels/dynamic paths and either cover them with the actual graph/parser policy or document the remaining gap. CI enforcement is still needed because a local hook can be skipped.
 
-**Acceptance:** execute positive/negative import fixtures, record this decision and one migration exception/expiry, then move one feature read/write path through its port with characterization tests. Do not claim a completed project migration from this proposed ADR or lint rule. The [compatibility seam exercise](../EngX_Quality/How_would_you_approach_significant_refactoring.md#worked-compatibility-seam-and-characterization-cases) supplies a small behavior-preserving first step. Learner repository integration remains required.
 
 Official references checked 2026-10-22: [ESLint restricted imports](https://eslint.org/docs/latest/rules/no-restricted-imports), [flat configuration and file coverage](https://eslint.org/docs/latest/use/configure/configuration-files).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/application_struvture.md). All learner practice remains outstanding; the worked examples above are explanatory material.

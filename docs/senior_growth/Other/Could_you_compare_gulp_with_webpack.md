@@ -63,25 +63,7 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 
 ### Example
 
-```javascript
-// webpack.config.cjs (CommonJS config, including inside a type:module project)
-const path = require('path');
-
-module.exports = {
-  entry: './src/index.js',
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  },
-  module: {
-    rules: [
-      { test: /\.js$/, use: 'babel-loader' },
-      { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }
-    ]
-  },
-  mode: 'production'
-};
-```
+<<< ../../workbench/engineering/specialists/webpack/webpack.config.cjs{javascript}
 
 ### Pros
 
@@ -147,4 +129,7 @@ Tree shaking depends on statically analyzable module exports/imports (commonly E
 
 Use the existing [host-resolution/source-map workbench](../React/build_tools.md#worked-lab-typechecking-host-resolution-and-private-source-maps). Its retained B31 checks actually typecheck browser aliases, execute NodeNext output, map a minified external-map failure to the exact source line and verify private map staging. They do not claim a webpack runtime or deployed browser error-service integration. TypeScript `paths` guides checking, while the bundler/test/runtime must resolve the corresponding specifier; one succeeding tool does not prove the others agree.
 
-**Exercise acceptance:** create a small ESM fixture with one unused export and one effectful registration/CSS file; compare the emitted graph/size and observable behavior under correct/incorrect side-effect metadata. Capture a generated stack, map it using the exact matching release map and reject a mismatched map. Reproduce an alias that typechecks but fails bundling, then fix the actual host configuration. Retain versions/commands/diff and measure rather than asserting automatic speed gains. Learner practice remains required. References: [webpack tree shaking/sideEffects](https://webpack.js.org/guides/tree-shaking/), [webpack source-map choices](https://webpack.js.org/configuration/devtool/), [Vite build options](https://vite.dev/config/build-options).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/specialists/Could_you_compare_gulp_with_webpack.md). All learner practice remains outstanding.

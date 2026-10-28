@@ -89,6 +89,10 @@ The original Flux package repository was archived2023-03-23 and is read-only. St
 
 **Worked comparison:** a rename that changes a user and all project owner labels needs coordination if separate stores hold copied names. In the [normalized Redux fixture](./How_would_you_introduce_centralized_store_management_%28f.e._REDUX%29_on_a_project_which_does_not_use_it.md#normalize-shared-relationships-before-migrating-consumers), one canonical user name plus owner IDs avoids rewriting every project. This is a data/ownership decision, not a universal proof that multiple stores are incorrect. Compare atomic publication, derived reads, unsubscribe/lifecycle and failure behavior before migrating a legacy system.
 
-**Introductory acceptance:** trace the rename through each architecture, identify its authoritative data and explain the coordination needed for a subscriber to avoid inconsistent views. Execute the primary normalized Redux example; document a migration decision and a reason to keep a small isolated state local. Building/running a historical Flux application is explicitly deferred optional practice, not a missing second primary stack.
 
 Official sources checked2026-10-22: [Flux archive/status](https://github.com/facebookarchive/flux), [Redux state/ownership guidance](https://redux.js.org/style-guide/), [entity adapters](https://redux-toolkit.js.org/api/createEntityAdapter).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/state/What_are_the_main_differences_between_REDUX_and_FLUX.md). All learner practice remains outstanding.

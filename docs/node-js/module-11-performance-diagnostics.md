@@ -262,38 +262,7 @@ Node.js executes JavaScript callbacks on an event-loop thread. A long-running ca
 
 ### Monitoring event-loop delay
 
-```ts
-// loop-diagnostics.ts
-import { monitorEventLoopDelay, performance } from 'node:perf_hooks';
-export type LoopSample = { meanMs: number | null; p99Ms: number | null;
-  maxMs: number | null; utilization: number };
-export function startLoopDiagnostics(observe: (sample: LoopSample) => undefined,
-  intervalMs = 10_000) {
-  if (!Number.isInteger(intervalMs) || intervalMs < 10 || intervalMs > 60_000)
-    throw new RangeError('Invalid reporting interval');
-  const delay = monitorEventLoopDelay({ resolution: 20 });
-  let previous = performance.eventLoopUtilization();
-  let stopped = false;
-  const stop = () => {
-    if (stopped) return;
-    stopped = true; clearInterval(timer); delay.disable();
-  };
-  delay.enable();
-  const timer = setInterval(() => {
-    const current = performance.eventLoopUtilization();
-    const utilization = performance.eventLoopUtilization(current, previous).utilization;
-    previous = current;
-    const samples = delay.count > 0;
-    const sample = { meanMs: samples ? delay.mean / 1_000_000 : null,
-      p99Ms: samples ? delay.percentile(99) / 1_000_000 : null,
-      maxMs: samples ? delay.max / 1_000_000 : null, utilization };
-    delay.reset();
-    try { observe(sample); } catch { stop(); }
-  }, intervalMs);
-  timer.unref();
-  return { stop, get stopped() { return stopped; } };
-}
-```
+<<< ../workbench/node-js/runtime/diagnostics/loop-diagnostics.ts
 
 **What it does:** records how late the event loop wakes compared with when it was expected to wake. The histogram values are in nanoseconds, so the example converts them to milliseconds.
 
@@ -303,7 +272,9 @@ export function startLoopDiagnostics(observe: (sample: LoopSample) => undefined,
 
 ### Event-loop utilization
 
-The owned helper above reports utilization and delay together from one timer. It returns stop, which clears the timer and disables histogram sampling; call it on application shutdown, replacement and failed startup. unref only allows process exit—it does not dispose the timer or histogram. stop is idempotent. An observation with no histogram samples reports null delay values instead of a made-up zero/NaN. If the observation sink throws, the helper stops and exposes stopped=true; the owner must surface that diagnostic failure through an independent safe health path rather than assume reporting continues. The callback is synchronous and must not return a promise.
+The owned helper above reports utilization and delay together from one timer. It returns stop, which clears the timer and disables histogram sampling; call it on application shutdown, replacement and failed startup. unref only allows process exit—it does not dispose the timer or histogram. stop is idempotent. An observation with no histogram samples reports null delay values instead of a made-up zero/NaN.
+
+If the observation sink throws, the helper stops and exposes stopped=true; the owner must surface that diagnostic failure through an independent safe health path rather than assume reporting continues. The callback is synchronous and must not return a promise.
 
 **What it does:** estimates the fraction of time the event loop was active during an interval.
 
@@ -510,44 +481,7 @@ database operation
 
 Measure pool acquisition separately from query execution.
 
-```ts
-// measured-db.ts — application port; adapt the real driver's acquisition/release API.
-import { performance } from 'node:perf_hooks';
-export type DbConnection<T> = {
-  query(statement: string, parameters: readonly unknown[]): Promise<T>;
-  release(): void;
-};
-export function createMeasuredDb<T>(pool: { acquire(): Promise<DbConnection<T>> },
-  observe: (phase: 'acquire' | 'query', outcome: 'ok' | 'error', milliseconds: number) => undefined) {
-  let droppedObservations = 0;
-  async function phase<R>(name: 'acquire' | 'query', task: () => Promise<R>): Promise<R> {
-    const started = performance.now();
-    let outcome: 'ok' | 'error' = 'error';
-    try { const result = await task(); outcome = 'ok'; return result; }
-    finally {
-      try { observe(name, outcome, performance.now() - started); }
-      catch { droppedObservations++; } // Instrumentation cannot mask DB outcome/ownership.
-    }
-  }
-  return {
-    get droppedObservations() { return droppedObservations; },
-    async query(statement: string, parameters: readonly unknown[]): Promise<T> {
-      const connection = await phase('acquire', () => pool.acquire());
-      let failed = false;
-      let primary: unknown;
-      try { return await phase('query', () => connection.query(statement, parameters)); }
-      catch (error) { failed = true; primary = error; throw error; }
-      finally {
-        try { connection.release(); }
-        catch (releaseError) {
-          if (failed) throw new AggregateError([primary, releaseError], 'Query and release failed');
-          throw releaseError;
-        }
-      }
-    },
-  };
-}
-```
+<<< ../workbench/node-js/runtime/diagnostics/measured-db.ts
 
 **What it does:** records both successful and failed acquisition/query durations separately. An acquisition failure emits no query sample and has no client to release. Query failure still releases exactly once; a throwing observation sink cannot leak an acquired connection or mask the original DB result. droppedObservations makes that telemetry loss visible. Query+release failure preserves both causes in an AggregateError; map them to safe categories rather than log raw statements, parameters or error objects. The observer must be synchronous; use fixed low-cardinality operation labels at the actual adapter.
 
@@ -793,78 +727,11 @@ A timeout longer than the caller's remaining budget cannot produce a useful answ
 
 ## 15. Practice exercises
 
-### Exercise 1: Event-loop stall
-
-A route parses a very large payload and performs a nested loop. Under load, unrelated health requests also become slow.
-
-Investigate:
-
-- which measurements prove event-loop blocking;
-- which code appears in a CPU profile;
-- whether bounds, a better algorithm, streaming, or workers are appropriate;
-- how you will prove the fix.
-
-### Exercise 2: The “database is slow” report
-
-Application traces show 900 ms around a database helper. The database reports that the query executes in 25 ms.
-
-Investigate pool acquisition, transaction duration, leaked clients, and total connections across instances. Explain why increasing the pool might make the system worse.
-
-### Exercise 3: Slow memory growth
-
-Heap usage rises by 30 MB each hour. Traffic stays constant. A map stores request status by correlation ID.
-
-Find the ownership rule that is missing. Add deletion or a bounded expiry policy. Verify the fix with a soak test and post-GC heap trend.
-
-### Exercise 4: Misleading load test
-
-A closed-model test reports good p99 latency at 100 virtual users. Production receives a fixed burst of 2,000 events per second and develops a queue.
-
-Explain the mismatch. Design a test that controls arrival rate and measures queue delay, rejection, and recovery.
-
-### Exercise 5: Worker-pool design
-
-PDF generation blocks the event loop for 400 ms. Design a bounded worker pool. Define queue capacity, timeout behavior, crash replacement, cancellation, correlation, and graceful shutdown.
-
-For every exercise, include the evidence that would falsify your first hypothesis. A strong diagnosis can change direction when measurements disagree.
-
----
+[Exercises and learner checklist](../practice/node-js/module-11-performance-diagnostics.md).
 
 ## 16. Final review checklist
 
-### Measurement
-
-- [ ] Turn a vague performance complaint into a measurable target.
-- [ ] Record a reproducible baseline before changing code.
-- [ ] Distinguish throughput, latency, concurrency, utilization, and saturation.
-- [ ] Use p50, p95, and p99 instead of relying only on averages.
-- [ ] Explain coordinated omission and open versus closed load models.
-
-### Node.js runtime
-
-- [ ] Distinguish CPU-bound work from asynchronous I/O waits.
-- [ ] Measure event-loop delay and event-loop utilization.
-- [ ] Recognize common event-loop blockers.
-- [ ] Interpret RSS, heap, external memory, and buffers separately.
-- [ ] Diagnose a leak from trends and retained ownership, not one memory reading.
-- [ ] Use CPU and heap profiling safely.
-
-### Dependencies and capacity
-
-- [ ] Separate database pool wait from query execution time.
-- [ ] Read query plans and investigate locks, result size, and N+1 patterns.
-- [ ] Budget total database connections across all service instances.
-- [ ] Bound queues and concurrency before overload consumes memory.
-- [ ] Choose workers only for measured CPU-intensive JavaScript.
-
-### Verification and observability
-
-- [ ] Design representative baseline, load, stress, spike, soak, and failure tests.
-- [ ] Monitor the load generator as well as the target.
-- [ ] Correlate logs, metrics, traces, and profiles.
-- [ ] Avoid high-cardinality metric labels.
-- [ ] Re-run the same experiment after each focused change.
-- [ ] Confirm correctness and error rates as well as speed.
+[Exercises and learner checklist](../practice/node-js/module-11-performance-diagnostics.md).
 
 ### One-minute recap
 
@@ -881,8 +748,4 @@ Performance work is experimental. Begin with a measurable symptom and a reproduc
 
 ## Executable lifecycle and failure checks
 
-Node24.18.0/TypeScript5.9.3 baseline, official APIs checked2026-10-25. Extract loop-diagnostics.ts and measured-db.ts into the isolated practice project. Observe at least one real reporting tick, call stop twice and require no later observation; inject a throwing sink and require stopped=true/no further ticks. Treat measured values as smoke-test observations, not a workload benchmark or proof of CPU/GC behavior. Check invalid interval values and that shutdown disposes all owned diagnostics.
-
-For the DB port test acquisition success/failure, query success/failure, throwing telemetry, release failure and combined query+release failure. Require phase labels/outcomes and nonnegative finite durations, one release per acquired connection and unchanged result/error identity except the documented AggregateError. No raw SQL/parameters/private error text may enter observation fields. Retain actual worker zero-exit/no-result, crash, invalid message, timeout, abort and post-result open-handle tests from the shared module02 helper; no duplicate broken worker wrapper belongs here.
-
-**Learner practice:** instrument an actual owned service/DB adapter, reproduce a representative workload, measure pool versus query wait, collect a short protected CPU/heap profile only when evidence justifies it and run the same workload after a focused change. Native profiling/GC/leak conclusions, pool capacity sizing and production gain are not established by these lifecycle tests. Memory counters overlap and percentiles need enough samples. [Node24 perf_hooks](https://nodejs.org/download/release/v24.18.0/docs/api/perf_hooks.html), [memoryUsage categories](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#processmemoryusage).
+[Exercises and learner checklist](../practice/node-js/module-11-performance-diagnostics.md).

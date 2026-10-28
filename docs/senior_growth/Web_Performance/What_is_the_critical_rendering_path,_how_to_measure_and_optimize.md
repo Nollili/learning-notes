@@ -161,9 +161,15 @@ Optimizing the Critical Rendering Path improves perceived performance. Focus on 
 
 Treat this path as a dependency graph, not a rigid sequence: parsing, preload scanning, fetching, scripting and rendering overlap and repeat. A small resource discovered late can dominate LCP more than an earlier large transfer. Deferred/async scripts can still create long tasks; style/layout work can dominate after bytes arrive. Inline critical CSS trades discovery against HTML size, duplication/cacheability and CSP handling; avoid copying an entire stylesheet into every page.
 
-**Exercise:** deliberately delay a CSS-imported font or JS-discovered hero, inspect initiators/waterfall and identify resource load delay, transfer and render delay. Compare one targeted discovery change. Acceptance: critical styles remain applied with JavaScript disabled/CSP enforced; no lazy LCP hero; no duplicate mismatched preload fetch; meaningful HTML/alt/dimensions survive failure; repeated same-condition traces substantiate the chosen trade-off. Record browser/tool versions and actual results; no measurement is supplied here. See the initial-load note for the typography/hero fixture.
 
 Official references checked2026-10-20: [HTML preload/stylesheet semantics](https://html.spec.whatwg.org/multipage/links.html), [loading performance](https://web.dev/learn/performance), [Lighthouse10](https://developer.chrome.com/blog/lighthouse-10-0).
 
 
-The paint observer deliberately records at most two FP/FCP samples and does not log arbitrary resource URLs. Its report callback is an application-owned nonthrowing sink. `buffered:true` requests retained entries emitted before observer installation; it does not observe LCP/INP or create historical entries a browser never collected. Dispose on navigation/unmount and test unsupported surfaces. The observer's JavaScript fixture can validate lifecycle/options; real browser traces are needed to validate actual paint behavior. Async/defer changes fetch/parser scheduling, not the main-thread cost of executing a script. Preloading CSS fetches bytes but never applies a stylesheet by itself.
+The paint observer deliberately records at most two FP/FCP samples and does not log arbitrary resource URLs. Its report callback is an application-owned nonthrowing sink. `buffered:true` requests retained entries emitted before observer installation; it does not observe LCP/INP or create historical entries a browser never collected. Dispose on navigation/unmount and test unsupported surfaces.
+
+The observer's JavaScript fixture can validate lifecycle/options; real browser traces are needed to validate actual paint behavior. Async/defer changes fetch/parser scheduling, not the main-thread cost of executing a script. Preloading CSS fetches bytes but never applies a stylesheet by itself.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_is_the_critical_rendering_path%2C_how_to_measure_and_optimize.md). All learner practice remains outstanding.

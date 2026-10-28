@@ -1,5 +1,7 @@
 ### What is memoization and how to achieve it in React?
 
+Canonical owner: memo/useMemo/useCallback mechanisms and cache lifetime. [Comparator correctness](./react_memo.md) keeps its callback/value counterexample; [performance experiments](./performance_potimization.md) retain debounce and workload examples. General algorithmic memoization remains in [CS practice/foundations](../../cs-foundations/).
+
 Memoization is an optimization technique used to improve the performance of functions or components by caching the results of expensive computations. When the same inputs are provided, the cached result is returned instead of recalculating, saving time and resources.
 
 In the context of React, memoization helps optimize rendering by avoiding unnecessary re-renders of components and recalculations of values or derived state.
@@ -13,7 +15,7 @@ React provides built-in tools and patterns for memoization:
 ### 1. **React.memo**
 
 - Used to memoize functional components.
-- Prevents unnecessary re-renders if the props of the component haven’t changed.
+- Can skip parent-driven rendering when props compare equal; local state/context and React scheduling still apply.
 
 **Usage**:
 
@@ -45,7 +47,7 @@ export default ParentComponent;
 
 **Tradeoff**:
 
-- React performs a shallow comparison of props. For deeply nested objects, you may need to use custom comparison functions.
+- React performs a shallow comparison of props. Prefer immutable snapshots and explicit stable props. A custom comparator must compare every output and behavior input and be cheaper than rendering; deep comparison is not the default remedy.
 
 ---
 
@@ -180,6 +182,10 @@ export function CounterButton({ report }) {
 
 A functional update can remove a dependency only when the callback no longer reads that value. Refs can hold the latest imperative value, but hiding dependencies in a ref without a clear synchronization contract can create different bugs. Prefer simpler state ownership and fewer Effect dependencies before adding caches. React Compiler, when enabled, can remove the need for much manual memoization; preserve behavior rather than coding to render counts.
 
-**Exercise:** use the MemoLab unrelated update, change input and replace CounterButton.report. Acceptance: cached calculation can be reused without skipping Calculation's render; input change recomputes; newest report handler executes; no missing-dependency suppression. Record before/after Profiler traces and memory/complexity trade-offs using a realistic expensive computation before claiming a gain. Development Strict Mode may invoke pure calculations more than once.
 
 Official references: [useMemo](https://react.dev/reference/react/useMemo), [useCallback](https://react.dev/reference/react/useCallback), [Profiler](https://react.dev/reference/react/Profiler). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_is_memoization_and_how_to_achieve_it_in_React.md). All learner practice remains outstanding; the worked examples above are explanatory material.

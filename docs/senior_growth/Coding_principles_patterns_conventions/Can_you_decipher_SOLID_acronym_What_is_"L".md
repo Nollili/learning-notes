@@ -83,7 +83,6 @@ birds.forEach(bird => {
 > *“If I replace the parent class with this subclass, will existing code still work correctly?”*
 
 
-
 ## 1️⃣ S – Single Responsibility Principle (SRP)
 
 - **Definition:** A class or module should have **only one reason to change**, meaning it should have **only one responsibility**.
@@ -206,4 +205,7 @@ The negative substitution is intentionally rejected by the shared suite. A produ
 
 **Validation:** TypeScript5.9.3 strict compilation (including indexed-access checks), Node24.18.0: two conforming adapters pass the five-assertion suite; an interface-compatible violating adapter is caught. The seed/returned-object mutation cases guard ownership. [Creation/ownership corrections](./What_kind_of_creational_design_patterns_do_you_know.md#ownership-and-creation-checks) cover prototype delegation versus copying and actual Factory Method; [shipping-rule Strategy](./Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md#worked-change-inject-a-shipping-quote-rule) justifies variation using a concrete change rather than applying a pattern mechanically.
 
-**Exercise acceptance:** implement the same contract using a real database or existing adapter, run the unchanged suite plus adapter-specific failure/cleanup tests, and add one deliberately stronger precondition or weaker postcondition that the suite catches. Explain which invariants the types cannot establish and whether subclassing is necessary. Learner practice remains required. References: [TypeScript structural type compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html), [Node assertions](https://nodejs.org/docs/latest-v24.x/api/assert.html).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/patterns/Can_you_decipher_SOLID_acronym_What_is_%22L%22.md). All learner practice remains outstanding.

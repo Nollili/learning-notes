@@ -1,6 +1,6 @@
 ### Are there design patterns in react?
 
-React encourages the use of design patterns to create maintainable, reusable, and efficient code. Below are some commonly used design patterns in React, along with explanations and examples:
+Choose a pattern to clarify ownership or a changing policy; each additional layer has a cost.
 
 ---
 
@@ -153,7 +153,7 @@ function TabPanel({ value, children }) {
 
 https://www.youtube.com/watch?v=8IGlJqy6cFQ&ab_channel=CodeRyan
 
-Here’s a **senior-level explanation** you can give about **controlled vs uncontrolled components in React**, including best practices:
+
 
 ---
 
@@ -412,7 +412,9 @@ const Modal = ({ children }) => {
 React supports diverse design patterns to solve various problems in UI development. **Composition**, **hooks**, and **context** are modern patterns recommended over older paradigms like HOCs or inheritance. Choosing the right pattern depends on the complexity and scalability requirements of your project.
 ## Contracts and failure cases for these patterns
 
-The old compound-tabs example assigned button indices0/1 but panel indices2/3, so no panel could activate. The corrected example pairs explicit values, creates unique IDs per instance, and implements roving focus with automatic activation. This teaching API supports a static, non-disabled horizontal tab set; values must be unique and the default must exist. Dynamic removal, disabled tabs, RTL/vertical navigation and asynchronous panel loading require explicit policies. Automatic activation is appropriate only when panels appear without noticeable latency; otherwise separate focus from activation and use Enter/Space to activate manually. Keep a focused tab visible and preserve panel content/state deliberately.
+The old compound-tabs example assigned button indices0/1 but panel indices2/3, so no panel could activate. The corrected example pairs explicit values, creates unique IDs per instance, and implements roving focus with automatic activation. This teaching API supports a static, non-disabled horizontal tab set; values must be unique and the default must exist. Dynamic removal, disabled tabs, RTL/vertical navigation and asynchronous panel loading require explicit policies.
+
+Automatic activation is appropriate only when panels appear without noticeable latency; otherwise separate focus from activation and use Enter/Space to activate manually. Keep a focused tab visible and preserve panel content/state deliberately.
 
 Context composition avoids clone-by-child-position coupling, but descendants require the provider and still share subscription updates. An item-data API can validate dynamic membership more easily than arbitrary compound children. HOCs should be created outside render, preserve intended prop/ref contracts and avoid consuming/colliding with child props; render props add flexibility at the cost of nesting. No pattern removes server authorization requirements.
 
@@ -420,7 +422,6 @@ The shared fetch hook checks status, parses a public shape, guards stale results
 
 Controlled inputs keep value/checked defined for their lifetime; use empty string/false rather than switching between undefined and a value. Uncontrolled inputs use defaultValue/defaultChecked for initialization; native FormData reads named successful controls on submit. Neither style automatically supplies validation/error accessibility, async races or server security.
 
-**Exercise:** assemble two independent tab widgets and the validated message container, then test a form using one explicit ownership style. Acceptance: both panels reachable by matching value; arrows/Home/End move and activate as designed; Tab leaves the tablist for panel/page; roles/names/controls relationships correct; same-valued tabs in separate widgets do not share IDs/state; no stale/error response crashes the presenter; timeout/unmount clears resources. Document the static API limits before implementing dynamic/disabled/RTL extensions. Verify with keyboard and a screen reader; no manual pass is implied.
 
 Official references: [WAI tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/), [React Effects](https://react.dev/reference/react/useEffect), [Formik controlled tutorial](https://formik.org/docs/tutorial), [React input contracts](https://react.dev/reference/react-dom/components/input), [Redux Toolkit](https://redux-toolkit.js.org/introduction/getting-started). React19 baseline; checked2026-10-20.
 
@@ -455,7 +456,9 @@ export function ReportRegion({ reportId }: { reportId: string }) {
 }
 ```
 
-Report.tsx is a learner-supplied module for the exercise, not a missing file in this notes repository. Place lazy declarations outside render so component identity/cache is not recreated on each update. React caches the lazy loader's promise/result: resetting only boundary state is not a reliable retry for a rejected import. The example offers explicit navigation/full reload; preserve unrelated drafts before a full-document action and never auto-reload forever. For stale deployments/chunk404, coordinate compatible asset retention, service-worker/CDN caches and recovery rather than repeatedly requesting a vanished chunk. A changed reportId remounts the boundary but does not erase lazy's module-level rejected promise cache.
+Report.tsx is a learner-supplied module for the exercise, not a missing file in this notes repository. Place lazy declarations outside render so component identity/cache is not recreated on each update. React caches the lazy loader's promise/result: resetting only boundary state is not a reliable retry for a rejected import. The example offers explicit navigation/full reload; preserve unrelated drafts before a full-document action and never auto-reload forever.
+
+For stale deployments/chunk404, coordinate compatible asset retention, service-worker/CDN caches and recovery rather than repeatedly requesting a vanished chunk. A changed reportId remounts the boundary but does not erase lazy's module-level rejected promise cache.
 
 The optional report port must scrub sensitive details and handle its own failure; a boundary cannot catch an exception thrown by its own fallback/reporting code. Choose the boundary at a useful recovery scope: one widget failure should not necessarily remove the whole app, while a route failure may need route-level controls. Keep safe fallback copy and test focus/announcement behavior. A library/framework boundary is an alternative to authoring the class; function components alone do not supply getDerivedStateFromError/componentDidCatch, and classes remain supported for this mechanism.
 
@@ -468,6 +471,10 @@ The optional report port must scrub sensitive details and handle its own failure
 
 For already visible content, a transition can allow a supported Suspense-aware framework/router to retain useful UI instead of replacing it immediately; avoid inventing a router protocol around arbitrary promises. Server Component streaming is a framework data flow, not proof that every client Effect is suspended. Measure fallback geometry/CLS and choose meaningful labels without announcing many skeleton rows.
 
-**Failure-driven exercise:** supply a report module that can succeed, suspend while importing, throw during render and reject module loading; separately fail an event handler, an Effect fetch and a server route. Acceptance: predict which channel handles each; usable widget/route fallback, intact neighboring UI, safe diagnostics, no retry loop or private data leak; changed resource identity resets the intended state; cached failed import limitations and stale-chunk deployment recovery are demonstrated. Retain actual component/browser/framework tests, including keyboard focus and preserved drafts, rather than equating syntax checks with runtime recovery.
 
 Official references checked2026-10-21: [React error-boundary scope](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary), [lazy promise caching](https://react.dev/reference/react/lazy), [Suspense](https://react.dev/reference/react/Suspense), [transitions](https://react.dev/reference/react/useTransition), [Next error scope](https://nextjs.org/docs/app/api-reference/file-conventions/error). Library/framework execution and learner practice remain required.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Are_there_design_patterns_in_react.md). All learner practice remains outstanding; the worked examples above are explanatory material.

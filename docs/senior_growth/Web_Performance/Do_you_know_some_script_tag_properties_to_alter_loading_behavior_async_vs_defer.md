@@ -185,16 +185,7 @@ Dynamically inserted classic scripts have different default async behavior from 
 
 DOMContentLoaded follows parsing/deferred processing but is not "all application async work complete". Async scripts, dynamic imports and code resumed after an await can run after it. A module dependency's top-level await can delay its dependents; independent roots/data tasks still need explicit completion contracts. Use an owned ready promise/state when a feature needs both DOM and data. A late-loaded initializer must check readyState instead of registering only for an event that may already have fired.
 
-```ts
-// dom-ready.ts
-export function onDomReady(doc: Document, run: () => void): () => void {
-  let disposed = false;
-  const start = () => { if (!disposed) run(); };
-  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
-  return () => { disposed = true; doc.removeEventListener('DOMContentLoaded', start); };
-}
-```
+<<< ../../workbench/engineering/performance/dom-ready.ts{ts}
 
 This helper owns one DOM-ready registration only. It does not wait for requests, catch every initializer exception, reverse an already-run initializer or establish responsiveness. The feature owns any returned widget/network disposer separately.
 
@@ -215,31 +206,13 @@ document.addEventListener('DOMContentLoaded', () => window.scriptTrace.push('DOM
 </head><body><h1>Static content</h1><p>Inspect scriptTrace and the network/CPU trace.</p></body></html>
 ```
 
-```js
-// classic-a.js
-window.scriptTrace.push('classic-a');
-```
+<<< ../../workbench/engineering/performance/classic-a.js{js}
 
-```js
-// classic-b.js
-if (!window.scriptTrace.includes('classic-a')) throw new Error('Classic dependency missing');
-window.scriptTrace.push('classic-b');
-```
+<<< ../../workbench/engineering/performance/classic-b.js{js}
 
-```js
-// dependency.js
-window.scriptTrace.push('dependency');
-export const dependencyReady = true;
-```
+<<< ../../workbench/engineering/performance/dependency.js{js}
 
-```js
-// entry.js
-import { dependencyReady } from './dependency.js';
-if (!dependencyReady) throw new Error('Module dependency missing');
-window.scriptTrace.push('module-start');
-await new Promise(resolve => setTimeout(resolve, 50));
-window.scriptTrace.push('module-continuation');
-```
+<<< ../../workbench/engineering/performance/entry.js{js}
 
 Assert only supported guarantees: deferred classic-a before classic-b, dependency before module-start, module-start before its continuation. Record where DOMContentLoaded occurs; do not equate it with module-continuation/data readiness. Then vary the classic pair to async and the module root to async in separate runs with controlled delays/cache. Observe loss of document-order assumptions without writing a test that depends on one lucky network order. The50ms timer is a bounded teaching pause, not a workload or latency target.
 
@@ -252,16 +225,14 @@ For a measured late-discovered **module**, use the module-aware hint with its no
 <script type="module" src="./entry.js"></script>
 ```
 
-modulepreload uses module fetch behavior and populates the module map; browsers may also fetch dependencies, but do not assume all graph dependencies were preloaded or that the link load event means the graph executed. A classic preload as=script instead populates preload machinery and does not execute anything. A prefetch targets a possible future navigation/resource and may be ignored or waste bytes. fetchpriority is a scheduling hint, not an execution-order guarantee or extra bandwidth; marking every script high can compete with content-critical work. A stylesheet preload still needs a stylesheet consumer to apply CSS.
+modulepreload uses module fetch behavior and populates the module map; browsers may also fetch dependencies, but do not assume all graph dependencies were preloaded or that the link load event means the graph executed. A classic preload as=script instead populates preload machinery and does not execute anything.
 
-**Measurement acceptance:** compare hint/no-hint under identical cold/warm conditions and target devices, including a critical image/font. Retain initiator/discovery/start/transfer timing, duplicate/unused preload warnings, protocol/cache state, long tasks/LCP and an actual interaction trace. Check that a byte saving or earlier script response actually improves the user outcome rather than shifting contention. Attribute execution order to the correct script category, not priority hints.
+A prefetch targets a possible future navigation/resource and may be ignored or waste bytes. fetchpriority is a scheduling hint, not an execution-order guarantee or extra bandwidth; marking every script high can compete with content-critical work. A stylesheet preload still needs a stylesheet consumer to apply CSS.
+
 
 ## An actual integrity hash, not a placeholder
 
-```js
-// integrity-fixture.js
-window.integrityFixtureReady = true;
-```
+<<< ../../workbench/engineering/performance/integrity-fixture.js{js}
 
 ```html
 <script src="./integrity-fixture.js" defer integrity="sha256-jiX3Ifk/fpggswAnfwfHp7jkjm2FiXakiSKrHqRf/1s=" crossorigin="anonymous"></script>
@@ -269,6 +240,10 @@ window.integrityFixtureReady = true;
 
 The SHA256 value covers the exact UTF-8 fixture bytes above, including the comment and final LF. Editing/minifying/line-ending changes require recomputing it from the deployed artifact. SRI verifies bytes, not that a script's behavior is safe; CSP, trusted dependencies and authorization are separate controls. Cross-origin SRI also needs an eligible CORS response; crossorigin=anonymous does not create server permission. Pin/update the expected artifact through the reviewed release mechanism rather than copy a digest for a different URL.
 
-**Overall acceptance:** strict-typecheck dom-ready and test loading/already-ready/disposed ownership. Parse the HTML/files and verify declared paths/hash, then run the actual browser lab for parser/script/DCL/module/priority/SRI behavior, including a deliberately modified fixture rejected by the browser. Static hashing/Node module execution and simulated DOM tests are not browser network/order/performance proof. Browser checks and learner practice remain required; no real browser validation is claimed here.
 
 Standards checked2026-10-22: [HTML script categories](https://html.spec.whatwg.org/multipage/scripting.html#the-script-element), [modulepreload](https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload), [DOMContentLoaded/late async continuation](https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event), [Subresource Integrity core](https://www.w3.org/TR/2016/REC-SRI-20160623/). Node24.18.0/TypeScript5.9.3 validate only the stated source/fixture boundaries; record real browser versions for loading conclusions.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/Do_you_know_some_script_tag_properties_to_alter_loading_behavior_async_vs_defer.md). All learner practice remains outstanding.

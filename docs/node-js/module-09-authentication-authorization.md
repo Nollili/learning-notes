@@ -96,9 +96,9 @@ request + cookie → server loads session → identity
 
 ### Worked browser session: login, CSRF and logout
 
-A browser session is an opaque identifier in a cookie plus a server-side record. The cookie does not contain the password, account record or permission list. The Task Board uses `express-session` with `connect-pg-simple` and the same PostgreSQL database as the application. The migration creates `textbook_sessions`; no request creates schema. Two explicitly owned pools serve the ORM and session/SQL work, so count both in the connection budget.
+A browser session is an opaque identifier in a cookie plus a server-side record. The cookie does not contain the password, account record or permission list. The runnable application uses `express-session` with `connect-pg-simple` and the same PostgreSQL database as the application. The migration creates `textbook_sessions`; no request creates schema. Two explicitly owned pools serve the ORM and session/SQL work, so count both in the connection budget.
 
-Read the [complete `app.ts` implementation below](#complete-runnable-example-app-ts). It is imported directly from `examples/node-textbook/src/app.ts` in the repository, so you can read it on this page without finding the file separately.
+Read the [complete `app.ts` workbench reference](../workbench/node-js/backend/session-app.md). It is imported directly from `examples/node-textbook/src/app.ts` in the repository, so the workbench listing stays aligned with the runnable source.
 
 | Step | Browser sends | Server does | Observable result |
 | --- | --- | --- | --- |
@@ -116,7 +116,7 @@ The sample cookie is HttpOnly, host-only, SameSite=Lax, path `/`, and has an eig
 
 Expired store rows need bounded cleanup, for example a scheduled `DELETE` of small batches selected by the expiry index. Expiration still prevents session loading before physical deletion. The sample disables the store's timer so pool ownership and process termination remain visible. Add an explicit cleanup job in Module 10's independent exercise.
 
-**Check yourself:** explain why deleting only the browser cookie does not revoke a stolen session identifier, why the login POST also needs CSRF protection, and why a session alone does not authorize a task ID.
+[Related practice](../practice/node-js/module-09-authentication-authorization.md).
 
 ### Worked password recovery: one credential, one successful use
 
@@ -131,9 +131,11 @@ Recovery is another authentication boundary. `src/security.ts` implements the st
 
 The session carries a credential version that protected requests compare to the account. This also rejects a stale login/session that raced password reset. Revocation affects subsequent authentication checks; it cannot undo a request already authorized and in flight. Highly sensitive operations may require a fresh version check inside their business transaction.
 
-**Local delivery:** the runnable server writes a reset credential to a private `.local-inbox` file, simulating a mailbox on your own computer; it sends no email. Read it only to finish the local exercise and delete it afterward. The test suite injects an in-memory delivery recorder. A hosted implementation needs a reviewed mail provider/queue, short retention, fixed trusted reset origin, and a page that avoids token leakage through referrers, analytics or third-party scripts. Delivery is outside the database transaction. If delivery fails, requesting another token is safe; this small sample does not implement durable mail retry/outbox delivery.
+**Local delivery:** the runnable server writes a reset credential to a private `.local-inbox` file, simulating a mailbox on your own computer; it sends no email. Read it only to finish the local exercise and delete it afterward. The test suite injects an in-memory delivery recorder. A hosted implementation needs a reviewed mail provider/queue, short retention, fixed trusted reset origin, and a page that avoids token leakage through referrers, analytics or third-party scripts.
 
-**Guided exercise:** obtain a recovery token, use it twice, and attempt login with the old and new passwords. **Expected:** first reset 204; second reset 400; old password 401; new password 200; existing session and refresh credentials unusable. Repeat after expiring the reset row in a disposable database. The acceptance runner also races two completions and requires one winner.
+Delivery is outside the database transaction. If delivery fails, requesting another token is safe; this small sample does not implement durable mail retry/outbox delivery.
+
+[Related practice](../practice/node-js/module-09-authentication-authorization.md).
 
 
 ### Signed access tokens
@@ -304,7 +306,9 @@ export function verifyAccessToken(
 }
 ```
 
-**What it does:** verifies signature/algorithm/issuer/audience and present time claims, then explicitly requires the application schema: bounded subject, allowlisted role, access-token purpose, integer iat/exp and a positive lifetime of at most 900 seconds. jsonwebtoken checks exp when present; it does not require exp automatically. This API requires it. Five seconds of clock tolerance is a deliberate bounded skew policy, not an expiry bypass. Use synchronized server clocks; test boundaries with the injected clock. The issuer projects trusted fields rather than signing arbitrary caller properties. Other APIs may choose different subject/lifetime policies. A typed return cannot replace these runtime checks.
+**What it does:** verifies signature/algorithm/issuer/audience and present time claims, then explicitly requires the application schema: bounded subject, allowlisted role, access-token purpose, integer iat/exp and a positive lifetime of at most 900 seconds. jsonwebtoken checks exp when present; it does not require exp automatically. This API requires it. Five seconds of clock tolerance is a deliberate bounded skew policy, not an expiry bypass. Use synchronized server clocks; test boundaries with the injected clock.
+
+The issuer projects trusted fields rather than signing arbitrary caller properties. Other APIs may choose different subject/lifetime policies. A typed return cannot replace these runtime checks.
 
 **When to use it:** run verification at every trust boundary where a bearer token becomes an authenticated identity. Decoding a token without verification is never sufficient.
 
@@ -367,7 +371,7 @@ This means a secure refresh-token design is not necessarily stateless. Server-si
 
 ### Worked refresh rotation with a real database
 
-This is a separate API-client exercise, not part of the browser session login. The complete implementation is `issueRefresh`/`rotateRefresh` in the Task Board's `src/security.ts`; its schema is in `src/migrate.ts`. Read the implementation in `examples/node-textbook/src/security.ts` at the repository root.
+This is a separate API-client exercise, not part of the browser session login. The complete implementation is `issueRefresh`/`rotateRefresh` in the runnable application's `src/security.ts`; its schema is in `src/migrate.ts`. Read the implementation in `examples/node-textbook/src/security.ts` at the repository root.
 
 A family row stores `id`, `account_id`, absolute `expires_at` and `revoked`. A token row stores a SHA-256 `hash`, `family_id` and `used`. Keep consumed hashes for the family's validity period so replay can be recognized. Do not extend the family's seven-day absolute deadline during rotation. Expired families and their token history need a deliberate retention/cleanup policy.
 
@@ -389,7 +393,7 @@ Throwing the replay error inside a callback that automatically rolls back would 
 
 This chooses strict replay handling: a benign retry after losing the successful response also revokes the family. Serialize refresh requests in the client and require login after an ambiguous failure. A grace/retry-cache design is possible but needs its own bounded replay analysis; do not silently accept an old token twice. Rotation provides replay detection, not proof that the first presenter was legitimate.
 
-**Guided verification:** run the acceptance suite against a disposable PostgreSQL database. It races two calls, requires exactly one fulfillment, then checks that the winner's replacement is rejected and the family remains revoked after both transactions finish. A mock repository cannot demonstrate row locking or commit behavior.
+[Related practice](../practice/node-js/module-09-authentication-authorization.md).
 
 ### When refresh tokens are unnecessary
 
@@ -778,7 +782,9 @@ export async function updateOwnedProduct(
 }
 ```
 
-**What it does:** checks resource, owner and tenant in the same UPDATE that changes it; values are bound, identifiers are fixed. The products table must declare owner_id/tenant_id (non-null foreign keys in the tenant model), in addition to the scalar columns in the PostgreSQL lesson. An earlier scoped read alone does not authorize a later unscoped update: ownership can change between those operations. Ignore caller-supplied owner/tenant fields; derive actor from verified current membership. A single-statement conditional write prevents that gap, subject to the selected PostgreSQL isolation/locking policy. This raw SQL bypasses the ORM identity map; return the projected row and avoid retaining stale managed Product instances in the same request.
+**What it does:** checks resource, owner and tenant in the same UPDATE that changes it; values are bound, identifiers are fixed. The products table must declare owner_id/tenant_id (non-null foreign keys in the tenant model), in addition to the scalar columns in the PostgreSQL lesson. An earlier scoped read alone does not authorize a later unscoped update: ownership can change between those operations. Ignore caller-supplied owner/tenant fields; derive actor from verified current membership.
+
+A single-statement conditional write prevents that gap, subject to the selected PostgreSQL isolation/locking policy. This raw SQL bypasses the ORM identity map; return the projected row and avoid retaining stale managed Product instances in the same request.
 
 **When to use it:** prefer query-level tenant/ownership scoping for object-level authorization. It reduces information leakage and avoids a separate “load, check, then act” gap.
 
@@ -921,6 +927,8 @@ passport.use(new OidcStrategy(
 
 **When to use it:** Passport is useful when an Express application benefits from its middleware ecosystem. For high-assurance systems, prefer a well-maintained OIDC client and provider discovery over manually assembling endpoint URLs.
 
+This Passport sketch does not demonstrate transaction-bound PKCE, nonce, state or signature checks and is not the complete login implementation. Use the maintained-client lab linked above for those explicit checks; do not credit a security checklist as executed evidence.
+
 Never assume a library makes the integration secure by itself. Validate provider metadata, callback configuration, account-linking rules, and token claims.
 
 ---
@@ -1015,6 +1023,8 @@ Test pure or injected components:
 - token expiry using a controlled clock;
 - generic login failure behavior;
 - refresh-token rotation and replay detection.
+
+### Integration/API example
 
 ```ts
 describe('requireRole', () => {
@@ -1176,7 +1186,9 @@ function resolveInsideUploadRoot(untrustedName: string): string {
 
 **When to use it:** use containment checks when a caller influences a filesystem location. A stronger design generates server-side storage names and stores the original display name as metadata.
 
-Do not rely only on removing `../`. Encodings, platform separators, absolute paths, and symbolic links can defeat simple string replacement. If attackers can create symbolic links inside the root, additional filesystem controls are required.
+Do not rely only on removing `../`. Encodings, platform separators, absolute paths, and symbolic links can defeat simple string replacement. If attackers can create symbolic links inside the root, additional filesystem controls are required. This is a lexical check, not a filesystem sandbox: resolving a name and opening it later can race replacement. The `path` APIs in [Module 2](./module-02-standard-library.md) normalize names; they do not resolve this authority boundary.
+
+Prefer opaque server-generated names under a trusted immutable root, or a separately reviewed no-follow/open-relative storage adapter. Do not present `startsWith(root)` or this relative-path check as protection against attacker-controlled symlinks.
 
 ### Command injection
 
@@ -1266,7 +1278,7 @@ Define:
 
 Parsing complex media can be dangerous. Isolate high-risk processors, patch them, enforce CPU and memory limits, and do not pass user filenames to a shell.
 
-Use the [bounded UTF-8 upload/storage lab and explicit threat model](./safe-text-uploads.md) for a worked pending/ready flow, current owner-scoped downloads, private opaque files and adversarial checks. Its narrow text contract does not implement PDF/image/multipart processing.
+Use the [bounded UTF-8 upload/storage lab and explicit threat model](./safe-text-uploads.md) for a worked pending/ready flow, current owner-scoped downloads, private opaque files and adversarial checks. Its base contract accepts bounded UTF-8 text; the separately labeled multipart variant handles a single bounded text file. Neither implements arbitrary PDF/image processing.
 
 ### Regular-expression denial of service
 
@@ -1367,89 +1379,17 @@ At every arrow, ask what the input can select and which resources it can consume
 
 ## Graduated practice: identity and access
 
-### 1. Worked example
-
-Follow the browser-session walkthrough near the start of this chapter: anonymous CSRF bootstrap, registration, session regeneration on login, an owner-scoped write and logout. Compare every expected status and cookie change.
-
-### 2. Guided build
-
-Complete Task Board checkpoint 9 with two independent cookie jars. Hint: a session identifies the caller; the `owner_id` predicate authorizes the task. **Success:** the owner can update, another signed-in user gets the same 404 as a missing task, and a missing CSRF token returns 403.
-
-### 3. Independent task
-
-Add an authenticated endpoint that renames a task using an allowlisted title. Keep ownership in the UPDATE predicate. **Success:** a hostile title is stored as text, an unknown field is rejected, and another user cannot rename the task even if they know its ID.
-
-### 4. Optional depth: JWT and concurrent access boundaries
-
-Use Node 24, TypeScript 5.9, Express 5 and jsonwebtoken 9.0.3 (lock exact resolved versions). Put the verifier, header parser and middleware in separate typed modules and wire the principal adapter shown above. Keep test fixtures outside any Autocode-owned src/tests directory. No actual key or provider credential belongs in the notes.
-
-**Acceptance:** a valid signed 15-minute access token works with Bearer/bearer/BEARER and multiple ASCII spaces while token case remains intact. Reject missing exp/iat/role/purpose, invalid role, malformed subject, future iat/nbf, expired token, wrong issuer/audience/algorithm/key, excessive lifetime and refresh-purpose token. Test the exact expiry and five-second tolerance boundary. Missing/invalid credentials and known disabled users return 401 with the challenge; a thrown verification configuration error or rejected account-store call reaches next(error), never 401 and never the protected handler. Do not log raw credentials. Document revocation/role-change staleness for the chosen lookup policy.
-
-In an isolated PostgreSQL database create two tenants and owners, perform the conditional update, change ownership between a prior read and write, then prove the old owner cannot update. Other-tenant/missing IDs produce the same no-row result; hostile name text stays a bound value; authorized changes return only id/name. For operations with extra invariants use a conditional version/state predicate or an explicit transaction/lock and test interleavings; authorization does not exempt stock/payment invariants. Record the observed interleavings and results before marking the exercise complete.
-
-References checked 2026-10-21: [jsonwebtoken verification/options/errors](https://github.com/auth0/node-jsonwebtoken), [HTTP authentication scheme case](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.1), [Bearer syntax](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1), [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [PostgreSQL Read Committed](https://www.postgresql.org/docs/16/transaction-iso.html#XACT-READ-COMMITTED). The Task Board supplies the session/CSRF and reset workflow. OIDC federation and upload pipelines are separate advanced integrations; this JWT lab does not implement those protocols.
-
----
+[Exercises and learner checklist](../practice/node-js/module-09-authentication-authorization.md).
 
 ## 16. Final review checklist
 
-### Fundamentals
-
-- [ ] Distinguish authentication from authorization.
-- [ ] Explain why missing/invalid credentials normally produce `401` and insufficient permission produces `403`.
-- [ ] Compare sessions, signed tokens, OIDC, and API keys.
-- [ ] Explain why bearer credentials must be protected from theft and replay.
-
-### JWTs and token lifecycle
-
-- [ ] Identify JWT header, payload, and signature.
-- [ ] Explain why signing is not encryption.
-- [ ] Validate algorithm, signature, issuer, audience, expiration, and application claims.
-- [ ] Keep claims minimal and non-secret.
-- [ ] Explain access-token expiry, refresh rotation, revocation, and replay detection.
-- [ ] Describe when server-side session/token state is worth the cost.
-
-### Passwords
-
-- [ ] Use a password-specific adaptive hashing function.
-- [ ] Explain salts, optional peppers, and work parameters.
-- [ ] Know why raw SHA-256 and MD5 are inappropriate for passwords.
-- [ ] Hash exactly once and never expose the stored hash.
-- [ ] Rate-limit credential endpoints and avoid account-enumeration responses.
-
-### Express implementation
-
-- [ ] Validate login and registration input.
-- [ ] Assign privileged fields on the server, not from public input.
-- [ ] Attach a small trusted principal to the request.
-- [ ] Apply authentication before authorization.
-- [ ] Enforce ownership/tenant filters at the data or use-case boundary.
-- [ ] Keep public response objects separate from persistence entities.
-
-### OAuth and browser security
-
-- [ ] Distinguish OAuth authorization from OIDC authentication.
-- [ ] Use Authorization Code flow with PKCE and validate state/nonce as applicable.
-- [ ] Link external accounts by stable issuer and subject.
-- [ ] Understand the XSS/CSRF trade-offs of browser token storage.
-- [ ] Configure secure cookies deliberately.
-
-### Application and supply-chain security
-
-- [ ] Map only allowed public fields instead of assigning an entire request body.
-- [ ] Keep caller-controlled paths inside an approved root or generate server-side names.
-- [ ] Avoid shell interpretation and validate subprocess arguments and resources.
-- [ ] Reject unknown and dangerous object keys before merging data.
-- [ ] Restrict outbound URLs and enforce network-level egress controls where possible.
-- [ ] Limit and isolate uploads, parsers, regular expressions, and other resource-heavy input.
-- [ ] Allowlist redirect destinations.
-- [ ] Keep secrets out of builds, source maps, logs, images, and browser bundles.
-- [ ] Review dependency and lockfile changes, scan for known risks, and remove unused packages.
-- [ ] Trace untrusted data through every privileged sink.
+[Exercises and learner checklist](../practice/node-js/module-09-authentication-authorization.md).
 
 ### One-minute recap
 
-Authentication converts a credential into a trusted identity; authorization decides whether that identity may perform a specific action. Sessions keep revocable state on the server, while signed access tokens enable independent verification but require careful claim validation and short lifetimes. Refresh tokens improve long-running sessions only when they are protected, rotated, and revocable. Passwords need adaptive password hashing—not fast checksums—and credential endpoints need validation, generic failures, and rate limits. Express middleware can establish identity and reject coarse permission failures, but critical ownership and tenant rules belong in the use-case or data boundary as well. OAuth 2.0 delegates access; OpenID Connect standardizes authentication. Security also follows untrusted data into filesystem, network, subprocess, parsing, redirect, and object-merging behavior. Dependencies and build artifacts are part of the trust boundary. Every design must account for credential theft, replay, revocation, browser threats, unsafe sinks, key management, testing, and observability.
+Authentication converts a credential into a trusted identity; authorization decides whether that identity may perform a specific action. Sessions keep revocable state on the server, while signed access tokens enable independent verification but require careful claim validation and short lifetimes. Refresh tokens improve long-running sessions only when they are protected, rotated, and revocable. Passwords need adaptive password hashing—not fast checksums—and credential endpoints need validation, generic failures, and rate limits.
+
+Express middleware can establish identity and reject coarse permission failures, but critical ownership and tenant rules belong in the use-case or data boundary as well. OAuth 2.0 delegates access; OpenID Connect standardizes authentication. Security also follows untrusted data into filesystem, network, subprocess, parsing, redirect, and object-merging behavior. Dependencies and build artifacts are part of the trust boundary. Every design must account for credential theft, replay, revocation, browser threats, unsafe sinks, key management, testing, and observability.
 
 ### Further reading
 
@@ -1464,10 +1404,4 @@ Authentication converts a credential into a trusted identity; authorization deci
 
 ## Complete runnable example: app.ts
 
-This is the complete HTTP application used by the session, CSRF, registration, login, password-recovery and task-ownership examples in this chapter. The listing comes directly from the source file, rather than a separately maintained copy.
-
-**Local file:** `examples/node-textbook/src/app.ts`, inside the repository's `examples` folder, alongside `docs`. It is not a file under `docs/node-js` and is not an HTTP endpoint.
-
-The file exports `createApp`; it does not start a server by itself. Its imports are supplied by the other files in `examples/node-textbook/src`, and setup instructions are in that project's `README.md`. Run the project from `examples/node-textbook` using its own package and database configuration.
-
-<<< ../../examples/node-textbook/src/app.ts
+[This reference collection now lives in the Node.js workbench](../workbench/node-js/backend/session-app.md).

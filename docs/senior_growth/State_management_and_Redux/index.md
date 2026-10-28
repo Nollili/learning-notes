@@ -1,5 +1,9 @@
 # State_management_and_Redux
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/state.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [Could you explain why the concept of immutability is important for redux?](./Could_you_explain_why_the_concept_of_immutability_is_important_for_redux.md)

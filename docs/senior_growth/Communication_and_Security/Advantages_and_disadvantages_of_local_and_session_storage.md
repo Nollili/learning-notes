@@ -75,35 +75,7 @@ Both **LocalStorage** and **SessionStorage** are part of the **Web Storage API**
 
 A draft can legitimately be incomplete/invalid for final submission. Validate its storage shape/size separately from business rules, then revalidate every wizard step on restoration. Persist only a justified safe subset with explicit user opt-in when appropriate; do not dump the form/store or treat local data as authorized. Prefer server-owned drafts for sensitive records or cross-device recovery. This training fixture stores public course-edit fields only, never credentials/private note contents.
 
-```js
-// course-draft.js — storage codec; now is injectable for deterministic expiry tests.
-export function decodeCourseDraft(raw, userId, now = Date.now()) {
-  if (raw === null) return null;
-  if (typeof raw !== 'string' || raw.length > 8192 || !Number.isFinite(now)) throw new Error('Invalid draft envelope');
-  let value = JSON.parse(raw);
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid draft');
-  if (value.version === 1) { // An explicit former field-name migration.
-    value = { ...value, version: 2, values: { title: value.subject, slug: value.slug, start: value.start, end: value.end } };
-  }
-  if (value.version !== 2) throw new Error('Unsupported draft version');
-  if (typeof value.userId !== 'string' || !Number.isFinite(value.expiresAt)) throw new Error('Invalid draft scope');
-  if (value.userId !== userId || value.expiresAt <= now) return null;
-  if (value.expiresAt > now + 7 * 86400000) throw new Error('Invalid draft lifetime');
-  if (!Number.isSafeInteger(value.baseVersion) || value.baseVersion < 1) throw new Error('Invalid record version');
-  const fields = value.values;
-  if (!fields || typeof fields !== 'object' || Array.isArray(fields)) throw new Error('Invalid draft values');
-  for (const [key, max] of [['title', 100], ['slug', 80], ['start', 10], ['end', 10]]) {
-    if (typeof fields[key] !== 'string' || fields[key].length > max) throw new Error('Invalid draft field');
-  }
-  return { baseVersion: value.baseVersion, values: { title: fields.title, slug: fields.slug, start: fields.start, end: fields.end } };
-}
-export function encodeCourseDraft(userId, baseVersion, values, now = Date.now()) {
-  const raw = JSON.stringify({ version: 2, userId, baseVersion, expiresAt: now + 86400000,
-    values: { title: values.title, slug: values.slug, start: values.start, end: values.end } });
-  if (!decodeCourseDraft(raw, userId, now)) throw new Error('Draft could not be encoded');
-  return raw;
-}
-```
+<<< ../../workbench/engineering/security/course-draft.js{js}
 
 The24-hour default and7-day maximum are exercise product policies, not browser/security guarantees. Device clocks can change; expiration is a usability/privacy bound here, not server authorization. Unknown/future schemas fail without silent downgrade. Extra properties/actions are projected away; bounded strings can still contain markup and must render as text. A restored baseVersion is compared to the current authorized server record; a mismatch needs review/rebase rather than overwriting newer work.
 
@@ -111,7 +83,6 @@ At the workflow owner, obtain sessionStorage inside try/catch after mount, use a
 
 Clear only the matching draft after confirmed server success or explicit discard. If a new edit can happen while save is in flight, do not clear a newer snapshot based on an old submission. LocalStorage read/compare/remove is not an atomic cross-tab transaction; use a transaction-capable store/server revision or isolated per-tab draft identity for stronger concurrency. Multiple tabs editing the same server resource still need the server version predicate. On logout/account change, dispose private work, remove scoped drafts per policy and never restore another user's payload.
 
-**Exercise acceptance:** integrate this codec with the [worked multistep wizard](../React/complex-forms-and-data.md), test blank/partial values, v1 migration, v2 round-trip, malformed/future/oversized payloads, expiry boundary, other-user data, disabled/quota storage, restored version conflicts, two tabs and save-response ambiguity. Show Restore/Discard/recovery failure UI and associated validation errors; no token/private fields persisted. Native/browser/session-restoration behavior needs actual platform tests; a pure codec test does not prove end-to-end recovery.
 
 Official references checked2026-10-21: [WHATWG Web Storage lifetime/scope/security](https://html.spec.whatwg.org/multipage/webstorage.html), [OWASP HTML5 storage risks](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html). Learner practice remains required.
 
@@ -120,4 +91,9 @@ Official references checked2026-10-21: [WHATWG Web Storage lifetime/scope/securi
 
 For access/read/write exceptions, serialization, migration and cross-tab events, use the [shared preference persistence owner](../React/React_state_management_and_tools.md) and [storage budget/recovery lesson](../General_ES6/Could_you_please_describe_with_which_Browser_APIs__177e8106c24d802caa88e9916f01fc53.md#browser-storage-budgets-and-recoverable-persistence). A storage event is not a database transaction or a guaranteed event in its writing tab; the owner rereads current state and suppresses echo writes. The [IndexedDB draft transaction lesson](../General_ES6/Browser_Storage_and_Offline_Drafts.md) provides commit/abort, migration, connection and local-revision conflict handling for structured data.
 
-The course codec above is a different, scoped wizard example; do not create a competing persisted preference schema. **Acceptance:** exercise access denial, quota failure, malformed/future formats, migration, cached partial drafts and two-tab conflicts while preserving in-memory editing. Native quota/eviction/session restoration and cross-tab behavior remain unperformed until tested in the selected browsers. Neither shorter storage lifetime nor later clearing creates an XSS or authorization boundary.
+The course codec above is a different, scoped wizard example; do not create a competing persisted preference schema.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/security/Advantages_and_disadvantages_of_local_and_session_storage.md). All learner practice remains outstanding.

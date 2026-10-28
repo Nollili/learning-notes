@@ -106,12 +106,18 @@ chmod +x .githooks/pre-commit
 git config --local core.hooksPath .githooks
 ```
 
-A whole-tree formatter with --fix can change unrelated unstaged edits and produce a commit different from what was reviewed. Prefer check-only staged-aware tooling with bounded explicit paths. Be careful with partially staged files: checking the working file can inspect different bytes from the index. A full build/test may use the worktree, so CI must check a clean candidate checkout. If using a temporary index/tree or a maintained staged runner, test preservation/restoration of partial changes and failure handling; never assume a script can safely auto-stage every rewrite.
+A whole-tree formatter with --fix can change unrelated unstaged edits and produce a commit different from what was reviewed. Prefer check-only staged-aware tooling with bounded explicit paths. Be careful with partially staged files: checking the working file can inspect different bytes from the index. A full build/test may use the worktree, so CI must check a clean candidate checkout.
+
+If using a temporary index/tree or a maintained staged runner, test preservation/restoration of partial changes and failure handling; never assume a script can safely auto-stage every rewrite.
 
 pre-commit/commit-msg can be bypassed by supported Git options and users can change local configuration. Hooks are not a security boundary against a contributor controlling their own machine. Enforce required checks/review on the server/CI and protect privileged CI credentials from untrusted branches. Client hooks should report failure and terminate, not loop or silently swallow an error. Server deployment triggers also need their own controlled release policy.
 
 **Actual validation2026-10-25:** the executable shebang/set-eu/staged-whitespace hook was installed in a disposable Git2.54 repo. Bad staged whitespace with a clean-looking unstaged replacement blocked commit; HEAD/index/worktree bytes were preserved. Staging the correction allowed commit. Conversely a clean staged file with bad unstaged whitespace committed only the clean index bytes and left the worktree untouched. No whole-tree auto-fix ran. The commitlint/full-build hook examples were not installed/executed; hosted enforcement was not tested.
 
-**Exercise acceptance:** install the minimal hook in a disposable repo, prove executable/interpreter behavior, nonzero rejection and preservation of partial staging. Add a reviewed staged lint/test policy and compare it with CI on the candidate commit. Explain bypass and why server enforcement remains necessary. Keep Autocode configuration/src/tests intact and never push as part of this exercise. Learner practice remains required.
 
 Official references checked2026-10-25: [hook execution/bypass](https://git-scm.com/docs/githooks), [core.hooksPath](https://git-scm.com/docs/git-config), [staged diff checks](https://git-scm.com/docs/git-diff).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/git/What_is_GIT_hooks_Which_git_hooks_you_are_using_on_your_current_project_and_why.md). All learner practice remains outstanding.

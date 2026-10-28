@@ -17,3 +17,8 @@
 - [Testing](./Testing/)
 - [TypeScript](./TypeScript/)
 - [Web_Performance](./Web_Performance/)
+
+
+## Frontend reading path
+
+Follow [HTML/CSS → JavaScript/TypeScript → React → Next.js](../frontend/) with separate reference collections and practice requirements.

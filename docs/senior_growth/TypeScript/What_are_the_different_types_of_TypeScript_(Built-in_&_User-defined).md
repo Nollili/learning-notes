@@ -210,7 +210,6 @@ const modes = ['light', 'dark'] as const; // readonly literal tuple in the type 
 
 `Object.freeze` provides shallow runtime freezing; `as const` changes inference without freezing the object. Deep readonly types and deep freezing have different runtime/compatibility costs; retain ownership boundaries rather than assuming a mapped type prevents all mutation. Project DTOs deliberately to avoid leaking storage-only fields.
 
-**Exercise:** design a user DTO, unknown-input parser and readonly view. Acceptance: fresh literal typo rejected; variable with extra properties is structurally compatible but DTO projection removes them; unknown cannot be used before parsing; Error-only guard cannot authorize errno access; demonstrate nested and aliased mutation; retain positive and @ts-expect-error negative type cases. Use discriminated states from the never lesson for loading/error/success UI.
 
 Official references: [object types](https://www.typescriptlang.org/docs/handbook/2/objects.html), [narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html), [satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator). Checked2026-10-20.
 
@@ -235,7 +234,6 @@ console.log(readonlyAlias.count); // 3: readonly access does not confer ownershi
 
 A recursive DeepReadonly type is a compile-time view, not a runtime traversal; a recursive freeze utility needs policies for cycles, getters, class instances, Maps/Sets and performance. Object.freeze on a Map does not disable its set method. Prefer a narrowly owned immutable value graph or projected/copied DTO for a boundary; do not promise all arbitrary JavaScript objects become immutable from one mapped type. A structured clone is a separate data-copy operation with its own supported types; it neither validates domain constraints nor automatically freezes output.
 
-**Acceptance:** execute the shallow/alias cases and inspect Object.isFrozen on the outer and nested objects; show that as const does not call Object.freeze. Explain which references a shallow spread shares. For an actual state update, create a new outer and changed nested object while preserving untouched references, then verify both old data and equality behavior. Record typecheck and runtime evidence separately; learner practice remains required.
 
 References checked2026-10-21: [TypeScript readonly properties](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties), [ECMAScript Object.freeze](https://tc39.es/ecma262/#sec-object.freeze).
 
@@ -243,4 +241,7 @@ References checked2026-10-21: [TypeScript readonly properties](https://www.types
 
 Continue with the [worked generic transformations](./Generics.md#mapped-and-utility-types). The dependent getter explains why keyof selects keys and T[K] retains the selected property's value type. The mapped examples add/remove readonly and optional modifiers; the allowlisted CoursePatch derives only editable fields, with Parameters/ReturnType following the helper signature. Conditional infer extracts an array element type, and the distribution example distinguishes string[] | number[] from (string | number)[]. These operations transform static contracts; they do not create a parser or remove fields from a runtime object.
 
-**Acceptance:** typecheck those exact positive/negative cases with strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes. Show that an invalid key and explicit undefined patch fail, a false patch value is preserved, an untouched input remains unchanged and unrelated runtime fields are omitted from output. Explain one conditional-distribution choice and prefer the simplest readable public API. This is the advanced follow-through for the utility-type list above; learner implementation remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/What_are_the_different_types_of_TypeScript_%28Built-in_%26_User-defined%29.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -115,8 +115,6 @@ Hook usage alone does not define statefulness: useRef does not schedule renders 
 ---
 
 
-
-
 ## State ownership and reset decisions
 
 A presentational component can have local interaction state (open disclosure, hovered item) without becoming a business-data container. Container/presenter is an optional separation by responsibility, not a rule requiring every component to be in one fixed category. Put state at the nearest common owner that needs to coordinate it; keep server cache, URL/shareable state and transient UI state under distinct owners.
@@ -134,6 +132,10 @@ function ContactEditor({ contact }) {
 
 Resetting by key also loses focus and every subtree state, so lift/save drafts when users must switch away and return. A controlled editor instead receives draft/onChange from an owner and can preserve per-entity drafts explicitly. Derived values such as filtered results usually should not be copied into another state variable with an Effect, which creates extra synchronization and possible stale frames.
 
-**Exercise:** build two contact editors with a local draft, a controlled alternative and a per-entity draft map. Acceptance: explain initial-prop behavior; key change resets only the intended editor; preserving a draft is deliberate; no prop mutation; no redundant derived state; ref mutation alone does not rerender. Include an unsaved-edit navigation case and choose its product behavior before adding an Effect.
 
 Official references: [choosing state structure](https://react.dev/learn/choosing-the-state-structure), [sharing state](https://react.dev/learn/sharing-state-between-components), [preserving/resetting state](https://react.dev/learn/preserving-and-resetting-state). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/state_stateless_stateful.md). All learner practice remains outstanding; the worked examples above are explanatory material.

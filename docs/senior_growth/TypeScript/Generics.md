@@ -190,7 +190,6 @@ const dogHandler: (dog: Dog) => void = general; // Broader input is safe.
 
 Overload implementation must accommodate every public signature; callers do not see the implementation signature as an additional overload. Prefer overloads only when argument/return relationships differ meaningfully. strictFunctionTypes checks function parameter positions contravariantly in this case; method syntax has compatibility exceptions, so do not assume every callback interface is equally strict. Contextual typing can infer event/callback arguments from the consuming API, but assertions can still defeat it.
 
-**Exercise — typed configuration and events:** implement a keyed getter and a typed event contract; derive a public update type, mapped dirty flags and inferred callback argument tuple. Acceptance: wrong keys/payloads and narrow unsafe callbacks fail with @ts-expect-error; selected values retain the exact return type; mixed-array distribution behaves as above; demonstrate one overload ambiguity and simplify it; runtime parser rejects malformed input. Compare API readability before adopting advanced transformations.
 
 TypeScript5.9.3 strict baseline; run isolated typecheck with noUncheckedIndexedAccess/exactOptionalPropertyTypes. These examples do not require mastery of type puzzles. Official references: [generics](https://www.typescriptlang.org/docs/handbook/2/generics.html), [indexed access](https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html), [mapped types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [conditional types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [functions/overloads](https://www.typescriptlang.org/docs/handbook/2/functions.html). Checked2026-10-20.
 
@@ -244,7 +243,6 @@ const unsafe: Handlers['saved'] = acceptsOnlyOne;
 
 A handler object supplies contextual parameter types; a separately declared unannotated callback may instead get implicit-any errors. Prefer function-valued callback properties in public contracts when strictFunctionTypes checking matters. Method syntax has bivariance compatibility exceptions. A generic kind/payload relationship is useful, but a caller with an independently union-typed kind and payload can lose correlation; model dynamic messages as a discriminated union and narrow before dispatch rather than assert away the mismatch.
 
-**Acceptance drill:** typecheck all positive and @ts-expect-error cases; removing a directive must expose the intended diagnostic. Add a third event and ensure the mapped handler table requires it. Run applyPatch with empty patch, false, changed title and a variable containing unrelated fields; assert projected keys and unchanged input. Build a parser for the real external patch separately and reject unknown keys/invalid fields. Explain optional absence versus an explicitly nullable field before designing deletion semantics.
 
 Official references checked2026-10-21: [utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html), [exact optional properties](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html), [function variance](https://www.typescriptlang.org/tsconfig/strictFunctionTypes.html). Learner practice remains required.
 
@@ -253,22 +251,9 @@ Official references checked2026-10-21: [utility types](https://www.typescriptlan
 
 The dependent getter above is also the primary keyof example; it supplements the authentication note's runtime allowlist without coupling a reusable type lesson to authentication. A static key union is not an authorization or unknown-input validator.
 
-```ts
-// keyed-contract.ts
-export function getField<T, K extends keyof T>(value: T, key: K): T[K] {
-  return value[key];
-}
-const profile: { name: string; attempts: number; nickname?: string } = { name: 'Ada', attempts: 0 };
-const attempts: number = getField(profile, 'attempts');
-const nickname: string | undefined = getField(profile, 'nickname');
-// @ts-expect-error The selected number property is not a string.
-const wrong: string = getField(profile, 'attempts');
-// @ts-expect-error Arbitrary external strings are not known profile keys.
-getField(profile, 'password');
-const key: 'name' | 'attempts' = Math.random() > 0.5 ? 'name' : 'attempts';
-const uncertain: string | number = getField(profile, key);
-// @ts-expect-error A union key produces a union value, not always a number.
-const alwaysNumber: number = getField(profile, key);
-```
+<<< ../../workbench/frontend/typescript/keyed-contract.ts{ts}
 
-**Acceptance:** run the positive/negative fixture with strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes; call the exported getter separately at runtime and confirm attempts0 and absent nicknameundefined. Remove each directive to expose the expected diagnostic. Explain why Object.keys returns external runtime strings rather than proving every key of a structural object type, and avoid a blanket assertion that bypasses validation. The getter performs no JSON parsing, ownership checks or runtime key allowlisting. Prefer direct property access when abstraction adds no useful relationship.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/Generics.md). All learner practice remains outstanding; the worked examples above are explanatory material.

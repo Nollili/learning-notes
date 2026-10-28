@@ -143,7 +143,6 @@ FormData includes successful named controls: disabled controls and unchecked che
 
 **Enhancement contract:** keep the real action/method; intercept submit only when the enhancement is ready. Announce pending/results/errors through a suitable status region, preserve input/focus, cancel superseded requests and provide a retry/native-navigation fallback. JSON and HTML responses need deliberate content negotiation. A failed bundle/network request must not remove the baseline server path. Do not report a successful save merely because local validation passed.
 
-**Form exercise:** implement the endpoint and optional fetch enhancement. Acceptance: no-JS search returns server-rendered results; invalid native fields prevent normal submit; server rejects bypassed invalid input; Enter and submit button work; name/value encoding is correct; repeated/disabled controls are tested; error summary links to fields; timeout/error preserves data and offers the native path. Keep server/interactive verification separate from documentation completion.
 
 ## A sortable data table, not an application grid
 
@@ -201,7 +200,6 @@ The caption names the data; row/column headers establish relationships. Sorting 
 
 Use table semantics for reading data with links/buttons. ARIA grid introduces a different keyboard model (roving focus, arrow navigation, editing) and should be chosen only when the interaction needs it. For complex multilevel headers use justified scope/headers/id relationships. If a wide table scrolls horizontally, preserve a meaningful accessible name and keyboard access to its scroll container; do not destroy header relationships just to make cards visually.
 
-**Table exercise:** render initial rows on the server, add sort enhancement and test with keyboard/reader. Acceptance: headers/caption announced; button toggles sort and aria-sort; equal-price order stable; focus not lost; empty/error/data-loading states remain understandable; no-JS baseline and narrow/zoomed layout are usable. A visual arrangement alone does not establish the table relationships.
 
 Official references: [WAI page structure](https://www.w3.org/WAI/tutorials/page-structure/), [WAI form validation](https://www.w3.org/WAI/tutorials/forms/validation/), [WHATWG forms](https://html.spec.whatwg.org/multipage/forms.html), [WAI tables](https://www.w3.org/WAI/tutorials/tables/), [accessible name/description](https://www.w3.org/TR/accname-1.2/). Checked2026-10-20; browser/reader results must be collected in practice.
 
@@ -225,7 +223,9 @@ Checked2026-10-21 against ARIA-in-HTML Recommendation (2026-08-11), WAI patterns
 </button>
 ```
 
-For these examples, expect the input's name “Billing email” and a separate hint description; expect “Save profile” from the referenced label rather than Commit; expect an icon-only close button named by aria-label with the decorative SVG excluded. Do not keep competing naming mechanisms in real code merely because this fixture demonstrates precedence. aria-labelledby references can compose text in ID order and direct hidden references can contribute under the algorithm's rules; visually hiding text does not always remove it from a referenced name/description. Broken/duplicate IDs or an overriding label can produce a different result than the visible text suggests.
+For these examples, expect the input's name “Billing email” and a separate hint description; expect “Save profile” from the referenced label rather than Commit; expect an icon-only close button named by aria-label with the decorative SVG excluded.
+
+Do not keep competing naming mechanisms in real code merely because this fixture demonstrates precedence. aria-labelledby references can compose text in ID order and direct hidden references can contribute under the algorithm's rules; visually hiding text does not always remove it from a referenced name/description. Broken/duplicate IDs or an overriding label can produce a different result than the visible text suggests.
 
 The exact naming algorithm depends on host element/role; do not assume every div/paragraph can be given a useful name by aria-label. Prefer label/legend/caption/heading relationships and meaningful native text. A placeholder is a hint, not a persistent visible label. A name identifies the control; a description adds instructions/errors; a role declares interaction semantics; states such as expanded/pressed/checked/current report the current condition. Adding a role does not implement keyboard behavior or state transitions.
 
@@ -280,10 +280,14 @@ Enter/Space activate the native button; Tab moves into/through links and can lea
 
 For a real composite widget, study the [worked value-paired tabs](../React/Are_there_design_patterns_in_react.md): role/ID linkage, roving Tab stop, arrows/Home/End, active panel and static-horizontal API limits are implemented there. Automatic activation needs low-latency panels; manual activation requires a separate focus/selected policy. Use the native sortable table above for reading tabular records; a spreadsheet grid is a different accessibility/keyboard project. These shared examples satisfy different interaction needs rather than requiring a custom menu/grid everywhere.
 
-**Names/widget exercise:** predict role/name/description/state for the markup before inspection, then compare the rendered tree and actual reader output. Break one ID reference, override visible text, hide a focused descendant and stale an expanded state; explain each failure and fix it. Run the disclosure with/without JS, Tab/Shift+Tab/Enter/Space/Escape and teardown; run two independent tabs instances and table sorting. Acceptance: correct native behavior, visible label included in spoken name where applicable, coherent IDs/states, no hidden focus target or trap, useful no-JS path and retained test evidence. Actual browser/reader behavior remains learner practice; code parsing is not a conformance result.
 
 References: [ARIA in HTML](https://www.w3.org/TR/html-aria/), [AccName1.2 draft](https://www.w3.org/TR/accname-1.2/), [APG disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/), [APG tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/), [APG menu button](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/). Checked2026-10-21.
 
 ### Connect isolated semantics to a complete path
 
 The [HTML-first search fixture](../Other/Cross_Browser_Progressive_Enhancement.md) supplies the missing runnable server/optional enhancement boundary for a small public search, including escaped HTML, invalid/repeated-query rejection, request failure fallback and Playwright keyboard/no-JS tests. Its exact route and field names differ from the course form above; adapt one coherent path rather than assume /courses/search is implemented by /search. The [WCAG evidence record](./What_is_WCAG_standard__What_parts_it_contains_Web_Content_Accessibility_Guidelines.md#a-scoped-evidence-record-not-a-percentage-score) explains how to record observations without turning selected DOM checks into a conformance claim.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/What_is_semantic_HTML.md). All learner practice remains outstanding; the worked examples above are explanatory material.

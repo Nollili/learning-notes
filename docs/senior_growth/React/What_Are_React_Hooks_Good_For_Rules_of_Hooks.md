@@ -162,7 +162,6 @@ Development Strict Mode probes setup/cleanup/setup. A well-owned interval/subscr
 
 React19's special use API can read supported resources in conditions/loops, unlike ordinary state/effect hooks; it still has React-context restrictions and cannot be wrapped in try/catch. This is not permission to conditionally call useState or useEffect. Check the installed React version and official use rules rather than generalizing the exception.
 
-**Decision exercise:** classify filtering a list, sending an order on click, subscribing to a socket, and synchronizing a document title. Acceptance: pure derivation stays in render; order write stays in the event action; synchronization has complete dependencies/cleanup; SSR produces no window access or differing initial markup; rapid source changes and Strict Mode leave no stale listener/timer. Confirm interval updates and cleanup with controlled timers, then verify hydration in a real SSR app. Material completion does not imply the exercise ran.
 
 Official references: [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks), [removing Effect dependencies](https://react.dev/learn/removing-effect-dependencies), [useEffect](https://react.dev/reference/react/useEffect), [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore), [special use rules](https://react.dev/reference/react/use). React19 baseline; checked2026-10-20.
 
@@ -208,7 +207,6 @@ export function useCounter() {
 
 React19 provider shorthand is used here; .Provider is the older compatible form. Separate contexts can let a dispatch-only consumer avoid subscribing to count; the combined useCounter subscribes to both by design. A null sentinel must be checked explicitly: zero is valid. Nested providers isolate state. A custom hook shares logic, not one shared instance across all calls—context/store ownership makes sharing explicit. For external mutable stores use useSyncExternalStore's subscribe/getSnapshot/server-snapshot contract rather than an ad hoc Effect that can tear; snapshot references must remain stable while data is unchanged.
 
-**Exercise:** compose two providers, dispatch-only controls, a count display and focus control. Acceptance: reducer bounds/no-op identity/previous-state preservation verified; missing-provider error is understandable; two providers don't share state; ref mutation alone doesn't update displayed state; external subscription setup/cleanup and SSR snapshot behavior are explained. Compare combined versus split context subscriptions with actual profiling, without claiming every rerender is waste. The existing fetch/timer hooks supply cancellation/cleanup failure cases; reusable hooks still need complete dependencies and an explicit API.
 
 ## Transitions and deferred values: scheduling, not a worker or debounce
 
@@ -240,6 +238,10 @@ Rows must retain identity when unchanged for the memo boundary to help; otherwis
 
 useDeferredValue is an alternative when receiving a value whose producer you do not control: pass the deferred value to a memoized expensive subtree and label stale content when it differs from current input. It has no fixed debounce interval, does not reduce network request count by itself and does not fix response races. Choose one scheduling ownership strategy instead of piling both onto the same state without a reason. In React19 async Actions, state updates after await still require an additional startTransition to mark them; ordering/cancellation and mutation integrity need their own policy.
 
-**Scheduling acceptance:** profile typing and result rendering in a production/profiling build, compare urgent-only versus transition/deferred variants under the same bounded data, verify latest input/result correctness and stale feedback. Explain a monolithic expensive callback that still blocks despite a transition. Test slow/failed async results with the existing identity/cancellation contract. No measured responsiveness win follows from the code listing alone.
 
 Official references checked2026-10-21: [useRef](https://react.dev/reference/react/useRef), [useReducer](https://react.dev/reference/react/useReducer), [context](https://react.dev/reference/react/useContext), [external store](https://react.dev/reference/react/useSyncExternalStore), [useTransition](https://react.dev/reference/react/useTransition), [useDeferredValue](https://react.dev/reference/react/useDeferredValue).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/What_Are_React_Hooks_Good_For_Rules_of_Hooks.md). All learner practice remains outstanding; the worked examples above are explanatory material.

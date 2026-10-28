@@ -1,6 +1,5 @@
 # How would you start the investigation, what are your steps after the customer's feedback is that the application is really slow?
 
-When users report that the app is slow, a senior developer must **approach the issue systematically** to identify whether the problem is **frontend, backend, or network-related**. Below is a structured investigation process and reasoning for each step.
 
 ---
 
@@ -123,4 +122,7 @@ Record a release/artifact, route, dataset, device/browser, cache/network/CPU con
 
 The [INP/TBT diagnostic lesson](./What_is_TTFI_%28Time_to_first_interaction%29._How_can_we_improve_TTFI.md) defines current metric boundaries. The [production split/side-effects fixture](./What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking,_code_splitting_and_bundling,_minimizing,_data_caching..md#worked-production-analysis-module-contracts-before-chunk-tuning) supplies actual synthetic build evidence, explicitly distinct from native user timing.
 
-**Acceptance:** investigate one slow task using this ledger, retain baseline/change traces and correct results, test failure/rapid input/focus, and explain one rejected hypothesis. Report unperformed field/native measurements as such; a written investigation is not a completed project performance result. References checked2026-10-22: [INP](https://web.dev/articles/inp), [historical TTI removal](https://developer.chrome.com/blog/lighthouse-10-0).
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/How_would_you_start_the_investigation%2C_what_are_your_steps_after_the_customer%27s_feedback_is_that_the_application_is_really_slow.md). All learner practice remains outstanding.

@@ -196,6 +196,10 @@ async function loadJsonPair(urls, parentSignal) {
 
 This Node22.7+/24-compatible example uses AbortSignal.any/timeout; check browser API support separately. It is intentionally bounded to two requests; a large collection needs the foundations limiter/producer queue. JSON parsing remains synchronous once bytes are assembled and must not accept arbitrarily large bodies. If dependencies ignore cancellation, they need their own finite driver deadlines. User cancellation is not a reason to retry a write; a timed-out remote write can already have completed.
 
-**Exercise:** use controlled fetch doubles/local responses for success, HTTP error, invalid JSON, delayed body and pre-aborted parent. Acceptance: both independent jobs start before either is awaited; first failure aborts/drains its peer; no stale result is committed; errors reach the caller; ESM top-level await works and classic-script top-level await fails parsing. Record runtime and cleanup evidence; syntax alone does not prove these cases.
 
 Official references: [Node ESM top-level await](https://nodejs.org/api/esm.html#top-level-await), [Node AbortSignal](https://nodejs.org/api/globals.html#class-abortsignal), [ECMAScript async functions](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-asyncfunction-objects). Checked2026-10-20. The bounded limiter and total-body budget lesson is in [Node foundations](../../node-js/module-01-nodejs-foundations.md).
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Understanding_async_await_in_JavaScript_177e8106c24d806fb457f53520e2c087.md). All learner practice remains outstanding; the worked examples above are explanatory material.

@@ -159,8 +159,12 @@ Compare font-display swap (early fallback with later replacement) against option
 
 Arial availability is platform-dependent. Compare actual fallback and loaded glyph widths/line metrics with font loading blocked/delayed, then calibrate using the chosen font's metrics and representative text. size-adjust scales outlines/metrics; metric overrides control line layout, not arbitrary glyph shape/width equality. They cannot guarantee identical wrapping. Verify relevant browser support instead of assuming every draft Fonts5 feature ships.
 
-**Exercise:** supply real font/image assets, create a typography specimen and measure cold/warm initial load. Acceptance: fallback is readable with failed font requests; supported accents/scripts remain correct; no clipped text with200% zoom and relevant text-spacing overrides; capture font-request discovery/bytes, line wrapping and layout-shift attribution before/after calibration; explain swap versus optional/system decisions; critical image is discoverable/eager with reserved geometry; baseline CSS works without script. Repeat identical conditions and record field-monitoring plan separately. No font binaries, browser measurements or learner results are supplied here.
 
 References checked2026-10-20: [font loading strategies](https://web.dev/articles/font-best-practices), [font subsetting](https://web.dev/learn/performance/optimize-web-fonts), [CSS Fonts5 metrics](https://www.w3.org/TR/css-fonts-5/), [responsive images](https://html.spec.whatwg.org/multipage/images.html), [Navigation Timing2](https://www.w3.org/TR/navigation-timing-2/).
 
 For emitted module graphs, side-effect preservation, conditional exports and a measured eager/lazy bundle fixture, use the [worked production analysis](./What_are_some_general_practices_and_techniques_to_optimize_in_the_area_Explain_tree_shaking%2C_code_splitting_and_bundling%2C_minimizing%2C_data_caching..md#worked-production-analysis-module-contracts-before-chunk-tuning). Its byte-size evidence is separate from browser responsiveness or field percentiles.
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/Do_you_know_some_ways_to_measure_and_improve_initial_load.md). All learner practice remains outstanding.

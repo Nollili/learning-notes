@@ -1,6 +1,6 @@
 ### Difference between object creation using new operator and function constructor?
 
-The new operator invokes a constructor; these are not competing creation mechanisms. Compare construction with new against a factory function that explicitly returns an object. Here's a detailed explanation:
+The new operator invokes a constructor; these are not competing creation mechanisms. Compare construction with new against a factory function that explicitly returns an object.
 
 ---
 
@@ -161,6 +161,10 @@ console.log(user.greet()); // Hello Ada; factory can still share a prototype
 
 A factory can choose the returned shape or hide dependencies in closures; a class/prototype can share methods and express instanceof-based identity. Do not choose solely by allocation folklore: measure construction volume and clarify ownership. instanceof checks a prototype relationship (and can be customized); it is not runtime schema validation and can fail across realms. new.target also supports subclass-aware construction, but derived-class return/super rules are more restrictive than the simple base examples above.
 
-**Exercise:** implement equivalent factory and constructor user objects. Acceptance: separate new invocation from factory return; verify shared versus per-instance method identity; test plain strict call failure, replacement object return and primitive return; explain why a fake prototype chain does not validate a user DTO. Keep intentional throwing calls isolated.
 
 Official references: [ECMA construction](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-new-operator), [new.target/classes](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html). Checked2026-10-20; Node24 runtime baseline.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/Difference_between_object_creation_using_new_opera_177e8106c24d80a0b5dcc47f05ba651e.md). All learner practice remains outstanding; the worked examples above are explanatory material.

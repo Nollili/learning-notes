@@ -1,5 +1,7 @@
 # Change Detection in React
 
+Canonical owner: render snapshots, update queues, commit and browser paint. Continue with [entity identity and reconciliation trade-offs](./Could_you_explain_how_change_detection_mechanism_works_in_React%2C_tradeoffs_and_benefits.md); that companion retains editable-list and key examples.
+
 Subjects: React
 
 ### **How Change Detection Works in React**
@@ -14,7 +16,7 @@ Subjects: React
 4. **Component Update Control**:
     - Developers can control updates using methods like `shouldComponentUpdate` (class components) or `React.memo` (functional components). This reduces unnecessary renders.
     
-    `shouldComponentUpdate`  nem tul ismeros!
+    Class `shouldComponentUpdate` is an optional optimization hook; modern function examples use memo when measurement justifies it.
     
     [https://www.youtube.com/watch?v=40Bq8kOKB74&ab_channel=DavidParker](https://www.youtube.com/watch?v=40Bq8kOKB74&ab_channel=DavidParker)
     
@@ -51,14 +53,14 @@ setState(newState); // Queues an update; setter must belong to the component.
 3. **Fiber Architecture** (Introduced in React 16):
     - React's Fiber is a reimplementation of its reconciliation algorithm.
     - It breaks rendering into units of work, allowing React to pause and resume rendering.
-    - Improves performance for large and complex applications by prioritizing tasks (e.g., animations are updated faster than off-screen updates).
+    - Supports interruptible React rendering and update priorities. It does not interrupt an arbitrary long synchronous callback or guarantee animation deadlines.
 
 ### **Trade-offs of React's Change Detection Mechanism**
 
 ### **1. Benefits:**
 
 1. **Performance**:
-    - The Virtual DOM and reconciliation process minimize expensive real DOM manipulations, enhancing performance, especially for dynamic applications.
+    - Reconciliation computes host updates while preserving intended identity; it adds CPU/memory work and makes no universal speed or globally minimal-edit guarantee.
 2. **Declarative Code**:
     - React’s declarative approach abstracts away the complexity of managing manual DOM updates.
 3. **Scalability**:
@@ -103,6 +105,10 @@ Object.is treats NaN as equal to NaN and distinguishes0 from−0. Calling a sett
 
 A transition marks nonurgent React rendering work; it does not move expensive synchronous JavaScript to a worker or impose network response order. Keep controlled input updates urgent; measure the expensive result subtree before introducing transitions. Reconciliation is not browser layout, and useMemo caches a value rather than the component's entire render.
 
-**Exercise — prediction before profiling:** run both buttons, add a parent-only update, set the same object reference after mutation (deliberately broken), then repair with a new state object. Acceptance: explain+1/+2; never mutate the prior snapshot; distinguish component calls from commits and browser paint using React Profiler plus a browser trace; verify a context consumer updates through memo. Do not use render console counts alone as production performance evidence.
 
 Official references: [render/commit](https://react.dev/learn/render-and-commit), [queued updates](https://react.dev/learn/queueing-a-series-of-state-updates), [state snapshots](https://react.dev/learn/state-as-a-snapshot), [useState](https://react.dev/reference/react/useState). React19 baseline; checked2026-10-20.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/react/Change_Detection_in_React.md). All learner practice remains outstanding; the worked examples above are explanatory material.

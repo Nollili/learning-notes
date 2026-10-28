@@ -177,6 +177,10 @@ Strictness does not change arrow lexical this. A non-simple parameter list (defa
 
 **Why/when:** explicit strict code catches accidental globals and failed writes earlier during a migration. It does not sanitize input, prevent XSS/injection or establish a security sandbox. Refactoring a sloppy function can change this, arguments aliasing and error behavior, so test callers rather than adding a directive mechanically.
 
-**Exercise:** compare a fresh classic script, a strict script, CJS and ESM. Acceptance: misplaced directive does not activate strict mode; genuine strict undeclared assignment rejects; module plain-call this is undefined; method calls keep their receiver; explicit0o10 succeeds; duplicate strict parameters fail parsing. Retain isolated cases so one parse failure does not prevent other checks.
 
 Official references: [ECMAScript strict code](https://tc39.es/ecma262/multipage/strict-mode-of-ecmascript.html), [directive prologues](https://tc39.es/ecma262/multipage/ecmascript-language-source-code.html#sec-directive-prologues-and-the-use-strict-directive), [Node module classification](https://nodejs.org/api/packages.html). Checked2026-10-20; runtime cases use Node24.18.0.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_is_the_significance%2C_and_what_are_the_benefit_177e8106c24d80e4ad82da2f259c18c5.md). All learner practice remains outstanding; the worked examples above are explanatory material.

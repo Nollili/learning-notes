@@ -112,10 +112,16 @@ function publishTotal(lines, write) {
 }
 ```
 
-Local mutation of a privately owned accumulator does not mutate observable external state. Mutating an argument, reading a changing clock/global or invoking a getter with effects does. The add function above is the pure part; the surrounding console.log is an effect. “Same input” includes relevant input values/ownership, not merely the same object reference after someone changed its fields. Fresh object allocation needs value/identity reasoning in JavaScript; a loose purity slogan does not make arbitrary memoization safe. Deterministic errors for invalid domain values can be part of a pure partial-function contract, while logging the error is a separate effect.
+Local mutation of a privately owned accumulator does not mutate observable external state. Mutating an argument, reading a changing clock/global or invoking a getter with effects does. The add function above is the pure part; the surrounding console.log is an effect. “Same input” includes relevant input values/ownership, not merely the same object reference after someone changed its fields. Fresh object allocation needs value/identity reasoning in JavaScript; a loose purity slogan does not make arbitrary memoization safe.
+
+Deterministic errors for invalid domain values can be part of a pure partial-function contract, while logging the error is a separate effect.
 
 Injecting `write` makes the shell testable, not pure. Keep I/O at that boundary, decide error/retry/idempotency behavior there, and keep the core independent. Rendering a React component should be pure; committing DOM changes and synchronizing effects have separate owners. A function named “get” may still be impure if it reads mutable state or logs.
 
-**Exercise acceptance:** freeze plain input records/array, prove repeat totals and unchanged inputs, reject invalid/overflow cents, and verify publishTotal calls its supplied sink once with the same total on repeated calls. Show that a deterministic sink effect is still impure; changing an external clock/random value is another distinct impurity source. Record the domain/alias assumptions before memoizing; learner practice remains required.
 
 References checked2026-10-22: [React pure component reasoning](https://react.dev/learn/keeping-components-pure), [JavaScript function semantics](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html). Purity is a design property under a stated contract, not a TypeScript or engine optimization guarantee.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/general_es6/What_are_pure_impure_functions_177e8106c24d80d19ebde80bcd1b5b50.md). All learner practice remains outstanding; the worked examples above are explanatory material.

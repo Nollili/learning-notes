@@ -161,6 +161,10 @@ A batch endpoint reduces round trips but needs maximum IDs/body size, per-item a
 
 For client query caches, define keys including all data-affecting inputs/user scope, stale policy, invalidation and bounded retention. Deduplicate in-flight equivalent reads where appropriate; abort obsolete searches and reject stale responses. Debounce alone does not cancel an already running request. Retry only classified transient failures with bounded backoff and safe/idempotent semantics; request reduction must not leak one user's private cached data to another.
 
-**Exercise:** compare20sequential item reads, bounded-parallel reads and one capped batch endpoint. Acceptance: retain waterfall/protocol/connection evidence, transferred bytes, server workload and perceived partial-result behavior; simulate one slow/error item, rapid query changes and two users; demonstrate correct authorization/cache isolation, cancellation and bounded retries. Choose a topology from measured latency/failure trade-offs rather than the lowest request count. This is an unperformed learner lab, not a recorded benchmark.
 
 References checked2026-10-20: [HTTP/2](https://www.rfc-editor.org/rfc/rfc9113.html), [HTTP/3](https://www.rfc-editor.org/rfc/rfc9114.html), [HTTP caching](https://www.rfc-editor.org/rfc/rfc9111.html), [Network tooling](https://developer.chrome.com/docs/devtools/network/reference).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/performance/What_if_we_are_facing_performance_issues_because_we_have_lots_of_requests.md). All learner practice remains outstanding.

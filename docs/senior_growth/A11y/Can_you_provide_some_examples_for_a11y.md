@@ -210,7 +210,6 @@ Initial focus goes to the email field for this short form; long/structured dialo
 
 **Failure cases:** if the trigger is removed, choose a logical surviving focus target; nested dialogs need stack-aware ownership. Async server submission additionally needs pending/error/retry handling, cancellation and stale-result protection; only close on actual success. Do not announce success before persistence. A custom dialog requires explicit focus containment, background inertness, Escape and restore logic; prefer native behavior or a tested library over an incomplete hand-written trap. Plain dropdown navigation/disclosures should not trap focus.
 
-**Exercise — complete contact flow:** implement this example with visible focus and responsive dialog sizing. Acceptance: the dialog's name and input label are exposed; Tab/Shift+Tab stay within the modal; Escape/Cancel restore focus; background cannot be operated; invalid submission focuses a readable summary and associates the error; valid submission announces the truthful outcome; zoom400% and long text do not obscure essential controls. Verify with a real screen reader/browser pair and record results. Add a server adapter only after distinguishing validation success from saving success. This exercise remains learner practice.
 
 ---
 
@@ -257,7 +256,6 @@ picture/source can choose a crop or supported format; img supplies the fallback 
 
 Alternative text communicates purpose in context: a linked logo often needs the destination/organization name rather than “Company Logo”; a decorative image uses alt=""; a chart needs a textual summary/data equivalent. Repeating a nearby caption verbatim may add noise. Inspect which source was selected through currentSrc and the network trace; cached image selection and browser policies can affect repeated tests.
 
-**Image exercise:** supply two sizes/crops and implement this in the matching layout. Acceptance: record viewport/density/currentSrc/transfer size; narrow crop and wide image communicate equivalent meaning; dimensions prevent avoidable shift; slow network does not delay the hero through lazy loading; meaningful alt and keyboard-linked-image names are verified. Do not infer selection from filename or DOM src alone.
 
 ## Audio/video: information equivalence and native controls
 
@@ -284,7 +282,6 @@ Captions include relevant speech and non-speech audio; subtitles alone may omit 
 
 Native controls offer a strong baseline but still need keyboard/reader/device testing. preload is a browser hint, not a promise about downloaded bytes. Avoid unexpected autoplay/audio, provide pause/stop and respect reduced-motion needs for moving previews. Handle failed/unsupported media with a useful alternative. Cross-origin caption/media access may require the correct crossorigin/CORS setup; MIME type and actual asset encoding matter. Do not build an inaccessible custom player merely to match a visual design.
 
-**Media exercise:** create a short recording, valid captions and a descriptive transcript, then test failed-media and keyboard paths. Acceptance: captions accurately synchronize and include meaningful sounds; essential visual actions are described; native controls have usable names/focus; no forced autoplay; alternatives remain available if video fails. Record the actual reader/browser checks. These assets/exercises are not claimed as completed by the learner.
 
 Official references: [WHATWG responsive images](https://html.spec.whatwg.org/multipage/images.html), [WAI image decisions](https://www.w3.org/WAI/tutorials/images/), [WAI accessible media](https://www.w3.org/WAI/media/av/), [WebVTT](https://www.w3.org/TR/webvtt1/). Checked2026-10-20. The earlier dialog error description is attached only while invalid: hidden text explicitly referenced by aria-describedby can still contribute to its accessible description.
 
@@ -424,21 +421,18 @@ export function installProfileForm(root, save) {
 // On route/owner disposal: dispose().
 ```
 
-The registration assumes this unique fixture/initially enabled fieldset; multiple instances require instance-scoped IDs/roots. If fields also have hints, preserve their description IDs when adding/removing error IDs instead of removing all descriptions as this hint-free fixture does. The save adapter must return only the projected field list, consume cancellation and have bounded completion/body limits; a custom adapter ignoring its signal needs an independent deadline. Cancellation does not prove a server write was undone. Close a containing dialog only after kind=saved, then announce success in a surviving status region; don't place the only result inside removed dialog content.
+The registration assumes this unique fixture/initially enabled fieldset; multiple instances require instance-scoped IDs/roots. If fields also have hints, preserve their description IDs when adding/removing error IDs instead of removing all descriptions as this hint-free fixture does. The save adapter must return only the projected field list, consume cancellation and have bounded completion/body limits; a custom adapter ignoring its signal needs an independent deadline. Cancellation does not prove a server write was undone.
 
-Empty/malformed/unknown server error results become operational uncertainty, not an invented field error or false success. Preserve entered values for recovery and do not infer authorization from a client's validation. Disable normal controls only while pending, leave a usable cancel mechanism and re-enable before following an error link. A generation guard prevents stale responses changing a disposed form; a full application also scopes work across user/session changes. Longer forms need a sensible error-summary heading/count/order and links to every relevant error. On validation failure focus the summary once rather than asserting the same content through summary alert plus field alert plus live status.
+Close a containing dialog only after kind=saved, then announce success in a surviving status region; don't place the only result inside removed dialog content.
+
+Empty/malformed/unknown server error results become operational uncertainty, not an invented field error or false success. Preserve entered values for recovery and do not infer authorization from a client's validation. Disable normal controls only while pending, leave a usable cancel mechanism and re-enable before following an error link. A generation guard prevents stale responses changing a disposed form; a full application also scopes work across user/session changes.
+
+Longer forms need a sensible error-summary heading/count/order and links to every relevant error. On validation failure focus the summary once rather than asserting the same content through summary alert plus field alert plus live status.
 
 ### Manual evidence record: fill with actual observations
 
-| Flow | Expected behavior | Required evidence |
-|---|---|---|
-| Open modal | Named dialog, intentional initial focus, background unavailable | Browser/OS/reader versions, focus/announcement observation |
-| Keyboard close | Tab containment, Escape/Cancel, logical restore/fallback | Keyboard trace and removed-trigger case |
-| Invalid local/server form | Summary focused, links focus fields, errors described | Actual announcement/reading order; no duplicate assertive announcements |
-| Slow save/cancel/error | Truthful status, usable controls, draft retained, no false success | Adapter/HTTP result plus keyboard/reader observation |
-| Confirmed success | Close only after persistence; surviving region announces result | Real committed result and observed announcement |
-| Zoom/reflow/motion | Essential controls/errors visible/operable, no blocked focus | Narrow/400%/preferences test artifacts |
+Use the [separate practice requirements and observation ledger](../../practice/frontend/a11y/Can_you_provide_some_examples_for_a11y.md). All learner work remains outstanding.
 
-Every evidence cell is **unperformed learner practice**, not a pass. Automated DOM/name/role checks can detect some defects but cannot substitute for these observations. Record expected versus actual, severity, correction/retest and residual support limits. Avoid claiming an entire product conforms because this fixture works in one reader/browser pair.
+## Separate practice
 
-Official references checked2026-10-21: [WAI form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/), [WAI modal pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), [AccName1.2 draft](https://www.w3.org/TR/accname-1.2/), [WCAG2.2](https://www.w3.org/TR/WCAG22/). Accessible names/descriptions and announcement timing need the declared platform matrix; syntax validation supplies no manual pass.
+Apply the [focused requirements and failure cases](../../practice/frontend/a11y/Can_you_provide_some_examples_for_a11y.md). All learner practice remains outstanding; the worked examples above are explanatory material.

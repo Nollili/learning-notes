@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": [
+      "react",
+      "react-dom",
+      "node"
+    ],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "allowArbitraryExtensions": true
+  },
+  "include": [
+    "demo/*.tsx",
+    "composition/*.tsx",
+    "forms/*.ts",
+    "forms/*.tsx",
+    "design-system/*.tsx",
+    "design-system/*.ts",
+    "reference-check.ts"
+  ]
+}

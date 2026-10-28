@@ -154,7 +154,6 @@ Expected emitted `.card` padding is1.5rem. `@use` loads a module once and namesp
 
 **Trade-offs/failures:** mixins can repeat declarations; `@extend` can expand selector combinations and couple distant rules. Compare the emitted selectors and compressed size before adopting either. Native nesting/custom properties may remove the need for a preprocessor; Sass remains useful for build-time generation and modules. Nesting-depth limits are team heuristics, not a browser correctness rule.
 
-**Exercise:** compile the three files, then migrate one old import-based theme. Acceptance: output contains1.5rem padding and no Sass import deprecation warning; two consumers do not duplicate module CSS; configuration is explicit; emitted selectors do not grow unexpectedly. Pin Sass in the scratch project's lockfile. The compilation and visual regression audit are learner practice until evidence is recorded.
 
 Official references: [import deprecation](https://sass-lang.com/documentation/breaking-changes/import/), [use](https://sass-lang.com/documentation/at-rules/use/), [forward](https://sass-lang.com/documentation/at-rules/forward/), [extend](https://sass-lang.com/documentation/at-rules/extend/). Verified2026-10-20.
 
@@ -171,4 +170,7 @@ Official references: [import deprecation](https://sass-lang.com/documentation/br
 
 The emitted selector lists include .notice,.warning for padding **and** .notice .label,.warning .label for font weight. Extending the class affects its use inside other selectors, not only the declaration block next to it. Replacing the extend with an explicit @include notice-base copies the padding into .warning but does not add .warning .label to that other rule. Choose extend when that shared semantic selector relationship is intended; choose mixins/composition when explicit declaration reuse is easier to reason about. Neither guarantees smaller compressed output or lower specificity.
 
-**Additional acceptance:** compile both versions, inspect the exact selector lists/declaration duplication and compressed sizes, and test the real DOM states separately. Reuse the namespaced three-file module fixture above; no new framework is needed. A compiler pass cannot prove CSS cascade/visual correctness. References rechecked2026-10-22 against the official use/forward/extend documentation above; learner visual practice remains required.
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/css/What_are_your_suggestions_to_someone_who_is_hesitating_to_use_SASS_What_are_the_key_feature_that_should_use.md). All learner practice remains outstanding; the worked examples above are explanatory material.

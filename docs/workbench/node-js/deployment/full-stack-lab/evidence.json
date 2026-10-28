@@ -1,0 +1,22 @@
+{
+  "project": "learning-notes-study-0fe90def",
+  "good_frontend": "sha256:315b285d3d65123132c163982bdcfa2cc82544911957d129d301217e844fd349",
+  "bad_frontend": "sha256:b8f9143e4ca3f296bb697370c38ad32f625224215ae0d893dc77e26ed6ab1199",
+  "frontend_sha256": "a082454912c8e26b250ee28f67e7d76360dbb1cc22e09116ec3f279cde2398c5",
+  "backup_sha256": "d18c46076dcd537c20567567cb2a10b3a09f98b9aa62662461494deea7844602",
+  "checks": [
+    "TLS certificate verification",
+    "frontend/script/CSP",
+    "proxy/database readiness/read",
+    "nonroot/read-only frontend",
+    "pg_dump restore into separate DB",
+    "failed semantic smoke detected",
+    "exact frontend rollback, database value retained"
+  ],
+  "limitations": [
+    "local loopback fixture; no public DNS/cloud",
+    "no browser interaction observation",
+    "read-only frontend; no authentication",
+    "no cluster/Kubernetes apply"
+  ]
+}

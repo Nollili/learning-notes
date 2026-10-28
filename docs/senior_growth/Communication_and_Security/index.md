@@ -1,5 +1,9 @@
 # Communication_and_Security
 
+## Recommended order and boundaries
+
+Use [the prerequisite-led guide](../../engineering/security.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
 ## Notes
 
 - [🗄️ LocalStorage vs SessionStorage — Advantages and Disadvantages](./Advantages_and_disadvantages_of_local_and_session_storage.md)

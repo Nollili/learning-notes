@@ -95,7 +95,6 @@ var greet = function (name) { return "Hello, " + name + "!"; };
 
 **Trade-offs:** a legacy bundle and broad polyfills increase bytes and maintenance; progressive enhancement can preserve basic HTML functionality without shipping every advanced feature to every browser. Dropping a browser needs a product decision, not an accidental compiler upgrade.
 
-**Exercise:** build a small page using an import, async function, fetch and an array API. Acceptance: record compiler/bundler versions, list syntax/API/module requirements, inspect the generated bundle, demonstrate one failure caused by a missing API, then verify the corrected page in each declared browser. Advanced legacy-device testing requires access to those devices; do not claim it from a local modern-browser run.
 
 Official references: [TS5.5 removed settings](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html#disabling-features-deprecated-in-typescript-50), [TS6 migration](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html), [target](https://www.typescriptlang.org/tsconfig/target.html), [module resolution](https://www.typescriptlang.org/tsconfig/moduleResolution.html). Verified 2026-10-20; executable type examples use installed TypeScript 5.9.3.
 
@@ -117,3 +116,8 @@ export const prefix = 'Hello, ';
 The arrow/const syntax lowers, but the import/export module syntax remains and Promise is still a required runtime value. Running the emitted file with Promise absent fails; adding a declaration to lib never creates the API. CommonJS output would instead require a CommonJS loader/bundler and is not itself a browser script solution. TypeScript6 deprecates ES5 targeting; do not silently rely on this5.9 demonstration after a compiler upgrade.
 
 Use the [HTML-first compatibility workflow](../Other/Cross_Browser_Progressive_Enhancement.md) to preserve essential tasks while declaring an actual support policy. **Acceptance:** retain emitted code showing all three boundaries, demonstrate missing Promise separately from unsupported module loading, then build/test the chosen production bundle in the declared browsers. The fixture proves compiler output and a controlled missing-global case, not IE11/native compatibility. Never bypass an environment's browser restrictions to obtain that evidence.
+
+
+## Separate practice
+
+Apply the [focused requirements and failure cases](../../practice/frontend/typescript/Can_we_write_code_in_TS_if_we_would_like_to_support_older_browsers.md). All learner practice remains outstanding; the worked examples above are explanatory material.

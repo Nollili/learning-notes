@@ -72,6 +72,10 @@ Record rule purpose, scope and an example of both acceptable and rejected code. 
 
 An exception needs a narrow suppression, rule name, concrete reason, owner and follow-up condition. Avoid file-wide disable comments for one line. A warning budget can be part of a migration, but required correctness rules must fail the build once adopted. Complexity/coverage numbers identify code to investigate; the team should justify thresholds from risk and maintainability rather than treat an arbitrary score as proof of quality. Revisit expensive/noisy rules when evidence shows poor signal; disabling a rule is a reviewed policy change.
 
-**Practice acceptance:** write a one-page team guide with3–5 high-value rules, wire compiler/lint/format checks independently in a separate project, demonstrate one valid exception and one rejected broad suppression, and make CI fail when a hook is bypassed. Retain diagnostics and decision reasons. Learner implementation remains required.
 
 References checked2026-10-21: [TSLint deprecation](https://palantir.github.io/tslint/), [typescript-eslint typed linting](https://typescript-eslint.io/getting-started/typed-linting/), [ESLint configuration](https://eslint.org/docs/latest/use/configure/configuration-files).
+
+
+## Separate practice
+
+Use the [focused acceptance and evidence requirements](../../practice/engineering/quality/What_is_a_style_guide.md). All learner practice remains outstanding.
