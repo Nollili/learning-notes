@@ -1,10 +1,10 @@
-### Are there design patterns in react?
+# Are there design patterns in react? {#are-there-design-patterns-in-react}
 
 Choose a pattern to clarify ownership or a changing policy; each additional layer has a cost.
 
 ---
 
-### **1. Container-Presenter Pattern**
+### **Container-Presenter Pattern** {#_1-container-presenter-pattern}
 
 - **Description**: Separates the logic (container) and UI (presenter) components.
     - **Container**: Handles state and business logic.
@@ -32,7 +32,7 @@ const UserPresenter = ({ result }) => {
 
 ---
 
-### **2. Higher-Order Components (HOC)**
+### **Higher-Order Components (HOC)** {#_2-higher-order-components-hoc}
 
 - **Description**: A function that takes a component and returns a new component with added functionality.
 - Commonly used for reusability (e.g., adding authentication, logging, or data fetching).
@@ -62,7 +62,7 @@ const MyComponentWithLoading = withLoading(MyComponent);
 
 ---
 
-### **3. Render Props**
+### **Render Props** {#_3-render-props}
 
 https://www.youtube.com/watch?v=3IdCQ7QAs38&ab_channel=TheCodeCreative
 
@@ -91,7 +91,7 @@ const DataFetcher = ({ render }) => render(useFetch('/api/data', parseMessage));
 
 ---
 
-### **4. Compound Components**
+### **Compound Components** {#_4-compound-components}
 
 https://www.youtube.com/watch?v=N_WgBU3S9W8&ab_channel=CosdenSolutions
 
@@ -149,7 +149,7 @@ function TabPanel({ value, children }) {
 
 ---
 
-### **5. Controlled vs. Uncontrolled Components**
+### **Controlled vs. Uncontrolled Components** {#_5-controlled-vs-uncontrolled-components}
 
 https://www.youtube.com/watch?v=8IGlJqy6cFQ&ab_channel=CodeRyan
 
@@ -157,7 +157,7 @@ https://www.youtube.com/watch?v=8IGlJqy6cFQ&ab_channel=CodeRyan
 
 ---
 
-### **1. Controlled Components**
+### **Controlled Components** {#_1-controlled-components}
 
 * **Definition:** Components where **React state drives the input value**.
 * **Example:**
@@ -178,7 +178,7 @@ https://www.youtube.com/watch?v=8IGlJqy6cFQ&ab_channel=CodeRyan
 
 ---
 
-### **2. Uncontrolled Components**
+### **Uncontrolled Components** {#_2-uncontrolled-components}
 
 * **Definition:** Components where **the DOM maintains the value**, and you read it via refs when needed.
 * **Example:**
@@ -199,7 +199,7 @@ https://www.youtube.com/watch?v=8IGlJqy6cFQ&ab_channel=CodeRyan
 
 ---
 
-### **3. Best Practice / Modern Approach**
+### **Best Practice / Modern Approach** {#_3-best-practice-modern-approach}
 
 * **Controlled components** are generally preferred in **React apps** because they make state predictable and easier to debug.
 * **Uncontrolled components** can be used for:
@@ -221,7 +221,7 @@ You can summarize like this:
 
 ---
 
-### **6. Context API for Dependency Injection**
+### **Context API for Dependency Injection** {#_6-context-api-for-dependency-injection}
 
 https://www.youtube.com/watch?v=MSpDAuDPqNw&ab_channel=WebDevCody
 
@@ -260,7 +260,7 @@ const Profile = () => {
 
 ---
 
-### **7. Hooks for Custom Logic**
+### **Hooks for Custom Logic** {#_7-hooks-for-custom-logic}
 
 https://www.youtube.com/watch?v=I2Bgi0Qcdvc&ab_channel=CosdenSolutions
 
@@ -318,7 +318,7 @@ const MessageView = () => {
 
 ---
 
-### **8. Flux/Redux Architecture**
+### **Flux/Redux Architecture** {#_8-flux-redux-architecture}
 
 https://www.youtube.com/watch?v=_shA5Xwe8_4&ab_channel=Fireship
 
@@ -372,7 +372,7 @@ const App = () => (
 
 ---
 
-### **9. Portals for Rendering Outside DOM Hierarchy**
+### **Portals for Rendering Outside DOM Hierarchy** {#_9-portals-for-rendering-outside-dom-hierarchy}
 
 https://www.youtube.com/watch?v=kUwyGQ1AzhU&ab_channel=frontend-coder
 
@@ -397,7 +397,7 @@ const Modal = ({ children }) => {
 
 ---
 
-### **10. Functional Programming Concepts**
+### **Functional Programming Concepts** {#_10-functional-programming-concepts}
 
 - Functional patterns like immutability, pure functions, and higher-order functions are naturally encouraged in React.
 

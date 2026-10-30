@@ -1,0 +1,200 @@
+5. Integration with S3Assignment
+Assignment
+Creating products one at a time works fine for a few items, but not for a catalog of hundreds. This module adds a bulk-import path instead: a client uploads a CSV file of products to S3, which an automatic pipeline then parses. You build this as a second, independent service, the Import Service, alongside your existing Product Service. It gets its own S3 bucket, its own REST API and two Lambda functions: one that returns a presigned upload URL on request, the other triggered by the upload to parse the file.
+
+Prerequisites
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+Make sure to use Node.js version 22 — this matches the Lambda runtime required for this module.
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+Workflow
+Make sure you're working in your fork of the template repository.
+Create a branch named task-5 off the latest main and work there for this module.
+Run npm run sync-tests -- module-5 to pull this module's Autocode tests into your local src/test/.
+Implement all the tasks described in Tasks below.
+Deploy and configure your stack for testing:
+Deploy: npm run deploy.
+Copy the printed Import Service API Gateway endpoint URL into the root-level e2e.config.ts's IMPORT_API_URL.
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+Validate your work:
+npm run test:unit — infrastructure tests.
+npm run test:e2e — endpoint tests against your deployed API.
+npm test — runs both.
+You can also test the live endpoints manually with a tool like Postman. A sample CSV file is provided at resources/sample-data/catalog-items.csv if you want a ready-to-upload file: grab a presigned URL from GET /import and PUT the file to it.
+Push your branch and submit your solution in Autocode. Wait for the pipeline to finish and grade your implementation.
+Once solution is graded in Autocode, create a pull request and merge it back into main.
+Architecture
+Import Service architecture
+
+The whole system's architecture is available here.
+
+Project structure
+Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Tasks below.
+
+resources/
+  sample-data/
+    catalog-items.csv                    # sample CSV for manual testing (unchanged)
+src/
+  infra/
+    bin/
+      app.ts                             # CDK app entry point (update)
+    lib/
+      index.ts                           # stack barrel (update)
+      import-service-stack/
+        index.ts                         # ImportServiceStack
+        import-bucket.ts                 # ImportBucketConstruct
+        import-products-file-lambda.ts   # ImportProductsFileLambdaConstruct
+        import-file-parser-lambda.ts     # ImportFileParserLambdaConstruct
+        rest-api.ts                      # RestApiConstruct
+  app/
+    handlers/
+      import-products-file/
+        handler.ts                       # importProductsFile handler
+      import-file-parser/
+        handler.ts                       # importFileParser handler
+
+Data Models
+Each row of the uploaded CSV file has this shape. importFileParser parses every row into it:
+
+  title       - text, not null
+  description - text, optional
+  price       - number, greater than 0
+  count       - integer, 0 or greater
+
+In this module, each parsed row is only logged to CloudWatch — nothing is persisted yet.
+
+API Contract
+Each response body below contains exactly the fields shown and no extra ones.
+
+GET /import
+Returns a presigned URL for uploading a CSV file to the import bucket. Takes the file name as a fileName query string parameter.
+
+200 response — a presigned S3 URL for uploading the file directly to the bucket, at the key uploaded/${fileName}:
+
+{
+  "signedUrl": "https://..."
+}
+
+400 — fileName query parameter missing. Body: { "message": "<reason>" }.
+
+Tasks
+warning
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+Task 5.1 — Import Service Stack and Bucket
+You start the Import Service here: a CDK stack of its own, so you can deploy and tear it down independently of anything else in your app. Its foundation is an S3 bucket that stores each uploaded CSV of products until it's parsed.
+
+Objects in it follow a key convention: uploaded/<fileName> for freshly-uploaded files, parsed/<fileName> once it's been read. You create the stack and the bucket first, then wire in the two Lambda functions and the REST API over the next two tasks.
+
+What to do:
+
+Create a new CDK stack for the Import Service at the same level as your existing ProductServiceStack, then instantiate it in your CDK app's entry point:
+
+src/infra/lib/import-service-stack/index.ts
+export class ImportServiceStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) { ... }
+}
+
+Define the S3 bucket that stores uploaded and parsed CSV files, with versioning enabled:
+
+RemovalPolicy.DESTROY, so the bucket itself is deleted along with the stack.
+autoDeleteObjects: true, so a non-empty bucket doesn't block that deletion.
+src/infra/lib/import-service-stack/import-bucket.ts
+export class ImportBucketConstruct extends s3.Bucket {
+  constructor(scope: Construct, id: string) { ... }
+}
+
+🟢 Checkpoint: is the bucket versioned and ready?
+Task 5.2 — importProductsFile Endpoint
+The bucket you just created can't yet receive anything: there's no way to upload a file to it yet. This task adds that endpoint, which takes a file name and returns a presigned S3 PUT URL. The client uses that URL to upload the CSV directly to the bucket, without routing its bytes through API Gateway and Lambda. You define the importProductsFile Lambda, wire it to GET /import through the REST API, then implement the handler that builds the presigned URL.
+
+What to do:
+
+Define a Lambda function:
+
+Function name importProductsFile.
+Node.js 22.x runtime, handler.main entry point.
+512 MB of memory, 30-second timeout.
+The construct receives the import bucket as a constructor prop and passes its name to the handler via the BUCKET_NAME environment variable.
+src/infra/lib/import-service-stack/import-products-file-lambda.ts
+export interface ImportProductsFileLambdaConstructProps {
+  readonly bucket: s3.IBucket; // the ImportBucketConstruct from Task 5.1
+}
+
+export class ImportProductsFileLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: ImportProductsFileLambdaConstructProps) { ... }
+}
+
+
+Create an API Gateway REST API construct (not an HTTP API) using Lambda-Proxy integration. Route GET /import to importProductsFile:
+
+src/infra/lib/import-service-stack/rest-api.ts
+export interface RestApiConstructProps {
+  readonly importProductsFileLambda: IFunction; // the ImportProductsFileLambdaConstruct from step 1
+}
+
+export class RestApiConstruct extends apigateway.RestApi {
+  constructor(scope: Construct, id: string, props: RestApiConstructProps) { ... }
+}
+
+
+Create the handler behind that endpoint. It reads the file name from the fileName query string parameter and returns a presigned URL for uploading that file to the bucket at the key uploaded/${fileName}. See API Contract for the response format:
+
+src/app/handlers/import-products-file/handler.ts
+export const main = async (event: {
+  queryStringParameters: Record<string, string | undefined> | null;
+}) => { ... };
+
+Wire together the bucket, the Lambda and the REST API in ImportServiceStack and grant importProductsFile write access to the bucket (put-only).
+
+🟢 Checkpoint: is the presigned URL usable?
+Task 5.3 — importFileParser Event Handler
+Clients can upload files now, but nothing processes them once they arrive. This task adds the Lambda that reacts to that upload. Instead of an HTTP request, it's triggered by the resulting ObjectCreated event. It streams the object, parses it as CSV and logs each row. Once it's done, it moves the file from uploaded/ to parsed/. You define the importFileParser Lambda, wire it to the bucket's upload event, then implement the handler that parses and moves the file.
+
+What to do:
+
+Define a second Lambda function:
+
+Function name importFileParser.
+Same runtime, entry point, memory, timeout, props and BUCKET_NAME environment variable as importProductsFile.
+src/infra/lib/import-service-stack/import-file-parser-lambda.ts
+export interface ImportFileParserLambdaConstructProps {
+  readonly bucket: s3.IBucket; // the ImportBucketConstruct from Task 5.1
+}
+
+export class ImportFileParserLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: ImportFileParserLambdaConstructProps) { ... }
+}
+
+
+Configure importFileParser to fire on s3:ObjectCreated:* events for objects under the bucket's uploaded/ prefix.
+
+Create the handler behind that trigger. It reads the created object as a stream and parses it as CSV, using the csv-parser package or any other. Each parsed row is logged to CloudWatch. See Data Models for the expected row shape:
+
+src/app/handlers/import-file-parser/handler.ts
+export const main = async (event: {
+  Records: Array<{ s3: { bucket: { name: string }; object: { key: string } } }>;
+}) => { ... };
+
+Copy the file to the same key under parsed/ and delete the original from uploaded/, once the stream ends without error.
+
+Update ImportServiceStack's IAM policies so the function can both read and write to the bucket.
+
+🟢 Checkpoint: does the uploaded file get parsed and moved?
+Evaluation criteria
+Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
+
+Infrastructure
+
+ImportServiceStack contains the import bucket, an API Gateway REST API and both the importProductsFile and importFileParser Lambda functions.
+The import bucket has versioning enabled, a DESTROY removal policy and auto-deletes its objects, so a non-empty bucket doesn't block stack teardown.
+Both Lambda functions run on the Node.js 22.x runtime with the handler.main entry point, 512 MB of memory and a 30-second timeout. Both receive the bucket name via the BUCKET_NAME environment variable.
+GET /import is wired to importProductsFile through a Lambda-Proxy integration.
+importProductsFile has write-only access to the bucket. importFileParser has both read and write access.
+importFileParser is triggered by s3:ObjectCreated:* events for objects created under the uploaded/ prefix.
+Behavior
+
+GET /import returns a 200 response with a signed URL for the key uploaded/<fileName>. A PUT to that URL uploads the file successfully.
+GET /import returns a 400 response with a { "message": "<reason>" } body when the fileName query parameter is missing.
+importFileParser streams the created object, parses it as CSV and logs each parsed row to CloudWatch.
+Once the stream ends without error, importFileParser copies the object to the same key under parsed/ and deletes the original from uploaded/.

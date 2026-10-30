@@ -1,4 +1,4 @@
-### What is the significance, and what are the benefits, of including 'use strict' at the beginning of a JavaScript source file?
+# What is the significance, and what are the benefits, of including 'use strict' at the beginning of a JavaScript source file? {#what-is-the-significance-and-what-are-the-benefits-of-including-use-strict-at-the-beginning-of-a-javascript-source-file}
 
 The inclusion of `'use strict';` at the beginning of a JavaScript file or a function enables **Strict Mode**, a feature introduced in ECMAScript 5 (ES5). Strict Mode helps catch common programming errors and enforces a stricter set of rules for JavaScript execution. It is designed to improve code quality, security, and maintainability.
 
@@ -19,7 +19,7 @@ The inclusion of `'use strict';` at the beginning of a JavaScript file or a func
 
 ### **Key Benefits of `'use strict';`**
 
-### 1. **Eliminates Silent Errors**
+### **Eliminates Silent Errors** {#_1-eliminates-silent-errors}
 
 - In non-strict mode, JavaScript often fails silently. Strict Mode throws exceptions instead, helping you catch issues earlier.
 
@@ -39,7 +39,7 @@ strictOnlyMissingName = 10; // ReferenceError in a fresh context
 
 ```
 
-### 2. **Prevents Accidental Global Variables**
+### **Prevents Accidental Global Variables** {#_2-prevents-accidental-global-variables}
 
 - Variables must be explicitly declared with `var`, `let`, or `const`. This avoids polluting the global namespace.
 
@@ -51,7 +51,7 @@ myVar = 42; // ReferenceError: myVar is not defined
 
 ```
 
-### 3. **Disallows Duplicate Parameter Names**
+### **Disallows Duplicate Parameter Names** {#_3-disallows-duplicate-parameter-names}
 
 - In Strict Mode, function parameters cannot have duplicate names, which prevents unexpected behavior.
 
@@ -65,7 +65,7 @@ function add(a, a) { // SyntaxError: Duplicate parameter name not allowed in thi
 
 ```
 
-### 4. **Restricts `this` in Functions**
+### **Restricts `this` in Functions** {#_4-restricts-this-in-functions}
 
 - In non-strict mode, calling a function without an explicit context (`this`) sets `this` to the global object (`window` in browsers). In Strict Mode, `this` is `undefined` in such cases.
 
@@ -80,7 +80,7 @@ showThis(); // undefined
 
 ```
 
-### 5. **Protects Reserved Keywords**
+### **Protects Reserved Keywords** {#_5-protects-reserved-keywords}
 
 - Strict Mode reserves certain keywords for future JavaScript versions (e.g., `implements`, `interface`, `let`, `private`, `public`, `yield`).
 
@@ -92,7 +92,7 @@ let implements = true; // SyntaxError: Unexpected strict mode reserved word
 
 ```
 
-### 6. **Prevents Deleting Non-Deletable Properties**
+### **Prevents Deleting Non-Deletable Properties** {#_6-prevents-deleting-non-deletable-properties}
 
 - In non-strict mode, deleting certain properties might silently fail. In Strict Mode, it throws an error.
 
@@ -104,7 +104,7 @@ delete Object.prototype; // TypeError: Cannot delete property 'prototype' of fun
 
 ```
 
-### 7. **Rejects Legacy Octal Literal Syntax**
+### **Rejects Legacy Octal Literal Syntax** {#_7-rejects-legacy-octal-literal-syntax}
 
 - Legacy leading-zero octal literals such as `010` are disallowed. Explicit `0o10` is valid modern octal syntax and evaluates to8.
 

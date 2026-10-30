@@ -12,4 +12,4 @@ Use [the prerequisite-led guide](../../engineering/delivery.md) and [shared prac
 - [Why a branching strategy is important? Which one you use in your project?](./Why_a_branching_strategy_is_important_Which_one_you_use_in_your_project.md)
 
 
-- [Git Flow versus trunk-based development](./GIT_flow_vs_Trunk-based_Development%2C_Differences%2C_benefits_each_of_branching_model.md)
+- [GIT flow vs Trunk-based Development? Differences, benefits each of branching model](./GIT_flow_vs_Trunk-based_Development%2C_Differences%2C_benefits_each_of_branching_model.md)

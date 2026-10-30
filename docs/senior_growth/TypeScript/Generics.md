@@ -1,12 +1,12 @@
 # What are generics in TS?
 
-## 🔹 TypeScript Generics
+## TypeScript Generics {#%F0%9F%94%B9-typescript-generics}
 
 **Generics** in TypeScript allow you to write **reusable, type-safe code** that works with **multiple types** without sacrificing type safety. They are like **placeholders for types**.
 
 ---
 
-## 1️⃣ Why Generics?
+## Why Generics? {#_1%EF%B8%8F%E2%83%A3-why-generics}
 
 - Avoid duplicating code for different types.
 - Maintain **type safety** instead of using `any`.
@@ -14,7 +14,7 @@
 
 ---
   
-## 2️⃣ Generic Functions
+## Generic Functions {#_2%EF%B8%8F%E2%83%A3-generic-functions}
 
 ```ts
 function identity<T>(value: T): T {
@@ -30,7 +30,7 @@ const str = identity<string>('TS');  // str: string
 
 ---
 
-## 3️⃣ Generic Interfaces
+## Generic Interfaces {#_3%EF%B8%8F%E2%83%A3-generic-interfaces}
 
 ```ts
 interface Box<T> {
@@ -45,7 +45,7 @@ const stringBox: Box<string> = { content: 'Hello' };
 
 ---
 
-## 4️⃣ Generic Classes
+## Generic Classes {#_4%EF%B8%8F%E2%83%A3-generic-classes}
 
 ```ts
 class Queue<T> {
@@ -68,7 +68,7 @@ numberQueue.enqueue(10);
 
 ---
 
-## 5️⃣ Generic Constraints
+## Generic Constraints {#_5%EF%B8%8F%E2%83%A3-generic-constraints}
 
 * Sometimes you want **specific capabilities** on type parameters.
 * Use `extends` to constrain types.
@@ -78,14 +78,14 @@ function getLength<T extends { length: number }>(item: T): number {
   return item.length;
 }
 
-getLength('hello');          // ✅ string has length
-getLength([1, 2, 3]);       // ✅ array has length
-// getLength(123);           // ❌ number has no length
+getLength('hello');          // string has length
+getLength([1, 2, 3]);       // array has length
+// getLength(123);           // number has no length
 ```
 
 ---
 
-## 6️⃣ Benefits of Generics
+## Benefits of Generics {#_6%EF%B8%8F%E2%83%A3-benefits-of-generics}
 
 * **Type relationships:** avoid unnecessary any; runtime inputs and implementation correctness still need validation/tests.
 * **Reusability:** One function/class can work for many types.
@@ -94,14 +94,14 @@ getLength([1, 2, 3]);       // ✅ array has length
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Generics = **type placeholders** for reusable code.
 * Use `<T>` to define generic functions, classes, interfaces, or types.
 * Combine with **constraints** (`extends`) to enforce structure or capabilities.
 * Generics are **essential in libraries, data structures, and utility functions**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Generics help **write flexible, strongly typed code** without sacrificing safety—think of them as “type variables” for your functions and classes.
 
 ## Dependent keys, defaults and public contracts

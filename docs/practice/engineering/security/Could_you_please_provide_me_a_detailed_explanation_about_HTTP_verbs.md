@@ -1,4 +1,4 @@
-# Practice: 🌐 HTTP Verbs — Detailed Explanation
+# Practice: HTTP Verbs — Detailed Explanation {#practice-%F0%9F%8C%90-http-verbs-%E2%80%94-detailed-explanation}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

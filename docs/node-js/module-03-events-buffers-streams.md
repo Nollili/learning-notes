@@ -21,7 +21,7 @@
 
 ---
 
-## 1. How the concepts fit together
+## How the concepts fit together {#_1-how-the-concepts-fit-together}
 
 `EventEmitter`, `Buffer`, and streams form much of Node.js's event-driven I/O model:
 
@@ -78,7 +78,7 @@ Streaming usually reduces peak memory and time-to-first-result. It does not guar
 
 ---
 
-## 2. `EventEmitter`
+## `EventEmitter` {#_2-eventemitter}
 
 `EventEmitter` implements an in-process publish/subscribe pattern. A publisher emits a named event, and every listener registered for that event is called.
 
@@ -416,7 +416,7 @@ Avoid using a global event bus for every interaction. It can make dependencies a
 
 ---
 
-## 3. `Buffer`
+## `Buffer` {#_3-buffer}
 
 A `Buffer` is a fixed-length sequence of bytes. Node.js uses buffers for files, network packets, cryptographic data, compression, and binary stream chunks.
 
@@ -485,9 +485,9 @@ Encoding is not encryption. Hex and Base64 make bytes printable; anyone can deco
 ### Byte length versus string length
 
 ```ts
-console.log('👋'.length);                  // 2 UTF-16 code units
-console.log(Buffer.byteLength('👋', 'utf8')); // 4 bytes
-console.log(Buffer.from('👋').length);       // 4 bytes
+console.log('𐐷'.length);                  // 2 UTF-16 code units
+console.log(Buffer.byteLength('𐐷', 'utf8')); // 4 bytes
+console.log(Buffer.from('𐐷').length);       // 4 bytes
 ```
 
 Do not use JavaScript string length to allocate a UTF-8 payload. Use `Buffer.byteLength()`.
@@ -613,7 +613,7 @@ Likewise, lines and JSON records may cross chunk boundaries. Never assume one ch
 
 ---
 
-## 4. Stream fundamentals
+## Stream fundamentals {#_4-stream-fundamentals}
 
 A stream is an interface for producing or consuming data over time. Streams can process input before the entire dataset exists and can keep memory bounded by coordinating producer and consumer speeds.
 
@@ -747,7 +747,7 @@ Avoid universal cutoffs such as “always stream above exactly 10 MB.” The cor
 
 ---
 
-## 5. Readable streams
+## Readable streams {#_5-readable-streams}
 
 Readable streams produce chunks. Modern consumers should usually use `for await...of` or `pipeline()`.
 
@@ -820,11 +820,11 @@ Readable state is subtle. A stream can have no active consumption, paused/pull-b
 Common transitions:
 
 ```text
-add 'data' listener ──────▶ flowing
-call .resume() ───────────▶ flowing
-call .pipe() ─────────────▶ flowing/piped consumption
-call .pause() ────────────▶ paused
-use 'readable' + .read() ─▶ pull-based paused mode
+add 'data' listener ──────> flowing
+call .resume() ───────────> flowing
+call .pipe() ─────────────> flowing/piped consumption
+call .pause() ────────────> paused
+use 'readable' + .read() ─> pull-based paused mode
 ```
 
 Do not mix `'data'`, `'readable'`, `.pipe()`, and async iteration on the same stream unless you thoroughly understand the resulting state. Choose one consumption style.
@@ -910,7 +910,7 @@ Treat these mainly as diagnostics and state guards; prefer lifecycle APIs over p
 
 ---
 
-## 6. Writable streams
+## Writable streams {#_6-writable-streams}
 
 Writable streams accept chunks for a destination.
 
@@ -1001,7 +1001,7 @@ Use this only when many small writes are a measured bottleneck. Always pair `cor
 
 ---
 
-## 7. Duplex and Transform streams
+## Duplex and Transform streams {#_7-duplex-and-transform-streams}
 
 ### Duplex streams
 
@@ -1076,7 +1076,7 @@ A transform does not have to emit one output chunk per input chunk. It can emit 
 
 ---
 
-## 8. `pipeline()`, errors, and cleanup
+## `pipeline()`, errors, and cleanup {#_8-pipeline-errors-and-cleanup}
 
 Use `pipeline()` to connect stream stages in new code. It coordinates backpressure, propagates errors, and destroys connected stages when the pipeline fails.
 
@@ -1200,12 +1200,12 @@ await finished(output, { cleanup: true });
 
 ---
 
-## 9. Backpressure
+## Backpressure {#_9-backpressure}
 
 Backpressure prevents a fast producer from overwhelming a slow consumer.
 
 ```text
-Fast producer ─────▶ writable internal queue ──▶ slow destination
+Fast producer ─────> writable internal queue ──> slow destination
                          │
                          └─ reaches highWaterMark
                                   ↓
@@ -1298,7 +1298,7 @@ A pipeline is only bounded if every custom stage honors its contract. Problems o
 
 ---
 
-## 10. Object mode
+## Object mode {#_10-object-mode}
 
 Normal streams accept strings, buffers, and compatible byte-array values. Object-mode streams can pass arbitrary JavaScript values such as database rows or parsed records.
 
@@ -1380,7 +1380,7 @@ Use object mode for structured record pipelines. Stay in byte/string mode for si
 
 ---
 
-## 11. Creating custom streams
+## Creating custom streams {#_11-creating-custom-streams}
 
 Create custom streams when an existing API cannot naturally represent the source, destination, or transformation. Prefer composition of built-in streams and async iterables before subclassing.
 
@@ -1582,7 +1582,7 @@ Cleanup must complete and invoke the callback. Preserve the original error unles
 
 ---
 
-## 12. Performance and design guidance
+## Performance and design guidance {#_12-performance-and-design-guidance}
 
 ### Choose consumption style deliberately
 
@@ -1672,7 +1672,7 @@ A larger chunk or `highWaterMark` may improve one isolated file copy but harm a 
 
 ---
 
-## 13. Framing and protocol boundaries
+## Framing and protocol boundaries {#_13-framing-and-protocol-boundaries}
 
 A stream is a sequence of bytes or objects. It does not preserve application message boundaries.
 
@@ -1699,7 +1699,7 @@ For arbitrary binary protocols, use a documented length prefix, delimiter with e
 
 ---
 
-## 14. Diagnosing stream failures
+## Diagnosing stream failures {#_14-diagnosing-stream-failures}
 
 ### Symptom: memory keeps growing
 
@@ -1766,7 +1766,7 @@ try {
 
 [Exercises and learner checklist](../practice/node-js/module-03-events-buffers-streams.md).
 
-## 15. Final review checklist
+## Final review checklist {#_15-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-03-events-buffers-streams.md).
 
@@ -1776,7 +1776,7 @@ try {
 
 Backpressure keeps producer speed aligned with consumer capacity, and custom streams must honor it through `write()` callbacks and `push()` results. Robust stream code treats chunk boundaries as arbitrary, handles every error, cleans up partial resources, and avoids unbounded queues or synchronous CPU work.
 
-## 16. Iterator and serialization contracts
+## Iterator and serialization contracts {#_16-iterator-and-serialization-contracts}
 
 ### Iterable, iterator and delegated cleanup
 

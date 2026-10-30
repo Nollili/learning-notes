@@ -1,4 +1,4 @@
-# 🔐 Authentication and Authorization Mechanisms in Modern Web Apps
+# Authentication and Authorization Mechanisms in Modern Web Apps {#%F0%9F%94%90-authentication-and-authorization-mechanisms-in-modern-web-apps}
 
 In modern frontend-backend architectures, **authentication** and **authorization** are separate concerns:
 
@@ -9,9 +9,9 @@ Here’s a detailed overview of commonly used mechanisms and how they work.
 
 ---
 
-## 1️⃣ JWT (JSON Web Tokens)
+## JWT (JSON Web Tokens) {#_1%EF%B8%8F%E2%83%A3-jwt-json-web-tokens}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is}
 - JWT is a compact claims format. A signed token provides integrity under a verified key/algorithm; ordinary signed payloads are readable, and the format alone is not an authentication or authorization system.
 - Contains:
     - Header (algorithm)
@@ -28,7 +28,7 @@ Here’s a detailed overview of commonly used mechanisms and how they work.
 }
 ```
 
-### 🔧 How It Works
+### How It Works {#%F0%9F%94%A7-how-it-works}
 
 1. User logs in → server verifies credentials.
 2. Server generates JWT and sends it to client.
@@ -42,49 +42,49 @@ Authorization: Bearer <JWT>
 5. Server validates an allowlisted algorithm/key, issuer, audience, time/required application claims and intended token purpose; then separately authorizes this action/resource/tenant. Decoding is not verification.
 6. Optionally, use **refresh tokens** to issue new JWTs when expired.
 
-### ✅ Pros
+### Pros {#%E2%9C%85-pros}
 
 * Local signature verification can avoid a session lookup, but revocation, rotation and current permissions may still need server state.
 * Scales well across distributed systems.
 * Can include roles/permissions in payload.
 
-### ❌ Cons
+### Cons {#%E2%9D%8C-cons}
 
 * Long-lived tokens can be stolen if not stored securely.
 * Choose expiration, reauthentication and optional refresh/revocation policies. A refresh mechanism is not universally mandatory.
 
 ---
 
-## 2️⃣ Session-Based Authentication
+## Session-Based Authentication {#_2%EF%B8%8F%E2%83%A3-session-based-authentication}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is-1}
 
 * Traditional approach using **server-side sessions**.
 * Server keeps a **session store** (memory, database, Redis) mapping session ID → user info.
 
-### 🔧 How It Works
+### How It Works {#%F0%9F%94%A7-how-it-works-1}
 
 1. User logs in → server creates session → stores session ID in server-side store.
 2. Session ID is sent to client as a **cookie** (`HttpOnly`, `Secure`).
 3. Browser sends an eligible cookie according to domain/path/Secure/SameSite, credentials mode and browser policy.
 4. Server checks session ID → validates user and permissions.
 
-### ✅ Pros
+### Pros {#%E2%9C%85-pros-1}
 
 * Can support secure sessions with proper lifecycle, cookie scope, CSRF/XSS defenses and authorization; two cookie flags alone do not establish security.
 * Can easily revoke sessions server-side.
 * Works well with sensitive data.
 
-### ❌ Cons
+### Cons {#%E2%9D%8C-cons-1}
 
 * Stateful → requires server session management.
 * Harder to scale across distributed servers (needs shared session store).
 
 ---
 
-## 3️⃣ OAuth 2.0
+## OAuth 2.0 {#_3%EF%B8%8F%E2%83%A3-oauth-2-0}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is-2}
 
 * Standard **authorization framework** for delegating access.
 * OAuth delegates API access. For standardized user login use OpenID Connect (OIDC), an identity layer on OAuth2; do not treat an arbitrary access token as a login assertion.
@@ -95,29 +95,29 @@ Authorization: Bearer <JWT>
     * **Authorization Server:** Issues access tokens
     * **Resource Server:** Protects APIs
 
-### 🔧 How It Works
+### How It Works {#%F0%9F%94%A7-how-it-works-2}
 
 1. User authorizes your app → app receives **authorization code**.
 2. App exchanges code for **access token** (and optionally refresh token).
 3. Client uses **access token** to access protected API.
 4. Access tokens may be opaque or structured. The resource server follows the issuer's validation/introspection contract; the client must not assume every token is a JWT.
 
-### ✅ Pros
+### Pros {#%E2%9C%85-pros-2}
 
 * Standardized, widely supported.
 * OIDC adds standardized identity/login semantics that can support SSO.
 * Access tokens can be scoped and short-lived.
 
-### ❌ Cons
+### Cons {#%E2%9D%8C-cons-2}
 
 * More complex to implement.
 * Requires secure storage of tokens and HTTPS.
 
 ---
 
-## 4️⃣ Role-Based Access Control (RBAC) & Permissions
+## Role-Based Access Control (RBAC) & Permissions {#_4%EF%B8%8F%E2%83%A3-role-based-access-control-rbac-permissions}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is-3}
 
 * Authorization mechanism controlling **what users can do** based on **roles** or **permissions**.
 * Often combined with JWT or session-based auth.
@@ -132,14 +132,14 @@ Authorization: Bearer <JWT>
 }
 ```
 
-### 🔧 How It Works
+### How It Works {#%F0%9F%94%A7-how-it-works-3}
 
 1. Backend checks user role/permissions before allowing an action.
 2. Frontend can **conditionally render UI** based on permissions.
 
 ---
 
-## 5️⃣ Practical Implementation in Projects
+## Practical Implementation in Projects {#_5%EF%B8%8F%E2%83%A3-practical-implementation-in-projects}
 
 * **Frontend:**
 
@@ -163,14 +163,14 @@ Authorization: Bearer <JWT>
 
 ---
 
-### 🧠 Summary
+### Summary {#%F0%9F%A7%A0-summary}
 
 | Mechanism        | Authentication | Authorization | Storage                   | Pros                        | Cons                             |
 | ---------------- | -------------- | ------------- | ------------------------- | --------------------------- | -------------------------------- |
 | JWT | Claims format, not a login protocol | Claims inform separate server decisions | Depends on transport | Local verification possible | Validation, theft/revocation policy |
-| Session          | ✅              | ✅             | HttpOnly cookie           | Secure, revocable           | Stateful, scaling requires store |
+| Session          | Yes | Yes | HttpOnly cookie           | Secure, revocable           | Stateful, scaling requires store |
 | OAuth2 / OIDC | OAuth alone: no standardized identity; OIDC: yes | Delegated scopes plus API policy | Protocol/design dependent | Standard federation | Callback/token/session validation |
-| RBAC/Permissions | ❌              | ✅             | Combined with JWT/session | Fine-grained access control | Needs server enforcement         |
+| RBAC/Permissions | No | Yes | Combined with JWT/session | Fine-grained access control | Needs server enforcement         |
 
 ---
 

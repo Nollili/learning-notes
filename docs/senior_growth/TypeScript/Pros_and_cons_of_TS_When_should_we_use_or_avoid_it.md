@@ -1,12 +1,12 @@
 # Pros and cons of TS? When should we use or avoid it?
 
-# ⚡ TypeScript (TS) – Pros, Cons, and Usage Guidelines
+## TypeScript (TS) – Pros, Cons, and Usage Guidelines {#%E2%9A%A1-typescript-ts-%E2%80%93-pros-cons-and-usage-guidelines}
 
 TypeScript is a **statically typed superset of JavaScript** that compiles to plain JS. It adds **types, interfaces, and compile-time checks**, helping catch errors early.
 
 ---
 
-## 1️⃣ Pros of TypeScript
+## Pros of TypeScript {#_1%EF%B8%8F%E2%83%A3-pros-of-typescript}
 
 | Pros | Explanation |
 |------|------------|
@@ -20,7 +20,7 @@ TypeScript is a **statically typed superset of JavaScript** that compiles to pla
 
 ---
 
-## 2️⃣ Cons / Drawbacks of TypeScript
+## Cons / Drawbacks of TypeScript {#_2%EF%B8%8F%E2%83%A3-cons-drawbacks-of-typescript}
 
 | Cons | Explanation |
 |------|------------|
@@ -32,7 +32,7 @@ TypeScript is a **statically typed superset of JavaScript** that compiles to pla
 
 ---
 
-## 3️⃣ When to Use TypeScript
+## When to Use TypeScript {#_3%EF%B8%8F%E2%83%A3-when-to-use-typescript}
 
 - **Large codebases** where maintainability is critical.
 - **Projects with multiple developers** to enforce type contracts and reduce bugs.
@@ -42,7 +42,7 @@ TypeScript is a **statically typed superset of JavaScript** that compiles to pla
 
 ---
 
-## 4️⃣ When to Avoid TypeScript
+## When to Avoid TypeScript {#_4%EF%B8%8F%E2%83%A3-when-to-avoid-typescript}
 
 - **Small/simple projects** or prototypes where speed is more important than safety.
 - **Short-lived scripts** or throwaway code.
@@ -51,7 +51,7 @@ TypeScript is a **statically typed superset of JavaScript** that compiles to pla
 
 ---
 
-## 5️⃣ Best Practices
+## Best Practices {#_5%EF%B8%8F%E2%83%A3-best-practices}
 
 - Use **strict mode** (`strict: true`) for better type safety.
 - Prefer **interfaces** and **type aliases** for clear contracts.
@@ -60,14 +60,14 @@ TypeScript is a **statically typed superset of JavaScript** that compiles to pla
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Pros:** Type safety, IDE support, maintainability, easier refactoring, scalability.  
 - **Cons:** Learning curve, verbosity, build step, initial slower development.  
 - **Use TS** for medium/large, long-term projects with team collaboration.  
 - **Choose deliberately:** checked JavaScript/JSDoc or a narrow TypeScript boundary may fit a small script; TypeScript can also be useful for small but high-risk domain logic.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Evaluate the relationships the types protect, the cost of errors and the maintenance cost of the type API. File count alone does not establish the benefit.
 
 ## A measurable adoption decision

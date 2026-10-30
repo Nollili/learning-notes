@@ -1,4 +1,4 @@
-# Practice: Composition and HOCs. Advantages and disadvantages? why composition is recommended against inheritance in react?
+# Practice: Composition and higher-order components in React {#practice-composition-and-hocs-advantages-and-disadvantages-why-composition-is-recommended-against-inheritance-in-react}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

@@ -1,4 +1,4 @@
-### From a performance perspective, why is immutability important?
+# From a performance perspective, why is immutability important? {#from-a-performance-perspective-why-is-immutability-important}
 
 **Immutability** means that once a data structure is created, it cannot be changed.  
 An immutable update returns a new changed path while preserving previous snapshots; unchanged branches may be shared. JavaScript objects are mutable by default, so this is an ownership discipline unless enforced.
@@ -7,25 +7,25 @@ While it might seem slower at first, immutability is a **major performance enabl
 
 ---
 
-## ⚙️ 1. **Efficient Change Detection**
+## **Efficient Change Detection** {#%E2%9A%99%EF%B8%8F-1-efficient-change-detection}
 
 Reference identity enables cheap comparisons. React state/memo use Object.is-based comparisons in relevant places; Redux selector behavior depends on its binding/selector contract.
 
-### 🔹 Mutable case (problematic)
+### Mutable case (problematic) {#%F0%9F%94%B9-mutable-case-problematic}
 If you mutate an object directly, React can't know something changed without deep comparison:
 
 ```js
-state.user.name = "Lili"; // ❌ Mutating
+state.user.name = "Lili"; // Mutating
 ```
 // React does not automatically deep-compare mutated state to repair this update.
 
-### 🔹 Immutable case (efficient)
+### Immutable case (efficient) {#%F0%9F%94%B9-immutable-case-efficient}
 If you return a new object, React can detect a change by shallow comparison:
 
 ```js
 setState(prev => ({
   ...prev,
-  user: { ...prev.user, name: "Lili" } // ✅ New reference
+  user: { ...prev.user, name: "Lili" } // New reference
 }));
 ```
 → Now `prev.user !== newState.user`, so state identity changes and memoized consumers can observe the changed branch; reconciliation/rendering still follows React ownership.
@@ -35,7 +35,7 @@ One reference comparison is constant work; shallow comparison across k props cos
 
 ---
 
-## ⚡ 2. **Avoid Unnecessary Re-renders**
+## **Avoid Unnecessary Re-renders** {#%E2%9A%A1-2-avoid-unnecessary-re-renders}
 
 Immutability enables pure components and memoization.
 
@@ -74,7 +74,7 @@ A new reference permits an update; stable unchanged references can support a mem
 
 ---
 
-## 🧠 3. **Predictable State Transitions**
+## **Predictable State Transitions** {#%F0%9F%A7%A0-3-predictable-state-transitions}
 
 Immutable updates create a history of states.  
 This improves debugging, undo/redo functionality, and time-travel debugging (as in Redux DevTools).
@@ -88,7 +88,7 @@ Snapshot reasoning supports debugging; immutable data does not guarantee fewer b
 
 ---
 
-## 🧮 4. **Enables Structural Sharing (Memory Efficient)**
+## **Enables Structural Sharing (Memory Efficient)** {#%F0%9F%A7%AE-4-enables-structural-sharing-memory-efficient}
 
 Libraries like Immer or Immutable.js use structural sharing:
 
@@ -109,7 +109,7 @@ Structural sharing avoids duplicating unchanged branches; copying a wide changed
 
 ---
 
-## 🚦 5. **Prevents Accidental State Corruption**
+## **Prevents Accidental State Corruption** {#%F0%9F%9A%A6-5-prevents-accidental-state-corruption}
 
 Mutable objects shared across components can cause side effects:
 
@@ -120,7 +120,7 @@ Immutable snapshots prevent shared in-place writes when the ownership rule is fo
 
 ---
 
-## ⚠️ Performance Trade-offs
+## Performance Trade-offs {#%E2%9A%A0%EF%B8%8F-performance-trade-offs}
 
 | Pros                      | Cons                                         |
 |---------------------------|----------------------------------------------|
@@ -132,21 +132,21 @@ Copying a large flat array/map is still proportional to its size; Immer proxies/
 
 ---
 
-## 🧩 Summary
+## Summary {#%F0%9F%A7%A9-summary}
 
 | Benefit                   | Description                                 | Performance Impact |
 |---------------------------|---------------------------------------------|--------------------|
-| Fast change detection     | Shallow equality replaces deep diffing      | 🔥 Major           |
-| Fewer re-renders          | Stable inputs support memoized children/calculations          | ⚡ High            |
-| Predictable state updates | Avoids hidden side effects                  | ✅ Stable          |
-| Structural sharing        | Efficient memory usage                      | 🧠 Optimized       |
+| Fast change detection     | Shallow equality replaces deep diffing      |  Major           |
+| Fewer re-renders          | Stable inputs support memoized children/calculations          |  High            |
+| Predictable state updates | Avoids hidden side effects                  |  Stable          |
+| Structural sharing        | Efficient memory usage                      |  Optimized       |
 | Snapshot reasoning | Preserves previous values; async ordering still needs coordination | Correctness tool |
 
 ---
 
-## ✅ Key Takeaway
+## Key Takeaway {#%E2%9C%85-key-takeaway}
 
-💡 Immutability isn’t about making code “functional” —  
+Immutability isn’t about making code “functional” —\
 it’s about making change detection cheap, rendering predictable, and performance consistent.
 
 In short:

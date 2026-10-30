@@ -1,6 +1,6 @@
 # Do you still think BEM style is valid nowadays? Main benefits?
 
-## 🔹 BEM (Block Element Modifier) in Modern Frontend
+## BEM (Block Element Modifier) in Modern Frontend {#%F0%9F%94%B9-bem-block-element-modifier-in-modern-frontend}
 
 **BEM** is a CSS naming methodology that stands for:
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 1️⃣ Is BEM Still Valid?
+## Is BEM Still Valid? {#_1%EF%B8%8F%E2%83%A3-is-bem-still-valid}
 
 Yes. BEM remains relevant **even with modern frontend frameworks** like React, Vue, or Angular.  
 
@@ -22,7 +22,7 @@ However, its usage has evolved:
 
 ---
 
-## 2️⃣ Main Benefits of BEM
+## Main Benefits of BEM {#_2%EF%B8%8F%E2%83%A3-main-benefits-of-bem}
 
 ### 2.1 Readability & Structure
 
@@ -50,7 +50,7 @@ However, its usage has evolved:
 
 ---
 
-## 3️⃣ Modern Considerations
+## Modern Considerations {#_3%EF%B8%8F%E2%83%A3-modern-considerations}
 
 * **With CSS Modules:**
   BEM is less needed because class names are automatically **scoped locally**.
@@ -68,7 +68,7 @@ import styles from './Button.module.css';
 
 ---
 
-## 4️⃣ Example
+## Example {#_4%EF%B8%8F%E2%83%A3-example}
 
 ```css
 /* BEM */
@@ -82,7 +82,7 @@ import styles from './Button.module.css';
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **BEM is still valid**, especially in large projects or team environments.
 * Provides **consistency, modularity, and maintainability**.
@@ -91,7 +91,7 @@ import styles from './Button.module.css';
   * **CSS Modules / CSS-in-JS / Tailwind** reduce the necessity of BEM.
   * BEM is most valuable when **working with global CSS or multi-developer teams**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Even if using modern tools, understanding BEM is valuable—it teaches **modular thinking and naming discipline**, which improves maintainable code.
 
 ## A collision that names cannot prevent

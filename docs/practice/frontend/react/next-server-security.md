@@ -1,4 +1,4 @@
-# Practice: next-server-security
+# Practice: Next.js Server Security: Sessions, Data Access and Mutations {#practice-next-server-security}
 
 **Status: outstanding learner practice.**
 

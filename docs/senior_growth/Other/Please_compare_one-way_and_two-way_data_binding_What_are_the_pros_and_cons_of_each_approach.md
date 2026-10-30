@@ -1,12 +1,12 @@
 # Please compare one-way and two-way data binding? What are the pros and cons of each approach?
 
-# 🔹 One-Way vs Two-Way Data Binding
+## One-Way vs Two-Way Data Binding {#%F0%9F%94%B9-one-way-vs-two-way-data-binding}
 
 **Data binding** defines how changes in the application **model** (data) and **view** (UI) are synchronized. Understanding the differences is crucial for designing maintainable, efficient front-end applications.
 
 ---
 
-## 1️⃣ One-Way Data Binding
+## One-Way Data Binding {#_1%EF%B8%8F%E2%83%A3-one-way-data-binding}
 
 **Definition:** Data flows in **one direction**, usually from **model → view**. The view is updated automatically when the model changes, but changes in the view do **not automatically update the model** unless explicitly handled.
 
@@ -38,7 +38,7 @@ function App() {
 
 ---
 
-## 2️⃣ Two-Way Data Binding
+## Two-Way Data Binding {#_2%EF%B8%8F%E2%83%A3-two-way-data-binding}
 
 **Definition:** Data flows in **both directions**. Changes in the model automatically update the view, and changes in the view automatically update the model.
 
@@ -63,11 +63,11 @@ function App() {
 
 ---
 
-## 3️⃣ Comparison Summary
+## Comparison Summary {#_3%EF%B8%8F%E2%83%A3-comparison-summary}
 
 | Aspect         | One-Way Binding                          | Two-Way Binding                       |
 | -------------- | ---------------------------------------- | ------------------------------------- |
-| Data Flow      | Model → View (explicit for view → model) | Model ↔ View (automatic)              |
+| Data Flow      | Model → View (explicit for view → model) | Model <-> View (automatic)              |
 | Predictability | High                                     | Lower in complex apps                 |
 | Debugging      | Easier                                   | Harder in large apps                  |
 | Performance    | Measure update/render cost under the workload | Also workload/implementation-dependent; syntax alone does not predict speed |
@@ -76,13 +76,13 @@ function App() {
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * **One-way binding** makes view-to-state updates explicit; ownership and event tracing can aid debugging. It does not guarantee speed or correctness.
 * **Two-way binding** is convenient syntax for coordinated input/output updates; clear ownership, validation and lifecycle still matter at any application size.
 * **Modern frameworks** often combine approaches: e.g., **React** encourages one-way binding with explicit handlers; **Angular** supports two-way binding via `[(ngModel)]`.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use the primary framework's state model consistently. Diagnose loops, stale values and excessive renders from actual data flow; there is no universal binding-style performance ranking.
 
 

@@ -1,4 +1,4 @@
-# Clean_code_and_Code_Quality
+# Clean code and code quality {#clean-code-and-code-quality}
 
 ## Recommended order and boundaries
 

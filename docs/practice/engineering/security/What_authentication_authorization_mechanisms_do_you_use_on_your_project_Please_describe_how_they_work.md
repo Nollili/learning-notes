@@ -1,4 +1,4 @@
-# Practice: 🔐 Authentication and Authorization Mechanisms in Modern Web Apps
+# Practice: Authentication and Authorization Mechanisms in Modern Web Apps {#practice-%F0%9F%94%90-authentication-and-authorization-mechanisms-in-modern-web-apps}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

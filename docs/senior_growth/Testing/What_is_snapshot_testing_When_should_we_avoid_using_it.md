@@ -1,12 +1,12 @@
 # What is snapshot testing? When should we avoid using it?
 
-# 📸 Snapshot Testing in JavaScript / React (Complete Overview)
+## Snapshot Testing in JavaScript / React (Complete Overview) {#%F0%9F%93%B8-snapshot-testing-in-javascript-react-complete-overview}
 
 **Snapshot testing** captures the **output of a component or function** and compares it against a stored snapshot to detect unexpected changes.
 
 ---
 
-## 1️⃣ How Snapshot Testing Works
+## How Snapshot Testing Works {#_1%EF%B8%8F%E2%83%A3-how-snapshot-testing-works}
 
 1. **Render / Execute:** Render a component or execute a function.
 2. **Capture Output:** Serialize the output (DOM tree, object, or value) into a snapshot file.
@@ -34,7 +34,7 @@ jest -u
 
 ---
 
-## 2️⃣ When Snapshot Testing is Useful
+## When Snapshot Testing is Useful {#_2%EF%B8%8F%E2%83%A3-when-snapshot-testing-is-useful}
 
 * **UI components:** Capture DOM structure for React, Vue, Angular.
 * **Serializable objects:** API responses, data transformations.
@@ -48,7 +48,7 @@ jest -u
 
 ---
 
-## 3️⃣ When to Avoid Snapshot Testing
+## When to Avoid Snapshot Testing {#_3%EF%B8%8F%E2%83%A3-when-to-avoid-snapshot-testing}
 
 | Situation                       | Reason                                                                                                     |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -61,7 +61,7 @@ jest -u
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 1. **Combine with other tests:** Snapshot + unit/integration tests.
 2. **Keep snapshots small:** Test **specific components** or **sections of UI**.
@@ -70,14 +70,14 @@ jest -u
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * A focused snapshot can detect regressions in the specific serialized output or rendered image it compares.
 * Avoid overusing snapshots for **dynamic content or critical logic**.
 * Always **combine with functional assertions** for meaningful test coverage.
 * Proper use reduces maintenance pain and improves confidence in UI changes.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Treat DOM/object snapshots as **serialization contracts**. Browser screenshot baselines compare pixels; neither replaces behavior or accessibility testing.
 
 

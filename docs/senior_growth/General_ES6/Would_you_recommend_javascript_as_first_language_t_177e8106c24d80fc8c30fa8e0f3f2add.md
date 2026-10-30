@@ -1,4 +1,4 @@
-### Would you recommend javascript as first language to learn?
+# JavaScript as a first programming language {#would-you-recommend-javascript-as-first-language-to-learn}
 
 Yes, JavaScript can be an excellent first programming language to learn for several reasons, but it also comes with some caveats. Let’s break down the pros and cons to help you decide.
 
@@ -6,26 +6,26 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 
 ## **Why JavaScript is a Great First Language**
 
-### **1. Beginner-Friendly**
+### **Beginner-Friendly** {#_1-beginner-friendly}
 
 - **Simple Syntax:** JavaScript is relatively easy to understand for beginners. You can write meaningful code with just a few lines.
 - **No Installation Required:** You can run JavaScript directly in a web browser's console, which means you don’t need to set up complicated development environments.
 
-### **2. Instant Results**
+### **Instant Results** {#_2-instant-results}
 
 - You can quickly see the output of your code by opening a browser and using tools like **Developer Console** or **CodePen**. This immediate feedback helps maintain motivation while learning.
 
-### **3. Versatility**
+### **Versatility** {#_3-versatility}
 
 - **Frontend and Backend:** JavaScript is used for both client-side (web pages) and server-side (using Node.js) programming.
 - **Diverse Applications:** It’s used for web development, game development, mobile app development, and even machine learning with libraries like TensorFlow.js.
 
-### **4. Large Community and Resources**
+### **Large Community and Resources** {#_4-large-community-and-resources}
 
 - A huge community of developers means access to a vast number of tutorials, forums, and libraries.
 - Free learning resources, like **MDN Web Docs**, **freeCodeCamp**, and **JavaScript.info**, make it easy to get started.
 
-### **5. Relevance to Web Development**
+### **Relevance to Web Development** {#_5-relevance-to-web-development}
 
 - JavaScript/TypeScript is central to browser application work; language study alone does not establish professional readiness or a job-market guarantee.
 
@@ -33,16 +33,16 @@ Yes, JavaScript can be an excellent first programming language to learn for seve
 
 ## **Potential Drawbacks of Starting with JavaScript**
 
-### **1. Quirks of the Language**
+### **Quirks of the Language** {#_1-quirks-of-the-language}
 
 - JavaScript has some confusing behavior for beginners (e.g., `==` vs. `===`, type coercion, scoping with `var`, etc.).
 - You may encounter issues with asynchronous programming (e.g., Promises, `async/await`), which can be tricky to grasp at first.
 
-### **2. Dynamic typing and coercion**
+### **Dynamic typing and coercion** {#_2-dynamic-typing-and-coercion}
 
 - JavaScript **and Python are dynamically typed**: a name can be rebound to a value of another type. Java/C# normally use static type checking. Static/dynamic typing and implicit coercion are different dimensions; calling one language simply strong/weak obscures the actual behavior.
 
-### **3. Broad Ecosystem**
+### **Broad Ecosystem** {#_3-broad-ecosystem}
 
 - JavaScript has a vast ecosystem (e.g., frameworks like React, Angular, Node.js) that might overwhelm beginners trying to figure out where to start.
 

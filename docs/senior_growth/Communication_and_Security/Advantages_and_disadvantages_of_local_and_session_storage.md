@@ -1,23 +1,23 @@
-# 🗄️ LocalStorage vs SessionStorage — Advantages and Disadvantages
+# LocalStorage vs SessionStorage — Advantages and Disadvantages {#%F0%9F%97%84%EF%B8%8F-localstorage-vs-sessionstorage-%E2%80%94-advantages-and-disadvantages}
 
 Both **LocalStorage** and **SessionStorage** are part of the **Web Storage API**, allowing browsers to store key-value data on the client side. They differ in **lifetime, scope, and usage patterns**.
 
 ---
 
-## 1️⃣ LocalStorage
+## LocalStorage {#_1%EF%B8%8F%E2%83%A3-localstorage}
 
 - **Scope:** Shared across all tabs/windows of the same origin.
 - **Persistence:** Usually survives sessions, subject to user clearing, private-mode policies, partitioning, quota/eviction and browser settings; not durable backup.
 - **Storage Limit:** Implementation/policy-dependent quota; handle access/write failures rather than assuming an available fixed capacity.
 - **Accessible From:** JavaScript (`window.localStorage`).
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages}
 - Persistent storage → useful for remembering settings or user preferences.
 - Simple key-value API (`setItem`, `getItem`, `removeItem`, `clear`).
 - No server round-trip → improves frontend performance for non-sensitive data.
 - Same-origin tabs can access the applicable shared area; an application still needs synchronization/conflict handling.
 
-### ❌ Disadvantages
+### Disadvantages {#%E2%9D%8C-disadvantages}
 - Vulnerable to **XSS attacks** → any JS code can access it.
 - Not suitable for sensitive data (auth tokens, passwords).
 - Synchronous API → can block the main thread for large data.
@@ -25,19 +25,19 @@ Both **LocalStorage** and **SessionStorage** are part of the **Web Storage API**
 
 ---
 
-## 2️⃣ SessionStorage
+## SessionStorage {#_2%EF%B8%8F%E2%83%A3-sessionstorage}
 
 - **Scope:** Partitioned by origin and top-level browsing context; cross-origin iframes do not automatically share one storage area. An opener can initially copy a session area under relevant browser rules; it is not live shared-tab state.
 - **Persistence:** Page-session storage, surviving reloads; browser session restoration can preserve it. Do not use tab closure as a security revocation guarantee.
 - **Storage Limit:** Browser/policy-dependent; handle unavailable storage and failed writes.
 - **Accessible From:** JavaScript (`window.sessionStorage`).
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages-1}
 - Tab-scoped workflow data reduces accidental cross-tab draft mixing; it does not enforce authentication isolation.
 - Simple API like LocalStorage (`setItem`, `getItem`).
 - Useful for temporary state (e.g., wizard forms, unsaved drafts).
 
-### ❌ Disadvantages
+### Disadvantages {#%E2%9D%8C-disadvantages-1}
 - Page-session lifetime is not a durable guarantee; closing/restoring behavior depends on the browser and policy.
 - Still vulnerable to **XSS attacks**.
 - Not shared across tabs → may require extra logic for multi-tab apps.
@@ -45,21 +45,21 @@ Both **LocalStorage** and **SessionStorage** are part of the **Web Storage API**
 
 ---
 
-## ⚖️ Comparison Table
+## Comparison Table {#%E2%9A%96%EF%B8%8F-comparison-table}
 
 | Feature                  | LocalStorage        | SessionStorage       |
 |---------------------------|------------------|-------------------|
 | Lifetime                 | Persistent        | Tab/session only  |
 | Scope | Same origin/storage partition | Origin plus top-level browsing context |
 | Use Case                 | User preferences, settings | Temporary form data, session info |
-| Shared Across Tabs        | ✅ Yes            | ❌ No             |
+| Shared Across Tabs        |  Yes            |  No             |
 | Security Risk            | XSS               | XSS               |
 | Storage Size Limit | Browser/policy dependent | Browser/policy dependent |
-| Synchronous API          | ✅ Yes            | ✅ Yes             |
+| Synchronous API          |  Yes            |  Yes             |
 
 ---
 
-### 🧠 Best Practices
+### Best Practices {#%F0%9F%A7%A0-best-practices}
 - **Never store sensitive data** (auth tokens, passwords) in LocalStorage or SessionStorage.
 - Use an appropriate server session/secure HttpOnly cookie contract; in-memory client data is still accessible to running script and is not an XSS boundary.
 - Prefer **SessionStorage** for temporary state within a tab.

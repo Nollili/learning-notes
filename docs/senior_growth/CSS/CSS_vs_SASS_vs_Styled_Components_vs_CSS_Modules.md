@@ -6,20 +6,20 @@ Tool comparison only: Sass transforms syntax, Modules localize names, and stylin
 
 ---
 
-## **1️⃣ CSS (Vanilla CSS)**
+## **CSS (Vanilla CSS)** {#_1%EF%B8%8F%E2%83%A3-css-vanilla-css}
 
 **Description:**
 
 * The classic way to style web pages, using plain `.css` files.
 * Styles are **global by default**.
 
-**Pros:**
+ **Pros:**
 
 * Simple, no build step needed.
 * Core CSS is widely available; check each newer feature against the declared support matrix.
 * Easy for small projects.
 
-**Cons:**
+ **Cons:**
 
 * Global namespace: risk of class name collisions.
 * Requires explicit ownership/cascade conventions as the style surface grows.
@@ -31,21 +31,21 @@ Tool comparison only: Sass transforms syntax, Modules localize names, and stylin
 
 ---
 
-## **2️⃣ SASS / SCSS**
+## **SASS / SCSS** {#_2%EF%B8%8F%E2%83%A3-sass-scss}
 
 **Description:**
 
 * A **CSS preprocessor** that adds variables, nesting, mixins, functions, and more.
 * Requires a build step to compile into CSS.
 
-**Pros:**
+ **Pros:**
 
 * Nested selectors for cleaner code.
 * Variables and mixins → reusable styles.
 * Conditional logic and loops for dynamic styling.
 * Wide adoption in medium to large projects.
 
-**Cons:**
+ **Cons:**
 
 * Requires build tooling.
 * Still global unless combined with CSS Modules.
@@ -56,20 +56,20 @@ Tool comparison only: Sass transforms syntax, Modules localize names, and stylin
 
 ---
 
-## **3️⃣ CSS Modules**
+## **CSS Modules** {#_3%EF%B8%8F%E2%83%A3-css-modules}
 
 **Description:**
 
 * Each CSS file is treated as a **module**. Class names are **scoped locally** by default.
 * Usually used with Webpack / Vite / React.
 
-**Pros:**
+ **Pros:**
 
 * Local scoping prevents class name collisions.
 * Native custom properties/nesting also work in `.module.css` when supported by the browser or transformed by the build. Sass is optional.
 * Compatible with existing CSS ecosystem.
 
-**Cons:**
+ **Cons:**
 
 * Still requires build tooling.
 * Slightly more boilerplate when importing styles (`import styles from './Button.module.css'`).
@@ -80,21 +80,21 @@ Tool comparison only: Sass transforms syntax, Modules localize names, and stylin
 
 ---
 
-## **4️⃣ Styled Components (CSS-in-JS)**
+## **Styled Components (CSS-in-JS)** {#_4%EF%B8%8F%E2%83%A3-styled-components-css-in-js}
 
 **Description:**
 
 * A **CSS-in-JS library** for React. Styles are written inside JS/TS files.
 * Supports dynamic styling via props.
 
-**Pros:**
+ **Pros:**
 
 * Scoped to components automatically.
 * Dynamic styles via props (`color={primary ? 'blue' : 'red'}`).
 * No separate CSS files — everything colocated with components.
 * Full JavaScript power (logic, loops, conditionals).
 
-**Cons:**
+ **Cons:**
 
 * Adds runtime overhead.
 * Larger bundle size compared to plain CSS.
@@ -122,7 +122,7 @@ Tool comparison only: Sass transforms syntax, Modules localize names, and stylin
 
 ---
 
-### **💡 Quick Decision Guide**
+### **Quick Decision Guide** {#%F0%9F%92%A1-quick-decision-guide}
 
 * **Small static site** → Vanilla CSS
 * **Repeated build-time composition** → consider Sass; large projects can also use owned native CSS

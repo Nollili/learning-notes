@@ -8,7 +8,7 @@ a11y → a + 11 letters + y → accessibility
 
 ---
 
-## 1️⃣ Purpose of a11y
+## Purpose of a11y {#_1%EF%B8%8F%E2%83%A3-purpose-of-a11y}
 
 Accessibility ensures that everyone can **perceive, understand, navigate, and interact** with digital content, including users with:
 
@@ -20,7 +20,7 @@ Accessibility ensures that everyone can **perceive, understand, navigate, and in
 
 ---
 
-## 2️⃣ Key Principles (WCAG Guidelines)
+## Key Principles (WCAG Guidelines) {#_2%EF%B8%8F%E2%83%A3-key-principles-wcag-guidelines}
 
 1. **Perceivable** – Information must be available in forms users can perceive, including compatible text alternatives and assistive output.
    - Example: Provide alt text for images, captions for videos.
@@ -33,7 +33,7 @@ Accessibility ensures that everyone can **perceive, understand, navigate, and in
 
 ---
 
-## 3️⃣ Benefits of a11y
+## Benefits of a11y {#_3%EF%B8%8F%E2%83%A3-benefits-of-a11y}
 
 - **Inclusion:** Removes barriers for people with varied disabilities and access needs; an undated prevalence estimate is unnecessary to justify a usable task.
 - **Content structure:** Useful semantics and alternatives can aid both people and content understanding; accessibility does not guarantee a search ranking.
@@ -42,12 +42,12 @@ Accessibility ensures that everyone can **perceive, understand, navigate, and in
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 **a11y = accessibility.**  
 It’s about designing **inclusive, usable, and robust experiences** for all users, regardless of ability.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Accessibility should be **built in from the start**, not patched later. It improves **quality, reach, and brand trust**.
 
 ## Move from terminology to an implemented task

@@ -1,12 +1,12 @@
 # What are the different types of TypeScript (Built-in & User-defined)?
 
-## 🔹 TypeScript Types
+## TypeScript Types {#%F0%9F%94%B9-typescript-types}
 
 TypeScript provides a **rich type system** that helps developers write safe and maintainable code. Types can be **built-in (primitive and advanced types)** or **user-defined**.
 
 ---
 
-## 1️⃣ Built-in Types
+## Built-in Types {#_1%EF%B8%8F%E2%83%A3-built-in-types}
 
 ### 1.1 Primitive Types
 
@@ -55,7 +55,7 @@ type PartialPerson = Partial<Person>; // { name?: string; age?: number }
 
 ---
 
-## 2️⃣ User-defined Types
+## User-defined Types {#_2%EF%B8%8F%E2%83%A3-user-defined-types}
 
 ### 2.1 Type Aliases
 
@@ -122,9 +122,9 @@ function identity<T>(value: T): T {
 
 ```ts
 let direction: "up" | "down" | "left" | "right";
-direction = "up"; // ✅
+direction = "up"; // Yes
 // @ts-expect-error Only the declared direction literals are allowed.
-direction = "forward"; // ❌
+direction = "forward"; // No
 ```
 
 - Restrict values to **specific constants**.
@@ -146,7 +146,7 @@ type D = A | B; // Union: can be A or B
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 TypeScript types can be grouped as:
 
@@ -154,7 +154,7 @@ TypeScript types can be grouped as:
 2. **Advanced built-in types**: Tuple, Enum, Array`<T>`, Utility Types
 3. **User-defined types**: Interfaces, Type Aliases, Generics, Literal types, Classes, Union/Intersection types
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Combining built-in and user-defined types effectively allows **safe, scalable, and self-documenting code**, which is critical in large applications.
 
 ## Structural assignment, inference and fresh literals

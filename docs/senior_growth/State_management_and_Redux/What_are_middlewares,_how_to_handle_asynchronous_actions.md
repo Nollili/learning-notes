@@ -1,12 +1,12 @@
 # What are middlewares, how to handle asynchronous actions?
 
-## 🛠 Middleware & Handling Asynchronous Actions in Redux
+## Middleware & Handling Asynchronous Actions in Redux {#%F0%9F%9B%A0-middleware-handling-asynchronous-actions-in-redux}
 
 In Redux, **middleware** is a mechanism to **intercept actions before they reach the reducer**. Middleware is commonly used to handle **side effects**, such as asynchronous API calls, logging, analytics, and more.
 
 ---
 
-## 1️⃣ What is Middleware?
+## What is Middleware? {#_1%EF%B8%8F%E2%83%A3-what-is-middleware}
 
 - Middleware sits **between dispatching an action and the moment it reaches the reducer**.
 - It can:
@@ -21,7 +21,7 @@ Dispatch Action → Middleware → Reducer → Store Updates → View
 
 ---
 
-## 2️⃣ Why Middleware is Needed
+## Why Middleware is Needed {#_2%EF%B8%8F%E2%83%A3-why-middleware-is-needed}
 
 - Redux reducers must be **pure functions** (no side effects, no async calls).
 - Any async operation (e.g., API request) cannot go directly in the reducer.
@@ -29,7 +29,7 @@ Dispatch Action → Middleware → Reducer → Store Updates → View
 
 ---
 
-## 3️⃣ Popular Redux Middleware for Async
+## Popular Redux Middleware for Async {#_3%EF%B8%8F%E2%83%A3-popular-redux-middleware-for-async}
 
 | Middleware | Description |
 |------------|------------|
@@ -39,7 +39,7 @@ Dispatch Action → Middleware → Reducer → Store Updates → View
 
 ---
 
-## 4️⃣ Example: Redux Thunk
+## Example: Redux Thunk {#_4%EF%B8%8F%E2%83%A3-example-redux-thunk}
 
 **Legacy low-level setup (modern code normally uses configureStore):**
 ```ts
@@ -68,7 +68,7 @@ Wire createProfileStore(createProfileHttpApi()) once per client owner or per SSR
 
 ---
 
-## 5️⃣ Redux Saga as an alternative
+## Redux Saga as an alternative {#_5%EF%B8%8F%E2%83%A3-redux-saga-as-an-alternative}
 
 Saga expresses orchestration with generator effects such as call/put and owns task cancellation. For one active selection, takeLatest can cancel the previous task; takeEvery deliberately permits concurrent tasks. Cancellation must be connected to a real AbortController/adapter teardown and result identity policy. It does not automatically cancel every arbitrary fetch or undo external writes. A takeLatest watcher over one action type also cancels unrelated resources if they share that watcher, so scope the workflow intentionally.
 
@@ -76,7 +76,7 @@ Primary learning implementation remains Toolkit's injected thunk/request owner a
 
 ---
 
-## 6️⃣ Key Takeaways
+## Key Takeaways {#_6%EF%B8%8F%E2%83%A3-key-takeaways}
 
 * **Middleware** intercepts actions and allows performing side effects **outside reducers**.
 * Async actions **cannot go inside reducers** — use middleware like Thunk, Saga, or Observables.
@@ -87,7 +87,7 @@ Primary learning implementation remains Toolkit's injected thunk/request owner a
   * **Saga:** Complex async workflows, retries, dependent requests
   * **Observable:** Stream-based async, reactive programming
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Keep reducers **pure**; all async, side-effect, or impure operations belong in **middleware**. This maintains predictability and testability of your Redux state.
 
 

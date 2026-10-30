@@ -4,7 +4,7 @@
 
 [Textbook explanation](../../node-js/module-12-resilient-distributed-systems.md) · [Node.js practice map](./index.md)
 
-## 17. Failure-driven exercises
+## Failure-driven exercises {#_17-failure-driven-exercises}
 
 ### Exercise 1: Duplicate payment request
 
@@ -59,7 +59,7 @@ For each exercise, identify the source of truth, the uncertain window, the recov
 
 ---
 
-## 18. Final review checklist
+## Final review checklist {#_18-final-review-checklist}
 
 ### Architecture and boundaries
 

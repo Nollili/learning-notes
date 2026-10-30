@@ -24,7 +24,7 @@
 
 ---
 
-## 1. Authentication and authorization
+## Authentication and authorization {#_1-authentication-and-authorization}
 
 Authentication and authorization solve different problems:
 
@@ -77,7 +77,7 @@ Use **least privilege**: grant only the capabilities needed for the current oper
 
 ---
 
-## 2. Choosing an authentication approach
+## Choosing an authentication approach {#_2-choosing-an-authentication-approach}
 
 ### Server-side sessions
 
@@ -178,7 +178,7 @@ No method is automatically “more scalable” or “more secure.” Choose base
 
 ---
 
-## 3. JSON Web Tokens
+## JSON Web Tokens {#_3-json-web-tokens}
 
 A JSON Web Token (JWT) is a compact representation of claims. A commonly used signed JWT has three Base64URL-encoded parts:
 
@@ -323,7 +323,7 @@ The issuer projects trusted fields rather than signing arbitrary caller properti
 
 ---
 
-## 4. Access and refresh token lifecycle
+## Access and refresh token lifecycle {#_4-access-and-refresh-token-lifecycle}
 
 ### Access tokens
 
@@ -411,7 +411,7 @@ Each strategy trades database/cache reads, operational complexity, and revocatio
 
 ---
 
-## 5. Password storage
+## Password storage {#_5-password-storage}
 
 Passwords must be hashed with a password-specific, adaptive algorithm. They must not be stored as plaintext, reversibly encrypted, or hashed with a fast general-purpose function such as raw MD5, SHA-1, or SHA-256.
 
@@ -479,7 +479,7 @@ const matches = await bcrypt.compare(candidatePassword, storedHash);
 
 ---
 
-## 6. Registration, login, and refresh
+## Registration, login, and refresh {#_6-registration-login-and-refresh}
 
 Keep transport, business rules, persistence, and cryptography separated:
 
@@ -615,7 +615,7 @@ Never serialize the persistence entity directly if it contains a password hash, 
 
 ---
 
-## 7. Authentication middleware
+## Authentication middleware {#_7-authentication-middleware}
 
 Authentication middleware should:
 
@@ -719,7 +719,7 @@ Choose deliberately. A database lookup is not mandatory for every JWT design, an
 
 ---
 
-## 8. Authorization with roles and attributes
+## Authorization with roles and attributes {#_8-authorization-with-roles-and-attributes}
 
 Authentication creates a trusted principal. Authorization evaluates that principal against the requested action and resource.
 
@@ -814,7 +814,7 @@ For tenant-aware applications:
 
 ---
 
-## 9. Composing protected routes
+## Composing protected routes {#_9-composing-protected-routes}
 
 Express middleware runs from left to right:
 
@@ -845,7 +845,7 @@ Avoid loading sensitive resources before authentication. Avoid expensive databas
 
 ---
 
-## 10. OAuth 2.0, OpenID Connect, and Passport
+## OAuth 2.0, OpenID Connect, and Passport {#_10-oauth-2-0-openid-connect-and-passport}
 
 ### OAuth is not itself a login protocol
 
@@ -933,7 +933,7 @@ Never assume a library makes the integration secure by itself. Validate provider
 
 ---
 
-## 11. API keys and service authentication
+## API keys and service authentication {#_11-api-keys-and-service-authentication}
 
 Generate keys from cryptographically secure random bytes:
 
@@ -962,7 +962,7 @@ Always send keys over TLS, avoid query strings, redact them from logs, and rate-
 
 ---
 
-## 12. Browser token storage, cookies, CSRF, and XSS
+## Browser token storage, cookies, CSRF, and XSS {#_12-browser-token-storage-cookies-csrf-and-xss}
 
 There is no universally safe browser storage location; the threats differ.
 
@@ -1008,7 +1008,7 @@ Cookies do not eliminate XSS: malicious script may still make authenticated requ
 
 ---
 
-## 13. Testing authentication and authorization
+## Testing authentication and authorization {#_13-testing-authentication-and-authorization}
 
 Security tests should prove both allowed and denied behavior.
 
@@ -1067,7 +1067,7 @@ Do not make tests depend on real external identity providers. Test your callback
 
 ---
 
-## 14. Common mistakes and production guidance
+## Common mistakes and production guidance {#_14-common-mistakes-and-production-guidance}
 
 | Mistake | Consequence | Better approach |
 | --- | --- | --- |
@@ -1117,7 +1117,7 @@ Authentication is only one control. A production service also needs:
 
 ---
 
-## 15. Application attack surface and supply-chain security
+## Application attack surface and supply-chain security {#_15-application-attack-surface-and-supply-chain-security}
 
 Authentication protects identity. Authorization protects permissions. Neither makes unsafe application behavior safe.
 
@@ -1381,7 +1381,7 @@ At every arrow, ask what the input can select and which resources it can consume
 
 [Exercises and learner checklist](../practice/node-js/module-09-authentication-authorization.md).
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-09-authentication-authorization.md).
 

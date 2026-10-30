@@ -1,12 +1,12 @@
 # What is the callback hell? How can you avoid it?
 
-## 🔹 Callback Hell in JavaScript
+## Callback Hell in JavaScript {#%F0%9F%94%B9-callback-hell-in-javascript}
 
 **Callback hell** occurs when you have **nested callbacks** in asynchronous JavaScript code, leading to code that is **hard to read, maintain, and debug**. It often looks like a “pyramid of doom.”
 
 ---
 
-## 1️⃣ Anti-pattern: incomplete callback nesting
+## Anti-pattern: incomplete callback nesting {#_1%EF%B8%8F%E2%83%A3-anti-pattern-incomplete-callback-nesting}
 
 ```javascript
 getUser(userId, function(user) {
@@ -30,7 +30,7 @@ This deliberately incomplete anti-pattern omits error-first handling and assumes
 
 ---
 
-## 2️⃣ How to Avoid Callback Hell
+## How to Avoid Callback Hell {#_2%EF%B8%8F%E2%83%A3-how-to-avoid-callback-hell}
 
 ### 2.1 Use Named Functions
 
@@ -86,7 +86,7 @@ async function notifyUser(details) { ... }
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Callback Hell**: Nested callbacks that are hard to read and maintain.
 * **Avoidance Techniques:**
@@ -96,7 +96,7 @@ async function notifyUser(details) { ... }
   3. Use **async/await** for clean, linear code.
   4. **Modularize** complex logic into reusable functions.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > For modern projects, prefer **async/await with proper error handling**. Promises remain the underlying modern abstraction used by async/await, Promise.all/allSettled and many Web/Node APIs. Choose syntax for the dependency/concurrency shape, not a legacy-versus-modern slogan.
 
 

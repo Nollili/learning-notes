@@ -1,4 +1,4 @@
-# Practice: People usually say JS is fast language. Do you agree? Why? What about single thread? DIfference between node and browser?
+# Practice: JavaScript performance in Node.js and the browser {#practice-people-usually-say-js-is-fast-language-do-you-agree-why-what-about-single-thread-difference-between-node-and-browser}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

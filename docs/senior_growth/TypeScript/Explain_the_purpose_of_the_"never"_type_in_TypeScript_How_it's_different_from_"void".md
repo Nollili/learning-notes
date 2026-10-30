@@ -1,12 +1,12 @@
 # Explain the purpose of the "never" type in TypeScript? How it's different from "void"?
 
-## 🔹 TypeScript `never` vs `void`
+## TypeScript `never` vs `void` {#%F0%9F%94%B9-typescript-never-vs-void}
 
 TypeScript provides **special types** to describe functions and values with specific behaviors. Two of these are `never` and `void`.
 
 ---
 
-## 1️⃣ `void` Type
+## `void` Type {#_1%EF%B8%8F%E2%83%A3-void-type}
 
 - **Purpose:** Represents **absence of a meaningful return value**.
 - Commonly used for **functions that don’t return anything**.
@@ -25,7 +25,7 @@ function logMessage(message: string): void {
 
 ---
 
-## 2️⃣ `never` Type
+## `never` Type {#_2%EF%B8%8F%E2%83%A3-never-type}
 
 * **Purpose:** Represents values that **never occur**.
 * Used for **functions that never return normally** or **unreachable code**.
@@ -60,7 +60,7 @@ function checkShape(shape: Shape) {
     case 'circle': return 'Circle';
     case 'square': return 'Square';
     default:
-      const _exhaustiveCheck: never = shape; // ❌ Compile-time error if not exhaustive
+      const _exhaustiveCheck: never = shape; // Compile-time error if not exhaustive
       return _exhaustiveCheck;
   }
 }
@@ -71,7 +71,7 @@ function checkShape(shape: Shape) {
 
 ---
 
-## 3️⃣ Key Differences: `void` vs `never`
+## Key Differences: `void` vs `never` {#_3%EF%B8%8F%E2%83%A3-key-differences-void-vs-never}
 
 | Feature       | `void`                        | `never`                                  |
 | ------------- | ----------------------------- | ---------------------------------------- |
@@ -82,7 +82,7 @@ function checkShape(shape: Shape) {
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 * **`void`** → “this function returns nothing meaningful.”
 * **`never`** → “this function never returns” or “this code path cannot happen.”
@@ -92,7 +92,7 @@ function checkShape(shape: Shape) {
   * **Safety in unreachable code detection**
   * **Functions that always throw or loop infinitely**
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use `never` to **catch unhandled cases at compile time**—it’s a type-safe way to ensure exhaustive logic in union types.
 
 ## Discriminated object states and exhaustive rendering

@@ -1,4 +1,4 @@
-### What unidirectional dataflow means. Why immutability is important in the React?
+# What unidirectional dataflow means. Why immutability is important in the React? {#what-unidirectional-dataflow-means-why-immutability-is-important-in-the-react}
 
 ### **What is Unidirectional Data Flow in React?**
 

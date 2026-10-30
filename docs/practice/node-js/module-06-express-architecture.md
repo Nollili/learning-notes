@@ -20,7 +20,7 @@ Explain:
 
 ---
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 ### Use-case reliability
 

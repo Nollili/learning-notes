@@ -1,4 +1,4 @@
-### Have you used React with TypeScript?
+# Have you used React with TypeScript? {#have-you-used-react-with-typescript}
 
 React and TypeScript are a powerful combination that enhances the development experience by providing static typing, better tooling, and improved code quality. 
 
@@ -14,7 +14,7 @@ React and TypeScript are a powerful combination that enhances the development ex
 
 ### **Common Use Cases of TypeScript in React**
 
-### **1. Typing Props**
+### **Typing Props** {#_1-typing-props}
 
 TypeScript allows you to define the structure of props a component should receive.
 
@@ -39,7 +39,7 @@ const Greeting: React.FC<GreetingProps> = ({ name, age }) => (
 
 ---
 
-### **2. Typing State and Refs**
+### **Typing State and Refs** {#_2-typing-state-and-refs}
 
 TypeScript works well with React’s state and `useRef`.
 
@@ -81,7 +81,7 @@ const InputFocus: React.FC = () => {
 
 ---
 
-### **3. Typing Hooks**
+### **Typing Hooks** {#_3-typing-hooks}
 
 Custom hooks can also benefit from TypeScript.
 
@@ -113,7 +113,7 @@ const Counter: React.FC = () => {
 
 ---
 
-### **4. Typing Events**
+### **Typing Events** {#_4-typing-events}
 
 TypeScript provides detailed types for event handlers.
 

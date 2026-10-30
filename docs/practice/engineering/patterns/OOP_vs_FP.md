@@ -1,4 +1,4 @@
-# Practice: OOP_vs_FP
+# Practice: OOP vs FP — Object-Oriented vs Functional Programming in JavaScript {#practice-oop-vs-fp}
 
 **Status: outstanding learner practice.** Prerequisite: [the worked lesson](../../../senior_growth/Coding_principles_patterns_conventions/OOP_vs_FP.md) and [shared increments](../index.md).
 

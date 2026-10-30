@@ -1,12 +1,12 @@
 # What is module ? How to build communication between modules?
 
-## 🔹 JavaScript Modules
+## JavaScript Modules {#%F0%9F%94%B9-javascript-modules}
 
 A **module** in JavaScript is a **self-contained unit of code** that encapsulates functionality (variables, functions, classes) and can **export** parts of it for use in other modules. Modules help organize code, improve maintainability, and reduce global namespace pollution.
 
 ---
 
-## 1️⃣ What is a Module?
+## What is a Module? {#_1%EF%B8%8F%E2%83%A3-what-is-a-module}
 
 - Each module has its **own scope**.
 - Can **export** specific elements (`export`) and **import** them in other modules (`import`).
@@ -45,7 +45,7 @@ console.log(square(4));        // 16
 
 ---
 
-## 2️⃣ How Modules Communicate
+## How Modules Communicate {#_2%EF%B8%8F%E2%83%A3-how-modules-communicate}
 
 Modules communicate using **exports and imports**. There are two main types:
 
@@ -98,7 +98,7 @@ Do not put per-user/tenant state into an unscoped process-wide singleton. Event 
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Modules** encapsulate code and define clear **interfaces** via `export`.
 * **Communication** between modules happens via:
@@ -112,7 +112,7 @@ Do not put per-user/tenant state into an unscoped process-wide singleton. Event 
   * Improves **code maintainability**
   * Encourages **reusability** and **separation of concerns**
 
-> 💡 Senior Tip:
+> Senior Tip:
 > For large projects, combine **ES modules** with **dynamic imports** and **Pub/Sub patterns** to achieve modular, performant, and decoupled architecture.
 
 

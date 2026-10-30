@@ -1,12 +1,12 @@
 # Is still valid to use Redux in a new project nowadays? Pros/cons?
 
-# ⚖️ Choosing Redux Toolkit (reviewed2026-10-22)
+## Choosing Redux Toolkit (reviewed2026-10-22) {#%E2%9A%96%EF%B8%8F-choosing-redux-toolkit-reviewed2026-10-22}
 
 Yes, Redux is still **valid and widely used**, but whether to use it in a **new project** depends on the **project size, complexity, and team preferences**. Modern tools and alternatives have also changed the landscape.
 
 ---
 
-## 1️⃣ Pros of Using Redux Today
+## Pros of Using Redux Today {#_1%EF%B8%8F%E2%83%A3-pros-of-using-redux-today}
 
 | Pros | Explanation |
 |------|------------|
@@ -19,7 +19,7 @@ Yes, Redux is still **valid and widely used**, but whether to use it in a **new 
 
 ---
 
-## 2️⃣ Cons / Drawbacks
+## Cons / Drawbacks {#_2%EF%B8%8F%E2%83%A3-cons-drawbacks}
 
 | Cons | Explanation |
 |------|------------|
@@ -31,7 +31,7 @@ Yes, Redux is still **valid and widely used**, but whether to use it in a **new 
 
 ---
 
-## 3️⃣ When Redux is Recommended
+## When Redux is Recommended {#_3%EF%B8%8F%E2%83%A3-when-redux-is-recommended}
 
 - Large applications with **complex global state**.
 - Apps with **frequent state sharing** across multiple components.
@@ -40,19 +40,19 @@ Yes, Redux is still **valid and widely used**, but whether to use it in a **new 
 
 ---
 
-## 4️⃣ Modern Alternatives
+## Modern Alternatives {#_4%EF%B8%8F%E2%83%A3-modern-alternatives}
 
 - **Zustand**: lightweight, simple, minimal boilerplate. Good for medium apps.  
 - **Jotai**: atom-oriented alternative where that ownership model fits. Recoil is historical: its repository was archived2025-01-01.  
 - **React Query / TanStack Query**: for server-side data and caching.  
 - **Context + useReducer**: simple, built-in solution for smaller apps.  
 
-> 💡 Tip:  
+> Tip:\
 > **Redux Toolkit** solves most traditional cons of Redux (boilerplate, immutability, async setup), making Redux still very viable for modern projects.
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **Redux is still valid**, especially with Redux Toolkit.  
 - Ideal for **large, complex, shared, and async-heavy applications**.  

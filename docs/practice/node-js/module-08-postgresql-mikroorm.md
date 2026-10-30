@@ -28,19 +28,19 @@ Requirements:
 
 ## Graduated practice: persistence and migrations
 
-### 1. Worked example
+### Worked example {#_1-worked-example}
 
 Run the temporary-table lesson and the Workbench fixture. Compare the returned rows with their expected output before introducing an ORM.
 
-### 2. Guided build
+### Guided build {#_2-guided-build}
 
 In the retained source under `examples/node-textbook`, inspect `Account`/`Task`, the migration, and the authenticated task routes' database operations. Authentication becomes your learning objective in Module 9; the completed project already contains those routes so it remains runnable throughout.
 
-### 3. Independent task
+### Independent task {#_3-independent-task}
 
 Add an optional due date to tasks using a new numbered migration and update the input/output schema. Hint: choose a calendar `date` if the user means a day, and distinguish omitted from explicit null. **Success:** a fresh database and an upgraded database both work; another user's tasks remain inaccessible; restarting the process preserves dates.
 
-### 4. Optional depth: metadata, timestamp and seed failures
+### Optional depth: metadata, timestamp and seed failures {#_4-optional-depth-metadata-timestamp-and-seed-failures}
 
 In the separate User modeling exercise, create the exact primary project files shown above: package/tsconfig, src/mikro-orm.config.ts, src/entities/user.entity.ts and src/seed.ts. Supply the authorized database configuration, run a locked install/typecheck/build, and verify metadata discovery/Migrator registration on the compiled path. Generate/review/compile/apply a migration against a disposable database. Run source and compiled entity discovery intentionally; do not require both source and built entities in one process. Relationship snippets are extensions needing their complete reciprocal fields/entities, not a second already-complete program.
 
@@ -54,7 +54,7 @@ For the executable SQL-only companion, use the [SQL Query Workbench](../../workb
 
 ---
 
-## 24. Final review checklist
+## Final review checklist {#_24-final-review-checklist}
 
 ### Concurrency and operations
 

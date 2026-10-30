@@ -1,4 +1,4 @@
-### How prototype chaining works in JavaScript? What are classes?
+# How prototype chaining works in JavaScript? What are classes? {#how-prototype-chaining-works-in-javascript-what-are-classes}
 
 ### **Prototype Chaining in JavaScript**
 

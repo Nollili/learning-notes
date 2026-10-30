@@ -1,0 +1,1 @@
+import{_ as a,c as s,o as t,ag as r}from"./chunks/framework.ARG558ZT.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"assessment.md","filePath":"assessment.md"}'),n={name:"assessment.md"};function o(i,e,l,c,f,m){return t(),s("div",null,[...e[0]||(e[0]=[r("",4)])])}const _=a(n,[["render",o]]);export{d as __pageData,_ as default};

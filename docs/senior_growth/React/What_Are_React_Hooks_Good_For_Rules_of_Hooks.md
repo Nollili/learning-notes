@@ -1,6 +1,6 @@
-### What are hooks good for? What are the rules of hooks?
+# What are hooks good for? What are the rules of hooks? {#what-are-hooks-good-for-what-are-the-rules-of-hooks}
 
-# Rules of Hooks
+## Rules of Hooks {#rules-of-hooks}
 
 React hooks are functions introduced in React 16.8 that allow developers to use state, synchronization and other React features in functional components. They simplify component development, enhance code reusability, and align well with React's declarative programming paradigm.
 
@@ -73,7 +73,7 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
 
 1. **Only Call Hooks at the Top Level**:
     - Do not call hooks inside loops, conditions, or nested functions. This ensures hooks are called in the same order on every render, which React relies on to preserve state and effect associations.
-    - ✅ Correct:
+    - Correct:
         
         ```jsx
         const MyComponent = () => {
@@ -84,7 +84,7 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
         };
         ```
         
-    - ❌ Incorrect:
+    - Incorrect:
         
         ```jsx
         const MyComponent = () => {
@@ -98,7 +98,7 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
         
 2. **Only Call Hooks from React Functions**:
     - Hooks can only be used in functional components or custom hooks. They cannot be used in regular JavaScript functions or class components.
-    - ✅ Correct:
+    - Correct:
         
         ```jsx
         const MyComponent = () => {
@@ -107,7 +107,7 @@ React enforces two fundamental rules for using hooks to maintain predictable beh
         const useCustomHook = () => useState(0);
         ```
         
-    - ❌ Incorrect:
+    - Incorrect:
         
         ```jsx
         function regularFunction() {

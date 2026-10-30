@@ -1,12 +1,12 @@
 # Do you use any CSS methodology or have any guidelines for it on your project?
 
-## 🔹 Example CSS Methodology and Guidelines
+## Example CSS Methodology and Guidelines {#%F0%9F%94%B9-example-css-methodology-and-guidelines}
 
 The following is a proposed project policy. It is an interview/example narrative, not a claim that this repository has implemented or measured these practices.
 
 ---
 
-## 1️⃣ CSS Methodology Used
+## CSS Methodology Used {#_1%EF%B8%8F%E2%83%A3-css-methodology-used}
 
 ### 1.1 BEM (Block Element Modifier)
 
@@ -79,7 +79,7 @@ import styles from './Button.module.css';
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * A project may combine BEM, CSS Modules and Sass where each solves a requirement; no project must adopt all three.
 * Guidelines ensure:
@@ -89,7 +89,7 @@ import styles from './Button.module.css';
   * Collaboration without conflicts
   * Easier maintenance over time
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Even if using modern frameworks or utility-first libraries like Tailwind, **having a methodology or guideline** improves **team consistency and long-term maintainability**.
 
 ## Turn a policy into reviewable evidence

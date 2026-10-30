@@ -1,8 +1,8 @@
-### What kind of components can we define in React, what's the difference between them?
+# What kind of components can we define in React, what's the difference between them? {#what-kind-of-components-can-we-define-in-react-what-s-the-difference-between-them}
 
 In React, components are the building blocks of the user interface. They come in two main types: **Functional Components** and **Class Components**. 
 
-### **1. Functional Components**
+### **Functional Components** {#_1-functional-components}
 
 ### **Definition**:
 
@@ -38,7 +38,7 @@ const Counter = () => {
 
 ---
 
-### **2. Class Components**
+### **Class Components** {#_2-class-components}
 
 ### **Definition**:
 
@@ -78,7 +78,7 @@ class Counter extends Component {
 
 ---
 
-### **3. Pure Components**
+### **Pure Components** {#_3-pure-components}
 
 [https://www.youtube.com/watch?v=0whToN64bTg&ab_channel=FreeCourseUniversity](https://www.youtube.com/watch?v=0whToN64bTg&ab_channel=FreeCourseUniversity)
 
@@ -111,7 +111,7 @@ class PureCounter extends PureComponent {
 
 ---
 
-### **4. Higher-Order Components (HOCs)**
+### **Higher-Order Components (HOCs)** {#_4-higher-order-components-hocs}
 
 ### **Definition**:
 
@@ -149,7 +149,7 @@ const HelloWithLogging = withLogging(Hello);
 
 ---
 
-### **5. Memoized Components**
+### **Memoized Components** {#_5-memoized-components}
 
 ### **Definition**:
 
@@ -178,7 +178,7 @@ const Greeting = React.memo(({ name }) => {
 
 ---
 
-### **6. Controlled and Uncontrolled Components**
+### **Controlled and Uncontrolled Components** {#_6-controlled-and-uncontrolled-components}
 
 ### **Controlled Components**:
 

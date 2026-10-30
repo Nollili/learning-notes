@@ -1,10 +1,10 @@
-# 🔹 What is TypeScript?
+# What is TypeScript? {#%F0%9F%94%B9-what-is-typescript}
 
 **TypeScript** is a **statically typed superset of JavaScript** developed by Microsoft. It adds **types, interfaces, enums, generics, and other modern features** to JavaScript while still compiling down to plain JavaScript, with output syntax/modules and runtime APIs chosen for the intended host.
 
 ---
 
-## 1️⃣ Key Characteristics
+## Key Characteristics {#_1%EF%B8%8F%E2%83%A3-key-characteristics}
 
 - **Static Typing**: You can define types for variables, function parameters, and return values.
 - **JavaScript foundation**: JavaScript syntax supplies the runtime model; the TypeScript checker may reject code that JavaScript would execute. Source/module/tooling compatibility still needs checking.
@@ -14,7 +14,7 @@
 
 ---
 
-## 2️⃣ Example
+## Example {#_2%EF%B8%8F%E2%83%A3-example}
 
 ```ts
 // TypeScript example
@@ -36,7 +36,7 @@ console.log(greet(john));
 
 ---
 
-## 3️⃣ Advantages over JavaScript
+## Advantages over JavaScript {#_3%EF%B8%8F%E2%83%A3-advantages-over-javascript}
 
 * **Catch errors early**: Reduce runtime bugs.
 * **Better developer experience**: IDE autocomplete, type hints, and navigation.
@@ -45,20 +45,20 @@ console.log(greet(john));
 
 ---
 
-## 4️⃣ Compilation
+## Compilation {#_4%EF%B8%8F%E2%83%A3-compilation}
 
 * TypeScript code (`.ts` or `.tsx`) is **compiled to JavaScript** using the TypeScript compiler (`tsc`).
 * Output must match the selected host syntax/module format and available APIs. A target transform does not polyfill fetch, the DOM or every library API.
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * TS = JavaScript + Types + Compile-time Safety.
 * Helps **build scalable, maintainable, and bug-resistant applications**.
 * Optional typing allows gradual adoption in existing JS projects.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Think of TypeScript as **a safety net for JS**, making your code more predictable and robust while checking the relationships represented in its types.
 
 

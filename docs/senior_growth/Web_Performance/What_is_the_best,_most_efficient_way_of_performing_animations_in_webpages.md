@@ -1,17 +1,17 @@
-### What is the best, most efficient way of performing animations in webpages?
+# What is the best, most efficient way of performing animations in webpages? {#what-is-the-best-most-efficient-way-of-performing-animations-in-webpages}
 
 Prefer transform/opacity when they express the intended effect: browsers can often composite them efficiently. Layer allocation, rasterization, effects, element size and other work determine the actual cost; no property or API guarantees GPU acceleration or absence of paint. Profile the supported devices.
 
 ---
 
-## 🚀 Golden Rule
-> ✅ **Only animate “compositor-friendly” properties:**  
+## Golden Rule {#%F0%9F%9A%80-golden-rule}
+> **Only animate “compositor-friendly” properties:**\
 > **`transform`** and **`opacity`**  
 > These often avoid per-frame layout/paint after preparation; verify the actual trace.
 
 ---
 
-## 🧠 Rendering Pipeline Recap
+## Rendering Pipeline Recap {#%F0%9F%A7%A0-rendering-pipeline-recap}
 
 When a browser renders a frame, it goes through:
 1. **Style calculation**
@@ -31,10 +31,10 @@ A transform/opacity animation may run through compositing without repeating layo
 
 ---
 
-## ⚙️ Best Techniques for Animations
+## Best Techniques for Animations {#%E2%9A%99%EF%B8%8F-best-techniques-for-animations}
 
-### 1. **CSS Transitions / CSS Animations**
-✅ Ideal for simple, declarative animations.
+### **CSS Transitions / CSS Animations** {#_1-css-transitions-css-animations}
+ Ideal for simple, declarative animations.
 
 - Can be compositor-eligible for suitable effects
 - Actual scheduling depends on the browser and animation
@@ -51,8 +51,8 @@ A transform/opacity animation may run through compositing without repeating layo
 ```
 Use will-change only after profiling shows a need. It is a hint, can allocate expensive resources and create stacking contexts; remove it when no longer useful. Do not apply it to every element.
 
-### 2. **requestAnimationFrame() (rAF) for JS-driven animations**
-✅ Use for interactive or complex JavaScript animations.
+### **requestAnimationFrame() (rAF) for JS-driven animations** {#_2-requestanimationframe-raf-for-js-driven-animations}
+ Use for interactive or complex JavaScript animations.
 
 - Schedules a one-shot callback before a rendering opportunity; reschedule deliberately
 - Timing follows the display/browser and may pause in hidden documents
@@ -72,10 +72,10 @@ frame = requestAnimationFrame(animate);
 // On disposal: cancelAnimationFrame(frame); clear the owned transform if appropriate.
 ```
 
-🧠 Prefer rAF over setTimeout/setInterval for smoothness and efficiency.
+ Prefer rAF over setTimeout/setInterval for smoothness and efficiency.
 
-### 3. **Web Animations API (WAAPI)**
-✅ Native JavaScript API for advanced animation control.
+### **Web Animations API (WAAPI)** {#_3-web-animations-api-waapi}
+ Native JavaScript API for advanced animation control.
 
 - Compositor eligibility depends on effects and browser, just as with CSS
 - Playback control (pause, reverse, finish)
@@ -87,10 +87,10 @@ element.animate(
   { duration: 400, iterations: Infinity, direction: "alternate" }
 );
 ```
-💡 Useful for dynamic and user-driven animations.
+ Useful for dynamic and user-driven animations.
 
-### 4. **Animation Libraries**
-✅ For complex or sequenced animations:
+### **Animation Libraries** {#_4-animation-libraries}
+ For complex or sequenced animations:
 
 - **GSAP (GreenSock):** Highly performant, uses transform/opacity.
 - **Framer Motion (React):** Declarative, physics-based.
@@ -100,7 +100,7 @@ Libraries help with browser quirks and batching.
 
 ---
 
-## 🧩 Optimization Tips
+## Optimization Tips {#%F0%9F%A7%A9-optimization-tips}
 
 | Practice | Why It Helps |
 |----------|--------------|
@@ -113,7 +113,7 @@ Libraries help with browser quirks and batching.
 
 ---
 
-## 🧪 Tools to Measure Animation Performance
+## Tools to Measure Animation Performance {#%F0%9F%A7%AA-tools-to-measure-animation-performance}
 
 - **Chrome DevTools → Performance tab:** Record frames/main-thread work; ~16.7ms at60Hz or8.3ms at120Hz is the entire frame interval, not an exclusive JavaScript budget
 - **Rendering panel:** Enable “Paint flashing” to see repaints
@@ -121,7 +121,7 @@ Libraries help with browser quirks and batching.
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 | Technique | Pros | Use When |
 |-----------|------|----------|
@@ -132,7 +132,7 @@ Libraries help with browser quirks and batching.
 
 ---
 
-## 🔑 Key Takeaway
+## Key Takeaway {#%F0%9F%94%91-key-takeaway}
 
 Prefer effects with low measured rendering cost; match display timing, limit work and preserve user control. Performance and motion accessibility require real device testing.
 

@@ -1,10 +1,10 @@
-### Understanding async/await in JavaScript
+# Understanding async/await in JavaScript {#understanding-async-await-in-javascript}
 
 `async/await` is a modern way to handle asynchronous code in JavaScript, introduced in ES2017. It’s built on top of Promises and provides a way to write asynchronous code that looks and behaves like synchronous code.
 
 ---
 
-### **1. The Basics of `async/await`**
+### **The Basics of `async/await`** {#_1-the-basics-of-async-await}
 
 ### **What is `async`?**
 
@@ -18,7 +18,7 @@
 
 ---
 
-### **2. How `async/await` Works**
+### **How `async/await` Works** {#_2-how-async-await-works}
 
 Here’s a simple example:
 
@@ -44,7 +44,7 @@ fetchData().catch(console.error);
 
 ---
 
-### **3. Error Handling in `async/await`**
+### **Error Handling in `async/await`** {#_3-error-handling-in-async-await}
 
 When using `async/await`, you can handle errors with a `try...catch` block:
 
@@ -70,7 +70,7 @@ fetchDataWithErrorHandling();
 
 ---
 
-### **4. Real-Life Example: `async/await` in Action**
+### **Real-Life Example: `async/await` in Action** {#_4-real-life-example-async-await-in-action}
 
 ### **Fetching Multiple Resources**:
 
@@ -107,7 +107,7 @@ fetchMultiple();
 
 ---
 
-### **5. Key Points to Remember**
+### **Key Points to Remember** {#_5-key-points-to-remember}
 
 1. **Async Functions Always Return Promises**:
     
@@ -126,7 +126,7 @@ fetchMultiple();
 
 ---
 
-### **6. Comparing `async/await` with Promises**
+### **Comparing `async/await` with Promises** {#_6-comparing-async-await-with-promises}
 
 ### **Using Promises**:
 
@@ -161,7 +161,7 @@ fetchData().catch(console.error);
 
 ---
 
-### **7. When to Use `async/await`?**
+### **When to Use `async/await`?** {#_7-when-to-use-async-await}
 
 - Use `async/await` when you want more readable and maintainable code for asynchronous operations.
 - It’s particularly useful when you need to process a sequence of asynchronous steps that depend on each other.

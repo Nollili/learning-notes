@@ -1,8 +1,8 @@
-### How do you start a REACT project from scratch?
+# How do you start a REACT project from scratch? {#how-do-you-start-a-react-project-from-scratch}
 
 
 
-### **1. Prerequisites**
+### **Prerequisites** {#_1-prerequisites}
 
 Before starting, ensure you have:
 
@@ -11,7 +11,7 @@ Before starting, ensure you have:
 
 ---
 
-### **2. New project choice and historical CRA context**
+### **New project choice and historical CRA context** {#_2-new-project-choice-and-historical-cra-context}
 
 CRA was officially deprecated for new apps on2025-02-14. Use Vite+React+TypeScript for these client-only labs, or Next App Router for integrated server/routing work. The commands below are historical migration context; do not choose CRA as a new-project default.
 
@@ -42,7 +42,7 @@ Your React application will open in the browser at `http://localhost:3000`.
 
 ---
 
-### **3. Starting a React Project Manually**
+### **Starting a React Project Manually** {#_3-starting-a-react-project-manually}
 
 If you prefer a minimal setup without using Create React App:
 
@@ -220,7 +220,7 @@ Your app will be available at `http://localhost:3000`.
 
 ---
 
-### **4. Alternative Setups**
+### **Alternative Setups** {#_4-alternative-setups}
 
 - **Vite**: A faster build tool for React projects.
     
@@ -242,7 +242,7 @@ Your app will be available at `http://localhost:3000`.
 
 ---
 
-### **5. Tips for React Projects**
+### **Tips for React Projects** {#_5-tips-for-react-projects}
 
 - **Code Quality**: Install ESLint and Prettier.
     

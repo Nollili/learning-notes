@@ -4,12 +4,12 @@ JavaScript supports **both paradigms**, and understanding their differences is c
 
 ---
 
-## 1️⃣ Object-Oriented Programming (OOP)
+## Object-Oriented Programming (OOP) {#_1%EF%B8%8F%E2%83%A3-object-oriented-programming-oop}
 
 **Definition:**  
 OOP organizes code around **objects**, which encapsulate **state (data)** and **behavior (methods)**.
 
-### 🔑 Key Concepts
+### Key Concepts {#%F0%9F%94%91-key-concepts}
 - **Classes & Objects:** Blueprint (`class`) and instances (`object`)
 - **Encapsulation:** Hide internal state; expose methods
 - **Inheritance:** Share behavior between classes
@@ -41,14 +41,14 @@ alice.greet(); // Hello, I am Alice
 bob.greet();   // Admin Bob is here
 ```
 
-### ✅ Pros
+### Pros {#%E2%9C%85-pros}
 
 * Intuitive modeling of real-world entities
 * Encapsulation improves modularity
 * Easy to manage complex stateful systems
 * Supports polymorphism and code reuse
 
-### ❌ Cons
+### Cons {#%E2%9D%8C-cons}
 
 * Shared mutable state can cause **side effects**
 * Inheritance can lead to tight coupling
@@ -56,12 +56,12 @@ bob.greet();   // Admin Bob is here
 
 ---
 
-## 2️⃣ Functional Programming (FP)
+## Functional Programming (FP) {#_2%EF%B8%8F%E2%83%A3-functional-programming-fp}
 
 **Definition:**
 FP organizes code around **pure functions**, **immutability**, and **composition**.
 
-### 🔑 Key Concepts
+### Key Concepts {#%F0%9F%94%91-key-concepts-1}
 
 * **Pure Functions:** No side effects; output depends only on input
 * **Immutability:** Data is never modified; always return new data
@@ -84,14 +84,14 @@ const adultNames = getNames(filterAdults(users));
 console.log(adultNames); // ["Alice", "Bob"]
 ```
 
-### ✅ Pros
+### Pros {#%E2%9C%85-pros-1}
 
 * Easier reasoning due to pure functions
 * Avoids shared mutable state → safer concurrency
 * Functions are composable → more reusable
 * Often leads to declarative, concise code
 
-### ❌ Cons
+### Cons {#%E2%9D%8C-cons-1}
 
 * Can be less intuitive for beginners
 * May involve extra memory (immutable copies)
@@ -99,7 +99,7 @@ console.log(adultNames); // ["Alice", "Bob"]
 
 ---
 
-## 3️⃣ Comparison Table
+## Comparison Table {#_3%EF%B8%8F%E2%83%A3-comparison-table}
 
 | Feature           | OOP                                                 | FP                                                    |
 | ----------------- | --------------------------------------------------- | ----------------------------------------------------- |
@@ -112,7 +112,7 @@ console.log(adultNames); // ["Alice", "Bob"]
 
 ---
 
-## 4️⃣ Practical Use in JS Projects
+## Practical Use in JS Projects {#_4%EF%B8%8F%E2%83%A3-practical-use-in-js-projects}
 
 * **OOP:** React class components, Angular services, complex models
 * **FP:** pure reducers and map/filter transformations. Hooks and streams can also own effects or mutable resources; using one does not automatically make code pure.
@@ -120,7 +120,7 @@ console.log(adultNames); // ["Alice", "Bob"]
 
 ---
 
-### 🧠 Key Takeaways
+### Key Takeaways {#%F0%9F%A7%A0-key-takeaways}
 
 1. **OOP:** Better for **stateful entities** and modeling real-world objects.
 2. **FP:** Better for **stateless transformations**, predictable code, and **avoiding side effects**.

@@ -1,4 +1,4 @@
-### Please compare JS inheritance mehanisms and classic OOP style classes. What about es6 "class"?
+# JavaScript inheritance, prototypes and ES2015 classes {#please-compare-js-inheritance-mehanisms-and-classic-oop-style-classes-what-about-es6-class}
 
 JavaScript’s inheritance mechanism and **classic Object-Oriented Programming (OOP)** style inheritance have some significant differences, but there are also similarities. The introduction of **ES6 classes** in JavaScript brought a more structured and familiar syntax that mimics the behavior of classes in traditional OOP languages (such as Java or C++), though it still relies on JavaScript's **prototype-based inheritance** under the hood.
 
@@ -6,7 +6,7 @@ Let's break down and compare **JavaScript inheritance** (including **ES6 classes
 
 ---
 
-### **1. JavaScript Inheritance Mechanism (Prototype-based)**
+### **JavaScript Inheritance Mechanism (Prototype-based)** {#_1-javascript-inheritance-mechanism-prototype-based}
 
 Before ES6, JavaScript used a **prototype-based inheritance model**. This is quite different from the **class-based inheritance** model commonly used in traditional OOP languages.
 
@@ -43,7 +43,7 @@ dog.bark();   // Output: Woof! (defined on the dog object)
 
 ---
 
-### **2. Classic OOP Inheritance (Class-based)**
+### **Classic OOP Inheritance (Class-based)** {#_2-classic-oop-inheritance-class-based}
 
 In classical OOP languages like **Java** or **C++**, inheritance is based on **classes**. A **class** is a blueprint that defines the properties and methods common to all objects of that type. A class can inherit from another class, meaning it can take on properties and methods from the parent class.
 
@@ -82,7 +82,7 @@ public class Main {
 
 ---
 
-### **3. ES6 Classes in JavaScript**
+### **ES6 Classes in JavaScript** {#_3-es6-classes-in-javascript}
 
 With **ES6 (ECMAScript 2015)**, JavaScript introduced the `class` syntax, which allows you to create **class-like structures** with a syntax that is similar to traditional OOP languages.
 

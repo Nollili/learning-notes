@@ -1,12 +1,12 @@
 # What is the testing pyramid(mention some tools for each) what do the different tests test, why each of them is important?
 
-# 🧪 The Testing Pyramid in Frontend/Fullstack Development
+## The Testing Pyramid in Frontend/Fullstack Development {#%F0%9F%A7%AA-the-testing-pyramid-in-frontend-fullstack-development}
 
 The **testing pyramid** is a concept describing **how much and what kind of tests** should be written in a software project. It emphasizes **more low-level tests, fewer high-level tests**, balancing **confidence, speed, and cost**.
 
 ---
 
-## 1️⃣ Overview of the Pyramid
+## Overview of the Pyramid {#_1%EF%B8%8F%E2%83%A3-overview-of-the-pyramid}
 
 
 ```
@@ -26,7 +26,7 @@ The **testing pyramid** is a concept describing **how much and what kind of test
 
 ---
 
-## 2️⃣ Unit Tests
+## Unit Tests {#_2%EF%B8%8F%E2%83%A3-unit-tests}
 
 **Purpose:** Test **individual functions or components** in isolation.
 
@@ -43,12 +43,12 @@ test('sum adds numbers correctly', () => {
 });
 ```
 
-✅ **Pros:** Fast, easy to maintain, isolated
-❌ **Cons:** Doesn’t cover interactions with external systems
+ **Pros:** Fast, easy to maintain, isolated
+ **Cons:** Doesn’t cover interactions with external systems
 
 ---
 
-## 3️⃣ Integration Tests
+## Integration Tests {#_3%EF%B8%8F%E2%83%A3-integration-tests}
 
 **Purpose:** Test **how multiple units work together** (modules, services, components).
 
@@ -62,12 +62,12 @@ test('sum adds numbers correctly', () => {
   * Supertest (for API endpoints)
 * **Example:** Testing a form component that submits data to an API and updates state
 
-✅ **Pros:** Catches bugs that appear only when components interact
-❌ **Cons:** Slower than unit tests, harder to isolate failures
+ **Pros:** Catches bugs that appear only when components interact
+ **Cons:** Slower than unit tests, harder to isolate failures
 
 ---
 
-## 4️⃣ End-to-End (E2E) Tests
+## End-to-End (E2E) Tests {#_4%EF%B8%8F%E2%83%A3-end-to-end-e2e-tests}
 
 **Purpose:** Test the **application as a whole** from the user’s perspective.
 
@@ -80,12 +80,12 @@ test('sum adds numbers correctly', () => {
   * Selenium
 * **Example:** Test logging in, creating an item, and verifying it appears in a list
 
-✅ **Pros:** Validates the complete system, high confidence in real-world behavior
-❌ **Cons:** Slow, brittle, expensive to maintain
+ **Pros:** Validates the complete system, high confidence in real-world behavior
+ **Cons:** Slow, brittle, expensive to maintain
 
 ---
 
-## 5️⃣ Summary Table
+## Summary Table {#_5%EF%B8%8F%E2%83%A3-summary-table}
 
 | Test Type     | What It Tests                  | Common Tools                        | Pros                        | Cons                        |
 |---------------|-------------------------------|-------------------------------------|-----------------------------|-----------------------------|
@@ -96,14 +96,14 @@ test('sum adds numbers correctly', () => {
 
 ---
 
-## 6️⃣ Key Takeaways
+## Key Takeaways {#_6%EF%B8%8F%E2%83%A3-key-takeaways}
 
 1. Start with cheap focused checks, then choose the test mix from failure risk and integration boundaries; no universal ratio applies.
 2. **Integration tests** catch module interaction issues.
 3. **E2E tests** validate full workflows but should be **limited in number** due to cost and fragility.
 4. The pyramid is a heuristic for feedback cost and confidence; it does not guarantee reliability or prescribe counts.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Start with **unit tests for core logic**, then **integration for critical modules**, and **E2E only for essential user journeys**.
 
 

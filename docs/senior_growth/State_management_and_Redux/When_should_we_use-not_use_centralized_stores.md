@@ -1,10 +1,10 @@
-# ⚖️ When to Use (or Not Use) a Centralized Store
+# When to Use (or Not Use) a Centralized Store {#%E2%9A%96%EF%B8%8F-when-to-use-or-not-use-a-centralized-store}
 
 A **centralized store** (for example Redux Toolkit or Zustand) is not always necessary. Its usage should be guided by **app complexity, state-sharing needs, and team size**.
 
 ---
 
-## 1️⃣ When to Use a Centralized Store
+## When to Use a Centralized Store {#_1%EF%B8%8F%E2%83%A3-when-to-use-a-centralized-store}
 
 | Situation | Reason |
 |-----------|--------|
@@ -17,7 +17,7 @@ A **centralized store** (for example Redux Toolkit or Zustand) is not always nec
 
 ---
 
-## 2️⃣ When Not to Use a Centralized Store
+## When Not to Use a Centralized Store {#_2%EF%B8%8F%E2%83%A3-when-not-to-use-a-centralized-store}
 
 | Situation | Reason |
 |-----------|--------|
@@ -29,7 +29,7 @@ A **centralized store** (for example Redux Toolkit or Zustand) is not always nec
 
 ---
 
-## 3️⃣ Best Practices
+## Best Practices {#_3%EF%B8%8F%E2%83%A3-best-practices}
 
 - **Hybrid approach:**  
   - Use local state for **transient UI**.  
@@ -40,13 +40,13 @@ A **centralized store** (for example Redux Toolkit or Zustand) is not always nec
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Use centralized stores** for shared, complex, or async state in medium-to-large apps.  
 - **Avoid centralized stores** for small apps, transient UI state, or when simplicity is more important.  
 - Always weigh **complexity vs benefit**—centralized state management is a tool, not a requirement.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > The goal is **predictable, maintainable state**. Choose the simplest solution that meets this goal.
 
 

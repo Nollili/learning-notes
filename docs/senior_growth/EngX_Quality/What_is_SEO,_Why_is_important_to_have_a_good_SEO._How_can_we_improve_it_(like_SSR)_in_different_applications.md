@@ -1,4 +1,4 @@
-### What is SEO? Why is important to have a good SEO? How can we improve it(like SSR) in different applications(like SPA)?
+# What is SEO? Why is important to have a good SEO? How can we improve it(like SSR) in different applications(like SPA)? {#what-is-seo-why-is-important-to-have-a-good-seo-how-can-we-improve-it-like-ssr-in-different-applications-like-spa}
 
 ### **What is SEO?**
 
@@ -25,7 +25,7 @@ A good SEO strategy is crucial for a variety of reasons:
 
 ### **How to Improve SEO in Different Applications**
 
-### **1. SEO in Single-Page Applications (SPA)**
+### **SEO in Single-Page Applications (SPA)** {#_1-seo-in-single-page-applications-spa}
 
 In **SPAs**, the web page dynamically loads content without refreshing the entire page, which can pose challenges for search engine crawlers. Since SPAs often rely heavily on JavaScript to render content, search engine bots may not fully index the content.
 
@@ -68,7 +68,7 @@ In **SPAs**, the web page dynamically loads content without refreshing the entir
 
 ---
 
-### **2. SEO in Traditional Multi-Page Applications (MPA)**
+### **SEO in Traditional Multi-Page Applications (MPA)** {#_2-seo-in-traditional-multi-page-applications-mpa}
 
 In **MPAs**, each page is rendered as a separate HTML file, and search engines can easily crawl and index the content. However, it’s still important to optimize these pages for SEO.
 
@@ -82,7 +82,7 @@ In **MPAs**, each page is rendered as a separate HTML file, and search engines c
 
 ---
 
-### **3. SEO in Progressive Web Apps (PWA)**
+### **SEO in Progressive Web Apps (PWA)** {#_3-seo-in-progressive-web-apps-pwa}
 
 A **PWA** adds app-like capabilities to a website. It can use server, static or client rendering; installation/offline capabilities do not inherently require SPA rendering. Public content needs the same crawl/indexing checks as any site.
 

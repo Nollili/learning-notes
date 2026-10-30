@@ -1,4 +1,4 @@
-### Could you please describe with which Browser APIs you've already worked with?
+# Could you please describe with which Browser APIs you've already worked with? {#could-you-please-describe-with-which-browser-apis-you-ve-already-worked-with}
 
 As a JavaScript developer, you would likely encounter and interact with a variety of **Browser APIs** depending on the type of web application you're building. Browser APIs provide functionality that allows JavaScript to interact with the web page and browser features, such as the Document Object Model (DOM), asynchronous operations, and browser-specific features.
 
@@ -6,7 +6,7 @@ The following examples introduce common Browser APIs and their use cases. They a
 
 ---
 
-### **1. DOM (Document Object Model) API**
+### **DOM (Document Object Model) API** {#_1-dom-document-object-model-api}
 
 The **DOM API** allows you to interact with the structure of an HTML document (the web page) as a tree of objects.
 
@@ -30,7 +30,7 @@ button.addEventListener('click', function() {
 
 ---
 
-### **2. Fetch API**
+### **Fetch API** {#_2-fetch-api}
 
 The **Fetch API** provides an interface for making HTTP requests to servers. It replaces the older `XMLHttpRequest` and returns **Promises**, making it easier to handle asynchronous operations.
 
@@ -51,7 +51,7 @@ fetch('https://api.example.com/data')
 
 ---
 
-### **3. Geolocation API**
+### **Geolocation API** {#_3-geolocation-api}
 
 The **Geolocation API** allows you to access the geographical location of the user's device. This is useful for applications that need to access the user's location, such as maps, weather apps, or location-based services.
 
@@ -70,7 +70,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 ---
 
-### **4. LocalStorage and SessionStorage API**
+### **LocalStorage and SessionStorage API** {#_4-localstorage-and-sessionstorage-api}
 
 Both **LocalStorage** and **SessionStorage** are part of the **Web Storage API**, which allows you to store data in the browser persistently (LocalStorage) or temporarily (SessionStorage).
 
@@ -91,7 +91,7 @@ console.log(username); // Output: JohnDoe
 
 ---
 
-### **5. Canvas API**
+### **Canvas API** {#_5-canvas-api}
 
 The **Canvas API** is used for drawing graphics and images directly onto the web page. It’s useful for games, data visualizations, image manipulation, and more.
 
@@ -110,7 +110,7 @@ ctx.fillRect(0, 0, 150, 75);  // Draw a blue rectangle
 
 ---
 
-### **6. WebSockets API**
+### **WebSockets API** {#_6-websockets-api}
 
 The **WebSockets API** provides a way to open a full-duplex communication channel between the client (browser) and a server, allowing real-time data exchange.
 
@@ -132,7 +132,7 @@ socket.onerror = () => console.error('Socket unavailable');
 
 ---
 
-### **7. Service Workers API**
+### **Service Workers API** {#_7-service-workers-api}
 
 **Service Workers** allow you to run background scripts that can intercept network requests, cache resources, and enable **offline functionality**.
 
@@ -154,7 +154,7 @@ navigator.serviceWorker.register('/service-worker.js')
 
 ---
 
-### **8. Web Audio API**
+### **Web Audio API** {#_8-web-audio-api}
 
 The **Web Audio API** provides the ability to process and generate audio directly in the browser. This is useful for building sound effects, music synthesis, and other interactive audio experiences.
 
@@ -177,7 +177,7 @@ oscillator.onended = () => { oscillator.disconnect(); void audioContext.close().
 
 ---
 
-### **9. Notification API**
+### **Notification API** {#_9-notification-api}
 
 The **Notification API** allows web pages to display native system notifications outside the browser window.
 
@@ -200,7 +200,7 @@ if ('Notification' in window && Notification.permission === 'granted') {
 
 ---
 
-### **10. File API**
+### **File API** {#_10-file-api}
 
 The **File API** allows web applications to access files on the client’s device, such as uploading files or reading them in JavaScript.
 
@@ -228,7 +228,7 @@ fileInput.addEventListener('change', function() {
 
 ---
 
-### **11. Intersection Observer API**
+### **Intersection Observer API** {#_11-intersection-observer-api}
 
 The **Intersection Observer API** provides a way to observe changes in the intersection of an element with the viewport (or another element). It's useful for tasks like lazy loading images, infinite scrolling, or animations when elements come into view.
 
@@ -252,7 +252,7 @@ if (target) observer.observe(target);
 
 ---
 
-### **12. Vibration API**
+### **Vibration API** {#_12-vibration-api}
 
 The **Vibration API** allows you to make the device vibrate, which can be used for notifications, haptic feedback, or in games.
 

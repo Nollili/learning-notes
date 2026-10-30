@@ -1,4 +1,4 @@
-# Modals in react, portal or not.md
+# React modals and portals {#modals-in-react-portal-or-not-md}
 
 In React, the `<App />` component is typically rendered inside a single `<div>` element with the id `root`. Nesting modals within other components can cause issues such as conflicting CSS styles—like padding, margins, or positioning—that may distort the modal’s appearance or behavior.
 
@@ -18,7 +18,7 @@ React Portals allow you to render a component outside of its parent DOM hierarch
 
 ---
 
-### 🧠 **Short explanation for interviews**
+### **Short explanation for interviews** {#%F0%9F%A7%A0-short-explanation-for-interviews}
 
 > “Yes — we still use **React Portals** for modals when we need them to render outside the normal component hierarchy, for example under a dedicated overlay host.
 > A portal lets you render a React component into a different DOM node — typically a `div` like `<div id="modal-root"></div>` that sits next to your app root.
@@ -27,7 +27,7 @@ React Portals allow you to render a component outside of its parent DOM hierarch
 
 ---
 
-### 🧩 Example:
+### Example: {#%F0%9F%A7%A9-example}
 
 ```tsx
 import { createPortal } from 'react-dom';
@@ -66,20 +66,20 @@ And in `index.html`:
 
 ---
 
-### 🧠 When to use portals today
+### When to use portals today {#%F0%9F%A7%A0-when-to-use-portals-today}
 
-✅ Still standard when:
+ Still standard when:
 
 * You need modals, tooltips, dropdowns, or popovers that escape parent `overflow:hidden` or `z-index` issues.
 * You’re building your own UI library or want full control.
 
-🚫 Often not needed when:
+ Often not needed when:
 
 * You use modern UI libraries (Radix UI, Material UI, Chakra UI, etc.) — the selected component may already own placement and modality; verify its implementation.
 
 ---
 
-### 🗣️ **Interview-ready 30-second answer**
+### **Interview-ready 30-second answer** {#%F0%9F%97%A3%EF%B8%8F-interview-ready-30-second-answer}
 
 > “Yes, we still use React Portals for modals — they can render an overlay under a suitable DOM host while preserving the React tree. Native top-layer dialog behavior or a tested component library may supply the modal primitive.
 > In practice, though, most UI libraries like MUI or Radix handle that internally, so the application often delegates placement and focus/modality ownership to that tested primitive.”

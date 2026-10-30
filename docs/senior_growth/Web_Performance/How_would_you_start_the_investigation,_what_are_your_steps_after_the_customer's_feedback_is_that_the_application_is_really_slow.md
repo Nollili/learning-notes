@@ -3,18 +3,18 @@
 
 ---
 
-## 🧭 1. **Collect Context and Define “Slow”**
+## **Collect Context and Define “Slow”** {#%F0%9F%A7%AD-1-collect-context-and-define-slow}
 Before touching code, clarify what “slow” means to the user:
 - When does the slowdown occur? (initial load, after interaction, specific page)
 - How often and for whom? (all users, specific regions, browsers)
 - What devices or network conditions?
 - Are there logs or performance metrics available (e.g., Sentry, Datadog, New Relic)?
 
-> 🎯 Goal: Narrow the scope. “Slow” can mean slow rendering, high network latency, or sluggish UI.
+> Goal: Narrow the scope. “Slow” can mean slow rendering, high network latency, or sluggish UI.
 
 ---
 
-## 🧩 2. **Reproduce the Issue**
+## **Reproduce the Issue** {#%F0%9F%A7%A9-2-reproduce-the-issue}
 - Attempt to reproduce the issue under similar conditions (browser, network speed, device).
 - Use **browser throttling** (Network tab → Slow 3G) to simulate user experience.
 - Observe what part of the experience is lagging:
@@ -24,8 +24,8 @@ Before touching code, clarify what “slow” means to the user:
 
 ---
 
-## 🧠 3. **Gather Data**
-### 🔹 **Browser DevTools**
+## **Gather Data** {#%F0%9F%A7%A0-3-gather-data}
+### **Browser DevTools** {#%F0%9F%94%B9-browser-devtools}
 - **Performance Tab** – Record a performance profile:
   - Detect long tasks (>50ms), layout thrashing, or re-renders.
 - **Network Tab** – Check:
@@ -35,14 +35,14 @@ Before touching code, clarify what “slow” means to the user:
 - **Lighthouse / Web Vitals report**:
   - Current Core Web Vitals: LCP, INP and CLS. Use TTFB/TBT and relevant traces as diagnostics; FID/TTI are historical, and Lighthouse removed TTI in version10.
 
-### 🔹 **Backend Monitoring (if applicable)**
+### **Backend Monitoring (if applicable)** {#%F0%9F%94%B9-backend-monitoring-if-applicable}
 - Check API response times and server logs.
 - Profile database queries or caching (Redis, CDN, etc.).
 - Use APM tools (Datadog, New Relic) to locate bottlenecks.
 
 ---
 
-## ⚙️ 4. **Identify the Bottleneck**
+## **Identify the Bottleneck** {#%E2%9A%99%EF%B8%8F-4-identify-the-bottleneck}
 Ask: *Where is the time being spent?*
 - **Network-bound:** Slow APIs, no caching, large bundles → optimize APIs, enable CDN, compress assets.
 - **CPU-bound:** Heavy JS parsing, large libraries, too many renders → code-splitting, memoization, virtualization.
@@ -50,7 +50,7 @@ Ask: *Where is the time being spent?*
 
 ---
 
-## 🚀 5. **Optimize**
+## **Optimize** {#%F0%9F%9A%80-5-optimize}
 Based on findings:
 - **Frontend load performance:**
   - Implement **code-splitting**, **lazy loading**, **tree-shaking**, **minification**, **preloading critical assets**.
@@ -65,7 +65,7 @@ Based on findings:
 
 ---
 
-## 📈 6. **Measure and Validate Improvements**
+## **Measure and Validate Improvements** {#%F0%9F%93%88-6-measure-and-validate-improvements}
 After implementing changes:
 - Re-run Lighthouse and DevTools audits.
 - Measure **before vs. after** for metrics like:
@@ -74,7 +74,7 @@ After implementing changes:
 
 ---
 
-## 📋 Summary Checklist
+## Summary Checklist {#%F0%9F%93%8B-summary-checklist}
 | Step | Goal | Tools |
 |------|------|--------|
 | 1. Gather info | Understand scope | Communication |
@@ -96,7 +96,7 @@ After implementing changes:
 
 ---
 
-### 📚 Key Mindset
+### Key Mindset {#%F0%9F%93%9A-key-mindset}
 > As a senior developer, focus not just on fixing *symptoms* but building *monitoring and prevention systems*:
 - Integrate **performance budgets** in CI/CD.
 - Use **Core Web Vitals monitoring** (e.g., with Web Vitals library).

@@ -4,7 +4,7 @@
 
 ---
 
-## 1️⃣ Importance of Accessibility
+## Importance of Accessibility {#_1%EF%B8%8F%E2%83%A3-importance-of-accessibility}
 
 ### 1.1 Legal & Compliance Reasons
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 2️⃣ Common Accessibility Considerations
+## Common Accessibility Considerations {#_2%EF%B8%8F%E2%83%A3-common-accessibility-considerations}
 
 | Area                     | Example Practices                              |
 |---------------------------|-----------------------------------------------|
@@ -46,7 +46,7 @@
 
 ---
 
-## 3️⃣ Tools to Check a11y
+## Tools to Check a11y {#_3%EF%B8%8F%E2%83%A3-tools-to-check-a11y}
 
 - **Lighthouse (Chrome DevTools)**
 - **axe DevTools**
@@ -55,7 +55,7 @@
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 1. Use **semantic HTML** (headings, lists, buttons, forms).  
 2. Ensure **keyboard-only accessibility**.  
@@ -66,13 +66,13 @@
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - Accessibility is about **inclusion, legal compliance, and usability**.  
 - Benefits everyone: users with disabilities, SEO, and general usability.  
 - Ignoring a11y can lead to **legal risk, lost users, and poor reputation**.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Treat accessibility as **part of the design and development process**, not as an afterthought. Integrate it early and retain task-based evidence; a guideline or one passing tool run does not establish universal usability.
 
 

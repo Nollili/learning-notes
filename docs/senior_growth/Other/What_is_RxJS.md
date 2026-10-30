@@ -1,12 +1,12 @@
 # What is RxJS?
 
-## 🔹 RxJS (Reactive Extensions for JavaScript)
+## RxJS (Reactive Extensions for JavaScript) {#%F0%9F%94%B9-rxjs-reactive-extensions-for-javascript}
 
 **RxJS** is a **reactive programming library** for JavaScript that allows you to work with **asynchronous data streams** using **observables**. It is widely used in modern front-end frameworks like **Angular**, and can also be used with React, Vue, or vanilla JS.
 
 ---
 
-## 1️⃣ Core Concepts
+## Core Concepts {#_1%EF%B8%8F%E2%83%A3-core-concepts}
 
 ### 1.1 Observables
 - Represents a **stream of data over time**.
@@ -108,7 +108,7 @@ Subscriber 2: 10
 
 ---
 
-## 2️⃣ Why Use RxJS?
+## Why Use RxJS? {#_2%EF%B8%8F%E2%83%A3-why-use-rxjs}
 
 * Handles **complex asynchronous flows**: HTTP requests, WebSocket streams, UI events.
 * **Declarative programming** → define how data flows.
@@ -118,7 +118,7 @@ Subscriber 2: 10
 
 ---
 
-## 3️⃣ Pros and Cons
+## Pros and Cons {#_3%EF%B8%8F%E2%83%A3-pros-and-cons}
 
 | Pros                                                 | Cons                                           |
 | ---------------------------------------------------- | ---------------------------------------------- |
@@ -129,14 +129,14 @@ Subscriber 2: 10
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **RxJS** = Reactive programming + Observables + Operators.
 * Ideal for **asynchronous streams** of events or data.
 * Commonly used in **Angular**, but can be applied anywhere JS async programming is needed.
 * Helps **avoid callback hell**, makes code more declarative, composable, and testable.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use **RxJS** when dealing with **multiple streams** or **complex async workflows**. For simple async tasks, Promises or async/await may be simpler and more readable.
 
 

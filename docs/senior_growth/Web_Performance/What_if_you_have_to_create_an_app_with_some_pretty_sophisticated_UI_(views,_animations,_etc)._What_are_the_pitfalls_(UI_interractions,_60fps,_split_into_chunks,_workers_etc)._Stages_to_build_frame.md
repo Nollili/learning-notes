@@ -7,7 +7,7 @@ The goal is responsive interaction and stable presentation on supported devices.
 
 ---
 
-## 🎯 Target Performance Budget
+## Target Performance Budget {#%F0%9F%8E%AF-target-performance-budget}
 
 - **1 frame = 16.6ms**  
   - 60 FPS = 1000ms / 60 = ~16.6ms per frame  
@@ -15,7 +15,7 @@ The goal is responsive interaction and stable presentation on supported devices.
 
 ---
 
-## 🧩 The Rendering Pipeline (Frame Lifecycle)
+## The Rendering Pipeline (Frame Lifecycle) {#%F0%9F%A7%A9-the-rendering-pipeline-frame-lifecycle}
 
 When the browser renders a frame, it goes through these **stages**:
 
@@ -29,9 +29,9 @@ Missing a presentation deadline can produce a repeated frame. Several individual
 
 ---
 
-## ⚠️ Common Performance Pitfalls in Sophisticated UIs
+## Common Performance Pitfalls in Sophisticated UIs {#%E2%9A%A0%EF%B8%8F-common-performance-pitfalls-in-sophisticated-uis}
 
-### 1. Heavy JavaScript on the Main Thread
+### Heavy JavaScript on the Main Thread {#_1-heavy-javascript-on-the-main-thread}
 
 - Large bundle or complex UI logic blocks input responsiveness.
 - JS competes with rendering tasks (same thread).
@@ -43,7 +43,7 @@ Missing a presentation deadline can produce a repeated frame. Several individual
 
 ---
 
-### 2. Layout Thrashing (Frequent Reflows)
+### Layout Thrashing (Frequent Reflows) {#_2-layout-thrashing-frequent-reflows}
 
 - Happens when JS reads and writes layout properties repeatedly:
 
@@ -61,7 +61,7 @@ A read requires synchronous layout only when relevant geometry is stale. Repeate
 
 ---
 
-### 3. Overdraw and Expensive Paints
+### Overdraw and Expensive Paints {#_3-overdraw-and-expensive-paints}
 
 - Too many overlapping layers or semi-transparent elements trigger costly painting.
 
@@ -71,7 +71,7 @@ A read requires synchronous layout only when relevant geometry is stale. Repeate
 
 ---
 
-### 4. Non-GPU-Friendly Animations
+### Non-GPU-Friendly Animations {#_4-non-gpu-friendly-animations}
 
 - Animating layout-affecting properties (`width`, `top`, `height`, `margin`) triggers reflow and repaint.
 
@@ -88,7 +88,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-### 5. Monolithic Rendering Logic
+### Monolithic Rendering Logic {#_5-monolithic-rendering-logic}
 
 - Large React components re-render on every state change.
 
@@ -99,7 +99,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-### 6. Heavy Data Processing in UI Thread
+### Heavy Data Processing in UI Thread {#_6-heavy-data-processing-in-ui-thread}
 
 - Parsing JSON, filtering, sorting, or aggregating large data sets in main thread.
 
@@ -109,7 +109,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-### 7. Too Many Event Listeners / Frequent Repaints
+### Too Many Event Listeners / Frequent Repaints {#_7-too-many-event-listeners-frequent-repaints}
 
 - Scroll, mousemove, resize handlers firing excessively.
 
@@ -119,7 +119,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-## 🧱 Optimized Build Architecture (for Heavy UI Apps)
+## Optimized Build Architecture (for Heavy UI Apps) {#%F0%9F%A7%B1-optimized-build-architecture-for-heavy-ui-apps}
 
 | Layer            | Purpose                              | Optimization                                 |
 |------------------|--------------------------------------|----------------------------------------------|
@@ -131,7 +131,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-## 🧪 Profiling and Testing
+## Profiling and Testing {#%F0%9F%A7%AA-profiling-and-testing}
 
 - Chrome DevTools → Performance tab  
   Identify long tasks, FPS drops, and “Layout” spikes.
@@ -141,7 +141,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-## 🚀 Strategies to Keep 60 FPS
+## Strategies to Keep 60 FPS {#%F0%9F%9A%80-strategies-to-keep-60-fps}
 
 - Set a measured JavaScript budget for supported refresh rates and devices
 - Prefer effects with low measured rendering cost
@@ -152,7 +152,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 | Area                | Problem                       | Solution                        |
 |---------------------|------------------------------|----------------------------------|
@@ -164,7 +164,7 @@ Only after profiling identifies a benefit, temporarily apply the `will-change` h
 
 ---
 
-**🧠 Rule of thumb:**  
+** Rule of thumb:**\
 The refresh interval is shared, variable and smaller on high-refresh displays. Measure the actual bottleneck before choosing memoization, chunking, virtualization or a worker.
 
 ## Worked decision: process a large catalogue without blocking interaction

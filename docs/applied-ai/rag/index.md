@@ -4,13 +4,13 @@ Retrieval-augmented generation selects external evidence for a generation reques
 
 ## Reading and implementation order
 
-1. [Extraction and chunk provenance](../../python-for-ai/document-processing.md): bounded text/CSV first; complex formats need separate isolation/fidelity decisions.
-2. [Embeddings, lexical and hybrid retrieval](../../python-for-ai/embeddings-and-similarity.md): exact identifiers versus paraphrases, compatible spaces, filters before top-k, separately observable branch rankings.
-3. [Persistent index/data lifecycle](../../python-for-ai/vector-storage-lifecycle.md): current sources/ACLs, source versions, staged index generation and update/delete. Learn this before composing the full query pipeline.
-4. [Evidence/citations](../../python-for-ai/retrieval-context.md): resolve exact current spans; mechanical membership does not prove entailment.
-5. [Retrieval/reranking/context](../../python-for-ai/retrieval-pipeline.md): original query retained, bounded union, rerank only permitted text, final request budgeting.
-6. [Answering boundary](./answering-and-failures.md): compose generation, publication and recovery without hiding missing adapters.
-7. [Evaluation](../../python-for-ai/evaluation-lab.md), [debugging/freshness](../../python-for-ai/retrieval-debugging.md), [derivative lifecycle](../../python-for-ai/provider-data-lifecycle.md): labeled relevance/support, oracle diagnostics and deletion reconciliation.
+- [Extraction and chunk provenance](../../python-for-ai/document-processing.md): bounded text/CSV first; complex formats need separate isolation/fidelity decisions.
+- [Embeddings, lexical and hybrid retrieval](../../python-for-ai/embeddings-and-similarity.md): exact identifiers versus paraphrases, compatible spaces, filters before top-k, separately observable branch rankings.
+- [Persistent index/data lifecycle](../../python-for-ai/vector-storage-lifecycle.md): current sources/ACLs, source versions, staged index generation and update/delete. Learn this before composing the full query pipeline.
+- [Evidence/citations](../../python-for-ai/retrieval-context.md): resolve exact current spans; mechanical membership does not prove entailment.
+- [Retrieval/reranking/context](../../python-for-ai/retrieval-pipeline.md): original query retained, bounded union, rerank only permitted text, final request budgeting.
+- [Answering boundary](./answering-and-failures.md): compose generation, publication and recovery without hiding missing adapters.
+- [Evaluation](../../python-for-ai/evaluation-lab.md), [debugging/freshness](../../python-for-ai/retrieval-debugging.md), [derivative lifecycle](../../python-for-ai/provider-data-lifecycle.md): labeled relevance/support, oracle diagnostics and deletion reconciliation.
 
 ## Two paths with different owners
 

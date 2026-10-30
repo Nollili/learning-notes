@@ -1,4 +1,4 @@
-# Practice: 🗄️ LocalStorage vs SessionStorage — Advantages and Disadvantages
+# Practice: LocalStorage vs SessionStorage — Advantages and Disadvantages {#practice-%F0%9F%97%84%EF%B8%8F-localstorage-vs-sessionstorage-%E2%80%94-advantages-and-disadvantages}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

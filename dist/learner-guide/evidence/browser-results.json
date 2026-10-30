@@ -1,0 +1,77 @@
+[
+  {
+    "url": "/learner-guide/",
+    "title": "Your learning hub: start here | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/node-start",
+    "title": "Node.js: your immediate route | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/roadmap",
+    "title": "Whole-hub roadmap and why it is grouped this way | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/tracks",
+    "title": "Reading and homework by track | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/topics",
+    "title": "Complete topic-to-roadmap and practice mapping | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/support",
+    "title": "Supporting file and practice crosswalk | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "url": "/learner-guide/ui",
+    "title": "Illustrated guide to the current application | My Notes for Bench Learning",
+    "overflow": false,
+    "mermaid": 0
+  },
+  {
+    "action": "lesson Contents Backpressure",
+    "hash": "#_9-backpressure"
+  },
+  {
+    "mobile": "/learner-guide/",
+    "overflow": false
+  },
+  {
+    "mobile": "/learner-guide/roadmap",
+    "overflow": false
+  },
+  {
+    "mobile": "/learner-guide/topics",
+    "overflow": false
+  },
+  {
+    "mobile": "/learner-guide/support",
+    "overflow": false
+  },
+  {
+    "mobile": "/learner-guide/ui",
+    "overflow": false
+  },
+  {
+    "follow_up": "Article selector .vp-doc svg confirmed two diagrams; separately captured and visually inspected",
+    "viewBoxes": [
+      "4 4 702.8046875 896",
+      "4 4 894.109375 724"
+    ],
+    "mobile_note": "Diagram labels shrink at 390 CSS pixels; full-size captures and prose alternatives supplied",
+    "screenshots_visually_inspected": 12
+  }
+]

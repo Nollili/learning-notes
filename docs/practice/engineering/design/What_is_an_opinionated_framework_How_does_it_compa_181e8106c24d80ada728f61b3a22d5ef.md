@@ -1,4 +1,4 @@
-# Practice: What is an "opinionated" framework? How does it compare to "non-opinionated"? What are the pros and cons of each approach?
+# Practice: Opinionated and unopinionated frameworks: tradeoffs {#practice-what-is-an-opinionated-framework-how-does-it-compare-to-non-opinionated-what-are-the-pros-and-cons-of-each-approach}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

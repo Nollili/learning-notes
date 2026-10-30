@@ -11,5 +11,5 @@ All learner practice remains outstanding. Start with [the staged sequence](../in
 - [What "Strict NULL check mode" means?](./What_%22Strict_NULL_check_mode%22_means.md)
 - [What are the different types of TypeScript (Built-in & User-defined)?](./What_are_the_different_types_of_TypeScript_%28Built-in_%26_User-defined%29.md)
 - [What do you think about TS?](./What_do_you_think_about_typescript.md)
-- [🔹 What is TypeScript?](./What_is_TS.md)
+- [What is TypeScript?](./What_is_TS.md)
 - [What kind of problems could be solved by using TS?](./What_kind_of_problems_could_be_solved_by_using_TS.md)

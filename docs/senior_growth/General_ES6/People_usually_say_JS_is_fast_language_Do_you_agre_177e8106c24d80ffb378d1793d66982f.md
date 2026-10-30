@@ -1,4 +1,4 @@
-### People usually say JS is fast language. Do you agree? Why? What about single thread? DIfference between node and browser?
+# JavaScript performance in Node.js and the browser {#people-usually-say-js-is-fast-language-do-you-agree-why-what-about-single-thread-difference-between-node-and-browser}
 
 “Fast” needs a workload and metric: startup, throughput, tail latency, memory, responsiveness and energy can favor different choices. Modern engines optimize many workloads, but the language name alone cannot establish a performance ranking.
 
@@ -34,29 +34,29 @@ While JavaScript is still technically running on a single thread, the event loop
 
 Although both Node.js and the browser run JavaScript, they serve different environments and have some key differences in terms of **execution context**, **APIs**, and **performance**.
 
-### **1. Execution Environment:**
+### **Execution Environment:** {#_1-execution-environment}
 
 - **Browser**: JavaScript in the browser is designed to interact with the **DOM** (Document Object Model) and provide interactivity for web pages. The browser's JavaScript engine is closely tied to rendering the UI, handling user events, and manipulating the DOM.
     - **Use Case**: Primarily focused on client-side interactions, animations, and rendering dynamic content in a web page.
 - **Node.js**: Node.js runs JavaScript on the **server side**, outside the browser, using the V8 engine, but without the DOM or rendering engine. It’s built for handling backend tasks like **file system access**, **database connections**, and **HTTP server management**.
     - **Use Case**: Server-side scripting, building web servers, handling APIs, and interacting with databases.
 
-### **2. APIs and Libraries:**
+### **APIs and Libraries:** {#_2-apis-and-libraries}
 
 - **Browser**: The browser provides APIs for manipulating the DOM, handling events, and interacting with browser-specific features (e.g., `localStorage`, `sessionStorage`, `window`, and `document`).
 - **Node.js**: Node.js provides APIs for interacting with the operating system, file system, networking, and other backend-specific tasks (e.g., `fs` for file system operations, `http` for server handling, `path` for working with file paths).
 
-### **3. I/O Operations:**
+### **I/O Operations:** {#_3-i-o-operations}
 
 - **Browser**: I/O in the browser is typically tied to user interaction, such as fetching resources (via **fetch** or **XMLHttpRequest**) or interacting with web APIs. However, browsers don’t have direct access to file systems (outside of specific browser APIs like `FileReader`).
 - **Node.js**: Node.js excels at **non-blocking I/O** due to its event-driven architecture. It can perform **file system operations**, **database queries**, and handle **network requests** asynchronously without blocking the execution thread.
 
-### **4. Event Loop and Concurrency:**
+### **Event Loop and Concurrency:** {#_4-event-loop-and-concurrency}
 
 - Both environments rely on the event loop for handling asynchronous operations.
 - In **Node.js**, the event loop is designed to handle **high-concurrency backend operations**, while in the **browser**, the event loop handles things like DOM updates and user interactions.
 
-### **5. Performance:**
+### **Performance:** {#_5-performance}
 
 - **Node.js**: Since it’s built for server-side applications, Node.js is optimized for I/O-bound tasks and can handle a large number of concurrent connections. However, Node.js isn't ideal for CPU-heavy tasks like image processing or complex algorithms, when expensive synchronous work monopolizes the event loop; worker/native/service alternatives need measured communication and ownership costs.
 - **Browser**: The browser is optimized for rendering and user interactions, with JavaScript responsible for UI manipulation, animations, etc. Performance can vary depending on how efficiently the browser engine interacts with the DOM and the system’s hardware.

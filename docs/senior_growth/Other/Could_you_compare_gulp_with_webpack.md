@@ -1,12 +1,12 @@
 # Could you compare gulp with webpack?
 
-## 🔹 Gulp vs Webpack
+## Gulp vs Webpack {#%F0%9F%94%B9-gulp-vs-webpack}
 
 Both **Gulp** and **Webpack** are popular **front-end build tools**, but they serve slightly different purposes and operate in different ways. Understanding their differences helps choose the right tool for a project.
 
 ---
 
-## 1️⃣ Gulp
+## Gulp {#_1%EF%B8%8F%E2%83%A3-gulp}
 
 **Definition:** Gulp is a **task runner** that automates repetitive tasks like **minification, compilation, linting, image optimization, and file copying**.
 
@@ -50,7 +50,7 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 
 ---
 
-## 2️⃣ Webpack
+## Webpack {#_2%EF%B8%8F%E2%83%A3-webpack}
 
 **Definition:** Webpack is a **module bundler** that processes **modules** (JS, CSS, images, etc.) and generates **optimized bundles** for the browser.
 
@@ -80,7 +80,7 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 
 ---
 
-## 3️⃣ Key Differences
+## Key Differences {#_3%EF%B8%8F%E2%83%A3-key-differences}
 
 | Aspect                   | Gulp                      | Webpack                           |
 | ------------------------ | ------------------------- | --------------------------------- |
@@ -94,7 +94,7 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 
 ---
 
-## 4️⃣ When to Use Each
+## When to Use Each {#_4%EF%B8%8F%E2%83%A3-when-to-use-each}
 
 ### Gulp
 
@@ -111,13 +111,13 @@ gulp.task('default', gulp.parallel('styles', 'scripts'));
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Gulp** → Task runner, flexible, good for automation.
 * **Webpack** → Module bundler, dependency-graph builds; one option alongside the primary Vite route, not essential for every SPA.
 * Often, teams use **both together**: Webpack for bundling + Gulp for auxiliary tasks (like copying assets).
 
-> 💡 Senior Tip:
+> Senior Tip:
 > For **modern React/Angular/Vue projects**, **Webpack (or Vite/Rollup)** is usually preferred. Use **Gulp only for additional automation** if needed.
 
 

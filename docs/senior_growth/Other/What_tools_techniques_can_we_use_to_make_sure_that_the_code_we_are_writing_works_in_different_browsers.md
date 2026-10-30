@@ -1,12 +1,12 @@
 # What tools/techniques can we use to make sure that the code we are writing works in different browsers?
 
-## 🔹 Ensuring Cross-Browser Compatibility
+## Ensuring Cross-Browser Compatibility {#%F0%9F%94%B9-ensuring-cross-browser-compatibility}
 
 When developing web applications, it’s important to make sure that your code works consistently across **different browsers** and **devices**. Cross-browser testing helps avoid UI bugs, broken features, or inconsistent behavior.
 
 ---
 
-## 1️⃣ Techniques for Cross-Browser Compatibility
+## Techniques for Cross-Browser Compatibility {#_1%EF%B8%8F%E2%83%A3-techniques-for-cross-browser-compatibility}
 
 ### 1.1 Use Standardized, Modern Web APIs
 - Prefer **well-supported HTML, CSS, and JS features**.
@@ -87,7 +87,7 @@ if (Modernizr.flexbox) {
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Check feature support:** Modernizr, MDN compatibility tables.
 * **Use polyfills/transpilers:** Babel, core-js, Autoprefixer.
@@ -96,7 +96,7 @@ if (Modernizr.flexbox) {
 * **Services:** BrowserStack, Sauce Labs for multiple browsers/devices.
 * **Best Practices:** Write standard, maintainable, responsive code.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Define the actual browser/OS/input/assistive-technology support policy and test it. Syntax transforms, API shims, feature detection and progressive enhancement address different failure modes; none proves compatibility alone.
 
 

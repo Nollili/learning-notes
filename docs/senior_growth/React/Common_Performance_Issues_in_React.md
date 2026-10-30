@@ -1,4 +1,4 @@
-### Common Performance Issues in React
+# Common Performance Issues in React {#common-performance-issues-in-react}
 
 Subjects: React
 
@@ -6,7 +6,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
 
 ### **Common Performance Issues in React**
 
-### **1. Unnecessary Re-renders**
+### **Unnecessary Re-renders** {#_1-unnecessary-re-renders}
 
 - **Cause**: React re-renders components whenever their state or props change, which can lead to excessive re-rendering.
 - **Examples**:
@@ -17,31 +17,31 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
         ```
         
 
-### **2. Overuse of State and Context**
+### **Overuse of State and Context** {#_2-overuse-of-state-and-context}
 
 - **Cause**: Excessive state updates or heavy use of `useContext` can trigger re-renders for all components consuming the context.
 
-### **3. Large Component Trees**
+### **Large Component Trees** {#_3-large-component-trees}
 
 - **Cause**: Deeply nested or overly complex component hierarchies increase rendering time.
 
-### **4. Inefficient Reconciliation**
+### **Inefficient Reconciliation** {#_4-inefficient-reconciliation}
 
 - **Cause**: The Virtual DOM diffing algorithm (reconciliation) may perform unnecessary comparisons if components are not optimized.
 
-### **5. Large Initial Load Times**
+### **Large Initial Load Times** {#_5-large-initial-load-times}
 
 - **Cause**: Loading too much data or too many assets at once can slow down the initial render.
 
-### **6. Inefficient Event Handling**
+### **Inefficient Event Handling** {#_6-inefficient-event-handling}
 
 - **Cause**: Using anonymous functions in JSX can lead to new function instances on every render.
 
-### **7. Excessive DOM Updates**
+### **Excessive DOM Updates** {#_7-excessive-dom-updates}
 
 - **Cause**: Frequent state changes leading to frequent DOM updates, particularly for animations or large datasets.
 
-### **8. Memory Leaks**
+### **Memory Leaks** {#_8-memory-leaks}
 
 - **Cause**: Forgetting to clean up event listeners, subscriptions, or timers in `useEffect`.
 
@@ -49,7 +49,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
 
 ### **How to Improve Performance in React**
 
-### **1. Optimize Rendering with `React.memo`**
+### **Optimize Rendering with `React.memo`** {#_1-optimize-rendering-with-react-memo}
 
 - Use `React.memo` to prevent re-rendering of functional components when their props haven't changed.
     
@@ -61,7 +61,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **2. Use `useCallback` and `useMemo`**
+### **Use `useCallback` and `useMemo`** {#_2-use-usecallback-and-usememo}
 
 - Reuse function/value identities when dependencies are equal. useCallback does not prevent creation of its function argument; measure whether identity matters at a memo/subscription boundary.
     
@@ -74,7 +74,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **3. Choose stable boundaries where measured**
+### **Choose stable boundaries where measured** {#_3-choose-stable-boundaries-where-measured}
 
 - Inline functions and objects create new instances on every render.
     
@@ -88,7 +88,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **4. Use the `key` Prop Wisely**
+### **Use the `key` Prop Wisely** {#_4-use-the-key-prop-wisely}
 
 - Provide stable, unique keys for list items to help React identify changes during reconciliation.
     
@@ -97,13 +97,13 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **5. Reduce State Complexity**
+### **Reduce State Complexity** {#_5-reduce-state-complexity}
 
 - Minimize the amount of state in components to avoid unnecessary updates.
     - Avoid deeply nested states. https://alexsidorenko.com/blog/react-update-nested-state
     - Split state into independent slices if necessary.
 
-### **6. Optimize Context Usage**
+### **Optimize Context Usage** {#_6-optimize-context-usage}
 
 - Avoid using a single context for unrelated pieces of state.
 - Use memoized values in the context provider.
@@ -113,7 +113,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **7. Lazy Loading**
+### **Lazy Loading** {#_7-lazy-loading}
 
 - Use `React.lazy` and `Suspense` to load components only when needed.
 - https://www.youtube.com/watch?v=nS5qbSJLGx8&ab_channel=DaveGray
@@ -129,7 +129,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **8. Use Virtualization for Large Lists**
+### **Use Virtualization for Large Lists** {#_8-use-virtualization-for-large-lists}
 
 - Use libraries like `react-window` or `react-virtualized` for efficiently rendering large lists by only rendering visible items.
 - https://www.youtube.com/watch?v=1JoEuJQIJbs&ab_channel=CoderOne
@@ -152,7 +152,7 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **9. Throttle and Debounce**
+### **Throttle and Debounce** {#_9-throttle-and-debounce}
 
 - For event handlers like `scroll` or `resize`, throttle or debounce updates to reduce re-renders.
 - https://www.youtube.com/watch?v=cjIswDCKgu0&ab_channel=WebDevSimplified
@@ -174,18 +174,18 @@ Measure the slow interaction before choosing an optimization; network, JavaScrip
     ```
     
 
-### **10. Optimize Third-Party Libraries**
+### **Optimize Third-Party Libraries** {#_10-optimize-third-party-libraries}
 
 - Analyze dependencies for performance bottlenecks and replace heavy libraries with lighter alternatives if possible.
 
-### **11. Reduce Initial Load Time**
+### **Reduce Initial Load Time** {#_11-reduce-initial-load-time}
 
 - Split bundles using `React.lazy` or a bundler like Webpack.
 - Use code-splitting and tree-shaking to remove unused code.
 https://medium.com/@balaji59321/maximizing-efficiency-with-tree-shaking-in-react-applications-848ef9994687
 - Compress assets (e.g., images, JavaScript) and enable Gzip/Brotli on the server.
 
-### **12. Profiling and Debugging**
+### **Profiling and Debugging** {#_12-profiling-and-debugging}
 
 - Use the React DevTools Profiler to identify performance bottlenecks.
 - Use Chrome DevTools for network and rendering performance analysis.

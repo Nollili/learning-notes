@@ -1,6 +1,6 @@
-### What is the difference between 'null' and 'undefined'?
+# What is the difference between 'null' and 'undefined'? {#what-is-the-difference-between-null-and-undefined}
 
-### **1. `undefined`**
+### **`undefined`** {#_1-undefined}
 
 - **Definition**: A variable is `undefined` when it has been declared but has not been assigned a value, or when a function does not explicitly return a value.
 - **Type**: It is a primitive type.
@@ -29,7 +29,7 @@
 
 ---
 
-### **2. `null`**
+### **`null`** {#_2-null}
 
 - **Definition**: `null` is an explicitly assigned value indicating the intentional absence of any object value.
 - **Type**: It is also a primitive type, but its type is a bit unintuitive:
@@ -67,7 +67,7 @@
 
 ---
 
-### **3. Comparison of `null` and `undefined`**
+### **Comparison of `null` and `undefined`** {#_3-comparison-of-null-and-undefined}
 
 ### **Equality Operators**
 
@@ -88,9 +88,9 @@ They are not strictly equal because they are different types:
 
 ---
 
-### **4. Common Pitfalls**
+### **Common Pitfalls** {#_4-common-pitfalls}
 
-### 1. **Default Function Parameters**
+### **Default Function Parameters** {#_1-default-function-parameters}
 
 If you omit an argument in a function call, it becomes `undefined`:
 
@@ -101,7 +101,7 @@ function greet(name) {
 greet(); // Output: "Hello, undefined"
 ```
 
-### 2. **Checking for Both**
+### **Checking for Both** {#_2-checking-for-both}
 
 To check for both `null` and `undefined`, you can use a loose equality comparison:
 
@@ -112,7 +112,7 @@ if (value == null) {
 }
 ```
 
-### 3. **Falsy Values**
+### **Falsy Values** {#_3-falsy-values}
 
 Both `null` and `undefined` are falsy values in JavaScript:
 

@@ -1,8 +1,8 @@
-# React.Memo and Performance Optimization
+# React.memo and performance optimization {#react-memo-and-performance-optimization}
 
 Companion owner: comparator correctness and callback behavior. Start with [memoization mechanisms](./What_is_memoization_and_how_to_achieve_it_in_React.md), then measure an actual workload. These examples are retained for their distinct failure cases.
 
-### **1. React.memo**
+### **React.memo** {#_1-react-memo}
 
 * **Purpose:** `React.memo` is a **Higher-Order Component (HOC)** used to **memoize functional components**. It can skip parent-driven work when props compare equal; state/context updates can still render it. This is an optimization, not a correctness guarantee.
 * **How it works:**
@@ -37,7 +37,7 @@ Companion owner: comparator correctness and callback behavior. Start with [memoi
 
 ---
 
-### **2. Performance Optimization in React**
+### **Performance Optimization in React** {#_2-performance-optimization-in-react}
 
 First identify the measured slow interaction, then compare the cost of rendering, comparison, network and browser work.
 
@@ -75,7 +75,7 @@ First identify the measured slow interaction, then compare the cost of rendering
 
 ---
 
-### **3. How to explain in an interview**
+### **How to explain in an interview** {#_3-how-to-explain-in-an-interview}
 
 * Show **understanding of trade-offs**, e.g., “Memoization helps, but it’s not free — it’s most useful for components that re-render often and are expensive.”
 * Give a **realistic example**: “We used `React.memo` in our table row component that receives hundreds of props. Without memo, every parent re-render caused 100+ rows to re-render unnecessarily.”

@@ -58,14 +58,14 @@ RAG is the recommended reading sequence before workflows in the hub, but a fixed
 | Frontend | Browser DOM, focus, layout, forms and state have distinct host responsibilities; coverage map assigns canonical lessons | Build one document → enhancement → typed UI → React → Next; defer optional stores until ownership needs them |
 | Node | Runtime first; backend, persistence and delivery are explicit continuations | N-01–06 now, P-332 next, P-331 when service work is useful |
 | CS | Correctness, cost and representation are independent of frameworks | Pair selected reasoning with analyzer bottlenecks; do not delay Node for the entire course |
-| Applied AI / Python | Detailed URLs remain in Python; grouped homes separate evidence selection, actions and automation | Follow concepts across folders rather than treating forty Python files as forty consecutive prerequisites |
+| Build AI Apps — JavaScript First | Beginner JS chatbot→tools→RAG→MCP→graphs; existing Python remains optional depth | Start with JS-00–02 before choosing deeper reference topics |
 | Engineering | State, measured performance, security, quality, delivery and design reuse P-328–337 | Add each control at the boundary it protects, then use E01–E07 to deepen the same product |
 | AI-assisted engineering | Issue → local diff → checks → traceability; distinct from autonomous product workflows | Start P-336 with a small real/study issue once you can explain its contract |
 | Senior Growth | Interview-origin subject collections retained behind canonical paths | Use as linked depth/reference; alphabetical folders are not another mandatory curriculum |
 
 ## Menu order is not study order
 
-Learning paths lists Frontend, CS, Node, Applied AI, AI Engineering, Engineering. Your recommended start is Node. Node module numbers put testing before networking, MongoDB before PostgreSQL and diagnostics after production: the current Node reading guide instead prioritizes core runtime/testing/HTTP/diagnostics/lifecycle, with PostgreSQL the main persistence route. Shared backend project IDs put P-331 before P-332; smaller runtime practice is recommended first. Materials, assessment, technical checks and historical audit files are resources/records, not next chapters.
+Learning paths distinguishes **Build AI Apps — JavaScript First** from **AI for Software Development**. For your AI goal begin with the JS app path; use the coding workflow path in parallel. Node remains the runtime foundation. Node module numbers put testing before networking, MongoDB before PostgreSQL and diagnostics after production: the current Node reading guide instead prioritizes core runtime/testing/HTTP/diagnostics/lifecycle, with PostgreSQL the main persistence route. Shared backend project IDs put P-331 before P-332; smaller runtime practice is recommended first. Materials, assessment, technical checks and historical audit files are resources/records, not next chapters.
 
 ## Keep optional scope bounded
 

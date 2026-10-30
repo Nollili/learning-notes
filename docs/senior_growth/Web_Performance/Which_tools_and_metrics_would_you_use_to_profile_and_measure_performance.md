@@ -1,42 +1,42 @@
-### Which tools and metrics would you use to profile and measure performance?
+# Which tools and metrics would you use to profile and measure performance? {#which-tools-and-metrics-would-you-use-to-profile-and-measure-performance}
 
 When profiling and measuring performance as a **senior frontend developer**, you should be able to identify, analyze, and improve **rendering efficiency**, **bundle size**, **load time**, and **runtime performance**. Below are the **core tools**, **metrics**, and **best practices** to cover.
 
 ---
 
-## 🧰 Tools
+## Tools {#%F0%9F%A7%B0-tools}
 
-### 1. **Browser DevTools (Chrome, Edge, Firefox)**
+### **Browser DevTools (Chrome, Edge, Firefox)** {#_1-browser-devtools-chrome-edge-firefox}
 - **Performance tab** → Record CPU, memory usage, and rendering time (JS execution, layout, paint).
 - **Network tab** → Check resource loading, waterfall view, caching, and blocking requests.
 - **Lighthouse** → Audits performance, accessibility, SEO, and best practices.
 - **Coverage tab** → Shows code unused during the recorded scenario; another route/state may require it.
 - **Memory tab** → Helps investigate retaining paths/bloat/allocation churn; a heap snapshot or rising chart alone does not prove a leak.
 
-### 2. **React Developer Tools**
+### **React Developer Tools** {#_2-react-developer-tools}
 - **Profiler** tab:
   - Visualizes recorded React commits and component work.
   - Highlights wasted renders or expensive re-renders.
   - Profiles React render/commit work; browser layout/paint and network need browser traces. Standard production React builds disable profiling unless a suitable profiling build is selected.
   - Helps detect unnecessary state or prop changes.
 
-### 3. **Field and local Web Vitals**
+### **Field and local Web Vitals** {#_3-field-and-local-web-vitals}
 - Current Core Web Vitals are LCP, INP and CLS; FID is historical.
 - Use maintained Web Vitals instrumentation for RUM, CrUX/PageSpeed field data where available, and the current DevTools Performance panel for local diagnosis. Pin versions; do not depend on a discontinued extension.
 
-### 4. **Performance Monitoring Services**
+### **Performance Monitoring Services** {#_4-performance-monitoring-services}
 - A configured RUM collection pipeline can retain appropriate custom metrics; an analytics product name does not mean Core Web Vitals are automatically collected.
 - **Sentry / Datadog / New Relic / LogRocket** – Monitor performance issues, slow transactions, and long tasks in production.
 - **WebPageTest / GTmetrix** – Synthetic lab analysis; distinguish these runs from field/RUM data.
 
-### 5. **Build and Bundle Analyzers**
+### **Build and Bundle Analyzers** {#_5-build-and-bundle-analyzers}
 - **Webpack Bundle Analyzer / Vite Bundle Visualizer** → Inspect bundle composition, spot large dependencies.
 - **Source Map Explorer** → Analyze which modules contribute to bundle size.
 - **ESBuild / Rollup stats** → Track tree-shaking efficiency.
 
 ---
 
-## 📏 Key Metrics to Measure
+## Key Metrics to Measure {#%F0%9F%93%8F-key-metrics-to-measure}
 
 ### Outcomes and diagnostics
 
@@ -67,7 +67,7 @@ Bundle/request budgets are **project decisions**, not universal250KB/50-request 
 **Example budget contract:** product-search route, fixed1,000-item fixture, mobile test profile, cold-cache production build; track compressed first-route script bytes and repeated load LCP/TBT plus a scripted interaction trace. Choose numeric limits only after baseline measurement; document owner, tolerance, tool version and exception expiry. This is a template, not a claimed passing result.
 
 
-## 🧠 Best Practices for Senior-Level Understanding
+## Best Practices for Senior-Level Understanding {#%F0%9F%A7%A0-best-practices-for-senior-level-understanding}
 
 - Profile **production builds**, not dev builds.
 - Always **measure before optimizing** — use baselines.
@@ -81,7 +81,7 @@ Bundle/request budgets are **project decisions**, not universal250KB/50-request 
 
 ---
 
-✅ **Summary:**
+ **Summary:**
 > Combine *profiling tools* (React DevTools, Chrome Performance), *monitoring platforms* (Sentry, Datadog), and *Web Vitals* to build a quantifiable performance culture.  
 > A senior developer should not only fix issues but also **set up automated performance budgets and observability** for continuous improvement.
 

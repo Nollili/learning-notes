@@ -1,4 +1,4 @@
-# Practice: key features introduced in ES6 (2015), ES7 (2016), and ES8 (2017)
+# Practice: ECMAScript features from ES2015 to ES2017 {#practice-key-features-introduced-in-es6-2015-es7-2016-and-es8-2017}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

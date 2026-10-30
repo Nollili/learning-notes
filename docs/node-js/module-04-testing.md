@@ -22,7 +22,7 @@
 
 ---
 
-## 1. Why automated testing matters
+## Why automated testing matters {#_1-why-automated-testing-matters}
 
 An automated test executes code, observes its behavior, and fails when that behavior differs from an explicit expectation.
 
@@ -79,7 +79,7 @@ Avoid reaching into private state or asserting incidental call sequences unless 
 
 ---
 
-## 2. Testing Pyramid and Testing Trophy
+## Testing Pyramid and Testing Trophy {#_2-testing-pyramid-and-testing-trophy}
 
 Both models help teams balance confidence, speed, realism, and maintenance cost. Neither prescribes exact percentages.
 
@@ -140,7 +140,7 @@ TypeScript checks static relationships under the program’s declared types. It 
 
 ---
 
-## 3. Choosing the right test boundary
+## Choosing the right test boundary {#_3-choosing-the-right-test-boundary}
 
 The test type is determined by its boundary, not its filename or tool.
 
@@ -191,7 +191,7 @@ Choose the smallest boundary that can detect the target failure. Do not mock awa
 
 ---
 
-## 4. Setting up Jest
+## Setting up Jest {#_4-setting-up-jest}
 
 Jest combines a test runner, assertion library, mocking APIs, lifecycle hooks, and coverage collection.
 
@@ -356,7 +356,7 @@ Do not commit focused tests such as `.only`. A CI check can reject them.
 
 ---
 
-## 5. Test structure and lifecycle
+## Test structure and lifecycle {#_5-test-structure-and-lifecycle}
 
 ### `describe()`, `test()`, and `it()`
 
@@ -477,7 +477,7 @@ Use parameterized tests when cases share the same behavior. Do not hide substant
 
 ---
 
-## 6. Jest assertions and matchers
+## Jest assertions and matchers {#_6-jest-assertions-and-matchers}
 
 An assertion combines `expect(actual)` with a matcher describing the required outcome.
 
@@ -612,7 +612,7 @@ test('invokes both callbacks', () => {
 
 ---
 
-## 7. Testing asynchronous code
+## Testing asynchronous code {#_7-testing-asynchronous-code}
 
 Jest must know when asynchronous work finishes. Return its promise, mark the test `async` and await it, or use the `done` callback for legacy callback APIs.
 
@@ -742,7 +742,7 @@ Use extended timeouts only when the expected operation is genuinely slow and bou
 
 ---
 
-## 8. Mocks, stubs, fakes, and spies
+## Mocks, stubs, fakes, and spies {#_8-mocks-stubs-fakes-and-spies}
 
 Test doubles replace or observe collaborators so a test can control inputs, failures, timing, and side effects.
 
@@ -928,7 +928,7 @@ Excessive mocking can make tests pass while the real components are incompatible
 
 ---
 
-## 9. Writing effective unit tests
+## Writing effective unit tests {#_9-writing-effective-unit-tests}
 
 A unit test exercises a small cohesive behavior under controlled conditions.
 
@@ -1054,7 +1054,7 @@ Assert stable error characteristics such as class, code, or meaningful message. 
 
 ---
 
-## 10. Writing integration tests
+## Writing integration tests {#_10-writing-integration-tests}
 
 An integration test verifies that selected real components work together. It may test a service and repository, HTTP route and middleware, application and database, or producer and message broker.
 
@@ -1177,7 +1177,7 @@ Do not repeat every pure validation edge case already covered by unit tests unle
 
 ---
 
-## 11. Writing backend E2E and API tests
+## Writing backend E2E and API tests {#_11-writing-backend-e2e-and-api-tests}
 
 Backend E2E tests exercise the application through its public interface, usually HTTP. They cover routing, parsing, validation, authentication, application logic, persistence, error handling, and response serialization within the chosen deployment boundary.
 
@@ -1367,7 +1367,7 @@ Close database pools, servers, sockets, message consumers, workers, and timers s
 
 ---
 
-## 12. Code coverage
+## Code coverage {#_12-code-coverage}
 
 Coverage reports which instrumented code executed during tests. It helps locate untested areas but does not measure assertion quality or correctness.
 
@@ -1499,7 +1499,7 @@ Use coverage as a map, not a goal by itself.
 
 ---
 
-## 13. Reliable test suites and common mistakes
+## Reliable test suites and common mistakes {#_13-reliable-test-suites-and-common-mistakes}
 
 ### Determinism
 
@@ -1618,7 +1618,7 @@ Prefer explicit matchers when they communicate intent more clearly.
 
 ---
 
-## 14. Running tests in continuous integration
+## Running tests in continuous integration {#_14-running-tests-in-continuous-integration}
 
 Continuous integration (CI) runs the same automated checks in a clean environment for every proposed change. This detects missing files, undeclared dependencies, environment assumptions, and order-dependent tests that may be hidden on a developer's machine.
 
@@ -1665,7 +1665,7 @@ CI should validate the same behavior developers can run locally. If a check only
 
 ---
 
-## 15. Contract, property, and concurrency testing
+## Contract, property, and concurrency testing {#_15-contract-property-and-concurrency-testing}
 
 ### Contract tests
 
@@ -1728,7 +1728,7 @@ One successful run does not prove the absence of races. Repeat targeted tests, v
 
 ---
 
-## 16. Diagnosing flaky and slow test suites
+## Diagnosing flaky and slow test suites {#_16-diagnosing-flaky-and-slow-test-suites}
 
 A flaky test has more than one outcome without a relevant code change. Treat flakiness as a defect, not as harmless noise.
 
@@ -1795,7 +1795,7 @@ Use mutation testing selectively on critical pure logic. It is computationally e
 
 [Exercises and learner checklist](../practice/node-js/module-04-testing.md).
 
-## 17. Final review checklist
+## Final review checklist {#_17-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-04-testing.md).
 

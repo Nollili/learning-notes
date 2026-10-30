@@ -1,12 +1,12 @@
 # Composition vs inheritance? Shared state vs immutability?
 
-# 🆚 Composition vs Inheritance & Shared State vs Immutability
+## Composition vs Inheritance & Shared State vs Immutability {#%F0%9F%86%9A-composition-vs-inheritance-shared-state-vs-immutability}
 
 These are core concepts in **JavaScript/React** and modern software architecture, often appearing in **senior-level discussions**.
 
 ---
 
-## 1️⃣ Composition vs Inheritance
+## Composition vs Inheritance {#_1%EF%B8%8F%E2%83%A3-composition-vs-inheritance}
 
 ### **Inheritance**
 - One class **extends another**, reusing behavior.
@@ -27,13 +27,13 @@ const dog = new Dog();
 dog.speak(); // Woof
 ```
 
-✅ **Pros**
+ **Pros**
 
 * Clear hierarchy
 * Code reuse via subclassing
 * Supports polymorphism
 
-❌ **Cons**
+ **Cons**
 
 * Tight coupling between parent and child
 * Hard to modify behavior without affecting all subclasses
@@ -64,13 +64,13 @@ person.speak(); // Hello
 person.walk();  // Walking
 ```
 
-✅ **Pros**
+ **Pros**
 
 * Flexible: behaviors can be added/removed dynamically
 * Encourages **code reuse** without deep hierarchies
 * Easier to test and maintain
 
-❌ **Cons**
+ **Cons**
 
 * Slightly more boilerplate than simple inheritance
 * Less intuitive for those familiar with classical OOP
@@ -79,7 +79,7 @@ person.walk();  // Walking
 
 ---
 
-## 2️⃣ Shared State vs Immutability
+## Shared State vs Immutability {#_2%EF%B8%8F%E2%83%A3-shared-state-vs-immutability}
 
 ### **Shared State**
 
@@ -94,12 +94,12 @@ function increment() { state.count += 1; }
 function decrement() { state.count -= 1; }
 ```
 
-✅ **Pros**
+ **Pros**
 
 * Simple and straightforward
 * Easy to implement for small apps
 
-❌ **Cons**
+ **Cons**
 
 * Hard to track changes → bugs due to unintended mutations
 * Difficult to debug in complex applications
@@ -125,21 +125,21 @@ console.log(state.count);    // 0
 console.log(newState.count); // 1
 ```
 
-✅ **Pros**
+ **Pros**
 
 * Predictable and easier to reason about
 * Avoids bugs from shared mutable state
 * Works well with **React rendering**, **Redux**, and **concurrent JS**
 * Facilitates undo/redo features
 
-❌ **Cons**
+ **Cons**
 
 * Can involve extra memory for large objects
 * Slightly more verbose code for deep updates
 
 ---
 
-## ⚖️ Summary Table
+## Summary Table {#%E2%9A%96%EF%B8%8F-summary-table}
 
 | Concept      | Approach / Idea                 | Pros                              | Cons                          |
 | ------------ | ------------------------------- | --------------------------------- | ----------------------------- |
@@ -150,7 +150,7 @@ console.log(newState.count); // 1
 
 ---
 
-### 🧠 Senior Developer Notes
+### Senior Developer Notes {#%F0%9F%A7%A0-senior-developer-notes}
 
 1. **React/JSX:** Composition is preferred over inheritance (HOCs, hooks, component composition).
 2. **State Management:** Favor immutability (Redux, Zustand, React state updates).

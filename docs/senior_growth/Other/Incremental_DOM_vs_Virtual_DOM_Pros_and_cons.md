@@ -1,12 +1,12 @@
 # Incremental DOM vs Virtual DOM? Pros and cons
 
-# 🔹 Incremental DOM vs Virtual DOM
+## Incremental DOM vs Virtual DOM {#%F0%9F%94%B9-incremental-dom-vs-virtual-dom}
 
 Both **Incremental DOM** and **Virtual DOM (VDOM)** are techniques to optimize **DOM updates** in web applications, but they differ in **how they track changes and render elements**.
 
 ---
 
-## 1️⃣ Virtual DOM (VDOM)
+## Virtual DOM (VDOM) {#_1%EF%B8%8F%E2%83%A3-virtual-dom-vdom}
 
 **Definition:** A **virtual representation** of the real DOM stored in memory. When the state changes:
 
@@ -36,7 +36,7 @@ State change → new VDOM → diff with old VDOM → patch real DOM
 
 ---
 
-## 2️⃣ Incremental DOM
+## Incremental DOM {#_2%EF%B8%8F%E2%83%A3-incremental-dom}
 
 **Definition:** Instead of creating a VDOM, Incremental DOM **updates the real DOM directly** during render. It **walks the template** and applies changes **incrementally**.
 
@@ -62,7 +62,7 @@ Render function → walk the DOM → update nodes directly
 
 ---
 
-## 3️⃣ Key Differences
+## Key Differences {#_3%EF%B8%8F%E2%83%A3-key-differences}
 
 | Feature                  | Virtual DOM                              | Incremental DOM                        |
 |---------------------------|-----------------------------------------|----------------------------------------|
@@ -74,7 +74,7 @@ Render function → walk the DOM → update nodes directly
 
 ---
 
-## 4️⃣ When to Use Which
+## When to Use Which {#_4%EF%B8%8F%E2%83%A3-when-to-use-which}
 
 - **Virtual DOM**
   - Declarative frameworks (React, Vue)
@@ -88,13 +88,13 @@ Render function → walk the DOM → update nodes directly
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **Virtual DOM:** A renderer computes representations and reconciles/commits according to its identity rules.
 - **Incremental DOM:** In-place diffing/direct patch instructions use a different representation; benchmark costs and correctness.
 - **Trade-off:** Representation, identity/ownership, integration and measured workload costs.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Diagnose state ownership, computation, DOM size and layout first. A renderer rewrite is not a substitute for bounded data or virtualization.
 
 

@@ -3,7 +3,7 @@
 All learner practice remains outstanding. Follow [the shared increments](../index.md).
 
 - [Could you compare gulp with webpack?](./Could_you_compare_gulp_with_webpack.md)
-- [🔹 Web Workers](./Could_you_please_describe_Web_Workers_in_details.md)
+- [Web Workers](./Could_you_please_describe_Web_Workers_in_details.md)
 - [Incremental DOM vs Virtual DOM? Pros and cons](./Incremental_DOM_vs_Virtual_DOM_Pros_and_cons.md)
 - [Please compare one-way and two-way data binding? What are the pros and cons of each approach?](./Please_compare_one-way_and_two-way_data_binding_What_are_the_pros_and_cons_of_each_approach.md)
 - [What is RxJS?](./What_is_RxJS.md)

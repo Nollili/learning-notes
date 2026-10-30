@@ -19,7 +19,7 @@ Requirements:
 
 ---
 
-## 15. Final review checklist
+## Final review checklist {#_15-final-review-checklist}
 
 You should be able to explain and demonstrate each point:
 

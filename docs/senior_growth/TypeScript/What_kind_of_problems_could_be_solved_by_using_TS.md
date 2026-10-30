@@ -1,12 +1,12 @@
 # What kind of problems could be solved by using TS?
 
-# 🛠️ Problems Solved by Using TypeScript
+## Problems Solved by Using TypeScript {#%F0%9F%9B%A0%EF%B8%8F-problems-solved-by-using-typescript}
 
 TypeScript addresses several common issues in JavaScript projects, especially as codebases grow in size and complexity.
 
 ---
 
-## 1️⃣ Catching Runtime Errors Early
+## Catching Runtime Errors Early {#_1%EF%B8%8F%E2%83%A3-catching-runtime-errors-early}
 
 - JavaScript errors often appear **at runtime**, which can be costly.
 - TypeScript catches errors **at compile-time**, e.g.:
@@ -24,7 +24,7 @@ greet(123);
 
 ---
 
-## 2️⃣ Better Maintainability in Large Codebases
+## Better Maintainability in Large Codebases {#_2%EF%B8%8F%E2%83%A3-better-maintainability-in-large-codebases}
 
 * TypeScript enforces **types, interfaces, and contracts**, which makes **code easier to read and maintain**.
 * Developers can understand expected inputs/outputs **without reading implementation**.
@@ -33,7 +33,7 @@ greet(123);
 
 ---
 
-## 3️⃣ Safer Refactoring
+## Safer Refactoring {#_3%EF%B8%8F%E2%83%A3-safer-refactoring}
 
 * Renaming functions, changing signatures, or moving modules is **safer with TS**.
 * Compiler immediately points out places where the changes break existing code.
@@ -42,7 +42,7 @@ greet(123);
 
 ---
 
-## 4️⃣ Checking React Prop Contracts
+## Checking React Prop Contracts {#_4%EF%B8%8F%E2%83%A3-checking-react-prop-contracts}
 
 * React props can have unexpected types or missing values.
 * TypeScript with **interfaces for props** checks that typed callers provide **statically compatible props**.
@@ -58,7 +58,7 @@ interface ButtonProps {
 
 ---
 
-## 5️⃣ Clearer API Contracts
+## Clearer API Contracts {#_5%EF%B8%8F%E2%83%A3-clearer-api-contracts}
 
 * Types describe what checked callers may pass; interfaces are erased from emitted JavaScript.
 * API JSON is untrusted `unknown` until runtime parsing establishes the contract. Writing `as User` only silences the compiler; it does not inspect a single field.
@@ -102,7 +102,7 @@ A user-defined `value is User` predicate is a promise made by its author; an inc
 
 ---
 
-## 6️⃣ Improved Developer Experience
+## Improved Developer Experience {#_6%EF%B8%8F%E2%83%A3-improved-developer-experience}
 
 * IDE features (autocomplete, hints, go-to-definition) prevent common mistakes.
 * Developers spend less time **debugging trivial mistakes**.
@@ -111,7 +111,7 @@ A user-defined `value is User` predicate is a promise made by its author; an inc
 
 ---
 
-## 7️⃣ Enforcing Immutability & Functional Patterns
+## Enforcing Immutability & Functional Patterns {#_7%EF%B8%8F%E2%83%A3-enforcing-immutability-functional-patterns}
 
 * TS encourages **readonly types, union types, and discriminated unions**, helping avoid **accidental mutations**.
 * Works well with Redux or functional programming practices.
@@ -120,7 +120,7 @@ A user-defined `value is User` predicate is a promise made by its author; an inc
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 TypeScript helps solve:
 
@@ -132,7 +132,7 @@ TypeScript helps solve:
 6. **Developer productivity problems** → autocomplete and type hints
 7. **State mutation issues** → readonly and strict types
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Think of TypeScript as **a safety net for complex applications**. The bigger and more team-oriented the project, the more critical these benefits become.
 
 ## Follow readonly and state modeling beyond mentions

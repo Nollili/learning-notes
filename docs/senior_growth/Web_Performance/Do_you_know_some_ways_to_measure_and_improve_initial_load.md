@@ -6,9 +6,9 @@ Optimizing **initial load performance** is about reducing the time it takes for 
 
 ---
 
-## 🧭 Key Metrics to Measure Initial Load
+## Key Metrics to Measure Initial Load {#%F0%9F%A7%AD-key-metrics-to-measure-initial-load}
 
-### 1. **TTFB (Time to First Byte)**
+### **TTFB (Time to First Byte)** {#_1-ttfb-time-to-first-byte}
 - Measures: Time for the server to respond to the browser’s initial request.  
 - Indicates backend or network latency issues.  
 - **Tools**:  
@@ -16,24 +16,24 @@ Optimizing **initial load performance** is about reducing the time it takes for 
   - Lighthouse → “Server response times”  
   - WebPageTest  
 
-### 2. **FCP (First Contentful Paint)**
+### **FCP (First Contentful Paint)** {#_2-fcp-first-contentful-paint}
 - Measures: Time until the browser renders the first visible content.  
 - Optimized by reducing render-blocking resources and minimizing bundle size.
 
-### 3. **LCP (Largest Contentful Paint)**
+### **LCP (Largest Contentful Paint)** {#_3-lcp-largest-contentful-paint}
 - Measures: Time for the main content (hero image, title, etc.) to appear.  
 - Good field LCP is at most2.5s at the75th percentile; a single lab result is different evidence.
 
-### 4. **Responsiveness diagnostics**
+### **Responsiveness diagnostics** {#_4-responsiveness-diagnostics}
 - Use lab TBT and interaction traces, plus field INP. TTI was removed from Lighthouse10; informal TTFI is not its standardized synonym.
 - Rendering content does not prove correct listeners, hydration or low input latency.
 
-### 5. **Speed Index**
+### **Speed Index** {#_5-speed-index}
 - Measures: How quickly content is visually displayed during load.
 
 ---
 
-## ⚙️ Tools to Measure
+## Tools to Measure {#%E2%9A%99%EF%B8%8F-tools-to-measure}
 
 - **Chrome DevTools → Performance & Lighthouse tabs**
 - **WebPageTest.org**
@@ -43,44 +43,44 @@ Optimizing **initial load performance** is about reducing the time it takes for 
 
 ---
 
-## 🚀 Techniques to Improve Initial Load
+## Techniques to Improve Initial Load {#%F0%9F%9A%80-techniques-to-improve-initial-load}
 
-### **1. Optimize Bundles**
+### **Optimize Bundles** {#_1-optimize-bundles}
 - Use **code splitting** (`React.lazy`, dynamic `import()`)
 - Apply **tree shaking** to remove unused code
 - Use **minification & compression** (e.g., Terser, Gzip, Brotli)
 - Remove **polyfills** not needed for modern browsers
 
-### **2. Defer or Async Scripts**
+### **Defer or Async Scripts** {#_2-defer-or-async-scripts}
 - Use `<script defer>` for non-critical scripts (loads in parallel, executes after HTML parsing)
 - Use `<script async>` for independent third-party scripts (analytics, ads)
 
-### **3. Optimize Rendering Path**
+### **Optimize Rendering Path** {#_3-optimize-rendering-path}
 - Inline **critical CSS**
 - Keep essential CSS as a stylesheet; preload only fetches and prefetch is a speculative future hint. Neither applies CSS on its own. Noncritical async styling requires a consuming stylesheet and a tested no-script/CSP strategy.
 - Choose a font-display policy deliberately; swap avoids prolonged invisible text but can cause shifts without matched fallback metrics.
 
-### **4. Optimize Server Response**
+### **Optimize Server Response** {#_4-optimize-server-response}
 - Use **HTTP/2 or HTTP/3**
 - Apply **CDN** for static assets
 - Cache responses effectively with **ETags** or **Cache-Control headers**
 
-### **5. Optimize Images**
+### **Optimize Images** {#_5-optimize-images}
 - Compress and resize appropriately
 - Use modern formats like **WebP** or **AVIF**
 - Lazy-load below-the-fold images (`loading="lazy"`)
 
-### **6. Preloading & Prefetching**
+### **Preloading & Prefetching** {#_6-preloading-prefetching}
 - `<link rel="preload">` for critical resources
 - `<link rel="prefetch">` or `<link rel="dns-prefetch">` for anticipated navigation
 
-### **7. SSR or SSG**
+### **SSR or SSG** {#_7-ssr-or-ssg}
 - Consider SSR/SSG when earlier useful HTML justifies server/cache/hydration complexity; neither guarantees faster results.
 - Example: Next.js, Remix, Astro
 
 ---
 
-## 🧩 Example: React + Vite Optimization Checklist
+## Example: React + Vite Optimization Checklist {#%F0%9F%A7%A9-example-react-vite-optimization-checklist}
 
 | Area | Tool/Technique | Benefit |
 |------|----------------|----------|
@@ -93,7 +93,7 @@ Optimizing **initial load performance** is about reducing the time it takes for 
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 Improving initial load is about reducing **what must be loaded**, **when it’s loaded**, and **how efficiently it’s delivered**.  
 Combining **bundle optimization**, **network tuning**, and **render path optimization** results in a visibly faster, more responsive first experience.

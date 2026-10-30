@@ -1,12 +1,12 @@
 # GIT flow vs Trunk-based Development? Differences, benefits each of branching model
 
-## 🔹 Git Flow vs Trunk-Based Development (TBD)
+## Git Flow vs Trunk-Based Development (TBD) {#%F0%9F%94%B9-git-flow-vs-trunk-based-development-tbd}
 
 Both **Git Flow** and **Trunk-Based Development (TBD)** are popular Git branching strategies, but they support different release cadences and integration policies; team size alone does not determine the choice. Understanding the differences helps choose the right strategy for a project.
 
 ---
 
-## 1️⃣ Git Flow
+## Git Flow {#_1%EF%B8%8F%E2%83%A3-git-flow}
 
 ### Structure
 
@@ -34,7 +34,7 @@ Both **Git Flow** and **Trunk-Based Development (TBD)** are popular Git branchin
 
 ---
 
-## 2️⃣ Trunk-Based Development (TBD)
+## Trunk-Based Development (TBD) {#_2%EF%B8%8F%E2%83%A3-trunk-based-development-tbd}
 
 ### Structure
 
@@ -58,7 +58,7 @@ Both **Git Flow** and **Trunk-Based Development (TBD)** are popular Git branchin
 
 ---
 
-## 3️⃣ Key Differences
+## Key Differences {#_3%EF%B8%8F%E2%83%A3-key-differences}
 
 | Aspect                  | Git Flow                          | Trunk-Based Development           |
 |-------------------------|----------------------------------|----------------------------------|
@@ -71,7 +71,7 @@ Both **Git Flow** and **Trunk-Based Development (TBD)** are popular Git branchin
 
 ---
 
-## 4️⃣ When to Use Each
+## When to Use Each {#_4%EF%B8%8F%E2%83%A3-when-to-use-each}
 
 ### Git Flow
 
@@ -87,12 +87,12 @@ Both **Git Flow** and **Trunk-Based Development (TBD)** are popular Git branchin
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **Git Flow:** Structured, stable, supports long-lived branches, useful for some maintained release lines and scheduled releases.  
 - **Trunk-Based Development:** Simple, fast, CI/CD-friendly, ideal for continuous integration and rapid iteration.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Many modern projects use a **hybrid approach**: short-lived feature branches **merged frequently into trunk/main** with **release branches only when needed**.
 
 

@@ -1,4 +1,4 @@
-# Practice: 🔹 What is TypeScript?
+# Practice: What is TypeScript? {#practice-%F0%9F%94%B9-what-is-typescript}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

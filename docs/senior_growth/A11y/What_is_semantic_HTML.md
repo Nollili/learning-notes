@@ -6,7 +6,7 @@ Semantic elements improve **accessibility, SEO, and maintainability**.
 
 ---
 
-## 1️⃣ What Makes HTML Semantic?
+## What Makes HTML Semantic? {#_1%EF%B8%8F%E2%83%A3-what-makes-html-semantic}
 
 - Elements **describe the content’s role**.
 - Browsers, developers, and assistive technologies can **understand the page structure**.
@@ -14,7 +14,7 @@ Semantic elements improve **accessibility, SEO, and maintainability**.
 
 ---
 
-## 2️⃣ Common Semantic HTML Elements
+## Common Semantic HTML Elements {#_2%EF%B8%8F%E2%83%A3-common-semantic-html-elements}
 
 | Element      | Purpose / Usage                                      |
 |-------------|-----------------------------------------------------|
@@ -36,7 +36,7 @@ Semantic elements improve **accessibility, SEO, and maintainability**.
 
 ---
 
-## 3️⃣ Benefits of Semantic HTML
+## Benefits of Semantic HTML {#_3%EF%B8%8F%E2%83%A3-benefits-of-semantic-html}
 
 1. **Accessibility (a11y)**
    - Screen readers understand the structure.
@@ -53,7 +53,7 @@ Semantic elements improve **accessibility, SEO, and maintainability**.
 
 ---
 
-## 4️⃣ Examples
+## Examples {#_4%EF%B8%8F%E2%83%A3-examples}
 
 ```html
 <header>
@@ -83,13 +83,13 @@ Semantic elements improve **accessibility, SEO, and maintainability**.
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * Semantic HTML = **meaningful, descriptive markup**.
 * Improves **accessibility, SEO, and code clarity**.
 * Always prefer semantic elements over generic `<div>` or `<span>` when possible.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Prefer native semantics, then add only the ARIA states/relationships the interaction needs. Redundant/conflicting roles can make an otherwise useful native element worse.
 
 ## Page structure and accessible names

@@ -1,4 +1,4 @@
-# Practice: What is code standard? 
+# Practice: What is code standard? {#practice-what-is-code-standard}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

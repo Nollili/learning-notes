@@ -1,8 +1,8 @@
-### Significant features introduced in ES9 (2018), ES10 (2019), and ES11 (2020)
+# ECMAScript features from ES2018 to ES2020 {#significant-features-introduced-in-es9-2018-es10-2019-and-es11-2020}
 
 ## **ES9 (ECMAScript 2018): Key Features**
 
-### **1. Asynchronous Iteration**
+### **Asynchronous Iteration** {#_1-asynchronous-iteration}
 
 - **`for await...of`** consumes async iterables and also awaits values from synchronous iterables. It does not itself limit when promises start. Mapping URLs to fetch promises starts every request eagerly; a later promise may reject before the loop reaches it. Use sequential production below, or attach handlers immediately through a bounded concurrency abstraction.
 
@@ -26,7 +26,7 @@ async function consume(urls, signal) {
 
 ---
 
-### **2. Rest/Spread Properties for Objects**
+### **Rest/Spread Properties for Objects** {#_2-rest-spread-properties-for-objects}
 
 - Previously available for arrays, `rest` and `spread` were extended to objects.
 
@@ -48,7 +48,7 @@ console.log(obj2); // { a: 1, b: 2, c: 3 }
 
 ---
 
-### **3. Promise.prototype.finally**
+### **Promise.prototype.finally** {#_3-promise-prototype-finally}
 
 - Adds a `finally` method to Promises for cleanup, regardless of the Promise's resolution or rejection.
 
@@ -61,7 +61,7 @@ fetch("https://api.example.com/data")
 
 ---
 
-### **4. Regular Expression Enhancements**
+### **Regular Expression Enhancements** {#_4-regular-expression-enhancements}
 
 - **Unicode Property Escapes**: Match Unicode characters based on their properties.
     
@@ -82,7 +82,7 @@ fetch("https://api.example.com/data")
 
 ## **ES10 (ECMAScript 2019): Key Features**
 
-### **1. Array `flat` and `flatMap`**
+### **Array `flat` and `flatMap`** {#_1-array-flat-and-flatmap}
 
 - **`flat`**: Flattens nested arrays to a specified depth.
     
@@ -101,7 +101,7 @@ fetch("https://api.example.com/data")
 
 ---
 
-### **2. `Object.fromEntries`**
+### **`Object.fromEntries`** {#_2-object-fromentries}
 
 - Converts an array of key-value pairs into an object (reverse of `Object.entries`).
 
@@ -113,7 +113,7 @@ console.log(obj); // { a: 1, b: 2 }
 
 ---
 
-### **3. String `trimStart` and `trimEnd`**
+### **String `trimStart` and `trimEnd`** {#_3-string-trimstart-and-trimend}
 
 - Removes whitespace from the start or end of a string.
 
@@ -124,7 +124,7 @@ console.log("   Hello ".trimEnd()); // "   Hello"
 
 ---
 
-### **4. Optional Catch Binding**
+### **Optional Catch Binding** {#_4-optional-catch-binding}
 
 - The `catch` block no longer requires an error parameter.
 
@@ -138,7 +138,7 @@ try {
 
 ---
 
-### **5. Function `toString` Updates**
+### **Function `toString` Updates** {#_5-function-tostring-updates}
 
 - For ordinary source-defined functions when source text is available, toString preserves their source text. Built-ins/bound functions can use native-code representations; it is not a portable serializer.
 
@@ -154,7 +154,7 @@ console.log(greet.toString());
 
 ## **ES11 (ECMAScript 2020): Key Features**
 
-### **1. Optional Chaining (`?.`)**
+### **Optional Chaining (`?.`)** {#_1-optional-chaining}
 
 - Safely access deeply nested properties without checking each level.
 
@@ -166,7 +166,7 @@ console.log(user?.settings?.theme); // undefined
 
 ---
 
-### **2. Nullish Coalescing (`??`)**
+### **Nullish Coalescing (`??`)** {#_2-nullish-coalescing}
 
 - Provides a default value only if the left-hand side is `null` or `undefined`.
 
@@ -180,7 +180,7 @@ console.log(bar); // 0
 
 ---
 
-### **3. Dynamic Import**
+### **Dynamic Import** {#_3-dynamic-import}
 
 - Allows importing modules dynamically at runtime.
 
@@ -194,7 +194,7 @@ loadModule()
 
 ---
 
-### **4. BigInt**
+### **BigInt** {#_4-bigint}
 
 - Supports arbitrarily large integers.
 
@@ -205,7 +205,7 @@ console.log(bigNumber + 1n); // 123456789012345678901234567891n
 
 ---
 
-### **5. Promise.allSettled**
+### **Promise.allSettled** {#_5-promise-allsettled}
 
 - Waits for all Promises to settle (resolve or reject) and returns their results.
 
@@ -226,7 +226,7 @@ Promise.allSettled(promises).then((results) => console.log(results));
 
 ---
 
-### **6. GlobalThis**
+### **GlobalThis** {#_6-globalthis}
 
 - Provides a universal way to access the global object.
 
@@ -236,7 +236,7 @@ console.log(globalThis); // Works in browsers, Node.js, and other environments
 
 ---
 
-### **7. `String.prototype.matchAll`**
+### **`String.prototype.matchAll`** {#_7-string-prototype-matchall}
 
 - Returns all matches of a regular expression as an iterator.
 
@@ -291,7 +291,7 @@ function regexFixture() {
   const states = [stateful.test('a'), stateful.test('a'), stateful.test('a')];
   const multiline = /^second$/m.test('first\nsecond');
   const dotAll = /^first.second$/s.test('first\nsecond');
-  const letters = [...'árvíz π 😀'.matchAll(/\p{L}[\p{L}\p{M}]*/gu)].map(match => match[0]);
+  const letters = [...'árvíz π !'.matchAll(/\p{L}[\p{L}\p{M}]*/gu)].map(match => match[0]);
   return { matches, states, multiline, dotAll, letters };
 }
 function literalMatches(text, literal) {

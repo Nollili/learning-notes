@@ -1,8 +1,8 @@
-### Do you know some of the differences of non relational databases and relational databases?
+# Do you know some of the differences of non relational databases and relational databases? {#do-you-know-some-of-the-differences-of-non-relational-databases-and-relational-databases}
 
 Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in several key aspects related to their data models, structure, scalability, and usage. Here’s a comparison:
 
-### **1. Data Model**
+### **Data Model** {#_1-data-model}
 
 - **Relational Databases (RDBMS)**:
     - **Structured Data**: Data is stored in tables with predefined schemas consisting of rows and columns.
@@ -15,7 +15,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **2. Data Structure**
+### **Data Structure** {#_2-data-structure}
 
 - **Relational Databases (RDBMS)**:
     - **Tables**: Data is stored in tables with rows (records) and columns (attributes).
@@ -30,7 +30,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **3. Scalability**
+### **Scalability** {#_3-scalability}
 
 - **Relational Databases (RDBMS)**:
     - **Scaling options**: Vertical resources, indexes/query design, replicas, partitioning and, for suitable products/designs, sharding/distributed SQL.
@@ -41,7 +41,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **4. Consistency and Transactions**
+### **Consistency and Transactions** {#_4-consistency-and-transactions}
 
 - **Relational Databases (RDBMS)**:
     - **ACID Compliance**: RDBMS follow **ACID** (Atomicity, Consistency, Isolation, Durability) principles to ensure reliable transactions.
@@ -54,7 +54,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **5. Querying and Flexibility**
+### **Querying and Flexibility** {#_5-querying-and-flexibility}
 
 - **Relational Databases (RDBMS)**:
     - **SQL**: Uses **Structured Query Language (SQL)** for querying, which is powerful and standardized across relational systems.
@@ -67,7 +67,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **6. Use Cases**
+### **Use Cases** {#_6-use-cases}
 
 - **Relational Databases (RDBMS)**:
     - **Best for structured data**: Applications that require structured data and relationships, such as financial systems, ERP systems, and transactional applications.
@@ -79,7 +79,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **7. Performance**
+### **Performance** {#_7-performance}
 
 - **Relational Databases (RDBMS)**:
     - **Optimized for Transactional Workloads**: RDBMS are optimized for transactional workloads where data integrity is critical.
@@ -90,7 +90,7 @@ Yes, relational databases (RDBMS) and non-relational databases (NoSQL) differ in
 
 ---
 
-### **8. Examples and Specifics**
+### **Examples and Specifics** {#_8-examples-and-specifics}
 
 - **Relational Databases (RDBMS)**:
     - **MySQL**: Popular for web applications and content management systems.

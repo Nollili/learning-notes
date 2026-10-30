@@ -1,4 +1,4 @@
-### What is ES6 Map? What is the difference between Map and WeakMap and Object?
+# What is ES6 Map? What is the difference between Map and WeakMap and Object? {#what-is-es6-map-what-is-the-difference-between-map-and-weakmap-and-object}
 
 ### **What is an ES6 Map?**
 

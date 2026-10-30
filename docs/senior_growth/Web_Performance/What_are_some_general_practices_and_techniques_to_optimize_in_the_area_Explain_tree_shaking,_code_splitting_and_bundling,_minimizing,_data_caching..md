@@ -6,25 +6,25 @@ Senior engineers optimize frontend performance by focusing on how code is delive
 
 ---
 
-### ⚙️ Build and Delivery Pipeline
+### Build and Delivery Pipeline {#%E2%9A%99%EF%B8%8F-build-and-delivery-pipeline}
 - Use production builds for configured minification/dead-code elimination. Configure and verify HTTP compression separately; a bundler does not automatically configure the CDN.
 - Generate source maps for production diagnosis when required; retain them privately with the exact release and exclude them from public artifacts. Hidden maps still need access control. Follow the [worked source-map lifecycle and resolution lab](../React/build_tools.md#source-maps-generate-privately-then-verify-an-actual-mapped-failure).
 - Monitor bundle size with tools like Webpack Bundle Analyzer or Vite Visualizer.
 - Set and enforce performance budgets for bundle sizes.
 
-### ⚡ JavaScript Execution
+### JavaScript Execution {#%E2%9A%A1-javascript-execution}
 - Split code by routes or components to avoid large bundles.
 - Use lazy loading for non-critical code.
 - Prefer lightweight libraries and native browser APIs.
 - Apply debounce/throttle for frequently triggered events.
 
-### 🖼️ Rendering Optimization
+### Rendering Optimization {#%F0%9F%96%BC%EF%B8%8F-rendering-optimization}
 - Prevent unnecessary component re-renders with memoization and stable props.
 - Use profiling tools to find performance bottlenecks.
 - Batch state updates and minimize re-renders from global context changes.
 - Virtualize long lists for better rendering performance.
 
-### 🌐 Network & Asset Optimization
+### Network & Asset Optimization {#%F0%9F%8C%90-network-asset-optimization}
 - Serve compressed assets (gzip or Brotli).
 - Use HTTP caching headers like ETag and Cache-Control.
 - Host static assets on CDNs.
@@ -32,7 +32,7 @@ Senior engineers optimize frontend performance by focusing on how code is delive
 
 ---
 
-## 🌳 Tree Shaking
+## Tree Shaking {#%F0%9F%8C%B3-tree-shaking}
 
 Tree shaking eliminates unused code from the final JavaScript bundle during build. It works with ES Modules (`import`/`export`) and bundlers like Webpack, Rollup, or Vite. Statically provable unused exports may be removed; dynamic access, side effects, CommonJS boundaries and configuration can retain code. Inspect the emitted result instead of assuming every unused feature disappears.
 
@@ -43,7 +43,7 @@ Tree shaking eliminates unused code from the final JavaScript bundle during buil
 
 ---
 
-## 📦 Code Splitting
+## Code Splitting {#%F0%9F%93%A6-code-splitting}
 
 Code splitting breaks your app into smaller chunks loaded as needed. This can be done by route, component, or vendor splitting. It can reduce initial code demand while adding later discovery/request/parse cost; verify both initial and feature-open outcomes.
 
@@ -55,7 +55,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 ---
 
-## 📚 Bundling
+## Bundling {#%F0%9F%93%9A-bundling}
 
 Bundling combines modules (JS, CSS, images) into files that browsers can load efficiently. Tools include Webpack, Rollup, ESBuild, and Vite. Bundling reduces HTTP requests and enables optimizations like minification and tree shaking.
 
@@ -63,7 +63,7 @@ Bundling combines modules (JS, CSS, images) into files that browsers can load ef
 
 ---
 
-## ✂️ Minification
+## Minification {#%E2%9C%82%EF%B8%8F-minification}
 
 Minification rewrites code and removes unnecessary characters (whitespace, comments, long local names) while aiming to preserve specified behavior. Code that depends on function names, eval or accidental timing may expose assumptions; configure and test the actual build. Tools include Terser for JS, CSSNano/PostCSS for CSS, and HTMLMinifier for HTML.
 
@@ -71,7 +71,7 @@ Minification rewrites code and removes unnecessary characters (whitespace, comme
 
 ---
 
-## 💾 Data Caching
+## Data Caching {#%F0%9F%92%BE-data-caching}
 
 Caching stores data (API responses, assets, computed values) for reuse, reducing network requests and improving performance.
 
@@ -85,7 +85,7 @@ Caching stores data (API responses, assets, computed values) for reuse, reducing
 
 ---
 
-## 🚀 Summary Table
+## Summary Table {#%F0%9F%9A%80-summary-table}
 
 | Technique      | Purpose              | Key Benefit                  |
 |----------------|---------------------|------------------------------|
@@ -95,13 +95,13 @@ Caching stores data (API responses, assets, computed values) for reuse, reducing
 | Minification   | Compress code       | Faster downloads             |
 | Data Caching   | Reuse data          | Less network load, faster UX |
 
-**Senior-level takeaway:**  
+ **Senior-level takeaway:**
 Performance optimization is about controlling when and how the browser loads and executes code. Use bundling, tree shaking, and caching together with runtime profiling for real user performance improvements.
 
 
 ## Worked production analysis: module contracts before chunk tuning
 
-### 1. Side effects and conditional exports
+### Side effects and conditional exports {#_1-side-effects-and-conditional-exports}
 
 A module's import-time side effects include CSS application, polyfill installation and global registration. They differ from a component's later click handler or React effect. Marking an entire library `sideEffects:false` asserts that unused modules may be skipped; it can delete required CSS/registration. For a hypothetical library whose emitted files match the following paths:
 
@@ -129,7 +129,7 @@ Conditional exports are selected by the host's active conditions and their order
 
 Do not disable side-effect handling globally or add a PURE annotation to an effectful call just to reduce bytes. Regression tests should verify styling/registration still occur, not only that a bundle became smaller.
 
-### 2. Eager versus on-demand code: a reproducible fixture
+### Eager versus on-demand code: a reproducible fixture {#_2-eager-versus-on-demand-code-a-reproducible-fixture}
 
 The fixture below uses **installed esbuild** for a controlled bundle experiment, separate from the primary Vite8 app configuration. It generates 1,000 deterministic report rows, compares equivalent eager/lazy click behavior and records a metafile. It is a synthetic build measurement, not a user-performance benchmark. Run it as `measure.cjs` in a scratch workspace with esbuild installed; it creates a fresh temporary folder. Keep its version and JSON output with the evidence.
 
@@ -169,7 +169,7 @@ The lazy entry is smaller while total raw bytes increase by91 and a later reques
 
 Read `results.json` output edges: the eager entry statically owns report code, while the lazy entry has a dynamic import edge to a report chunk. Track route entry, shared modules, JS/CSS assets and imported dependencies; a vendor chunk can still be required on the initial route. For the real app, compare initial route raw/compressed bytes, parse/evaluate time, main-thread tasks and feature-open latency under identical cold/warm conditions. Capture at least several repeated runs and retain variability; do not invent a performance improvement percentage from this size table.
 
-### 3. Primary Vite8 configuration and request waterfalls
+### Primary Vite8 configuration and request waterfalls {#_3-primary-vite8-configuration-and-request-waterfalls}
 
 <<< ../../workbench/engineering/performance/vite.config.ts{ts}
 

@@ -1,4 +1,4 @@
-### Explain history API from Browser API?
+# Explain history API from Browser API? {#explain-history-api-from-browser-api}
 
 The **History API** in JavaScript is part of the **Browser APIs** that allows you to interact with the browser’s history stack, enabling you to manipulate the navigation history without actually triggering a page reload or navigation. It is primarily used to create single-page applications (SPAs), where users can navigate between different views or states without leaving the current page or reloading the whole application.
 
@@ -14,7 +14,7 @@ The **History API** in JavaScript is part of the **Browser APIs** that allows yo
 
 The History API is accessed through the `window.history` object, and it provides the following methods:
 
-### **1. `history.pushState()`**
+### **`history.pushState()`** {#_1-history-pushstate}
 
 This method allows you to add a new entry to the browser’s history stack. It does **not trigger a page reload** and allows you to change the URL in the address bar. It is commonly used to simulate navigation within SPAs.
 
@@ -37,7 +37,7 @@ history.pushState({ page: 'about' }, 'About', '/about');
 
 This will update the URL to `/about` but won't reload the page. The state object can hold data related to the page that can be used later when navigating.
 
-### **2. `history.replaceState()`**
+### **`history.replaceState()`** {#_2-history-replacestate}
 
 This method is similar to `pushState()`, but instead of adding a new entry to the history stack, it **replaces** the current history entry with the new one. It’s useful for updating the URL or state without creating a new entry in the browser's history.
 
@@ -60,7 +60,7 @@ history.replaceState({ page: 'home' }, 'Home', '/home');
 
 This replaces the current history state with the `/home` URL, but it doesn’t add a new entry to the history.
 
-### **3. `history.back()`**
+### **`history.back()`** {#_3-history-back}
 
 This method simulates the behavior of the **Back button** in the browser. It navigates to the previous page in the browser's history stack.
 
@@ -77,7 +77,7 @@ history.back();
 history.back();
 ```
 
-### **4. `history.forward()`**
+### **`history.forward()`** {#_4-history-forward}
 
 This method simulates the behavior of the **Forward button** in the browser. It navigates to the next page in the history stack, if there is one.
 
@@ -94,7 +94,7 @@ history.forward();
 history.forward();
 ```
 
-### **5. `history.go()`**
+### **`history.go()`** {#_5-history-go}
 
 This method allows you to go to a specific point in the history stack by providing an integer parameter. A positive integer moves forward, while a negative integer moves backward.
 

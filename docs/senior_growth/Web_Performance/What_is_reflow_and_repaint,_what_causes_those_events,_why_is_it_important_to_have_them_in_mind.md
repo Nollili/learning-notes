@@ -2,7 +2,7 @@
 
 ---
 
-## 🧩 What Are Reflow and Repaint?
+## What Are Reflow and Repaint? {#%F0%9F%A7%A9-what-are-reflow-and-repaint}
 
 When a browser renders a web page, it follows these steps:
 1. **Parse HTML → Build DOM**
@@ -16,7 +16,7 @@ Reflow and repaint are **important for web performance**. If triggered too often
 
 ---
 
-## 🔁 Reflow (Layout)
+## Reflow (Layout) {#%F0%9F%94%81-reflow-layout}
 **What is it?**  
 Reflow (layout) is when the browser recalculates the position and size of elements in the document.
 
@@ -32,7 +32,7 @@ Reflow is computationally expensive and can affect many elements, especially if 
 
 ---
 
-## 🎨 Repaint
+## Repaint {#%F0%9F%8E%A8-repaint}
 **What is it?**  
 Repaint redraws the visual appearance of elements without affecting their layout.
 
@@ -46,7 +46,7 @@ Paint and layout costs depend on affected content, rasterization, invalidation a
 
 ---
 
-## ⚠️ Why It Matters
+## Why It Matters {#%E2%9A%A0%EF%B8%8F-why-it-matters}
 
 Frequent reflows and repaints:
 - Slow down rendering, especially on less powerful devices
@@ -55,9 +55,9 @@ Frequent reflows and repaints:
 
 ---
 
-## 🧠 How to Avoid Performance Issues
+## How to Avoid Performance Issues {#%F0%9F%A7%A0-how-to-avoid-performance-issues}
 
-| ❌ Inefficient | 💡 Better Practice |
+|  Inefficient |  Better Practice |
 |---------------|-------------------|
 | Repeated dirty read/write cycles | Measure needed geometry together, then apply owned writes |
 | Reading layout after changing styles | Separate read and write operations |
@@ -67,7 +67,7 @@ Frequent reflows and repaints:
 
 ---
 
-## 🧰 How to Detect
+## How to Detect {#%F0%9F%A7%B0-how-to-detect}
 
 - **Chrome DevTools → Performance tab:** Record and inspect “Layout” and “Paint” events
 - **Lighthouse / Web Vitals:** Check INP and CLS metrics
@@ -75,7 +75,7 @@ Frequent reflows and repaints:
 
 ---
 
-## 🚀 Summary Table
+## Summary Table {#%F0%9F%9A%80-summary-table}
 
 | Concept            | What It Does                | Cost      | Triggered By                       |
 |--------------------|----------------------------|-----------|------------------------------------|
@@ -85,11 +85,11 @@ Frequent reflows and repaints:
 
 ---
 
-### ✅ Optimization Tips
+### Optimization Tips {#%E2%9C%85-optimization-tips}
 > Minimize layout changes, batch DOM updates, and use GPU-friendly CSS properties.
 
 **In short:**  
-> 💡 *Reflow rearranges pixels; repaint recolors them.*  
+> *Reflow rearranges pixels; repaint recolors them.*\
 > Both can slow rendering if overused—optimize for smooth UI.
 
 

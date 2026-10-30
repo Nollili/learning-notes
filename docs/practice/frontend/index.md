@@ -15,6 +15,10 @@
 
 Each stage records source revision, environment, expected/actual outcomes, one failure→correction→retest and explicit unperformed checks. Do not duplicate the full application per topic. Keep smaller counterexamples isolated from the working version.
 
+## Performance hometasks
+
+After the relevant browser/JavaScript foundations (and F05/F06 for framework-specific choices), complete [H1 — investigate, H2 — improve, H3 — verify](./performance/). Reuse this app and the existing E02 performance increment. The core sequence is required practice in the performance path; Webpack compatibility, critical-CSS automation, workers and offline service workers are optional extensions.
+
 ## Extracted lesson requirements
 
 The linked topic indexes list the original exercises moved out of textbook paragraphs. They refine the same projects; they do not require a new application per page.

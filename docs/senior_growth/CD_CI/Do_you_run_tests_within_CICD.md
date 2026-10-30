@@ -1,10 +1,10 @@
-# 🧪 Running Tests within CI/CD
+# Running Tests within CI/CD {#%F0%9F%A7%AA-running-tests-within-ci-cd}
 
 Yes, running tests is a **core part of the CI/CD pipeline**. Automated testing checks selected behavior before promotion; missing cases, weak oracles and configuration failures remain possible.
 
 ---
 
-## 1️⃣ Why Tests in CI/CD Are Important
+## Why Tests in CI/CD Are Important {#_1%EF%B8%8F%E2%83%A3-why-tests-in-ci-cd-are-important}
 
 - **Immediate Feedback:** Detect failing code as soon as it’s pushed.
 - **Prevent Regressions:** Catch bugs early to avoid breaking production.
@@ -13,7 +13,7 @@ Yes, running tests is a **core part of the CI/CD pipeline**. Automated testing c
 
 ---
 
-## 2️⃣ Types of Tests Typically Run in CI/CD
+## Types of Tests Typically Run in CI/CD {#_2%EF%B8%8F%E2%83%A3-types-of-tests-typically-run-in-ci-cd}
 
 | Test Type                 | Tool Example             | Purpose                                                                 |
 |---------------------------|------------------------|-------------------------------------------------------------------------|
@@ -23,11 +23,11 @@ Yes, running tests is a **core part of the CI/CD pipeline**. Automated testing c
 | **Linting & Type Checks** | ESLint, TypeScript      | Ensure code style and type safety before further processing.           |
 | **Static Code Analysis**  | SonarQube               | Detect code smells, vulnerabilities, or coverage issues.               |
 
-> 💡 Note: Unit and linting tests usually run on **every commit**, while E2E tests might run on **feature merges or staging deployments** due to longer runtime.
+> Note: Unit and linting tests usually run on **every commit**, while E2E tests might run on **feature merges or staging deployments** due to longer runtime.
 
 ---
 
-## 3️⃣ Example CI Pipeline with Tests
+## Example CI Pipeline with Tests {#_3%EF%B8%8F%E2%83%A3-example-ci-pipeline-with-tests}
 
 This is a **client Vite project example** on GitLab CI, not this notes repository's active pipeline. Its package must define lint/typecheck/test:unit/test:integration/build scripts and have a compatible Node24 toolchain/lockfile. Each job is isolated. Node services use their actual server build artifact and integration smoke test instead of the client HTML check.
 
@@ -86,7 +86,7 @@ The final job checks artifact availability only, not functional UI behavior. A r
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 1. **Run tests in parallel** where possible to speed up CI.
 2. **Cache package downloads** keyed by lockfile/runtime policy; transfer required build output with explicit artifacts. Every npm job still establishes its own dependencies.
@@ -99,13 +99,13 @@ The final job checks artifact availability only, not functional UI behavior. A r
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * Running tests in CI/CD supplies evidence for its configured gates; production safety needs additional release controls.
 * Unit, integration, and E2E tests form a **layered safety net**.
 * Test automation reduces **manual effort, errors, and regressions**, improving developer confidence and release speed.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Think of tests in CI/CD as a **gatekeeper**: no code passes to staging or production without passing automated validation.
 
 

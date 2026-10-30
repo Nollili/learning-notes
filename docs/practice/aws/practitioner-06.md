@@ -1,0 +1,342 @@
+# P06 — SQS and SNS integration
+
+**Learner status: not started. All supplied tasks on this page are mandatory in this learning path**, including items originally labelled optional or bonus. Repeating tasks still require the stated action or comparison; reuse earlier resources and code where suitable, and record the new evidence. Source optional labels describe the original course only.
+
+**Read first:** [messaging](../../aws/messaging.md). **Overlap:** Repeating in A09: queues, persistence, notifications and DLQs. The DLQ alarm is mandatory here.
+
+[Original supplied text](/aws-homework/sources/practitioner-06.txt) preserves the source wording. Apply the [corrections](./source-notes.md) and this path’s mandatory status when interpreting it.
+
+Your store can accept a bulk CSV upload and parse it, but the pipeline stops there. Module 5's importFileParser only logs each parsed row to CloudWatch, so nothing from an uploaded file reaches your database yet. This module closes that gap: importFileParser sends each parsed row onto a new SQS queue. A new Lambda in the Product Service consumes the queue in batches and creates the corresponding products. Every product created this way also publishes an SNS notification, so other systems can react to new inventory without polling your API.
+
+## Prerequisites
+
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+
+Make sure to use Node.js version 22 — this matches the Lambda runtime required for this module.
+
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+
+You'll need two real, working email addresses to subscribe to the SNS topic below. They can both be yours, for example a second alias on the same inbox. You must confirm each subscription via the link AWS emails you before you'll actually receive any notifications.
+
+## Workflow
+
+Make sure you're working in your fork of the template repository.
+
+Create a branch named task-6 off the latest main and work there for this module.
+
+Run npm run sync-tests -- module-6 to pull this module's Autocode tests into your local src/test/.
+
+Implement all the tasks described in Tasks below.
+
+Deploy and configure your stack for testing:
+
+This module's Tasks add three SNS email subscriptions (see Task 6.4), split across two addresses. Set both as environment variables before deploying:
+
+```bash
+export NOTIFICATION_EMAIL=you@example.com
+export PRIORITY_NOTIFICATION_EMAIL=you+important@example.com
+npm run deploy
+```
+
+Check both inboxes and confirm every SNS subscription email AWS sends you. Until confirmed, no notification actually reaches you.
+
+e2e.config.ts doesn't need any new URLs for this module. It reuses IMPORT_API_URL and PRODUCT_API_URL from previous modules.
+
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+
+Validate your work:
+
+```bash
+npm run test:unit # infrastructure tests.
+npm run test:e2e # endpoint tests against your deployed API.
+npm test # runs both.
+```
+
+You can also test the live pipeline manually. A sample CSV file is provided at resources/sample-data/catalog-items.csv if you want a ready-to-upload file: request an upload URL from GET /import, PUT the file to it, then check GET /products a few seconds later.
+
+**User-owned submission:** after local validation, the user pushes and submits the branch in Autocode and waits for grading. The assistant must never push.
+
+After grading, the learner follows the course pull-request and merge workflow.
+
+## Architecture
+
+See the [course-wide system diagram](../../aws/index.md#one-application-several-responsibilities). The pasted source contains an image label rather than an embedded diagram.
+
+## Project structure
+
+Files marked (unchanged) already exist and need no changes. Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Tasks below.
+
+```text
+src/
+  infra/
+    bin/
+      app.ts                              # CDK app entry point (update)
+    lib/
+      index.ts                            # stack barrel (unchanged)
+      product-service-stack/
+        index.ts                          # ProductServiceStack (update)
+        catalog-items-dlq.ts              # CatalogItemsDlqConstruct
+        catalog-items-queue.ts            # CatalogItemsQueueConstruct
+        catalog-batch-process-lambda.ts   # CatalogBatchProcessLambdaConstruct
+        create-product-topic.ts           # CreateProductTopicConstruct
+      import-service-stack/
+        index.ts                          # ImportServiceStack (update)
+        import-file-parser-lambda.ts      # ImportFileParserLambdaConstruct (update)
+  app/
+    handlers/
+      catalog-batch-process/
+        handler.ts                        # catalogBatchProcess handler
+      import-file-parser/
+        handler.ts                        # importFileParser handler (update)
+    types/
+      product.ts                          # `Product` interface (unchanged)
+```
+
+## Data Models
+
+catalogBatchProcess reads one CSV row per SQS message. Each row has the same shape as Module 5's Data Models:
+
+```text
+  title       - text, not null
+  description - text, optional
+  price       - number, greater than 0
+  count       - integer, 0 or greater
+```
+
+For every valid message, it creates one item in the products table and one in the stock table. Both get the same shape createProduct already writes, with a fresh, server-generated id. See Module 4's Data Models for both tables' schemas.
+
+## Tasks
+
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+### Task 6.1 — Catalog Items Queue
+
+Right now importFileParser only logs each row it parses, so nothing from an uploaded file gets any further than CloudWatch. This task adds two SQS queues to ProductServiceStack: the standard catalogItemsQueue, which holds each parsed row until a consumer is ready to write it to the database, and a dead-letter queue for messages that keep failing.
+
+Both queues belong to Product Service, not Import Service. That's where the catalogItemsQueue consumer will live once you build it in a later task. It will read straight from the queue and will write to the products and stock DynamoDB tables. You build the dead-letter queue first, then the main queue that points at it.
+
+What to do:
+
+Define the dead-letter queue that catches rows the consumer couldn't process, for example a row that failed to write to the products or stock table:
+
+Queue name catalogItemsDLQ.
+
+`src/infra/lib/product-service-stack/catalog-items-dlq.ts`
+
+```ts
+export class CatalogItemsDlqConstruct extends sqs.Queue {
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+Define the standard SQS queue that holds the parsed CSV rows:
+
+Queue name catalogItemsQueue.
+
+visibilityTimeout of 180 seconds, 6× the timeout of the batch consumer Lambda you define in a later task.
+
+A redrive policy pointing at catalogItemsDLQ, with maxReceiveCount: 3: after 3 failed delivery attempts, a message moves to the DLQ instead of being retried again.
+
+`src/infra/lib/product-service-stack/catalog-items-queue.ts`
+
+```ts
+export interface CatalogItemsQueueConstructProps {
+  readonly deadLetterQueue: sqs.IQueue; // the CatalogItemsDlqConstruct from step 1
+}
+```
+
+```ts
+export class CatalogItemsQueueConstruct extends sqs.Queue {
+  constructor(scope: Construct, id: string, props: CatalogItemsQueueConstructProps) { ... }
+}
+```
+
+Instantiate both catalogItemsDLQ and catalogItemsQueue in ProductServiceStack. ImportServiceStack will need a reference to catalogItemsQueue in the next task, so expose it as a public readonly property on the stack:
+
+`src/infra/lib/product-service-stack/index.ts`
+
+```ts
+export class ProductServiceStack extends Stack {
+  public readonly catalogItemsQueue: sqs.IQueue; // needed by ImportServiceStack, see the next task
+
+  constructor(scope: Construct, id: string, props?: StackProps) { ... }
+}
+```
+
+**Checkpoint: is the queue configured with the right visibility timeout and redrive policy?**
+
+### Task 6.2 — Publish to the Catalog Items Queue
+
+The queue is ready, but nothing writes to it yet. This task builds that path from Import Service. ProductServiceStack passes catalogItemsQueue into ImportServiceStack. importFileParser then publishes each parsed row to the queue as its own message instead of just writing it to CloudWatch.
+
+What to do:
+
+Give ImportServiceStack's constructor a new catalogItemsQueue prop. Since it depends on ProductServiceStack's queue, the CDK app's entry point needs to instantiate ProductServiceStack first, then pass its catalogItemsQueue property into ImportServiceStack through that prop:
+
+`src/infra/lib/import-service-stack/index.ts`
+
+```ts
+export interface ImportServiceStackProps extends StackProps {
+  readonly catalogItemsQueue: sqs.IQueue; // ProductServiceStack's catalogItemsQueue from Task 6.1
+}
+```
+
+```ts
+export class ImportServiceStack extends Stack {
+  constructor(scope: Construct, id: string, props: ImportServiceStackProps) { ... }
+}
+```
+
+Update the importFileParser Lambda construct to accept the queue's URL as a new prop, so it can pass that URL to the handler as a CATALOG_ITEMS_QUEUE_URL environment variable, next to the BUCKET_NAME it already sets:
+
+`src/infra/lib/import-service-stack/import-file-parser-lambda.ts`
+
+```ts
+export interface ImportFileParserLambdaConstructProps {
+  readonly bucket: s3.IBucket;
+  readonly catalogItemsQueueUrl: string; // catalogItemsQueue's queueUrl
+}
+```
+
+```ts
+export class ImportFileParserLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: ImportFileParserLambdaConstructProps) { ... }
+}
+```
+
+Update the importFileParser handler. For each parsed row, send one SQS message to catalogItemsQueue. The handler no longer logs parsed rows to CloudWatch.
+
+Grant importFileParser permission to send messages to catalogItemsQueue in ImportServiceStack.
+
+**Checkpoint: does an uploaded file reach the queue instead of just the logs?**
+
+### Task 6.3 — Process the Catalog Items Queue
+
+The queue now holds messages, but nothing reads them yet. This task adds catalogBatchProcess, the Lambda that reads the queue in batches and writes each valid row to products and stock. Each message in a batch can succeed or fail on its own, so a bad row shouldn't force SQS to redeliver the whole batch. You define the Lambda and its trigger first, then the handler logic that validates and persists each record.
+
+What to do:
+
+Define a Lambda function in ProductServiceStack with this configuration:
+
+Function name catalogBatchProcess.
+
+Node.js 22.x runtime, handler.main entry point.
+
+512 MB of memory, 30-second timeout.
+
+Receives both DynamoDB tables as props and passes their names to the handler through the PRODUCTS_TABLE_NAME and STOCK_TABLE_NAME environment variables.
+
+`src/infra/lib/product-service-stack/catalog-batch-process-lambda.ts`
+
+```ts
+export interface CatalogBatchProcessLambdaConstructProps {
+  readonly productsTable: dynamodb.ITable;
+  readonly stockTable: dynamodb.ITable;
+}
+```
+
+```ts
+export class CatalogBatchProcessLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: CatalogBatchProcessLambdaConstructProps) { ... }
+}
+```
+
+Instantiate catalogBatchProcess in ProductServiceStack. Configure catalogItemsQueue as its SQS trigger, using these settings:
+
+batchSize: 5, so each invocation handles up to 5 messages.
+
+maxBatchingWindow: 10 seconds, so an invocation waits up to 10 seconds to fill a batch instead of firing on the first message.
+
+maxConcurrency: 5 caps how many concurrent invocations this queue can drive, so a large import can't starve the account's shared Lambda concurrency pool.
+
+reportBatchItemFailures: true turns on partial batch failure reporting, so a failing message in a batch doesn't send the whole batch back for reprocessing.
+
+Grant catalogBatchProcess write access to both the products and stock tables in ProductServiceStack.
+
+Create the catalogBatchProcess handler that processes messages from catalogItemsQueue. For each message in the batch, it writes one product to products and that product's count to stock. See Data Models for the expected row shape:
+
+`src/app/handlers/catalog-batch-process/handler.ts`
+
+```ts
+export const main = async (event: {
+  Records: Array<{ messageId: string; body: string }>;
+}): Promise<{ batchItemFailures: { itemIdentifier: string }[] }> => { ... };
+```
+
+Report a failed message as a batch item failure, so SQS redelivers only that message. A message can fail because of invalid JSON, a row that doesn't match the shape in Data Models or a DynamoDB write error. The rest of the batch is processed independently, each message succeeding or failing on its own. For example, a row missing price creates no product, but the other valid rows from the same uploaded CSV file still do.
+
+**Checkpoint: is catalogBatchProcess deployed, wired to the queue and actually creating products?**
+
+### Task 6.4 — Product Notifications
+
+Products are now persisted in the database, but nobody outside your service knows when a new one appears. Without a notification, another system would have to keep polling GET /products just to catch new inventory. This task adds createProductTopic, an SNS topic that publishes one message for every created product to any number of subscribers. A subscription's filter policy lets each one listen only for the products matching its own criteria, rather than every product created. You define the topic, publish to it from catalogBatchProcess, then add three email subscriptions: one unfiltered, two filtered by price and count.
+
+What to do:
+
+Define a standard SNS topic instantiated in ProductServiceStack, with topicName: 'createProductTopic'. It needs one default unfiltered email subscription, addressed to the email in NOTIFICATION_EMAIL, so every product creation reaches at least one inbox:
+
+`src/infra/lib/product-service-stack/create-product-topic.ts`
+
+```ts
+export class CreateProductTopicConstruct extends sns.Topic {
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+Update catalogBatchProcess to publish a message to createProductTopic for every product it creates, with that product's price and count as message attributes (DataType: 'Number' on both). Pass the topic's ARN to the handler through a CREATE_PRODUCT_TOPIC_ARN environment variable.
+
+Grant catalogBatchProcess permission to publish to createProductTopic in ProductServiceStack.
+
+Add two more email subscriptions to createProductTopic, defined inside CreateProductTopicConstruct alongside the default subscription from step 1. Each is filtered by a message attribute, and both go to PRIORITY_NOTIFICATION_EMAIL — a second address different from NOTIFICATION_EMAIL:
+
+A bulk-shipment alert, subscribed with a filter policy of count >= 1000.
+
+A high-value alert, subscribed with a filter policy of price >= 100.
+
+**Checkpoint: do the right inboxes get notified?**
+
+## Evaluation criteria
+
+## Infrastructure
+
+ProductServiceStack contains the catalogItemsQueue and catalogItemsDLQ SQS queues, the catalogBatchProcess Lambda function and the createProductTopic SNS topic.
+
+catalogBatchProcess runs on the Node.js 22.x runtime with the handler.main entry point, 512 MB of memory and a 30-second timeout. It receives the PRODUCTS_TABLE_NAME, STOCK_TABLE_NAME and CREATE_PRODUCT_TOPIC_ARN environment variables.
+
+catalogItemsQueue has a 180-second visibility timeout and a redrive policy pointing at catalogItemsDLQ with maxReceiveCount: 3.
+
+catalogItemsQueue triggers catalogBatchProcess with batchSize: 5, a 10-second batching window, maxConcurrency: 5 and partial batch failure reporting enabled.
+
+catalogBatchProcess has write access to the products and stock tables, consume access to catalogItemsQueue and publish access to createProductTopic.
+
+createProductTopic has three email subscriptions: an unfiltered one at NOTIFICATION_EMAIL and two at PRIORITY_NOTIFICATION_EMAIL filtered on count >= 1000 and on price >= 100.
+
+ProductServiceStack exposes catalogItemsQueue as a public property. ImportServiceStack takes it in as a prop and passes its URL to importFileParser via the CATALOG_ITEMS_QUEUE_URL environment variable.
+
+importFileParser has send-message access to catalogItemsQueue.
+
+## Behavior
+
+importFileParser sends each parsed CSV row to catalogItemsQueue as its own message.
+
+A valid CSV row uploaded through GET /import ends up as a product and its stock count, retrievable via GET /products and GET /products/{productId}.
+
+A row that fails validation (an empty title, a price of 0 or below, or a negative count) creates nothing. Other valid rows from the same file still create their products.
+
+A row with an empty description creates a product with description set to an empty string. A row with count: 0 creates a product with a count of 0.
+
+A message that can't be processed is reported back as a batch item failure, so SQS redelivers only that message and the rest of the batch is still processed.
+
+catalogBatchProcess publishes a message to createProductTopic for every product it creates, with that product's price and count as message attributes.
+
+## Promoted extensions — required (originally optional)
+
+The original course does not grade this extension; it is **mandatory in this learning path**.
+
+DLQ alarm: add a CloudWatch alarm on catalogItemsDLQ's ApproximateNumberOfMessagesVisible metric, with threshold: 1 and evaluationPeriods: 1, so it fires as soon as a single message lands in the DLQ. Wire it to a dedicated SNS topic with an email subscription, the same way createProductTopic does it. That way a message landing in catalogItemsDLQ actually notifies you, instead of requiring a manual CloudWatch console check.
+
+## Completion evidence
+
+Record each required task, the observed acceptance results, applicable test output, all promoted extensions, and cleanup. Original Autocode checks do not automatically verify the promoted extensions. See the [shared evidence rules](./index.md#evidence-for-every-required-module).

@@ -1,4 +1,4 @@
-# Practice: State
+# Practice: Stateless and stateful React components {#practice-state}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

@@ -1,4 +1,4 @@
-## What is a Memory Leak? Real-World Examples & Detection
+# What is a Memory Leak? Real-World Examples & Detection {#what-is-a-memory-leak-real-world-examples-detection}
 
 ## What is a Memory Leak?
 
@@ -60,9 +60,9 @@ storeData("user", { name: "Lili" });
      const el = document.createElement("div");
      document.body.appendChild(el);
      cachedElement = el;
-     document.body.removeChild(el); // ❌ Leak
+     document.body.removeChild(el); // Leak
    }
-   // ✅ Fix: cachedElement = null;
+   // Fix: cachedElement = null;
    ```
 
 4. **Timers and Intervals**
@@ -71,7 +71,7 @@ storeData("user", { name: "Lili" });
    const id = setInterval(() => {
      console.log("Leaky interval");
    }, 1000);
-   // ✅ Fix: clearInterval(id);
+   // Fix: clearInterval(id);
    ```
 
 5. **Global Variables**
@@ -80,7 +80,7 @@ storeData("user", { name: "Lili" });
    function leak() {
      leaked = "I’m global now"; // Sloppy scripts create a global; modules/strict mode throw ReferenceError.
    }
-   // ✅ Fix: use let/const/var
+   // Fix: use let/const/var
    ```
 
 ---

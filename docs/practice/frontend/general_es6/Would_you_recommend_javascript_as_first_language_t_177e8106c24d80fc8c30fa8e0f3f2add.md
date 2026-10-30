@@ -1,4 +1,4 @@
-# Practice: Would you recommend javascript as first language to learn?
+# Practice: JavaScript as a first programming language {#practice-would-you-recommend-javascript-as-first-language-to-learn}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

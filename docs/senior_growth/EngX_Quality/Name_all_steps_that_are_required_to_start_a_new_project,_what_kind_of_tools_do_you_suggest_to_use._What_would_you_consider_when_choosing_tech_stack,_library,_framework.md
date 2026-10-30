@@ -1,4 +1,4 @@
-### Name all steps that are required to start a new project, what kind of tools do you suggest to use? What would you consider when choosing tech stack, library/framework?
+# Name all steps that are required to start a new project, what kind of tools do you suggest to use? What would you consider when choosing tech stack, library/framework? {#name-all-steps-that-are-required-to-start-a-new-project-what-kind-of-tools-do-you-suggest-to-use-what-would-you-consider-when-choosing-tech-stack-library-framework}
 
 
 ---

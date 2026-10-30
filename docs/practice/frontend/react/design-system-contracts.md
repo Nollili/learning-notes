@@ -1,4 +1,4 @@
-# Practice: design-system-contracts
+# Practice: Design Systems: Component Contracts and Token Outputs {#practice-design-system-contracts}
 
 **Status: outstanding learner practice.**
 

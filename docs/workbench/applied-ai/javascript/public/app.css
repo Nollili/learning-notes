@@ -1,0 +1,12 @@
+:root { font-family: system-ui, sans-serif; color: #172b40; background: #f2f6fb; }
+body { margin: 0; }
+main { max-width: 720px; padding: 32px 20px; margin: auto; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.7rem); }
+#messages { padding: 12px; background: white; border-radius: 12px; min-height: 100px; overflow-wrap: anywhere; }
+#messages p { white-space: pre-wrap; }
+label { display: block; margin-top: 24px; font-weight: 600; }
+textarea { box-sizing: border-box; width: 100%; min-height: 100px; margin: 8px 0; padding: 12px; font: inherit; border: 1px solid #8497aa; border-radius: 8px; }
+button { font: inherit; margin: 4px 6px 4px 0; padding: 10px 14px; border: 1px solid #37629b; border-radius: 8px; background: #214e89; color: white; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 3px solid #c36a08; outline-offset: 3px; }
+#status { min-height: 3em; }

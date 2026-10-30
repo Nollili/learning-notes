@@ -1,0 +1,13 @@
+{
+  "name": "learning-notes-ai-starter",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test checks/*.test.mjs",
+    "start": "node server.mjs",
+    "console": "node console.mjs",
+    "demo": "node demo.mjs"
+  }
+}

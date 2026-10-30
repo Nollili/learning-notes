@@ -1,4 +1,4 @@
-# Practice: React.Memo and Performance Optimization
+# Practice: React.memo and performance optimization {#practice-react-memo-and-performance-optimization}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

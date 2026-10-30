@@ -4,7 +4,7 @@ Folder layouts express ownership; they do not enforce dependencies or establish 
 
 ---
 
-## 🧭 **React Application Structure Best Practices**
+## **React Application Structure Best Practices** {#%F0%9F%A7%AD-react-application-structure-best-practices}
 
 | Structure                  | Description                                                                                                           | Pros                                                                  | Cons                                             | When to use                                                      |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------- |
@@ -15,7 +15,7 @@ Folder layouts express ownership; they do not enforce dependencies or establish 
 
 ---
 
-### 💡 **Additional Best Practices**
+### **Additional Best Practices** {#%F0%9F%92%A1-additional-best-practices}
 
 * **Shared folders**: Put reusable hooks, utils, assets, and services at the root or a `shared/` folder.
 * **Containers vs UI components**: Separate data/transition owners from reusable UI where that boundary helps. Presentational function components may still have local interaction state.
@@ -24,7 +24,7 @@ Folder layouts express ownership; they do not enforce dependencies or establish 
 
 ---
 
-### 🗣️ **30-second interview answer**
+### **30-second interview answer** {#%F0%9F%97%A3%EF%B8%8F-30-second-interview-answer}
 
 > “For small projects, the default CRA structure is fine. For mid-size apps, I prefer **tech separation** where each component has its folder with styles and tests. For larger projects, I go **domain-based**, separating containers, UI components, services, and utils by feature.
 > For enterprise apps, deeper domains may help when actual ownership/dependency boundaries justify them. Shared hooks, utils, and assets usually sit in a root `shared/` or `common/` folder. The key is maintainability and team consistency.”

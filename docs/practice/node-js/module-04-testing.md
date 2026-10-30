@@ -21,7 +21,7 @@ Document the evidence that identified each cause.
 
 ---
 
-## 17. Final review checklist
+## Final review checklist {#_17-final-review-checklist}
 
 You should be able to explain and demonstrate each item:
 

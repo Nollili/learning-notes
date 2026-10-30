@@ -1,4 +1,4 @@
-# Practice: 🌐 CORS and CSRF — Understanding the Difference and Mitigation
+# Practice: CORS and CSRF — Understanding the Difference and Mitigation {#practice-%F0%9F%8C%90-cors-and-csrf-%E2%80%94-understanding-the-difference-and-mitigation}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

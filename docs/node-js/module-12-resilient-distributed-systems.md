@@ -23,7 +23,7 @@
 
 ---
 
-## 1. The distributed-systems mental model
+## The distributed-systems mental model {#_1-the-distributed-systems-mental-model}
 
 Inside one process, a function call either returns, throws, or fails with the process. Across a network, the caller can also receive no answer and remain uncertain about what happened.
 
@@ -78,7 +78,7 @@ Before implementation, answer:
 
 ---
 
-## 2. Choose boundaries before technologies
+## Choose boundaries before technologies {#_2-choose-boundaries-before-technologies}
 
 Architecture begins with ownership and change boundaries, not with queues or containers.
 
@@ -139,7 +139,7 @@ Dependency injection does not require a container. Constructor parameters are of
 
 ---
 
-## 3. Synchronous and asynchronous communication
+## Synchronous and asynchronous communication {#_3-synchronous-and-asynchronous-communication}
 
 ### Synchronous request-response
 
@@ -185,13 +185,13 @@ If yes, asynchronous processing may provide a clearer reliability model. The sta
 
 ---
 
-## 4. Queues and background jobs
+## Queues and background jobs {#_4-queues-and-background-jobs}
 
 A durable queue separates producers from consumers in time.
 
 ```text
 producer → broker queue → consumer
-                      ↘ retry/dead-letter path
+                      down-right retry/dead-letter path
 ```
 
 ### What a queue can provide
@@ -253,7 +253,7 @@ A queue depth of ten may be serious if the oldest message is two hours old.
 
 ---
 
-## 5. Delivery guarantees and acknowledgements
+## Delivery guarantees and acknowledgements {#_5-delivery-guarantees-and-acknowledgements}
 
 ### At-most-once
 
@@ -308,7 +308,7 @@ Acknowledging before the effect risks message loss. Acknowledging after a non-id
 
 ---
 
-## 6. Idempotent producers and consumers
+## Idempotent producers and consumers {#_6-idempotent-producers-and-consumers}
 
 An operation is idempotent when repeating the same logical request has the same intended effect as performing it once.
 
@@ -384,7 +384,7 @@ For a payment provider or email service, pass a stable operation identifier when
 
 ---
 
-## 7. Retries, backoff, jitter, and poison messages
+## Retries, backoff, jitter, and poison messages {#_7-retries-backoff-jitter-and-poison-messages}
 
 A retry is appropriate only when:
 
@@ -446,7 +446,7 @@ Dead-letter storage is not a final solution. Alert on it and assign ownership.
 
 ---
 
-## 8. Ordering, partitions, and competing consumers
+## Ordering, partitions, and competing consumers {#_8-ordering-partitions-and-competing-consumers}
 
 ### Global ordering is expensive
 
@@ -499,7 +499,7 @@ More consumers can increase queue throughput until a downstream resource saturat
 
 ---
 
-## 9. The transactional outbox pattern
+## The transactional outbox pattern {#_9-the-transactional-outbox-pattern}
 
 Consider a service that must update its database and publish an event.
 
@@ -554,7 +554,7 @@ Choose based on measured volume and latency requirements, not fashion.
 
 ---
 
-## 10. Sagas and compensation
+## Sagas and compensation {#_10-sagas-and-compensation}
 
 A local database transaction cannot atomically update independent services. A **saga** coordinates several local transactions.
 
@@ -613,7 +613,7 @@ Reservations need expiry and reconciliation. They reduce the need to compensate 
 
 ---
 
-## 11. Caching and invalidation
+## Caching and invalidation {#_11-caching-and-invalidation}
 
 A cache trades freshness and complexity for lower latency or dependency load.
 
@@ -686,7 +686,7 @@ Bound every cache by size, TTL, or both. A cache without an eviction policy is a
 
 ---
 
-## 12. Circuit breakers and bulkheads
+## Circuit breakers and bulkheads {#_12-circuit-breakers-and-bulkheads}
 
 ### Circuit breaker
 
@@ -743,7 +743,7 @@ A fallback may return cached data, a reduced response, or a queued operation. It
 
 ---
 
-## 13. Eventual consistency and user-visible state
+## Eventual consistency and user-visible state {#_13-eventual-consistency-and-user-visible-state}
 
 With asynchronous propagation, different views may temporarily disagree.
 
@@ -762,7 +762,7 @@ Use statuses that match reality:
 
 ```text
 pending → processing → completed
-                    ↘ failed
+                    down-right failed
 ```
 
 Do not return “completed” merely because work was queued.
@@ -792,7 +792,7 @@ Critical distributed workflows need a scheduled or operator-triggered reconcilia
 
 ---
 
-## 14. Distributed locks, leases, and fencing
+## Distributed locks, leases, and fencing {#_14-distributed-locks-leases-and-fencing}
 
 A local mutex protects only one process. Multiple processes need a shared coordination mechanism or, preferably, a storage-level correctness rule.
 
@@ -845,7 +845,7 @@ Distributed locks coordinate access. They do not replace transactions, idempoten
 
 ---
 
-## 15. Operating message-driven services
+## Operating message-driven services {#_15-operating-message-driven-services}
 
 ### Consumer startup
 
@@ -917,7 +917,7 @@ Before replay, define:
 
 ---
 
-## 16. Architecture decision guide
+## Architecture decision guide {#_16-architecture-decision-guide}
 
 | Need | Likely starting point | Warning |
 | --- | --- | --- |
@@ -949,11 +949,11 @@ If these answers are vague, the boundary is not ready.
 
 ---
 
-## 17. Failure-driven exercises
+## Failure-driven exercises {#_17-failure-driven-exercises}
 
 [Exercises and learner checklist](../practice/node-js/module-12-resilient-distributed-systems.md).
 
-## 18. Final review checklist
+## Final review checklist {#_18-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-12-resilient-distributed-systems.md).
 

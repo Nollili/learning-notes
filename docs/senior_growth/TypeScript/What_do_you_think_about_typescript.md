@@ -1,12 +1,12 @@
 # What do you think about TS?
 
-# 💡 Thoughts on TypeScript
+## Thoughts on TypeScript {#%F0%9F%92%A1-thoughts-on-typescript}
 
 TypeScript is, in my view, a **highly valuable tool for modern JavaScript development**, especially in professional, large-scale, or long-term projects.
 
 ---
 
-## 1️⃣ Why TypeScript is Great
+## Why TypeScript is Great {#_1%EF%B8%8F%E2%83%A3-why-typescript-is-great}
 
 - **Predictability and Safety**: Types catch many bugs **at compile time** before they even run in the browser. This reduces runtime errors.
 - **Developer Experience**: IDE support (autocomplete, type hints, go-to-definition) can help navigation/refactoring; productivity depends on the code, type quality and workflow.
@@ -16,7 +16,7 @@ TypeScript is, in my view, a **highly valuable tool for modern JavaScript develo
 
 ---
 
-## 2️⃣ Potential Downsides
+## Potential Downsides {#_2%EF%B8%8F%E2%83%A3-potential-downsides}
 
 - **Learning Curve**: Developers need to understand type annotations, generics, union types, etc. Teams unfamiliar with TS may need some ramp-up time.
 - **Boilerplate/Verbosity**: Adding types can slow initial development and make code more verbose, especially for simple components or scripts.
@@ -25,7 +25,7 @@ TypeScript is, in my view, a **highly valuable tool for modern JavaScript develo
 
 ---
 
-## 3️⃣ My Take / Recommendation
+## My Take / Recommendation {#_3%EF%B8%8F%E2%83%A3-my-take-recommendation}
 
 - **For small projects or prototypes**: compare checked JS/JSDoc with a narrow strict TypeScript slice; small size alone does not decide error risk or iteration speed.
 - **For maintained shared contracts**: TypeScript can help refactoring and misuse detection; evaluate migration, declaration and checking costs against actual requirements.
@@ -33,11 +33,11 @@ TypeScript is, in my view, a **highly valuable tool for modern JavaScript develo
 
 ---
 
-### ✅ Bottom Line
+### Bottom Line {#%E2%9C%85-bottom-line}
 
 TypeScript checks declared/inferred relationships and supports tooling. Runtime validation, tests, ownership and readable design still determine whether the system is reliable.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Keep types precise enough to catch likely misuse and simple enough for a maintainer to understand the diagnostics.
 
 ## Follow the decision into concrete evidence

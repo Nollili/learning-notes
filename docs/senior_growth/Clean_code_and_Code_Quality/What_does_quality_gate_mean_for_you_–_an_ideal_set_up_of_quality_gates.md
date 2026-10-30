@@ -1,12 +1,12 @@
 # What does quality gate mean for you – an ideal set up of quality gates?
 
-## 🏁 Quality Gate in Software Development
+## Quality Gate in Software Development {#%F0%9F%8F%81-quality-gate-in-software-development}
 
 A **quality gate** is a set of **automated checks** that code must pass before it can be merged or deployed. It enforces the configured checks and limits; passing them does not prove overall safety, completeness or correct requirements.
 
 ---
 
-## 1️⃣ What a Quality Gate Means
+## What a Quality Gate Means {#_1%EF%B8%8F%E2%83%A3-what-a-quality-gate-means}
 
 - **Automated enforcement** of coding standards, tests, and metrics.
 - Acts as a **“stoplight”**: code either **passes (green)** or **fails (red)** based on criteria.
@@ -14,9 +14,9 @@ A **quality gate** is a set of **automated checks** that code must pass before i
 
 ---
 
-## 2️⃣ Ideal Set Up for a Quality Gate
+## Ideal Set Up for a Quality Gate {#_2%EF%B8%8F%E2%83%A3-ideal-set-up-for-a-quality-gate}
 
-### ✅ Code Quality Metrics
+### Code Quality Metrics {#%E2%9C%85-code-quality-metrics}
 
 | Metric | Illustrative policy — justify for the project |
 |--------|--------------------|
@@ -27,19 +27,19 @@ A **quality gate** is a set of **automated checks** that code must pass before i
 | **Cyclomatic complexity** | Reasonable limits per function/module (e.g., < 10) |
 | **Linting & formatting** | No linting errors; consistent code style |
 
-### ✅ Security & Vulnerability Checks
+### Security & Vulnerability Checks {#%E2%9C%85-security-vulnerability-checks}
 
 - No **high/critical security vulnerabilities** in dependencies.
 - Enforce **OWASP best practices** (XSS, injection prevention, etc.).
 - Check **secret keys or tokens** are not exposed.
 
-### ✅ Build & Deployment Checks
+### Build & Deployment Checks {#%E2%9C%85-build-deployment-checks}
 
 - Successful **build pipeline**.
 - All **unit, integration, and E2E tests pass**.
 - Optional: **Performance tests** (e.g., bundle size, load times).
 
-### ✅ Documentation & Best Practices
+### Documentation & Best Practices {#%E2%9C%85-documentation-best-practices}
 
 - PRs include **description, testing instructions, and changelog**.
 - Code is **readable, modular, and follows design patterns**.
@@ -47,7 +47,7 @@ A **quality gate** is a set of **automated checks** that code must pass before i
 
 ---
 
-## 3️⃣ How It Works in CI/CD
+## How It Works in CI/CD {#_3%EF%B8%8F%E2%83%A3-how-it-works-in-ci-cd}
 
 1. Developer pushes a branch → CI pipeline triggers.
 2. Quality gate runs:
@@ -61,7 +61,7 @@ A **quality gate** is a set of **automated checks** that code must pass before i
 
 ---
 
-## 4️⃣ Benefits of a Quality Gate
+## Benefits of a Quality Gate {#_4%EF%B8%8F%E2%83%A3-benefits-of-a-quality-gate}
 
 - **Blocks detected violations** before production.
 - **Encourages best practices** across the team.
@@ -71,7 +71,7 @@ A **quality gate** is a set of **automated checks** that code must pass before i
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - Quality gates are **automated checkpoints** for code quality, testing, and security.
 - A project-specific setup might enforce:
@@ -82,7 +82,7 @@ A **quality gate** is a set of **automated checks** that code must pass before i
   - Optional performance benchmarks
 - Quality gates **save time, reduce bugs, and enforce maintainable, reliable software**.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Required gates need clear ownership and an audited exceptional-change policy; silently bypassing a failing check defeats its purpose.
 
 

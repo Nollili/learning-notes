@@ -1,12 +1,12 @@
 # How would you introduce TS on a project?
 
-# 🚀 Introducing TypeScript into an Existing Project
+## Introducing TypeScript into an Existing Project {#%F0%9F%9A%80-introducing-typescript-into-an-existing-project}
 
 Introducing TypeScript into a JavaScript project should be **gradual and strategic**, especially for medium-to-large applications, to avoid breaking existing functionality and to ease developer adoption.
 
 ---
 
-## 1️⃣ Assess the Project
+## Assess the Project {#_1%EF%B8%8F%E2%83%A3-assess-the-project}
 
 - Identify **critical/shared code** and modules where type safety would bring the most benefit.
 - Determine which parts of the codebase are **actively maintained** versus legacy code.
@@ -14,7 +14,7 @@ Introducing TypeScript into a JavaScript project should be **gradual and strateg
 
 ---
 
-## 2️⃣ Install TypeScript
+## Install TypeScript {#_2%EF%B8%8F%E2%83%A3-install-typescript}
 
 ```bash
 npm install --save-dev typescript @types/node @types/react
@@ -24,7 +24,7 @@ npm install --save-dev typescript @types/node @types/react
 
 ---
 
-## 3️⃣ Initialize TypeScript Configuration
+## Initialize TypeScript Configuration {#_3%EF%B8%8F%E2%83%A3-initialize-typescript-configuration}
 
 ```bash
 npx tsc --init
@@ -52,7 +52,7 @@ Key `tsconfig.json` settings:
 
 ---
 
-## 4️⃣ Gradual Migration
+## Gradual Migration {#_4%EF%B8%8F%E2%83%A3-gradual-migration}
 
 ### 4.1 Enable JS + TS Coexistence
 
@@ -77,7 +77,7 @@ npm install --save-dev @types/lodash
 
 ---
 
-## 5️⃣ Integrate into Build and Tooling
+## Integrate into Build and Tooling {#_5%EF%B8%8F%E2%83%A3-integrate-into-build-and-tooling}
 
 * **Webpack/Vite**: Use the project's supported TypeScript transformation. Vite8 uses Rolldown/Oxc; older Vite versions used esbuild. Transformation is separate from typechecking: run tsc --noEmit in CI. A Node-executed package instead needs a matching NodeNext module/resolution configuration.
 * **ESLint**: Add `@typescript-eslint/parser` for linting.
@@ -86,7 +86,7 @@ npm install --save-dev @types/lodash
 
 ---
 
-## 6️⃣ Team Guidelines
+## Team Guidelines {#_6%EF%B8%8F%E2%83%A3-team-guidelines}
 
 * Enforce **strict type usage** in new modules.
 * Encourage **gradual refactoring** of existing code.
@@ -95,7 +95,7 @@ npm install --save-dev @types/lodash
 
 ---
 
-## ✅ Best Practices for Smooth Migration
+## Best Practices for Smooth Migration {#%E2%9C%85-best-practices-for-smooth-migration}
 
 1. **Start small**: Migrate a single feature/module first.
 2. **Use allowJs**: Gradually adopt TS without breaking JS code.
@@ -105,7 +105,7 @@ npm install --save-dev @types/lodash
 
 ---
 
-> 💡 Senior Tip:
+> Senior Tip:
 > TypeScript adoption is **incremental**. Start with **shared logic and key components**, then expand gradually. Avoid “big bang” migration, which is risky and slows development.
 
 

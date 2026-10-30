@@ -1,4 +1,4 @@
-# Practice: Explain asynchronousity/event loop in JS to a newcomer?
+# Practice: Asynchronous execution and the JavaScript event loop {#practice-explain-asynchronousity-event-loop-in-js-to-a-newcomer}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

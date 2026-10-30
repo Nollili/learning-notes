@@ -1,12 +1,12 @@
 # Would you consider using JQuery nowadays? Why?
 
-# 🔹 Using jQuery Nowadays: Pros and Cons
+## Using jQuery Nowadays: Pros and Cons {#%F0%9F%94%B9-using-jquery-nowadays-pros-and-cons}
 
 **jQuery** is a classic JavaScript library that simplifies **DOM manipulation, event handling, AJAX requests, and animations**. While it was extremely popular in the 2000s and early 2010s, its relevance today has decreased due to modern frameworks and browser improvements.
 
 ---
 
-## 1️⃣ Reasons You Might Consider jQuery
+## Reasons You Might Consider jQuery {#_1%EF%B8%8F%E2%83%A3-reasons-you-might-consider-jquery}
 
 ### 1.1 Legacy Projects
 - Many older codebases **already use jQuery**.
@@ -30,7 +30,7 @@ $.get('/api/data', function(response) {
 
 ---
 
-## 2️⃣ Reasons to Avoid jQuery Today
+## Reasons to Avoid jQuery Today {#_2%EF%B8%8F%E2%83%A3-reasons-to-avoid-jquery-today}
 
 ### 2.1 Modern Browser APIs
 
@@ -55,7 +55,7 @@ $.get('/api/data', function(response) {
 
 ---
 
-## 3️⃣ When jQuery Might Still Make Sense
+## When jQuery Might Still Make Sense {#_3%EF%B8%8F%E2%83%A3-when-jquery-might-still-make-sense}
 
 | Scenario                                 | Reason                                   |
 | ---------------------------------------- | ---------------------------------------- |
@@ -66,13 +66,13 @@ $.get('/api/data', function(response) {
 
 ---
 
-## 4️⃣ Summary
+## Summary {#_4%EF%B8%8F%E2%83%A3-summary}
 
 * **Not recommended** for **new large-scale projects**.
 * Prefer **Vanilla JS** or modern frameworks/libraries (React, Vue, Svelte) for maintainable, performant apps.
 * Can be used **for small scripts, legacy support, or quick prototypes**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > If you use jQuery in a modern project, keep a working dependency when its benefits justify its costs. Replace one bounded feature when measured maintenance/performance/support needs justify it, with behavior and rollback evidence.
 
 

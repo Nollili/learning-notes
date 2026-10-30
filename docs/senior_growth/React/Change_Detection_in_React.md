@@ -57,7 +57,7 @@ setState(newState); // Queues an update; setter must belong to the component.
 
 ### **Trade-offs of React's Change Detection Mechanism**
 
-### **1. Benefits:**
+### **Benefits:** {#_1-benefits}
 
 1. **Performance**:
     - Reconciliation computes host updates while preserving intended identity; it adds CPU/memory work and makes no universal speed or globally minimal-edit guarantee.
@@ -68,7 +68,7 @@ setState(newState); // Queues an update; setter must belong to the component.
 4. **Predictability**:
     - Immutable snapshots and one-way data flow make reasoning easier; developers still must handle external synchronization and async races correctly.
 
-### **2. Trade-offs:**
+### **Trade-offs:** {#_2-trade-offs}
 
 1. **Reconciliation Overhead**:
     - The diffing process, while efficient, still adds computational overhead. For extremely frequent updates, this might be a bottleneck.

@@ -25,7 +25,7 @@
 
 ---
 
-## 1. Networking mental model
+## Networking mental model {#_1-networking-mental-model}
 
 The client-server model explains **what communicates**. Protocols explain **how messages move and what they mean**. REST adds architectural constraints for using HTTP consistently.
 
@@ -76,7 +76,7 @@ Connections may be reused for multiple HTTP requests. HTTP/2 and HTTP/3 change c
 
 ---
 
-## 2. Client-server architecture
+## Client-server architecture {#_2-client-server-architecture}
 
 A **client** initiates communication. A **server** listens for requests, performs work, and returns responses or ongoing messages.
 
@@ -168,7 +168,7 @@ Security, scalability, operational complexity, and client capabilities matter mo
 
 ---
 
-## 3. HTTP fundamentals
+## HTTP fundamentals {#_3-http-fundamentals}
 
 HTTP is an application protocol built around messages. A client sends a request; a server returns a response.
 
@@ -323,7 +323,7 @@ Validate media types before parsing. Consider the media type and parameters rath
 
 ---
 
-## 4. HTTPS and TLS
+## HTTPS and TLS {#_4-https-and-tls}
 
 HTTPS is HTTP carried over TLS. HTTP semantics remain the same; TLS protects the connection underneath.
 
@@ -397,7 +397,7 @@ mTLS is useful for service-to-service identity in controlled environments. It do
 
 ---
 
-## 5. WebSockets
+## WebSockets {#_5-websockets}
 
 WebSocket creates a persistent, full-duplex message channel. Either peer may send after the connection is established.
 
@@ -544,7 +544,7 @@ On shutdown stop intake and close/terminate all owned clients under a deadline b
 
 ---
 
-## 6. Building an HTTP server
+## Building an HTTP server {#_6-building-an-http-server}
 
 `node:http` exposes HTTP/1.x server and client primitives without a framework.
 
@@ -679,7 +679,7 @@ Defaults vary by Node.js release and deployment, so make important policy explic
 
 ---
 
-## 7. Routing and request bodies
+## Routing and request bodies {#_7-routing-and-request-bodies}
 
 Raw Node.js routing examines the method and parsed pathname.
 
@@ -895,7 +895,7 @@ Understanding `req` and `res` remains important because frameworks build on thes
 
 ---
 
-## 8. Making requests with `fetch()`
+## Making requests with `fetch()` {#_8-making-requests-with-fetch}
 
 Node.js 22 exposes the browser-compatible `fetch` API globally. Use it for ordinary outbound HTTP and HTTPS requests.
 
@@ -1019,7 +1019,7 @@ For normal JSON calls, `fetch()` is simpler. Its body is a **Web ReadableStream*
 
 ---
 
-## 9. `https`, `net`, and `dns`
+## `https`, `net`, and `dns` {#_9-https-net-and-dns}
 
 ### `node:https`
 
@@ -1167,7 +1167,7 @@ const mailServers = await resolveMx('example.com');
 
 ---
 
-## 10. `URL` and `URLSearchParams`
+## `URL` and `URLSearchParams` {#_10-url-and-urlsearchparams}
 
 Node.js exposes the WHATWG `URL` and `URLSearchParams` classes globally.
 
@@ -1268,7 +1268,7 @@ if (!Number.isInteger(page) || page < 1) {
 
 ---
 
-## 11. REST constraints
+## REST constraints {#_11-rest-constraints}
 
 REST is an architectural style defined by Roy Fielding. An HTTP JSON API is not automatically RESTful; REST applies a set of constraints.
 
@@ -1346,7 +1346,7 @@ Not every useful HTTP API implements every REST constraint perfectly. Be precise
 
 ---
 
-## 12. Designing resource-based APIs
+## Designing resource-based APIs {#_12-designing-resource-based-apis}
 
 Model durable concepts as resources and use nouns in paths.
 
@@ -1464,7 +1464,7 @@ If the resource changed, return `412 Precondition Failed` instead of silently ov
 
 ---
 
-## 13. HTTP caching
+## HTTP caching {#_13-http-caching}
 
 HTTP caching allows a client or intermediary to reuse a response when policy permits.
 
@@ -1586,7 +1586,7 @@ Without the correct `Vary`, a cache may serve compressed data to an incompatible
 
 ---
 
-## 14. HATEOAS
+## HATEOAS {#_14-hateoas}
 
 Hypermedia as the Engine of Application State means representations include links or controls that tell clients what related resources or actions are available.
 
@@ -1637,7 +1637,7 @@ Avoid adding decorative links that no client follows. If you adopt hypermedia, d
 
 ---
 
-## 15. CORS
+## CORS {#_15-cors}
 
 CORS (Cross-Origin Resource Sharing) is a browser-enforced protocol that lets a server permit selected cross-origin reads.
 
@@ -1800,7 +1800,7 @@ Cookies also need appropriate `SameSite`, `Secure`, domain, and path attributes.
 
 ---
 
-## 16. Security, reliability, and operations
+## Security, reliability, and operations {#_16-security-reliability-and-operations}
 
 ### Input boundaries
 
@@ -1899,7 +1899,7 @@ Use ephemeral ports and close servers/sockets so tests terminate cleanly.
 
 ---
 
-## 17. Timeout budgets, retries, and idempotency
+## Timeout budgets, retries, and idempotency {#_17-timeout-budgets-retries-and-idempotency}
 
 Every network operation needs a finite time budget. Otherwise one slow dependency can hold sockets, memory, and request capacity indefinitely.
 
@@ -1977,7 +1977,7 @@ If a client, gateway, service, and database layer each retry three times, one us
 
 ---
 
-## 18. Connections, proxies, and network diagnostics
+## Connections, proxies, and network diagnostics {#_18-connections-proxies-and-network-diagnostics}
 
 ### Connection reuse
 
@@ -2027,7 +2027,7 @@ Record durations for DNS/connect/TLS/first-byte/body when the client library exp
 
 [Exercises and learner checklist](../practice/node-js/module-05-networking.md).
 
-## 19. Final review checklist
+## Final review checklist {#_19-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-05-networking.md).
 
@@ -2038,6 +2038,6 @@ Networked Node.js applications sit on layered contracts: DNS finds endpoints, TC
 Good APIs choose methods and status codes according to semantics, parse URLs with standard classes, validate and bound all input, and return consistent representations. Caching uses freshness directives and validators; HATEOAS advertises navigation; CORS grants browser origins permission to read cross-origin responses. Production correctness also requires TLS trust, authorization, deadlines, backpressure, observability, graceful shutdown, and careful retry behavior.
 
 
-## 20. Boundary failure labs
+## Boundary failure labs {#_20-boundary-failure-labs}
 
 [Exercises and learner checklist](../practice/node-js/module-05-networking.md).

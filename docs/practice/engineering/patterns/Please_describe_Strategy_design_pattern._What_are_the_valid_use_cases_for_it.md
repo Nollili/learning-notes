@@ -1,4 +1,4 @@
-# Practice: Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it
+# Practice: Please describe Strategy design pattern. What are the valid use cases for it? {#practice-please-describe-strategy-design-pattern-what-are-the-valid-use-cases-for-it}
 
 **Status: outstanding learner practice.** Prerequisite: [the worked lesson](../../../senior_growth/Coding_principles_patterns_conventions/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md) and [shared increments](../index.md).
 

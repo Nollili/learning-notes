@@ -1,4 +1,4 @@
-# Practice: HOC, what is it, when to use
+# Practice: Higher-order components: purpose and use cases {#practice-hoc-what-is-it-when-to-use}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

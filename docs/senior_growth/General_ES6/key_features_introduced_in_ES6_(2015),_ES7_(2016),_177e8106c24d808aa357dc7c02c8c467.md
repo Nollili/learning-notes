@@ -1,8 +1,8 @@
-### key features introduced in ES6 (2015), ES7 (2016), and ES8 (2017)
+# ECMAScript features from ES2015 to ES2017 {#key-features-introduced-in-es6-2015-es7-2016-and-es8-2017}
 
 ## **ES6 (ECMAScript 2015): Major Features**
 
-### **1. Let and Const**
+### **Let and Const** {#_1-let-and-const}
 
 - `let` and `const` introduced block-scoping, replacing the problematic function-scoping of `var`.
 
@@ -13,7 +13,7 @@ const y = 20; // Cannot be reassigned
 
 ---
 
-### **2. Arrow Functions**
+### **Arrow Functions** {#_2-arrow-functions}
 
 - Shorter syntax for functions and lexical `this` binding.
 
@@ -24,7 +24,7 @@ console.log(greet("Alice")); // "Hello, Alice!"
 
 ---
 
-### **3. Template Literals**
+### **Template Literals** {#_3-template-literals}
 
 - Introduced backticks (`) for multi-line strings and string interpolation.
 
@@ -35,7 +35,7 @@ const message = `Hello, ${name}! Welcome.`;
 
 ---
 
-### **4. Default Parameters**
+### **Default Parameters** {#_4-default-parameters}
 
 - Functions can have default values for parameters.
 
@@ -48,7 +48,7 @@ console.log(greet()); // "Hello, Guest!"
 
 ---
 
-### **5. Destructuring**
+### **Destructuring** {#_5-destructuring}
 
 - Easily extract values from arrays or objects.
 
@@ -59,7 +59,7 @@ const { name, age } = { name: "Alice", age: 25 };
 
 ---
 
-### **6. Rest and Spread Operators**
+### **Rest and Spread Operators** {#_6-rest-and-spread-operators}
 
 - ES2015 introduced rest parameters and iterable/array spread. Object rest/spread properties are a separate ES2018 addition, shown below.
 
@@ -75,7 +75,7 @@ const newArr = [...arr, 4, 5]; // [1, 2, 3, 4, 5]
 
 ---
 
-### **7. Modules**
+### **Modules** {#_7-modules}
 
 - Introduced `import` and `export` for modular development.
 
@@ -90,7 +90,7 @@ console.log(greet("Alice"));
 
 ---
 
-### **8. Promises**
+### **Promises** {#_8-promises}
 
 - Simplified asynchronous code handling.
 
@@ -102,7 +102,7 @@ Promise.resolve({ id: 1 })
 
 ---
 
-### **9. Classes**
+### **Classes** {#_9-classes}
 
 - Cleaner syntax for object-oriented programming.
 
@@ -119,7 +119,7 @@ class Animal {
 
 ---
 
-### **10. Enhanced Object Literals**
+### **Enhanced Object Literals** {#_10-enhanced-object-literals}
 
 - Simplified property initialization and added methods.
 
@@ -137,7 +137,7 @@ const obj = {
 
 ## **ES7 (ECMAScript 2016): Small but Handy Features**
 
-### **1. Array `includes` Method**
+### **Array `includes` Method** {#_1-array-includes-method}
 
 - Easier to check if an array contains a value.
 
@@ -149,7 +149,7 @@ console.log(numbers.includes(4)); // false
 
 ---
 
-### **2. Exponentiation Operator (`**`)**
+### **Exponentiation Operator (`**`)** {#_2-exponentiation-operator}
 
 - Shorter syntax for exponents.
 
@@ -161,7 +161,7 @@ console.log(2 ** 3); // 8
 
 ## **ES8 (ECMAScript 2017): Enhanced Productivity**
 
-### **1. Async/Await**
+### **Async/Await** {#_1-async-await}
 
 - Built on Promises, making asynchronous code easier to read.
 
@@ -176,7 +176,7 @@ fetchData(() => Promise.resolve({ id: 1 }))
 
 ---
 
-### **2. Object.entries and Object.values**
+### **Object.entries and Object.values** {#_2-object-entries-and-object-values}
 
 - Extract key-value pairs or just values from objects.
 
@@ -188,7 +188,7 @@ console.log(Object.values(obj)); // [1, 2]
 
 ---
 
-### **3. String Padding**
+### **String Padding** {#_3-string-padding}
 
 - Added methods `padStart` and `padEnd` for string manipulation.
 
@@ -199,7 +199,7 @@ console.log("5".padEnd(3, "0")); // "500"
 
 ---
 
-### **4. Trailing Commas in Function Parameters**
+### **Trailing Commas in Function Parameters** {#_4-trailing-commas-in-function-parameters}
 
 - Cleaner code when adding/removing parameters.
 

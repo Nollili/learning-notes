@@ -1,12 +1,12 @@
 # Difference between pixels, ems or rems? Which one we should use?
 
-## 🔹 CSS Units: px, em, rem
+## CSS Units: px, em, rem {#%F0%9F%94%B9-css-units-px-em-rem}
 
 In CSS, **length units** define sizes for fonts, spacing, widths, etc. The most common units are **pixels (px), em, and rem**. Understanding their differences is crucial for **scalable, responsive design**.
 
 ---
 
-## 1️⃣ Pixels (`px`)
+## Pixels (`px`) {#_1%EF%B8%8F%E2%83%A3-pixels-px}
 
 - **Absolute CSS length unit**, defined by the CSS reference pixel. One CSS px is not necessarily one physical device pixel; device density and page zoom affect the mapping.
 - Example:
@@ -24,7 +24,7 @@ p {
 
 ---
 
-## 2️⃣ Ems (`em`)
+## Ems (`em`) {#_2%EF%B8%8F%E2%83%A3-ems-em}
 
 * On `font-size`, `em` resolves against the inherited parent font size; on properties such as padding, it resolves against the element's own computed font size.
 * Example:
@@ -47,7 +47,7 @@ p {
 
 ---
 
-## 3️⃣ Rems (`rem`)
+## Rems (`rem`) {#_3%EF%B8%8F%E2%83%A3-rems-rem}
 
 * **Relative unit** based on **root (`<html>`) font size**, usually 16px by default.
 * Example:
@@ -70,7 +70,7 @@ p {
 
 ---
 
-## 4️⃣ Comparison Table
+## Comparison Table {#_4%EF%B8%8F%E2%83%A3-comparison-table}
 
 | Unit | Relative To      | Pros                                      | Cons                               | Use Case                           |
 | ---- | ---------------- | ----------------------------------------- | ---------------------------------- | ---------------------------------- |
@@ -80,7 +80,7 @@ p {
 
 ---
 
-## 5️⃣ Recommendations
+## Recommendations {#_5%EF%B8%8F%E2%83%A3-recommendations}
 
 1. **Use `rem` for:**
 
@@ -100,13 +100,13 @@ p {
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **px** → CSS absolute length; browser zoom still scales it
 * **em** → font-relative with property-dependent resolution; nested font sizes can compound
 * **rem** → relative to **root**, consistent and predictable, best for global sizing
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Font-relative units can follow user sizing preferences. Test wrapping, focus and clipping as well; choosing rem alone does not establish accessibility.
 
 ## Worked calculation and fluid layout

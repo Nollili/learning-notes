@@ -1,10 +1,10 @@
-## What is the Critical Rendering Path, How to Measure and Optimize?
+# What is the Critical Rendering Path, How to Measure and Optimize? {#what-is-the-critical-rendering-path-how-to-measure-and-optimize}
 
 The **Critical Rendering Path (CRP)** is the sequence of steps browsers take to convert HTML, CSS, and JavaScript into pixels on the screen. Optimizing the CRP improves metrics like **First Paint (FP)**, **First Contentful Paint (FCP)**, and **Largest Contentful Paint (LCP)**, which are key for perceived performance.
 
 ---
 
-### 🧩 Steps in the Critical Rendering Path
+### Steps in the Critical Rendering Path {#%F0%9F%A7%A9-steps-in-the-critical-rendering-path}
 
 | Step | Description |
 |------|-------------|
@@ -17,13 +17,13 @@ The **Critical Rendering Path (CRP)** is the sequence of steps browsers take to 
 
 ---
 
-### ⚡ Why Optimize the CRP?
+### Why Optimize the CRP? {#%E2%9A%A1-why-optimize-the-crp}
 
 Render-blocking resources (CSS, JS) delay rendering and increase blank screen time. Optimizing the CRP speeds up FCP and LCP, improving user experience.
 
 ---
 
-### 🧮 How to Measure the CRP
+### How to Measure the CRP {#%F0%9F%A7%AE-how-to-measure-the-crp}
 
 **Chrome DevTools (Performance Tab):**
 - Record page load.
@@ -67,7 +67,7 @@ function observePaints(report, Observer = globalThis.PerformanceObserver) {
 
 ---
 
-### 🧠 Optimization Techniques
+### Optimization Techniques {#%F0%9F%A7%A0-optimization-techniques}
 
 1. **Minimize Critical Resources**
    - Inline small critical CSS.
@@ -115,7 +115,7 @@ function observePaints(report, Observer = globalThis.PerformanceObserver) {
 
 ---
 
-### 🧾 Example: Optimized Loading Sequence
+### Example: Optimized Loading Sequence {#%F0%9F%A7%BE-example-optimized-loading-sequence}
 
 ```html
 <!DOCTYPE html>
@@ -141,7 +141,7 @@ function observePaints(report, Observer = globalThis.PerformanceObserver) {
 
 ---
 
-### 📊 Summary Table
+### Summary Table {#%F0%9F%93%8A-summary-table}
 
 | Step                  | Optimization Goal         | Key Actions                |
 |-----------------------|--------------------------|----------------------------|
@@ -153,7 +153,7 @@ function observePaints(report, Observer = globalThis.PerformanceObserver) {
 
 ---
 
-**Senior-level takeaway:**  
+ **Senior-level takeaway:**
 Optimizing the Critical Rendering Path improves perceived performance. Focus on reducing render-blocking resources, prioritizing above-the-fold content, and leveraging browser hints for efficient loading.
 
 

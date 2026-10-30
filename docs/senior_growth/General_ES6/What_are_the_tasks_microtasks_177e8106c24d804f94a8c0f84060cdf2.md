@@ -1,4 +1,4 @@
-### What are the tasks / microtasks?
+# What are the tasks / microtasks? {#what-are-the-tasks-microtasks}
 
 In JavaScript, tasks and microtasks are part of the **event loop** mechanism and determine how asynchronous code is executed. 
 
@@ -6,7 +6,7 @@ External animation reference (unreviewed): [event-loop illustration](https://mir
 
 ---
 
-### **1. Tasks (Macrotasks)**
+### **Tasks (Macrotasks)** {#_1-tasks-macrotasks}
 
 ### **Definition**:
 
@@ -26,7 +26,7 @@ External animation reference (unreviewed): [event-loop illustration](https://mir
 
 ---
 
-### **2. Microtasks**
+### **Microtasks** {#_2-microtasks}
 
 ### **Definition**:
 
@@ -56,7 +56,7 @@ External animation reference (unreviewed): [event-loop illustration](https://mir
 
 ---
 
-### **3. Example: Tasks vs. Microtasks in Action**
+### **Example: Tasks vs. Microtasks in Action** {#_3-example-tasks-vs-microtasks-in-action}
 
 ```jsx
 console.log("Start");
@@ -94,7 +94,7 @@ Task: setTimeout
 
 ---
 
-### **4. Why This Matters**
+### **Why This Matters** {#_4-why-this-matters}
 
 - Microtasks are prioritized, so they allow you to handle follow-up operations immediately after a promise resolves or a DOM mutation occurs.
 - Tasks are better suited for non-urgent actions or delays.

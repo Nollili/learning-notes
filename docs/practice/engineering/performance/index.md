@@ -2,6 +2,12 @@
 
 All learner practice remains outstanding. Follow [the shared increments](../index.md).
 
+## Guided hometasks
+
+Start with the [three core performance hometasks](../../frontend/performance/), which apply the [merged performance path](../../../frontend/performance/) to the same app. The focused requirements below refine those experiments and optional extensions; they do not each require another application.
+
+## Focused cases
+
 - [Can SSR (Server-Side Rendering) Improve First Render?](./Can_SSR_improve_first_render.md)
 - [Debouncing and throttling: timing, ownership and request freshness](./Can_you_describe_an_idea_of_debouncing%2C_throttling_When_we_need_them%2C_what_is_the_difference.md)
 - [Can you describe the process from time you type appliaction url, to it finished state on your screen?](./Can_you_describe_the_process_from_time_you_type_appliaction_url%2C_to_it_finished_state_on_your_screen.md)

@@ -6,11 +6,11 @@ n8n connects triggers, transformations and integrations in a visual workflow. It
 
 ## Introductory-to-practical order
 
-1. Understand the item envelope and expressions below using synthetic manual input.
-2. Trace a condition and a subworkflow without credentials or side effects.
-3. Follow [webhook and custom-service integration](./integration.md).
-4. Apply [errors, testing and deployment ownership](./operations.md).
-5. Perform the separate [N8N-P01 practice](../../practice/applied-ai/n8n-integration.md), reusing the notes domain from P-334/P-335.
+- Understand the item envelope and expressions below using synthetic manual input.
+- Trace a condition and a subworkflow without credentials or side effects.
+- Follow [webhook and custom-service integration](./integration.md).
+- Apply [errors, testing and deployment ownership](./operations.md).
+- Perform the separate [N8N-P01 practice](../../practice/applied-ai/n8n-integration.md), reusing the notes domain from P-334/P-335.
 
 ## Items are the unit of data flow
 

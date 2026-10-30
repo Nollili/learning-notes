@@ -1,11 +1,11 @@
 # Could you please describe CI/CD process on your project? Do you see any options how it could be improved?
-## 🚀 Example CI/CD Process to Adapt to a Real Project
+## Example CI/CD Process to Adapt to a Real Project {#%F0%9F%9A%80-example-ci-cd-process-to-adapt-to-a-real-project}
 
 This illustrative CI/CD process checks that **code changes are automatically tested, built, and deployed**, minimizing errors and improving delivery speed.
 
 ---
 
-## 1️⃣ Continuous Integration (CI)
+## Continuous Integration (CI) {#_1%EF%B8%8F%E2%83%A3-continuous-integration-ci}
 
 **Goal:** Automatically verify that new code integrates well with the main branch.
 
@@ -34,7 +34,7 @@ This illustrative CI/CD process checks that **code changes are automatically tes
 
 ---
 
-## 2️⃣ Continuous Deployment / Delivery (CD)
+## Continuous Deployment / Delivery (CD) {#_2%EF%B8%8F%E2%83%A3-continuous-deployment-delivery-cd}
 
 **Goal:** Automatically deploy verified builds to target environments.
 
@@ -51,7 +51,7 @@ This illustrative CI/CD process checks that **code changes are automatically tes
 
 ---
 
-## 3️⃣ Tools Used
+## Tools Used {#_3%EF%B8%8F%E2%83%A3-tools-used}
 
 | Stage                | Tool / Tech                            |
 |---------------------|----------------------------------------|
@@ -65,7 +65,7 @@ This illustrative CI/CD process checks that **code changes are automatically tes
 
 ---
 
-## 4️⃣ Possible Improvements
+## Possible Improvements {#_4%EF%B8%8F%E2%83%A3-possible-improvements}
 
 1. **Parallel Jobs in CI**
    - Run lint, build, and tests in **parallel** to reduce pipeline time.
@@ -90,12 +90,12 @@ This illustrative CI/CD process checks that **code changes are automatically tes
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **Configured CI/CD automates selected checks and release steps**; protection rules and operational gates determine what can merge/deploy.
 - Evaluate the real pipeline before claiming its results; improvements like **parallelization, E2E testing, feature flags, and monitoring** can increase **speed, reliability, and observability**.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always **measure CI/CD metrics**: pipeline duration, test coverage, deployment frequency, and rollback rate. These metrics guide where improvements are most valuable.
 
 Use the [worked job isolation and artifact handoff example](./Do_you_run_tests_within_CICD.md) to make this overview concrete. Describe only tools and measured results actually used on your project; this template is not evidence of personal deployment experience.

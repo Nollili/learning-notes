@@ -1,12 +1,12 @@
 # Can you provide some examples for accessibility?
 
-## 🔹 Accessibility (a11y) Examples
+## Accessibility (a11y) Examples {#%F0%9F%94%B9-accessibility-a11y-examples}
 
 Accessibility (a11y) ensures that **all users, including those with disabilities**, can access and interact with your website. Here are concrete examples of implementing accessibility in web development.
 
 ---
 
-## 1️⃣ Text Alternatives
+## Text Alternatives {#_1%EF%B8%8F%E2%83%A3-text-alternatives}
 
 **Problem:** Blind or visually impaired users can’t see images.  
 **Solution:** Provide **`alt` attributes** for images.
@@ -23,7 +23,7 @@ Accessibility (a11y) ensures that **all users, including those with disabilities
 
 ---
 
-## 2️⃣ Keyboard Navigation
+## Keyboard Navigation {#_2%EF%B8%8F%E2%83%A3-keyboard-navigation}
 
 **Problem:** Users with motor disabilities rely on keyboard instead of a mouse.
 **Solution:** Prefer native controls with their built-in keyboard behavior. Composite widgets may have a single Tab stop with internal arrow navigation; do not add tabindex indiscriminately.
@@ -38,7 +38,7 @@ Accessibility (a11y) ensures that **all users, including those with disabilities
 
 ---
 
-## 3️⃣ ARIA Roles and Labels
+## ARIA Roles and Labels {#_3%EF%B8%8F%E2%83%A3-aria-roles-and-labels}
 
 **Problem:** Screen readers may not understand custom components.
 **Solution:** Use **ARIA attributes** to convey roles, states, and labels.
@@ -53,7 +53,7 @@ Accessibility (a11y) ensures that **all users, including those with disabilities
 
 ---
 
-## 4️⃣ Color Contrast & Visual Accessibility
+## Color Contrast & Visual Accessibility {#_4%EF%B8%8F%E2%83%A3-color-contrast-visual-accessibility}
 
 **Problem:** Low contrast text is unreadable for users with visual impairments.
 **Solution:** Ensure **sufficient contrast** (WCAG recommends ≥ 4.5:1 for normal text).
@@ -74,7 +74,7 @@ body {
 
 ---
 
-## 5️⃣ Form Accessibility
+## Form Accessibility {#_5%EF%B8%8F%E2%83%A3-form-accessibility}
 
 **Problem:** Forms are confusing without proper labels.
 **Solution:** Use `<label>` elements and associate them with inputs.
@@ -88,7 +88,7 @@ body {
 
 ---
 
-## 6️⃣ Responsive & Scalable Text
+## Responsive & Scalable Text {#_6%EF%B8%8F%E2%83%A3-responsive-scalable-text}
 
 **Problem:** Users with low vision may need to **resize text**.
 **Solution:** use font-relative sizing and flexible layout, then test text/page zoom. CSS pixels also scale under page zoom; rem alone does not prevent clipping.
@@ -104,7 +104,7 @@ h1 {
 
 ---
 
-## 7️⃣ Captions & Transcripts
+## Captions & Transcripts {#_7%EF%B8%8F%E2%83%A3-captions-transcripts}
 
 **Problem:** Deaf or hard-of-hearing users cannot access audio content.
 **Solution:** Supply captions, transcripts and audio description as required by the media content and applicable criteria; they are not universally interchangeable.
@@ -118,7 +118,7 @@ h1 {
 
 ---
 
-## 8️⃣ Semantic HTML
+## Semantic HTML {#_8%EF%B8%8F%E2%83%A3-semantic-html}
 
 **Problem:** Screen readers need to understand page structure.
 **Solution:** Use proper semantic tags (`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<footer>`).
@@ -136,7 +136,7 @@ h1 {
 
 ---
 
-## 9️⃣ Focus Management for Modals
+## Focus Management for Modals {#_9%EF%B8%8F%E2%83%A3-focus-management-for-modals}
 
 **Problem:** Users using keyboard or screen readers may lose context when modals open.
 **Solution:** Trap focus inside the modal and restore focus when closed.
@@ -213,7 +213,7 @@ Initial focus goes to the email field for this short form; long/structured dialo
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 **Accessibility examples include:**
 
@@ -227,7 +227,7 @@ Initial focus goes to the email field for this short form; long/structured dialo
 8. Semantic HTML for page structure
 9. Focus management in dynamic content
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Accessibility should be **integrated from the beginning** of the project. Test with **screen readers, keyboard-only navigation, and contrast tools** to catch issues early.
 
 ## References and audit scope

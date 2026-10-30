@@ -1,6 +1,6 @@
-#  **PropTypes vs TypeScript**
+# PropTypes vs TypeScript {#proptypes-vs-typescript}
 
-### 1️⃣ **PropTypes — legacy React integration**
+### **PropTypes — legacy React integration** {#_1%EF%B8%8F%E2%83%A3-proptypes-%E2%80%94-legacy-react-integration}
 
 Version scope: React 19+ removes automatic `propTypes` checks; checked against the official upgrade guide on 2026-10-20. The example below documents React 18 and earlier behavior, not a validation strategy for React 19.
 
@@ -23,19 +23,19 @@ Button.propTypes = {
 };
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Simple for JS projects
 * Warned in development when integrated with older React; warnings did not reject invalid input.
 
-❌ **Cons:**
+ **Cons:**
 
 * Only runtime checking → errors appear during execution, not compile-time
 * Less powerful than TypeScript (no interfaces, enums, generics)
 
 ---
 
-### 2️⃣ **TypeScript**
+### **TypeScript** {#_2%EF%B8%8F%E2%83%A3-typescript}
 
 * **Compile-time type checking** using interfaces/types.
 * Catches type errors **before runtime**, during development.
@@ -54,27 +54,27 @@ function Button({ label, onClick }: ButtonProps) {
 }
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Compile-time safety → fewer runtime bugs
 * Works everywhere: props, state, context, hooks, API responses
 * Supports advanced typing: unions, generics, mapped types
 
-❌ **Cons:**
+ **Cons:**
 
 * Learning curve if team is new to TS
 * Initial setup takes slightly longer than JS
 
 ---
 
-### 🧩 **Primary choice for these notes: TypeScript + runtime boundary parsing**
+### **Primary choice for these notes: TypeScript + runtime boundary parsing** {#%F0%9F%A7%A9-primary-choice-for-these-notes-typescript-runtime-boundary-parsing}
 
 > Use TypeScript for checked component contracts, and parse external values at entry points. This is a project choice, not a requirement for every React application.
 > PropTypes may still appear in legacy JS projects, but TypeScript provides stronger guarantees, better IDE support, and safer refactoring.
 
 ---
 
-### 🗣️ **Interview-ready 30-second answer**
+### **Interview-ready 30-second answer** {#%F0%9F%97%A3%EF%B8%8F-interview-ready-30-second-answer}
 
 > “I use TypeScript for checked props and runtime schemas for external data. Legacy React invoked PropTypes in development, but React 19 removed those checks. Neither static declarations nor development warnings replace input validation or authorization.”
 

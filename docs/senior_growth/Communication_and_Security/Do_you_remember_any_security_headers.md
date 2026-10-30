@@ -1,10 +1,10 @@
-# 🔐 Important Web Security Headers
+# Important Web Security Headers {#%F0%9F%94%90-important-web-security-headers}
 
 Security headers are HTTP response headers that instruct browsers how to handle content, reducing the risk of attacks such as **XSS, clickjacking, or data injection**. As a senior front-end developer, knowing the most important headers is essential.
 
 ---
 
-## 1. **Content Security Policy (CSP)**
+## **Content Security Policy (CSP)** {#_1-content-security-policy-csp}
 - **Header:** `Content-Security-Policy`
 - **Purpose:** Restricts which resources can be loaded/executed.
 - **Protects against:** XSS, data injection, mixed content.
@@ -17,7 +17,7 @@ Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none';
 
 ---
 
-## 2. **Strict-Transport-Security (HSTS)**
+## **Strict-Transport-Security (HSTS)** {#_2-strict-transport-security-hsts}
 * **Header:** `Strict-Transport-Security`
 * **Purpose:** Tells browsers to upgrade future requests to the HSTS host for the policy lifetime; accepted over HTTPS.
 * **Protects against:** Man-in-the-middle attacks, SSL stripping.
@@ -28,7 +28,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 
 ---
 
-## 3. **X-Content-Type-Options**
+## **X-Content-Type-Options** {#_3-x-content-type-options}
 * **Header:** `X-Content-Type-Options`
 * **Purpose:** Prevents MIME type sniffing.
 * **Protects against:** Attacks where the browser interprets files incorrectly.
@@ -39,7 +39,7 @@ X-Content-Type-Options: nosniff
 
 ---
 
-## 4. **X-Frame-Options**
+## **X-Frame-Options** {#_4-x-frame-options}
 * **Header:** `X-Frame-Options`
 * **Purpose:** Prevents your site from being embedded in an iframe.
 * **Protects against:** Clickjacking attacks.
@@ -52,7 +52,7 @@ X-Frame-Options: DENY
 
 ---
 
-## 5. **Referrer-Policy**
+## **Referrer-Policy** {#_5-referrer-policy}
 * **Header:** `Referrer-Policy`
 * **Purpose:** Controls what referrer info is sent with requests.
 * **Protects privacy:** Prevents leaking sensitive URL info.
@@ -63,7 +63,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ---
 
-## 6. **Permissions-Policy** (Formerly Feature-Policy)
+## **Permissions-Policy** (Formerly Feature-Policy) {#_6-permissions-policy-formerly-feature-policy}
 * **Header:** `Permissions-Policy`
 * **Purpose:** Controls which browser APIs/features are allowed (geolocation, camera, microphone, etc.).
 * **Example:**
@@ -74,7 +74,7 @@ Permissions-Policy: geolocation=(self), camera=()
 
 ---
 
-## 7. **Cross-Origin Resource Sharing (CORS)**
+## **Cross-Origin Resource Sharing (CORS)** {#_7-cross-origin-resource-sharing-cors}
 * **Header:** `Access-Control-Allow-Origin`
 * **Purpose:** Controls which origins browser JavaScript may read through CORS.
 * **Protects against:** Unapproved cross-origin response reads; not server authorization or universal request blocking.
@@ -85,7 +85,7 @@ Access-Control-Allow-Origin: https://trusted.example.com
 
 ---
 
-## 8. **Set-Cookie Security Attributes**
+## **Set-Cookie Security Attributes** {#_8-set-cookie-security-attributes}
 * Not exactly a header, but part of `Set-Cookie`.
 * **HttpOnly** → JS cannot read this cookie; XSS can still perform authenticated actions
 * **Secure** → Cookie only sent over HTTPS
@@ -96,7 +96,7 @@ Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Strict
 
 ---
 
-## 🧠 Summary Table
+## Summary Table {#%F0%9F%A7%A0-summary-table}
 
 | Header                                  | Purpose                       | Protects Against            |
 | --------------------------------------- | ----------------------------- | --------------------------- |
@@ -114,7 +114,7 @@ Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Strict
 > **Tip for Frontend Developers:**
 > Even though most headers are configured on the backend, you must **understand their purpose**, test their effect in DevTools, and ensure your app is compatible with strict policies (like CSP or HSTS).
 
-### 🔒 Web Security Headers — How They Protect Your App (Diagram)
+### Web Security Headers — How They Protect Your App (Diagram) {#%F0%9F%94%92-web-security-headers-%E2%80%94-how-they-protect-your-app-diagram}
 
 Here’s a simplified diagram showing **how key security headers protect the browser and frontend app**:
 
@@ -134,27 +134,27 @@ v
 ```
 **Browser Processes Headers:**
 
-1️⃣ **HTTPS & HSTS**
+1. **HTTPS & HSTS**
 
 * Forces encrypted connection
 * Prevents MITM / SSL stripping
 
-2️⃣ **CSP**
+2. **CSP**
 
 * Only allows scripts/styles/images from trusted sources
 * Restricts execution/loading under its actual policy; does not sanitize injected content
 
-3️⃣ **X-Frame-Options**
+3. **X-Frame-Options**
 
 * Blocks framing of site
 * Prevents clickjacking
 
-4️⃣ **X-Content-Type-Options**
+4. **X-Content-Type-Options**
 
 * Stops MIME sniffing
 * Prevents browser from executing untrusted content
 
-5️⃣ **HttpOnly + Secure + SameSite Cookies**
+5. **HttpOnly + Secure + SameSite Cookies**
 
 * HttpOnly: JS cannot read that cookie; injected script can still act as the user
 * Secure: sent only over HTTPS
@@ -162,7 +162,7 @@ v
 
 **Result:** browser enforces supported, correctly delivered policies; application security still needs validation and testing.
 
-**Summary:**  
+ **Summary:**
 - Each header layer protects against a specific threat (XSS, CSRF, clickjacking, MITM, MIME attacks).  
 - Combined, they **create a strong defense-in-depth** for your frontend app.  
 

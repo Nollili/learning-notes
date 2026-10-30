@@ -1,4 +1,4 @@
-### What is an "opinionated" framework? How does it compare to "non-opinionated"? What are the pros and cons of each approach?
+# Opinionated and unopinionated frameworks: tradeoffs {#what-is-an-opinionated-framework-how-does-it-compare-to-non-opinionated-what-are-the-pros-and-cons-of-each-approach}
 
 An **opinionated framework** is a framework that makes decisions for the developer about the structure, organization, or design of the application. It often comes with pre-defined conventions, patterns, and practices that guide the developer in how to organize and develop the application. These frameworks aim to streamline development by offering a "one right way" to build the application.
 

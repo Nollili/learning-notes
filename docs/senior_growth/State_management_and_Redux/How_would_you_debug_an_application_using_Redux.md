@@ -1,12 +1,12 @@
 # How would you debug an application using Redux?
 
-# 🐞 Debugging Redux Applications
+## Debugging Redux Applications {#%F0%9F%90%9E-debugging-redux-applications}
 
 Debugging Redux applications involves **understanding the flow of actions, state updates, and component re-renders**. There are multiple strategies and tools to make this process efficient.
 
 ---
 
-## 1️⃣ Use Redux DevTools
+## Use Redux DevTools {#_1%EF%B8%8F%E2%83%A3-use-redux-devtools}
 
 **Redux DevTools** is the most common and powerful debugging tool.
 
@@ -29,7 +29,7 @@ export const store = configureStore({
 
 ---
 
-## 2️⃣ Log Actions and State
+## Log Actions and State {#_2%EF%B8%8F%E2%83%A3-log-actions-and-state}
 
 * Even without DevTools, logging can help:
 
@@ -47,7 +47,7 @@ const unsubscribe = store.subscribe(() => {
 
 ---
 
-## 3️⃣ Check Reducers and Actions
+## Check Reducers and Actions {#_3%EF%B8%8F%E2%83%A3-check-reducers-and-actions}
 
 * **Reducers should be pure functions**.
 
@@ -61,7 +61,7 @@ expect(counterReducer({ count: 0 }, { type: 'INCREMENT' })).toEqual({ count: 1 }
 
 ---
 
-## 4️⃣ Inspect Components with `useSelector` and `connect`
+## Inspect Components with `useSelector` and `connect` {#_4%EF%B8%8F%E2%83%A3-inspect-components-with-useselector-and-connect}
 
 * Verify that components receive the **correct slice of state**:
 
@@ -73,7 +73,7 @@ const count = useSelector(state => state.counter.count);
 
 ---
 
-## 5️⃣ Check Middleware / Async Flows
+## Check Middleware / Async Flows {#_5%EF%B8%8F%E2%83%A3-check-middleware-async-flows}
 
 * Async actions are common sources of bugs.
 * For **Redux Thunk**:
@@ -87,7 +87,7 @@ const count = useSelector(state => state.counter.count);
 
 ---
 
-## 6️⃣ Common Debugging Steps
+## Common Debugging Steps {#_6%EF%B8%8F%E2%83%A3-common-debugging-steps}
 
 1. Identify the **symptom** in the UI.
 2. Check the **component state via `useSelector`**.
@@ -98,7 +98,7 @@ const count = useSelector(state => state.counter.count);
 
 ---
 
-## 7️⃣ Best Practices for Debugging Redux
+## Best Practices for Debugging Redux {#_7%EF%B8%8F%E2%83%A3-best-practices-for-debugging-redux}
 
 * Keep **reducers pure** and predictable.
 * Use **DevTools** in development.
@@ -109,14 +109,14 @@ const count = useSelector(state => state.counter.count);
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Redux DevTools is **essential** for inspecting state and actions.
 * Pure reducers + immutable state = easier debugging.
 * Middleware/async actions are often the source of subtle bugs.
 * Logging, unit tests, and selectors help pinpoint issues quickly.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Always **debug state first, then UI**. Redux separates state logic from presentation, so most bugs can be found by inspecting actions and state flow.
 
 

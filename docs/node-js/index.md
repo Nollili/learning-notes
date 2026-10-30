@@ -25,33 +25,35 @@ The [shared JavaScript references](./prerequisites-and-boundaries.md) fill speci
 
 ## Recommended reading order
 
-### 1. Runtime foundations
+### Runtime foundations
 
-1. [Foundations](./module-01-nodejs-foundations.md): runtime, CJS/ESM, npm, scheduling, promises and bounded concurrency.
-2. [Standard library](./module-02-standard-library.md): errors, process/CLI, files/handles/paths, crypto and subprocess/worker ownership. Worker pools and cluster are later depth.
-3. [Events, buffers and streams](./module-03-events-buffers-streams.md): notifications, bytes/encoding, framing, backpressure, iteration and cleanup.
-4. [Testing](./module-04-testing.md): awaitable checks, useful assertions, controlled failures and open handles. Its database/E2E sections become relevant with a service.
-5. [Networking](./module-05-networking.md): raw HTTP, request/response streams, bounded clients, TLS/DNS, deadlines and security boundaries. REST architecture and real-time alternatives can follow your first server.
-6. [Diagnostics](./module-11-performance-diagnostics.md): measure event-loop behavior, resource ownership, memory categories and one reproducible bottleneck. Database pool diagnosis belongs with persistence.
-7. [Lifecycle](./module-10-production-ready-applications.md): use configuration, startup, safe diagnostics, readiness and shutdown for your first long-running server. Its deployment-specific sections are a continuation.
+- [Foundations](./module-01-nodejs-foundations.md): runtime, CJS/ESM, npm, scheduling, promises and bounded concurrency.
+- [Standard library](./module-02-standard-library.md): errors, process/CLI, files/handles/paths, crypto and subprocess/worker ownership. Worker pools and cluster are later depth.
+- [Events, buffers and streams](./module-03-events-buffers-streams.md): notifications, bytes/encoding, framing, backpressure, iteration and cleanup.
+- [Testing](./module-04-testing.md): awaitable checks, useful assertions, controlled failures and open handles. Its database/E2E sections become relevant with a service.
+- [Networking](./module-05-networking.md): raw HTTP, request/response streams, bounded clients, TLS/DNS, deadlines and security boundaries. REST architecture and real-time alternatives can follow your first server.
+- [Diagnostics](./module-11-performance-diagnostics.md): measure event-loop behavior, resource ownership, memory categories and one reproducible bottleneck. Database pool diagnosis belongs with persistence.
+- [Lifecycle](./module-10-production-ready-applications.md): use configuration, startup, safe diagnostics, readiness and shutdown for your first long-running server. Its deployment-specific sections are a continuation.
 
 Apply these in the [small log-analyzer project](../practice/node-js/core-project.md), then deepen failure handling with [P-332](../practice/backend-project.md#p-332). The [chapter exercises](../practice/node-js/index.md) are separate from the explanations; every learner task remains outstanding until independently performed.
 
-### 2. One backend and persistence path
+### One backend and persistence path
 
-8. [Express and architecture](./module-06-express-architecture.md): ordered middleware, validation, use cases and persistence boundaries.
-9. [PostgreSQL and MikroORM](./module-08-postgresql-mikroorm.md): learn SQL/constraints before ORM behavior. The [SQL workbench](../workbench/node-js/database/sql-queries.md) supplies one coherent fixture.
-10. [Authentication and authorization](./module-09-authentication-authorization.md): sessions, CSRF, passwords, tokens and current owner/tenant policy. Its [runnable application reference](../workbench/node-js/backend/session-app.md) reuses existing source.
-11. Return to [production lifecycle](./module-10-production-ready-applications.md) and the database sections of [diagnostics](./module-11-performance-diagnostics.md) for the integrated service.
+- [Express and architecture](./module-06-express-architecture.md): ordered middleware, validation, use cases and persistence boundaries.
+- [PostgreSQL and MikroORM](./module-08-postgresql-mikroorm.md): learn SQL/constraints before ORM behavior. The [SQL workbench](../workbench/node-js/database/sql-queries.md) supplies one coherent fixture.
+- [Authentication and authorization](./module-09-authentication-authorization.md): sessions, CSRF, passwords, tokens and current owner/tenant policy. Its [runnable application reference](../workbench/node-js/backend/session-app.md) reuses existing source.
+- Return to [production lifecycle](./module-10-production-ready-applications.md) and the database sections of [diagnostics](./module-11-performance-diagnostics.md) for the integrated service.
 
 [P-331](../practice/backend-project.md#p-331) is the ready-to-use integration specification. PostgreSQL/REST is the primary path; [MongoDB/Mongoose](./module-07-mongodb-mongoose.md) is an optional document-model comparison.
 
-### 3. Delivery and distributed failure
+### Delivery and distributed failure
 
-12. [Resilient/distributed systems](./module-12-resilient-distributed-systems.md): unknown outcomes, duplicates, outbox, queues, caching and recovery. A modular monolith remains the starting point.
-13. [Container deployment](./container-deployment-lab.md), [backup/recovery](./database-recovery.md), [release compatibility](./release-artifact-compatibility.md) and [whole-stack local deployment](./full-stack-deployment.md) prepare [P-333](../practice/backend-project.md#p-333). A fixture run is distinct from an authenticated hosted deployment.
+- [Resilient/distributed systems](./module-12-resilient-distributed-systems.md): unknown outcomes, duplicates, outbox, queues, caching and recovery. A modular monolith remains the starting point.
+- [Container deployment](./container-deployment-lab.md), [backup/recovery](./database-recovery.md), [release compatibility](./release-artifact-compatibility.md) and [whole-stack local deployment](./full-stack-deployment.md) prepare [P-333](../practice/backend-project.md#p-333). A fixture run is distinct from an authenticated hosted deployment.
 
 ## Supplements by requirement
+
+The sidebar groups these supplements into **Backend and persistence continuation** (database queries and calendar data), **Security and data handling** (uploads, deletion, callbacks and browser boundaries), and **API transports and adapters** (real-time updates, alternative APIs and shared cache/limits). Choose them when your service needs the capability; they are not additional runtime prerequisites.
 
 | Requirement | Reading/reference |
 |---|---|

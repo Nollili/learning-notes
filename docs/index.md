@@ -1,5 +1,5 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
+## https://vitepress.dev/reference/default-theme-home-page {#frontend-reading-path}
 layout: home
 
 hero:
@@ -10,8 +10,8 @@ hero:
       text: Node.js Learning Path
       link: /node-js/
     - theme: alt
-      text: Python for AI
-      link: /python-for-ai/
+      text: Build AI Apps — JavaScript First
+      link: /applied-ai/
     - theme: alt
       text: Materials
       link: /materials
@@ -31,6 +31,15 @@ hero:
 
 Follow [HTML/CSS → JavaScript/TypeScript → React → Next.js](/frontend/) with separate reference collections and practice requirements.
 
+
+## AWS cloud learning path
+
+Start with [cloud foundations, then AWS application development](/aws/): beginner explanations, security, hosting, serverless, databases, messaging, networking and operations. The [required course homework](/practice/aws/) includes both tracks, marked repetition and separate optional gap exercises.
+
+## Two different AI learning paths
+
+- [Build AI Apps — JavaScript First](/applied-ai/): start from zero in AI development; build a chatbot, tools, RAG, MCP and stateful workflows. [Python](/python-for-ai/) stays an optional deep dive.
+- [AI for Software Development](/ai-assisted-engineering/): use an assistant to investigate bugs, implement features, verify code and prepare PRs. No AI app-building prerequisite.
 
 ## Complete hub inventory
 

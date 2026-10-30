@@ -1,4 +1,4 @@
-# Practice: ⚡ How Redux Works
+# Practice: How Redux Works {#practice-%E2%9A%A1-how-redux-works}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

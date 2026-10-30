@@ -1,8 +1,8 @@
-# 🌐 CORS and CSRF — Understanding the Difference and Mitigation
+# CORS and CSRF — Understanding the Difference and Mitigation {#%F0%9F%8C%90-cors-and-csrf-%E2%80%94-understanding-the-difference-and-mitigation}
 
 ---
 
-## 1️⃣ What is CORS?
+## What is CORS? {#_1%EF%B8%8F%E2%83%A3-what-is-cors}
 
 **CORS (Cross-Origin Resource Sharing)** is a **browser security mechanism** that controls when browser JavaScript may read a cross-origin response.  
 
@@ -34,7 +34,7 @@ Access-Control-Allow-Origin: https://frontend.com
 
 ---
 
-## 2️⃣ Can CORS Protect Against CSRF?
+## Can CORS Protect Against CSRF? {#_2%EF%B8%8F%E2%83%A3-can-cors-protect-against-csrf}
 
 **No, not fully.**
 
@@ -49,7 +49,7 @@ CORS is primarily about **cross-origin data sharing**, not about preventing CSRF
 
 ---
 
-## 3️⃣ Measures to Mitigate CSRF
+## Measures to Mitigate CSRF {#_3%EF%B8%8F%E2%83%A3-measures-to-mitigate-csrf}
 
 ### a) **Use SameSite Cookies**
 
@@ -91,7 +91,7 @@ fetch('/api/transfer', {
 
 ---
 
-## 4️⃣ Summary Table
+## Summary Table {#_4%EF%B8%8F%E2%83%A3-summary-table}
 
 | Security Concept         | Purpose                         | Protection Against                                  | Notes                                 |
 | ------------------------ | ------------------------------- | --------------------------------------------------- | ------------------------------------- |
@@ -103,7 +103,7 @@ fetch('/api/transfer', {
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 1. **CORS ≠ CSRF protection** — it controls cross-origin **read access**, not whether cookies are sent.
 2. To prevent CSRF:

@@ -1,4 +1,4 @@
-# Practice: next-app-router
+# Practice: Next.js App Router: Boundaries, Data and Route States {#practice-next-app-router}
 
 **Status: outstanding learner practice.**
 

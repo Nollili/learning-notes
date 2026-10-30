@@ -1,4 +1,6 @@
-# Integrated RAG, workflow and n8n practice
+# AI app practice: JavaScript first, then deeper integration
+
+**New to AI development? Start with [the JavaScript assistant milestones](./javascript-assistant.md).** They pair with [Build AI Apps — JavaScript First](../../applied-ai/); Python is not a prerequisite. The deeper sequence below remains available after the relevant beginner project.
 
 **All learner practice remains outstanding.** These specifications refine the existing P-334/P-335 projects and add one bounded n8n integration. Supplied workbench passes are reference verification, not evidence that you implemented or mastered the projects.
 

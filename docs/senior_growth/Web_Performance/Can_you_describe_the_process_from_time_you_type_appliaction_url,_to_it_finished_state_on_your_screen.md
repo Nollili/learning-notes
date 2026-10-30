@@ -6,7 +6,7 @@ Understanding this process shows **how browsers render a web application**, and 
 
 ---
 
-## 1. URL Resolution & DNS Lookup
+## URL Resolution & DNS Lookup {#_1-url-resolution-dns-lookup}
 
 - You type the URL → e.g., `https://example.com`.
 - The browser must find the **IP address** of the domain.
@@ -21,7 +21,7 @@ Measure resolver/network/cache conditions; there is no universal DNS latency.
 
 ---
 
-## 2. Transport Connection: TCP or QUIC
+## Transport Connection: TCP or QUIC {#_2-transport-connection-tcp-or-quic}
 
 - When a new HTTP/1.1 or HTTP/2 connection is needed, TCP is commonly used (HTTPS typically443). HTTP/3 uses QUIC over UDP with integrated TLS; it does not perform a TCP handshake. Existing connections, caches or a service worker may avoid a new network setup entirely.
 - TCP 3-way handshake:
@@ -29,11 +29,11 @@ Measure resolver/network/cache conditions; there is no universal DNS latency.
   2. SYN-ACK → from server
   3. ACK → from browser
 
-🕑 *Adds round-trip latency.*
+ *Adds round-trip latency.*
 
 ---
 
-## 3. TLS Handshake (HTTPS)
+## TLS Handshake (HTTPS) {#_3-tls-handshake-https}
 
 - Establishes an **encrypted session**.
 - Browser and server:
@@ -45,7 +45,7 @@ TLS version, resumption, transport and network conditions determine setup. TLS1.
 
 ---
 
-## 4. Sending the HTTP Request
+## Sending the HTTP Request {#_4-sending-the-http-request}
 
 - Browser sends an **HTTP GET** request for the page (e.g. `/index.html`).
 - Request includes:
@@ -54,18 +54,18 @@ TLS version, resumption, transport and network conditions determine setup. TLS1.
 
 ---
 
-## 5. Server Processing
+## Server Processing {#_5-server-processing}
 
 - The server:
   - Handles request.
   - May query a database or cache.
   - Returns a **response** (HTML or redirect).
 
-🕑 *Server response time — can vary widely.*
+ *Server response time — can vary widely.*
 
 ---
 
-## 6. Browser Receives HTML Response
+## Browser Receives HTML Response {#_6-browser-receives-html-response}
 
 - Browser consumes the response body incrementally as bytes become available.
 - It immediately starts **parsing** and building the **DOM tree**.
@@ -76,7 +76,7 @@ TLS version, resumption, transport and network conditions determine setup. TLS1.
 
 ---
 
-## 7. Building the Render Tree
+## Building the Render Tree {#_7-building-the-render-tree}
 
 1. **DOM Tree** from HTML.
 2. **CSSOM Tree** from CSS.
@@ -86,27 +86,27 @@ Matching critical stylesheets can delay rendering; media conditions, discovery a
 
 ---
 
-## 8. Layout (Reflow)
+## Layout (Reflow) {#_8-layout-reflow}
 
 - Browser calculates **positions and sizes** of elements.
 - This process is called **layout** or **reflow**.
 
 ---
 
-## 9. Paint
+## Paint {#_9-paint}
 
 - Browser paints **pixels** for each element to layers (background, borders, text, etc.)
 
 ---
 
-## 10. Compositing
+## Compositing {#_10-compositing}
 
 - The rendering/compositing pipeline produces frames using browser/platform resources; GPU use is implementation-dependent.
 - A first frame is not necessarily FCP: FCP requires eligible content. LCP is a separate later/largest eligible content milestone.
 
 ---
 
-## 11. JavaScript Execution Overlaps Earlier Stages
+## JavaScript Execution Overlaps Earlier Stages {#_11-javascript-execution-overlaps-earlier-stages}
 
 - JavaScript may execute while parsing, after parsing, or later; it is not a stage that always waits until after the first composite:
   - Can manipulate DOM → triggers **reflows/repaints**.
@@ -115,7 +115,7 @@ Matching critical stylesheets can delay rendering; media conditions, discovery a
 
 ---
 
-## 12. Loading Additional Resources
+## Loading Additional Resources {#_12-loading-additional-resources}
 
 - Browser continues loading:
   - Fonts
@@ -125,20 +125,20 @@ Matching critical stylesheets can delay rendering; media conditions, discovery a
 
 ---
 
-## 13. Interaction and Ongoing Updates
+## Interaction and Ongoing Updates {#_13-interaction-and-ongoing-updates}
 
 Native links/forms can work before hydration; client controls become available according to code/data/boundary readiness. A load event or attached handler does not prove responsiveness or correctness. Use actual interaction traces and field INP; TTI is a retired Lighthouse metric and TTFI is informal terminology.
 
 ---
 
-## 14. Idle State
+## Idle State {#_14-idle-state}
 
 - The load event does not mean every future resource is loaded/cached or that the application is permanently idle.
 - Background tasks or workers may continue (analytics, prefetching, hydration).
 
 ---
 
-## 🔍 Common Performance Bottlenecks
+## Common Performance Bottlenecks {#%F0%9F%94%8D-common-performance-bottlenecks}
 
 | Stage | Problem | Example Fix |
 |--------|----------|-------------|
@@ -153,7 +153,7 @@ Native links/forms can work before hydration; client controls become available a
 
 ---
 
-## 🧩 Summary Flow
+## Summary Flow {#%F0%9F%A7%A9-summary-flow}
 
 URL → DNS Lookup → TCP/TLS Handshake → HTTP Request
 → Server Response → Parse HTML → Build DOM & CSSOM

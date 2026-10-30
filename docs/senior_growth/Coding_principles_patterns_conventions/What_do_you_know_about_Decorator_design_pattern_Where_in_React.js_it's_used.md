@@ -1,10 +1,10 @@
 # What do you know about Decorator design pattern? Where in React.js it's used?
 
-# 🎨 Decorator Design Pattern in JavaScript and React
+## Decorator Design Pattern in JavaScript and React {#%F0%9F%8E%A8-decorator-design-pattern-in-javascript-and-react}
 
 ---
 
-## 1️⃣ What is the Decorator Pattern?
+## What is the Decorator Pattern? {#_1%EF%B8%8F%E2%83%A3-what-is-the-decorator-pattern}
 
 **Definition:**  
 The **Decorator pattern** is a **structural design pattern** that allows you to **dynamically add new behavior** to an object **without modifying its structure**.  
@@ -19,7 +19,7 @@ The **Decorator pattern** is a **structural design pattern** that allows you to 
 
 ---
 
-## 2️⃣ Simple JavaScript Example
+## Simple JavaScript Example {#_2%EF%B8%8F%E2%83%A3-simple-javascript-example}
 ```js
 class Coffee {
   cost() { return 5; }
@@ -46,11 +46,11 @@ console.log(milkCoffee.cost());  // 7
 
 ---
 
-## 3️⃣ Decorator Pattern in React.js
+## Decorator Pattern in React.js {#_3%EF%B8%8F%E2%83%A3-decorator-pattern-in-react-js}
 
 In React, decorators are commonly used for **enhancing components**, often called **Higher-Order Components (HOCs)**.
 
-### 🔹 Higher-Order Component (HOC)
+### Higher-Order Component (HOC) {#%F0%9F%94%B9-higher-order-component-hoc}
 
 * Function that **takes a component and returns an enhanced component**.
 * Allows code reuse, logic separation, and behavior injection.
@@ -63,7 +63,7 @@ An HOC is a function-to-component adapter that can resemble object decoration; i
 
 ---
 
-### 🔹 Where Decorators Are Useful in React
+### Where Decorators Are Useful in React {#%F0%9F%94%B9-where-decorators-are-useful-in-react}
 
 1. **Cross-cutting concerns**
 
@@ -80,14 +80,14 @@ An HOC is a function-to-component adapter that can resemble object decoration; i
 
 ---
 
-### 4️⃣ Modern React Approach
+### Modern React Approach {#_4%EF%B8%8F%E2%83%A3-modern-react-approach}
 
 * **HOCs** are still used, but with **React Hooks**, many decorator use cases are replaced by **custom hooks**.
 * Hooks allow **composition and behavior reuse** without wrapping components, making code more readable.
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * **Decorator Pattern:** Dynamically extend object behavior.
 * **In React:** Component adapters can use HOCs; do not conflate that pattern with @decorator syntax.

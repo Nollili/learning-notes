@@ -1,6 +1,6 @@
-# Jest, Vite, and React Testing Library (RTL)
+# React testing with Jest, Vite and React Testing Library {#jest-vite-and-react-testing-library-rtl}
 
-### **1. Overview of React Testing**
+### **Overview of React Testing** {#_1-overview-of-react-testing}
 
 * **Purpose:** Ensure components and logic work as expected, reduce regressions, and improve confidence in refactoring.
 * **Types of tests:**
@@ -11,7 +11,7 @@
 
 ---
 
-### **2. Jest**
+### **Jest** {#_2-jest}
 
 * **Role:** Test runner and assertion library.
 * **Features:**
@@ -32,7 +32,7 @@ test('adds 1 + 2 to equal 3', () => {
 
 ---
 
-### **3. React Testing Library (RTL)**
+### **React Testing Library (RTL)** {#_3-react-testing-library-rtl}
 
 * **Role:** Focused on **testing React components from the user’s perspective**.
 * **Philosophy:** Don’t test implementation details; test **what the user sees and interacts with**.
@@ -57,7 +57,7 @@ test('renders button text', () => {
 
 ---
 
-### **4. Vite / Vitest**
+### **Vite / Vitest** {#_4-vite-vitest}
 
 * **Role:** Modern alternative to Jest for projects using Vite.
 * **Vitest** is **a Vite-native test runner**, designed for speed and ESM support.
@@ -70,7 +70,7 @@ test('renders button text', () => {
 
 ---
 
-### **5. Best Practices**
+### **Best Practices** {#_5-best-practices}
 
 1. **Unit vs Integration:**
 

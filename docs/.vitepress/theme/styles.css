@@ -1,3 +1,8 @@
+.vp-doc .hub-section-number {
+  margin-inline-end: 0.25em;
+  white-space: pre;
+}
+
 .mermaid-diagram {
   margin: 1.5rem 0;
   overflow-x: auto;

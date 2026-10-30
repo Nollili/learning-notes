@@ -20,7 +20,7 @@ This exercise combines promises, cancellation, resource ownership, and event-loo
 
 ---
 
-## 12. Final review checklist
+## Final review checklist {#_12-final-review-checklist}
 
 You should be able to explain and demonstrate the following:
 

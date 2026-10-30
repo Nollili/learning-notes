@@ -1,0 +1,121 @@
+2. Serving frontend applicationAssignment
+Assignment
+You've got a webpage — now it needs a home on the internet. In this task, you'll host it on AWS with CDK, the way production sites usually are: files in a private S3 bucket, served through a CloudFront distribution that handles HTTPS, caching and one address that never changes. The bucket itself never faces the public internet directly. The page itself is small and hand-written, with no framework and no build step. That keeps the focus on the hosting infrastructure.
+
+Prerequisites
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+Make sure to use Node.js version 22, the version this project's tooling requires.
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+Workflow
+Start the assignment in Autocode, which will create a fork of the template repository in your own Autocode Git EPAM account. Make sure you're working there, not in the template repository itself.
+Create a branch named task-2 off the latest main and work there for this module.
+Run npm run sync-tests -- module-2 to pull this module's Autocode tests into your local src/test/.
+Implement the Task described below.
+Deploy and configure your stack for testing:
+Deploy: npm run deploy.
+Copy the two printed URLs into the root-level e2e.config.ts: the CloudFront domain into FRONTEND_HOSTING_URL and the S3 bucket's regional domain into FRONTEND_HOSTING_BUCKET_URL.
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+Validate your work:
+npm run test:unit — infrastructure tests.
+npm run test:e2e — endpoint tests against your deployed stack.
+npm test — runs both.
+You can also check the page manually by visiting the CloudFront URL in a browser.
+Push your branch and submit your solution in Autocode. Wait for the pipeline to finish and grade your implementation.
+Once solution is graded in Autocode, create a pull request and merge it back into main.
+Architecture
+Frontend Hosting stack architecture
+
+The whole system's architecture is available here.
+
+Project structure
+Files marked (unchanged) already exist and need no changes. Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Task below.
+
+resources/
+  website/
+    index.html            # (unchanged)
+    styles.css            # (unchanged)
+src/
+  infra/
+    bin/
+      app.ts              # CDK app entry point (update)
+    lib/
+      index.ts            # stack barrel (update)
+      frontend-hosting-stack/
+        index.ts          # FrontendHostingStack
+        bucket.ts         # BucketConstruct
+        distribution.ts   # DistributionConstruct
+        deployment.ts     # DeploymentConstruct
+
+Task
+warning
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+A static site needs two things: a place to store its files and a way to serve them over the internet. S3 stores files well, but it wasn't built to serve traffic worldwide over HTTPS with low latency. CloudFront takes on that job instead: caching content close to each user, handling HTTPS and giving the site one address that never changes. You define the bucket, the distribution in front of it and the deployment that keeps the two in sync.
+
+What to do:
+
+Create a private S3 bucket that blocks all public access and has no static-website-hosting configuration — it is never reachable directly, only through CloudFront:
+
+src/infra/lib/frontend-hosting-stack/bucket.ts
+export class BucketConstruct extends s3.Bucket {
+  constructor(scope: Construct, id: string) { ... }
+}
+
+Create a CloudFront distribution in front of the bucket:
+
+Default behavior origin is the bucket, accessed through Origin Access Control, not a public bucket policy.
+viewerProtocolPolicy redirects HTTP to HTTPS.
+defaultRootObject is index.html.
+src/infra/lib/frontend-hosting-stack/distribution.ts
+export interface DistributionConstructProps {
+  readonly bucket: IBucket; // the BucketConstruct from step 1
+}
+
+export class DistributionConstruct extends cloudfront.Distribution {
+  constructor(scope: Construct, id: string, props: DistributionConstructProps) { ... }
+}
+
+Create a deployment that uploads the contents of resources/website/ to the bucket. Wire it to the CloudFront distribution, so every cdk deploy also invalidates the entire CDN cache (/*) without a separate manual step:
+
+src/infra/lib/frontend-hosting-stack/deployment.ts
+export interface DeploymentConstructProps {
+  readonly bucket: IBucket; // the BucketConstruct from step 1
+  readonly distribution: cloudfront.IDistribution; // the DistributionConstruct from step 2
+}
+
+export class DeploymentConstruct extends s3deploy.BucketDeployment {
+  constructor(scope: Construct, id: string, props: DeploymentConstructProps) { ... }
+}
+
+
+Compose bucket, distribution and deployment into a stack. It declares two CfnOutputs. distributionDomainName holds the CloudFront distribution's domain name. bucketRegionalDomainName holds the S3 bucket's regional domain name. Both print after cdk deploy, so you don't need to open the AWS Console to find them:
+
+src/infra/lib/frontend-hosting-stack/index.ts
+export class FrontendHostingStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) { ... }
+}
+
+Initialize FrontendHostingStack in src/infra/bin/app.ts.
+
+ Checkpoint: does the bucket stay private?
+Evaluation criteria
+Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed CloudFront URL.
+
+Infrastructure
+
+FrontendHostingStack contains the hosting bucket, a CloudFront distribution and a deployment, with the distribution and the deployment both pointing at that same bucket.
+The S3 bucket blocks all public access and has no static-website-hosting configuration.
+The CloudFront distribution serves the bucket through Origin Access Control, redirects HTTP to HTTPS and uses index.html as its default root object.
+The deployment uploads the contents of resources/website/ to the bucket and invalidates the entire CloudFront cache (/*) on every deploy.
+The stack declares the distributionDomainName and bucketRegionalDomainName outputs.
+Behavior
+
+The CloudFront URL returns a 200 response with the page's HTML and a text/html content type.
+styles.css is served from the CloudFront URL with a 200 response and a text/css content type.
+A direct request to the S3 bucket's object URL returns a 403 response.
+What's next
+Your website is live. From here, the course shifts focus to serverless APIs, built as separate services alongside it. Module 3 adds the first one, the Product Service, serving product data from Lambda functions behind a REST API.
+
+Previous
+Deploying a Frontend App with AWS Console

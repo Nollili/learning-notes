@@ -10,21 +10,21 @@ This compatibility page preserves earlier URLs and section anchors. Learner prac
 
 - [What is Big O notation? How can it be used to optimize JS code?](../../cs-foundations/complexity-and-cost.md)
 
-<a id="🔹-big-o-notation-in-javascript"></a>
+<a id="-big-o-notation-in-javascript"></a>
 
-- [🔹 Big O Notation in JavaScript](../../cs-foundations/complexity-and-cost.md)
+- [Big O Notation in JavaScript](../../cs-foundations/complexity-and-cost.md)
 
-<a id="_1️⃣-why-big-o-matters"></a>
+<a id="_1. -why-big-o-matters"></a>
 
-- [1️⃣ Why Big O Matters](../../cs-foundations/complexity-and-cost.md)
+- [1. Why Big O Matters](../../cs-foundations/complexity-and-cost.md)
 
-<a id="_2️⃣-common-big-o-classes"></a>
+<a id="_2. -common-big-o-classes"></a>
 
-- [2️⃣ Common Big O Classes](../../cs-foundations/complexity-and-cost.md)
+- [2. Common Big O Classes](../../cs-foundations/complexity-and-cost.md)
 
-<a id="_3️⃣-examples-in-javascript"></a>
+<a id="_3. -examples-in-javascript"></a>
 
-- [3️⃣ Examples in JavaScript](../../cs-foundations/complexity-and-cost.md)
+- [3. Examples in JavaScript](../../cs-foundations/complexity-and-cost.md)
 
 <a id="linear-search-o-n"></a>
 
@@ -42,13 +42,13 @@ This compatibility page preserves earlier URLs and section anchors. Learner prac
 
 - [Recursion vs Memoization](../../cs-foundations/complexity-and-cost.md)
 
-<a id="_4️⃣-using-big-o-to-optimize-js-code"></a>
+<a id="_4. -using-big-o-to-optimize-js-code"></a>
 
-- [4️⃣ Using Big O to Optimize JS Code](../../cs-foundations/complexity-and-cost.md)
+- [4. Using Big O to Optimize JS Code](../../cs-foundations/complexity-and-cost.md)
 
-<a id="✅-summary"></a>
+<a id="-summary"></a>
 
-- [✅ Summary](../../cs-foundations/complexity-and-cost.md)
+- [Summary](../../cs-foundations/complexity-and-cost.md)
 
 <a id="state-the-cost-model-before-optimizing"></a>
 

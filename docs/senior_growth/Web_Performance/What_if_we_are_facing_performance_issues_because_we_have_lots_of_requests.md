@@ -7,7 +7,7 @@ Requests consume bandwidth/server/scheduling capacity, but do not each require a
 
 ---
 
-## ⚠️ Why Too Many Requests Are a Problem
+## Why Too Many Requests Are a Problem {#%E2%9A%A0%EF%B8%8F-why-too-many-requests-are-a-problem}
 
 | Impact                  | Description                                                                 |
 |-------------------------|-----------------------------------------------------------------------------|
@@ -19,7 +19,7 @@ Requests consume bandwidth/server/scheduling capacity, but do not each require a
 
 ---
 
-## 🔍 Step 1: Diagnose and Measure
+## Step 1: Diagnose and Measure {#%F0%9F%94%8D-step-1-diagnose-and-measure}
 
 Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
 - Total number of requests
@@ -34,28 +34,28 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
 
 ---
 
-## 🧩 Step 2: Optimize Static Asset Requests
+## Step 2: Optimize Static Asset Requests {#%F0%9F%A7%A9-step-2-optimize-static-asset-requests}
 
-### 1. Bundle and Minify
+### Bundle and Minify {#_1-bundle-and-minify}
 - Combine small JS/CSS files into bigger bundles (but **don’t make one huge bundle**; code splitting is still important).
 - Use **tree shaking** to remove unused code.
 - Enable **Gzip** or **Brotli compression**.
 
-### 2. Code Splitting
+### Code Splitting {#_2-code-splitting}
 - Dynamically import only what’s needed:
   ```js
   const Chart = React.lazy(() => import('./Chart'));
   ```
 - Load non-critical components after first render.
 
-### 3. Asset Caching
+### Asset Caching {#_3-asset-caching}
 - Use long-term caching with HTTP headers:
   ```http
   Cache-Control: max-age=31536000, immutable
   ```
 - Version assets with file hashes (e.g. `main.abc123.js`).
 
-### 4. Preload & Prefetch
+### Preload & Prefetch {#_4-preload-prefetch}
 - Use HTML resource hints:
   ```html
   <link rel="stylesheet" href="critical.css">
@@ -63,33 +63,33 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
   <link rel="prefetch" href="next-page.js">
   ```
 
-### 5. Serve Through a CDN
+### Serve Through a CDN {#_5-serve-through-a-cdn}
 - Lower latency by serving from servers closer to users.
 - Reduce load on your origin server.
 
 ---
 
-## 🌐 Step 3: Optimize API Requests
+## Step 3: Optimize API Requests {#%F0%9F%8C%90-step-3-optimize-api-requests}
 
-### 1. Batch and Aggregate Requests
+### Batch and Aggregate Requests {#_1-batch-and-aggregate-requests}
 - Combine small API calls into one endpoint.
 - Example: Instead of 10 `/user/{id}` calls, use `/users?ids=1,2,3,…`.
 
-### 2. Use GraphQL or BFF (Backend-for-Frontend)
+### Use GraphQL or BFF (Backend-for-Frontend) {#_2-use-graphql-or-bff-backend-for-frontend}
 - A BFF can aggregate UI-specific data. GraphQL permits selection but does not automatically avoid over-fetching, N+1 work or authorization errors; enforce server budgets and data access rules.
 
-### 3. Debounce or Throttle Frequent Requests
+### Debounce or Throttle Frequent Requests {#_3-debounce-or-throttle-frequent-requests}
 - Prevent flooding APIs from user input or scroll events.
   ```js
   const debouncedFetch = debounce(fetchData, 300);
   ```
 
-### 4. Implement Caching Layers
+### Implement Caching Layers {#_4-implement-caching-layers}
 - Client-side caching with React Query, SWR, or Redux Toolkit Query.
 - Server-side caching (Redis, CDN edge cache).
 - Use ETag or Last-Modified headers for conditional requests.
 
-### 5. Lazy Load Non-Critical Data
+### Lazy Load Non-Critical Data {#_5-lazy-load-non-critical-data}
 - Load non-essential data after the main UI is interactive.
   ```js
   useEffect(() => {
@@ -99,24 +99,24 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
 
 ---
 
-## 📱 Step 4: Image and Media Optimization
+## Step 4: Image and Media Optimization {#%F0%9F%93%B1-step-4-image-and-media-optimization}
 
-### 1. Use Responsive Images
+### Use Responsive Images {#_1-use-responsive-images}
 - Use HTML:
   ```html
   <img srcset="..." sizes="..." src="..." alt="..." />
   ```
 - Or use Next.js `<Image>` to serve the right size for each device.
 
-### 2. Lazy Loading
+### Lazy Loading {#_2-lazy-loading}
 - Use `loading="lazy"` to defer off-screen image requests.
 
-### 3. Choose Icon Delivery Deliberately
+### Choose Icon Delivery Deliberately {#_3-choose-icon-delivery-deliberately}
 - SVG sprites or a small icon subset can share bytes; inline SVG avoids a request but enlarges HTML. Icon fonts have loading/semantics trade-offs. Label meaningful controls and hide decorative icons appropriately.
 
 ---
 
-## ⚙️ Step 5: Architectural Strategies
+## Step 5: Architectural Strategies {#%E2%9A%99%EF%B8%8F-step-5-architectural-strategies}
 
 | Technique           | Description                                                      |
 |---------------------|------------------------------------------------------------------|
@@ -127,7 +127,7 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
 
 ---
 
-## ✅ Summary
+## Summary {#%E2%9C%85-summary}
 
 | Problem                    | Solution                                 |
 |----------------------------|------------------------------------------|
@@ -139,13 +139,13 @@ Use the **Network tab in Chrome DevTools** or **WebPageTest** to check:
 
 ---
 
-## 🧠 Rule of Thumb
+## Rule of Thumb {#%F0%9F%A7%A0-rule-of-thumb}
 
 Set route/device-specific budgets from a baseline and user outcomes;100requests/2MB is not a universal target. Prioritize critical-path bytes, dependency waterfalls, duplication and server cost rather than request count alone.
 
 ---
 
-## 🧾 Example Summary Workflow
+## Example Summary Workflow {#%F0%9F%A7%BE-example-summary-workflow}
 
 1. Measure with Lighthouse or DevTools.
 2. Find redundant or late-loaded assets.

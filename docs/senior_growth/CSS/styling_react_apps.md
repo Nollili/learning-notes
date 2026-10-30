@@ -6,14 +6,14 @@ Choose an approach from component ownership, runtime/SSR requirements and the ex
 
 ---
 
-## 🧠 **Overview**
+## **Overview** {#%F0%9F%A7%A0-overview}
 
 In React, there are **several main ways to style components**, each with its pros and cons.
 A senior dev should know **when and why** to use each.
 
 ---
 
-### 1️⃣ **Inline styles**
+### **Inline styles** {#_1%EF%B8%8F%E2%83%A3-inline-styles}
 
 ```jsx
 function Button() {
@@ -21,23 +21,23 @@ function Button() {
 }
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Simple and scoped to the element
 * No class name collisions
 * Useful for dynamic styles (based on props)
 
-❌ **Cons:**
+ **Cons:**
 
 * No pseudo-classes (`:hover`, `:focus`) or media queries
 * Harder to maintain for larger apps
 * Performance cost if used excessively
 
-🧠 **Good for:** small dynamic changes, one-off components, prototyping.
+ **Good for:** small dynamic changes, one-off components, prototyping.
 
 ---
 
-### 2️⃣ **Traditional CSS / SCSS**
+### **Traditional CSS / SCSS** {#_2%EF%B8%8F%E2%83%A3-traditional-css-scss}
 
 ```scss
 /* button.scss */
@@ -55,22 +55,22 @@ function Button() {
 }
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Familiar, supports everything (media queries, animations)
 * SCSS allows nesting, variables, mixins
 * Works with global design systems
 
-❌ **Cons:**
+ **Cons:**
 
 * Risk of class name collisions (unless modularized)
 * Styles are global unless scoped manually
 
-🧠 **Good for:** large apps with an established global style system.
+ **Good for:** large apps with an established global style system.
 
 ---
 
-### 3️⃣ **CSS Modules**
+### **CSS Modules** {#_3%EF%B8%8F%E2%83%A3-css-modules}
 
 ```scss
 /* Button.module.scss */
@@ -88,22 +88,22 @@ function Button() {
 }
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Automatic local scoping (no collisions)
 * Works with SCSS
 * Supported by common Vite and Next.js tooling; verify the project configuration
 
-❌ **Cons:**
+ **Cons:**
 
 * Class name composition can get verbose
 * Runtime values can use inherited custom properties or inline custom properties
 
-🧠 **Good for:** mid/large-scale projects that need maintainable, isolated styles.
+ **Good for:** mid/large-scale projects that need maintainable, isolated styles.
 
 ---
 
-### 4️⃣ **CSS-in-JS (Styled Components, Emotion, etc.)**
+### **CSS-in-JS (Styled Components, Emotion, etc.)** {#_4%EF%B8%8F%E2%83%A3-css-in-js-styled-components-emotion-etc}
 
 ```jsx
 import styled from 'styled-components';
@@ -117,23 +117,23 @@ const Button = styled.button`
 `;
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Scoped styles by default
 * Can use props for dynamic styling
 * No separate CSS files
 * Great for design systems and theming
 
-❌ **Cons:**
+ **Cons:**
 
 * Slight runtime overhead (though newer versions optimize this)
 * Harder to extract CSS for SSR unless configured
 
-🧠 **Good for:** design systems, component libraries, projects emphasizing encapsulation and theming.
+ **Good for:** design systems, component libraries, projects emphasizing encapsulation and theming.
 
 ---
 
-### 5️⃣ **Utility-first frameworks (Tailwind CSS)**
+### **Utility-first frameworks (Tailwind CSS)** {#_5%EF%B8%8F%E2%83%A3-utility-first-frameworks-tailwind-css}
 
 ```jsx
 function Button() {
@@ -145,18 +145,18 @@ function Button() {
 }
 ```
 
-✅ **Pros:**
+ **Pros:**
 
 * Fast to develop
 * Utilities reduce authored CSS; a generated stylesheet is still delivered
 * Consistent design and responsive utilities built-in
 
-❌ **Cons:**
+ **Cons:**
 
 * Verbose markup
 * Can be hard to read for complex components
 
-🧠 **Good for:** modern React + Vite setups, quick iteration, consistent UI across teams.
+ **Good for:** modern React + Vite setups, quick iteration, consistent UI across teams.
 
 ---
 ### CSS-in-JS terminology
@@ -177,7 +177,7 @@ function Button() {
 
 ---
 
-### ✅ **Pros**
+### **Pros** {#%E2%9C%85-pros}
 
 * **Scoped styles** — no class name collisions, styles tied to components
 * **Dynamic styling** — can use React props and state inside styles
@@ -187,7 +187,7 @@ function Button() {
 
 ---
 
-### ❌ **Cons**
+### **Cons** {#%E2%9D%8C-cons}
 
 * **Runtime overhead** (though less with zero-runtime libs like *vanilla-extract*)
 * **Harder to debug** in browser dev tools (class names are hashed)
@@ -196,14 +196,14 @@ function Button() {
 
 ---
 
-### 🗣️ **Short interview answer**
+### **Short interview answer** {#%F0%9F%97%A3%EF%B8%8F-short-interview-answer}
 
 > “CSS-in-JS gives great encapsulation and dynamic styling, but it adds runtime and build complexity.
 > It’s excellent for component libraries and theming, but for global or layout styles I’d use Tailwind or CSS Modules instead.”
 
 ---
 
-### 🧩 **What to say in your senior assessment**
+### **What to say in your senior assessment** {#%F0%9F%A7%A9-what-to-say-in-your-senior-assessment}
 
 > “React supports multiple styling approaches.
 > For small or dynamic tweaks, inline styles are fine.
@@ -213,7 +213,7 @@ function Button() {
 
 ---
 
-### 🗣️ **30-second interview answer**
+### **30-second interview answer** {#%F0%9F%97%A3%EF%B8%8F-30-second-interview-answer}
 
 > “React allows different styling strategies — from inline styles to SCSS, CSS Modules, or CSS-in-JS.
 > I usually prefer **CSS Modules or Styled Components** for scoped, maintainable styling, and use **Tailwind** when the project favors utility-first design.
@@ -228,7 +228,7 @@ For these notes, use React with CSS Modules and a small global semantic-token la
 
 The following hybrid example illustrates an alternative; it is not an additional mastery requirement.
 
-### 🧩 Typical modern setup (React + Vite)
+### Typical modern setup (React + Vite) {#%F0%9F%A7%A9-typical-modern-setup-react-vite}
 
 * **Tailwind CSS** → for spacing, layout, colors, responsive utilities
 * **CSS Modules** or **Vanilla Extract** → for component-level styling logic

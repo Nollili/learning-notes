@@ -1,12 +1,12 @@
 # What do you think, who is responsible for write unit tests?
 
-# 🧪 Responsibility for Writing Unit Tests
+## Responsibility for Writing Unit Tests {#%F0%9F%A7%AA-responsibility-for-writing-unit-tests}
 
 **Unit tests** are a fundamental part of software quality, and **responsibility should be shared across the team**, but primarily it falls on **developers writing the code**.
 
 ---
 
-## 1️⃣ Primary Responsibility: Developers
+## Primary Responsibility: Developers {#_1%EF%B8%8F%E2%83%A3-primary-responsibility-developers}
 
 - **Who:** The engineer who writes the feature or module
 - **Why:**
@@ -20,7 +20,7 @@
 
 ---
 
-## 2️⃣ Secondary Responsibility: Team / Code Review
+## Secondary Responsibility: Team / Code Review {#_2%EF%B8%8F%E2%83%A3-secondary-responsibility-team-code-review}
 
 - **Code reviewers / peers** should ensure:
   - Tests exist for new features
@@ -30,7 +30,7 @@
 
 ---
 
-## 3️⃣ Other Stakeholders
+## Other Stakeholders {#_3%EF%B8%8F%E2%83%A3-other-stakeholders}
 
 - **QA / Test Engineers:**
   - Typically focus on **integration and E2E tests**, but may contribute unit tests in some teams
@@ -40,7 +40,7 @@
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 1. **Write tests as you code** (TDD or alongside feature development)
 2. **Test critical paths first**
@@ -49,13 +49,13 @@
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Developers are primarily responsible** for unit tests.
 - **QA and team leads** support and enforce quality and coverage.
 - **Ownership matters:** the author supplies behavior evidence and reviewers challenge assumptions; proximity alone does not guarantee quality.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Unit tests are **part of the definition of done (DoD)** for a feature. No code should be merged without meaningful tests.
 
 

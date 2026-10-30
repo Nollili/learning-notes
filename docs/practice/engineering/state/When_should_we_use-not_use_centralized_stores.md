@@ -1,4 +1,4 @@
-# Practice: ⚖️ When to Use (or Not Use) a Centralized Store
+# Practice: When to Use (or Not Use) a Centralized Store {#practice-%E2%9A%96%EF%B8%8F-when-to-use-or-not-use-a-centralized-store}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

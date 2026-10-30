@@ -1,12 +1,12 @@
 # What is a style guide?
 
-# 🎨 Style Guide in Software Development
+## Style Guide in Software Development {#%F0%9F%8E%A8-style-guide-in-software-development}
 
 A **style guide** is a **document or set of rules** that defines how code should be **written, formatted, and structured** in a project or organization. It ensures **consistency and readability** across the codebase, making it easier for teams to maintain and scale software.
 
 ---
 
-## 1️⃣ Purpose of a Style Guide
+## Purpose of a Style Guide {#_1%EF%B8%8F%E2%83%A3-purpose-of-a-style-guide}
 
 - **Consistency:** All developers follow the same conventions, reducing cognitive load.
 - **Readability:** Easier for team members to understand code quickly.
@@ -16,7 +16,7 @@ A **style guide** is a **document or set of rules** that defines how code should
 
 ---
 
-## 2️⃣ Common Components of a Style Guide
+## Common Components of a Style Guide {#_2%EF%B8%8F%E2%83%A3-common-components-of-a-style-guide}
 
 | Component | Examples |
 |-----------|---------|
@@ -30,7 +30,7 @@ A **style guide** is a **document or set of rules** that defines how code should
 
 ---
 
-## 3️⃣ Examples of Style Guides
+## Examples of Style Guides {#_3%EF%B8%8F%E2%83%A3-examples-of-style-guides}
 
 - **JavaScript / TypeScript:**
   - Airbnb JavaScript Style Guide
@@ -44,7 +44,7 @@ A **style guide** is a **document or set of rules** that defines how code should
 
 ---
 
-## 4️⃣ Enforcement
+## Enforcement {#_4%EF%B8%8F%E2%83%A3-enforcement}
 
 - **Linters:** ESLint with typescript-eslint for TypeScript, and Stylelint for CSS. TSLint was deprecated in2019 and belongs to migration history.
 - **Formatters:** Prettier ensures consistent formatting.
@@ -53,14 +53,14 @@ A **style guide** is a **document or set of rules** that defines how code should
 
 ---
 
-## ✅ Key Takeaways
+## Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Style guide = team-agreed conventions for writing code**
 - Ensures **consistent, readable, maintainable code** across projects
 - Works hand-in-hand with **linters, formatters, and automated pipelines**
 - Makes **code reviews faster and more effective** because reviewers focus on logic, not style
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > A style guide is not just about aesthetics—it’s **a contract that communicates code intent and quality** across the team.
 
 

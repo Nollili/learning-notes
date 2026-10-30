@@ -1,4 +1,4 @@
-# Practice: 🔹 Web Workers
+# Practice: Web Workers {#practice-%F0%9F%94%B9-web-workers}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

@@ -4,7 +4,7 @@
 
 [Textbook explanation](../../node-js/module-11-performance-diagnostics.md) · [Node.js practice map](./index.md)
 
-## 15. Practice exercises
+## Practice exercises {#_15-practice-exercises}
 
 ### Exercise 1: Event-loop stall
 
@@ -43,7 +43,7 @@ For every exercise, include the evidence that would falsify your first hypothesi
 
 ---
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 ### Measurement
 

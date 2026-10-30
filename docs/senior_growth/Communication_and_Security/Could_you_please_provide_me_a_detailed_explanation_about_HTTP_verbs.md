@@ -1,14 +1,14 @@
-# 🌐 HTTP Verbs — Detailed Explanation
+# HTTP Verbs — Detailed Explanation {#%F0%9F%8C%90-http-verbs-%E2%80%94-detailed-explanation}
 
 HTTP verbs (also called **methods**) define the **action** the client wants to perform on a resource. Understanding them is crucial for designing **RESTful APIs** and frontend-backend communication.
 
 ---
 
-## 1️⃣ **GET**
+## **GET** {#_1%EF%B8%8F%E2%83%A3-get}
 
 - **Purpose:** Retrieve data from the server.
-- **Idempotent:** ✅ (same intended server effect; response representations may differ)
-- **Safe:** ✅ (client does not request a state-changing effect; incidental logging is possible)
+- **Idempotent:**  (same intended server effect; response representations may differ)
+- **Safe:**  (client does not request a state-changing effect; incidental logging is possible)
 - **Request Body:** No generally defined GET content semantics; avoid relying on a GET body without explicit interoperable agreement
 - **Caching:** Responses can be cached.
 - **Use Case:** Fetching user data, page content, or images.
@@ -29,11 +29,11 @@ Host: api.example.com
 
 ---
 
-## 2️⃣ **POST**
+## **POST** {#_2%EF%B8%8F%E2%83%A3-post}
 
 * **Purpose:** Create a new resource or trigger an action.
-* **Idempotent:** ❌ (multiple requests can create duplicates)
-* **Safe:** ❌ (modifies server state)
+* **Idempotent:**  (multiple requests can create duplicates)
+* **Safe:**  (modifies server state)
 * **Request Body:** API-defined; POST does not universally require content
 * **Caching:** Responses are **not cached** by default.
 * **Use Case:** Create user, submit form, trigger workflow.
@@ -53,11 +53,11 @@ Content-Type: application/json
 
 ---
 
-## 3️⃣ **PUT**
+## **PUT** {#_3%EF%B8%8F%E2%83%A3-put}
 
 * **Purpose:** Replace an existing resource (or create if missing)
-* **Idempotent:** ✅ (same intended replacement effect; not necessarily identical response)
-* **Safe:** ❌ (modifies server state)
+* **Idempotent:**  (same intended replacement effect; not necessarily identical response)
+* **Safe:**  (modifies server state)
 * **Request Body:** Required
 * **Caching:** Usually not cached
 * **Use Case:** Update entire resource
@@ -77,11 +77,11 @@ Content-Type: application/json
 
 ---
 
-## 4️⃣ **PATCH**
+## **PATCH** {#_4%EF%B8%8F%E2%83%A3-patch}
 
 * **Purpose:** Update **part** of a resource.
 * **Idempotent:** Not inherently; depends on the patch document/operation
-* **Safe:** ❌ (modifies server state)
+* **Safe:**  (modifies server state)
 * **Request Body:** Partial data describing changes
 * **Use Case:** Update a single field (e.g., email)
 
@@ -99,11 +99,11 @@ Content-Type: application/json
 
 ---
 
-## 5️⃣ **DELETE**
+## **DELETE** {#_5%EF%B8%8F%E2%83%A3-delete}
 
 * **Purpose:** Remove a resource.
-* **Idempotent:** ✅ (deleting same resource multiple times has same effect)
-* **Safe:** ❌ (modifies server state)
+* **Idempotent:**  (deleting same resource multiple times has same effect)
+* **Safe:**  (modifies server state)
 * **Request Body:** Usually none
 * **Use Case:** Delete a user, post, or file.
 
@@ -116,11 +116,11 @@ DELETE /users/123 HTTP/1.1
 
 ---
 
-## 6️⃣ **HEAD**
+## **HEAD** {#_6%EF%B8%8F%E2%83%A3-head}
 
 * **Purpose:** Retrieve headers only (no response body)
-* **Idempotent:** ✅
-* **Safe:** ✅
+* **Idempotent:** Yes
+* **Safe:** Yes
 * **Use Case:** Check if a resource exists, check caching headers, content-length, last-modified.
 
 **Example:**
@@ -136,11 +136,11 @@ Content-Length: 123
 
 ---
 
-## 7️⃣ **OPTIONS**
+## **OPTIONS** {#_7%EF%B8%8F%E2%83%A3-options}
 
 * **Purpose:** Discover supported HTTP methods and CORS policies for a resource.
-* **Idempotent:** ✅
-* **Safe:** ✅
+* **Idempotent:** Yes
+* **Safe:** Yes
 * **Use Case:** CORS preflight requests, API discovery.
 
 **Example:**
@@ -155,7 +155,7 @@ Allow: GET, POST, PUT, DELETE, OPTIONS
 
 ---
 
-## 8️⃣ Other Less Common Verbs
+## Other Less Common Verbs {#_8%EF%B8%8F%E2%83%A3-other-less-common-verbs}
 
 | Verb              | Purpose / Use Case                                          |
 | ----------------- | ----------------------------------------------------------- |
@@ -165,21 +165,21 @@ Allow: GET, POST, PUT, DELETE, OPTIONS
 
 ---
 
-## 🧠 Summary Table
+## Summary Table {#%F0%9F%A7%A0-summary-table}
 
 | Method  | Safe | Idempotent | Typical Use Case           |
 | ------- | ---- | ---------- | -------------------------- |
-| GET     | ✅    | ✅          | Read/fetch resource        |
-| POST    | ❌    | ❌          | Create resource / action   |
-| PUT     | ❌    | ✅          | Replace resource           |
-| PATCH   | ❌    | Depends on operation | Partial update             |
-| DELETE  | ❌    | ✅          | Delete resource            |
-| HEAD    | ✅    | ✅          | Fetch headers only         |
-| OPTIONS | ✅    | ✅          | Discover supported methods |
+| GET     | Yes | Yes | Read/fetch resource        |
+| POST    | No | No | Create resource / action   |
+| PUT     | No | Yes | Replace resource           |
+| PATCH   | No | Depends on operation | Partial update             |
+| DELETE  | No | Yes | Delete resource            |
+| HEAD    | Yes | Yes | Fetch headers only         |
+| OPTIONS | Yes | Yes | Discover supported methods |
 
 ---
 
-### 💡 Best Practices
+### Best Practices {#%F0%9F%92%A1-best-practices}
 
 * **GET** → fetch data only
 * **POST** → create new resources

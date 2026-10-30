@@ -1,6 +1,6 @@
-### Can you explain to me the difference between virtual dom and shadow dom/real dom?
+# Can you explain to me the difference between virtual dom and shadow dom/real dom? {#can-you-explain-to-me-the-difference-between-virtual-dom-and-shadow-dom-real-dom}
 
-# Difference Between Virtual DOM, Shadow DOM, and Real DOM
+## Difference Between Virtual DOM, Shadow DOM, and Real DOM {#difference-between-virtual-dom-shadow-dom-and-real-dom}
 
 ### **Real DOM**
 

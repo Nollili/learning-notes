@@ -4,7 +4,7 @@ Design patterns are **reusable solutions** to common problems in software design
 
 ---
 
-## 1️⃣ Module Pattern
+## Module Pattern {#_1%EF%B8%8F%E2%83%A3-module-pattern}
 
 **Purpose:** Encapsulate code in a self-contained module with private and public members.
 
@@ -28,7 +28,7 @@ console.log(CounterModule.getCount()); // 1
 
 ---
 
-## 2️⃣ Singleton Pattern
+## Singleton Pattern {#_2%EF%B8%8F%E2%83%A3-singleton-pattern}
 
 **Purpose:** Ensure a class or object has **only one instance** and provide a global point of access.
 
@@ -53,7 +53,7 @@ console.log(config1 === config2); // true
 
 ---
 
-## 3️⃣ Factory Pattern
+## Factory Pattern {#_3%EF%B8%8F%E2%83%A3-factory-pattern}
 
 **Purpose:** Create objects without exposing the instantiation logic to the client.
 
@@ -82,7 +82,7 @@ const user2 = userFactory('Bob', 'guest');
 
 ---
 
-## 4️⃣ Observer / Pub-Sub Pattern
+## Observer / Pub-Sub Pattern {#_4%EF%B8%8F%E2%83%A3-observer-pub-sub-pattern}
 
 **Purpose:** Allow objects to **subscribe to events** and get notified when they occur.
 
@@ -97,7 +97,7 @@ const user2 = userFactory('Bob', 'guest');
 
 ---
 
-## 5️⃣ Strategy Pattern
+## Strategy Pattern {#_5%EF%B8%8F%E2%83%A3-strategy-pattern}
 
 **Purpose:** Define a family of algorithms and make them **interchangeable** at runtime.
 
@@ -121,7 +121,7 @@ console.log(executeStrategy('multiply', 2, 3)); // 6
 
 ---
 
-## 6️⃣ Decorator Pattern
+## Decorator Pattern {#_6%EF%B8%8F%E2%83%A3-decorator-pattern}
 
 **Purpose:** Dynamically **add behavior** to objects without modifying their structure.
 
@@ -147,7 +147,7 @@ console.log(loggedSum(2, 3)); // logs args, returns 5
 
 ---
 
-## 7️⃣ Prototype / Inheritance Pattern
+## Prototype / Inheritance Pattern {#_7%EF%B8%8F%E2%83%A3-prototype-inheritance-pattern}
 
 **Purpose:** Reuse behavior through prototypes instead of creating new instances.
 
@@ -168,7 +168,7 @@ alice.sayHi(); // Hi, I'm Alice
 
 ---
 
-## 8️⃣ Command Pattern
+## Command Pattern {#_8%EF%B8%8F%E2%83%A3-command-pattern}
 
 **Purpose:** Encapsulate requests as objects for **undo/redo**, queueing, or logging.
 
@@ -190,7 +190,7 @@ logCommand.execute('Hello World');
 
 ---
 
-## 🧠 Why These Patterns Are Useful in Daily JS Development
+## Why These Patterns Are Useful in Daily JS Development {#%F0%9F%A7%A0-why-these-patterns-are-useful-in-daily-js-development}
 
 1. **Code Reusability:** Avoid duplication, centralize logic.
 2. **Maintainability:** Easier to extend and debug.

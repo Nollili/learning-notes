@@ -1,0 +1,450 @@
+# P08 — RDS order service
+
+**Learner status: not started. All supplied tasks on this page are mandatory in this learning path**, including items originally labelled optional or bonus. Repeating tasks still require the stated action or comparison; reuse earlier resources and code where suitable, and record the new evidence. Source optional labels describe the original course only.
+
+**Read first:** [databases](../../aws/databases.md). **Overlap:** Repeating in A08: relational persistence. Order status and order listing are mandatory here.
+
+[Original supplied text](/aws-homework/sources/practitioner-08.txt) preserves the source wording. Apply the [corrections](./source-notes.md) and this path’s mandatory status when interpreting it.
+
+Your shop can list products, import them in bulk and authorize incoming requests. What it can't do yet is store orders. This module adds an Order Service that lets an authenticated caller place an order and fetch it back.
+
+An order is stored as two related pieces: one row in orders and one row per line item in order_items. Both parts have to be written together. Reading an order back means joining them and summing the line items. PostgreSQL does all of that with transactions, foreign keys and aggregate queries, so this service uses RDS rather than DynamoDB.
+
+## Prerequisites
+
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+
+Make sure to use Node.js version 22 — this matches the Lambda runtime required for this module.
+
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+
+## Workflow
+
+Make sure you're working in your fork of the template repository.
+
+Create a branch named task-8 off the latest main and work there for this module.
+
+Run npm run sync-tests -- module-8 to pull this module's Autocode tests into your local src/test/.
+
+Implement all the tasks described in Tasks below.
+
+Deploy and set up your database:
+
+Make sure AuthorizationServiceStack from Module 7 is still deployed, with its users table seeded. Both endpoints below authenticate through it. If you ran cdk destroy on it after that module, every request now returns 403.
+
+Deploy: npm run deploy. Creating an RDS instance takes several minutes, longer than any previous module's deploy.
+
+Copy the printed API Gateway URL into e2e.config.ts's ORDER_API_URL.
+
+Run your migration script, the one you write in Task 8.2. The orders and order_items tables don't exist until it has run once. Until then every request to either endpoint fails.
+
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+
+Validate your work:
+
+```bash
+npm run test:unit # infrastructure tests.
+npm run test:e2e # endpoint tests against your deployed API.
+npm test # runs both.
+```
+
+You can also test manually with a tool like Postman. Send POST /orders and GET /orders/{orderId} requests with an Authorization: Basic {base64(login:password)} header, using credentials seeded in Module 7.
+
+**User-owned submission:** after local validation, the user pushes and submits the branch in Autocode and waits for grading. The assistant must never push.
+
+After grading, the learner follows the course pull-request and merge workflow.
+
+## Architecture
+
+See the [course-wide system diagram](../../aws/index.md#one-application-several-responsibilities). The pasted source contains an image label rather than an embedded diagram.
+
+## Project structure
+
+Files marked (unchanged) already exist and need no changes. Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Tasks below.
+
+```text
+src/
+  infra/
+    bin/
+      app.ts                        # CDK app entry point (update)
+    lib/
+      index.ts                      # stack barrel (update)
+      order-service-stack/
+        index.ts                    # OrderServiceStack
+        db-instance.ts              # OrderDbInstanceConstruct
+        create-order-lambda.ts      # CreateOrderLambdaConstruct
+        get-order-by-id-lambda.ts   # GetOrderByIdLambdaConstruct
+        rest-api.ts                 # RestApiConstruct
+  app/
+    handlers/
+      create-order/
+        handler.ts                  # createOrder handler
+      get-order-by-id/
+        handler.ts                  # getOrderById handler
+    types/
+      order.ts                      # `Order`, `OrderItem` interfaces (unchanged)
+  migrations/
+    setup-order-db.ts               # schema setup script
+```
+
+## Data Models
+
+The Order Service uses its own PostgreSQL database, provisioned by this module. It starts out empty, so you create the schema below yourself in Task 8.2.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS orders (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+```
+
+);
+
+```sql
+CREATE TABLE IF NOT EXISTS order_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id text NOT NULL,
+  count integer NOT NULL CHECK (count > 0),
+  price numeric(10, 2) NOT NULL CHECK (price > 0)
+```
+
+);
+
+Two things to notice about the keys:
+
+order_items.order_id is a real foreign key with ON DELETE CASCADE. Deleting an order takes its items with it.
+
+user_id and product_id are plain text, not foreign keys. A foreign key can only point at a table in the same database. The users and products tables live in DynamoDB, so these two columns hold bare ids that nothing validates.
+
+## API Contract
+
+Both routes are protected the same way GET /import is. A missing Authorization header returns 401. A header whose credentials don't match a known login and password returns 403. Both happen before the request reaches either handler.
+
+Each response body below contains exactly the fields shown and no extra ones.
+
+POST /orders
+
+Creates an order and all of its line items in a single transaction.
+
+Request body:
+
+```text
+{
+  "userId": "user-123",
+  "items": [
+    {
+      "productId": "prod-1",
+      "count": 2,
+      "price": 9.99
+    }
+  ]
+}
+```
+
+userId — non-empty string, required.
+
+items — required array, at least 1 item.
+
+productId — non-empty string.
+
+count — integer, greater than 0.
+
+price — number, greater than 0.
+
+201 response:
+
+```text
+{
+  "id": "uuid",
+  "userId": "user-123",
+  "createdAt": "iso-timestamp",
+  "items": [{ "id": "uuid", "productId": "prod-1", "count": 2, "price": 9.99 }]
+}
+```
+
+400 — invalid request body. Body: { "message": "`<reason>`" }.
+
+GET /orders/{orderId}
+
+Looks up a single order by id, with its line items and a computed total. No request body.
+
+200 response. Same shape as the POST response, plus a computed total:
+
+```text
+{
+  "id": "uuid",
+  "userId": "user-123",
+  "createdAt": "iso-timestamp",
+  "total": 19.98,
+  "items": [{ "id": "uuid", "productId": "prod-1", "count": 2, "price": 9.99 }]
+}
+```
+
+404 — no order with that id. Body: { "message": "`<reason>`" }.
+
+## Tasks
+
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+### Task 8.1 — Order Database
+
+RDS is not like DynamoDB and S3: it runs a PostgreSQL server on an instance, which has to sit somewhere in a network. That network is a VPC, dedicated to your AWS account with its own private address range. A security group acts as a firewall around the instance inside it. Most of the work below is networking rather than database configuration: the stack first, then the VPC, the instance inside it and the credentials it connects with.
+
+What to do:
+
+Create a new CDK stack named OrderServiceStack at the same level as your existing service stacks. It takes the basicAuthorizer Lambda from Module 7 as a constructor prop because the routes you add in Tasks 8.3 and 8.4 are protected by it:
+
+`src/infra/lib/order-service-stack/index.ts`
+
+```ts
+export interface OrderServiceStackProps extends StackProps {
+  readonly basicAuthorizerLambda: IFunction; // AuthorizationServiceStack's basicAuthorizerLambda from Module 7
+}
+```
+
+```ts
+export class OrderServiceStack extends Stack {
+  constructor(scope: Construct, id: string, props: OrderServiceStackProps) { ... }
+}
+```
+
+Pass AuthorizationServiceStack's basicAuthorizer into it from the CDK app's entry point infra/bin/app.ts. That stack is already instantiated before the Import Service there, so its authorizer property is available to pass along.
+
+Provision a PostgreSQL database in the stack:
+
+Create an RDS instance running PostgreSQL (engine postgres, version 18.3), with a database named orders.
+
+Use a micro instance class, keeping the instance inside the AWS Free Tier.
+
+Set removalPolicy: RemovalPolicy.DESTROY on the instance, so cdk destroy deletes it completely. Otherwise it leaves behind a snapshot. A snapshot is a full backup copy of the database, billed on its own.
+
+Create a VPC for it, then place the instance in one of that VPC's public subnets. Public subnets have a route to the internet, which is what gives the instance a public address.
+
+Give the VPC only public subnets. A VPC normally also creates private ones, each with its own NAT Gateway, adding costs this stack doesn't need.
+
+Use that public address for one thing only: in Task 8.2 you connect from your own machine to create the schema. It doesn't mean anyone can connect. The security group only lets the Order Service Lambdas through.
+
+Create an rds.DatabaseSecret with the database username — it will also generate the password and store both in Secrets Manager. Wire that secret into the instance via rds.Credentials.fromSecret(secret).
+
+`src/infra/lib/order-service-stack/db-instance.ts`
+
+```ts
+export class OrderDbInstanceConstruct extends Construct {
+  public readonly databaseName = 'orders';
+
+  public readonly instance: rds.DatabaseInstance;
+  public readonly secret: secretsmanager.ISecret;
+  public readonly vpc: ec2.IVpc;
+
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+**Checkpoint: is the instance up and configured as intended?**
+
+### Task 8.2 — Schema Setup
+
+Your deploy created a database server, not the tables inside it. Creating those tables is a separate step because a schema changes far more often than a server does. You add a migration script, an npm command to run it and the temporary firewall change the script needs to connect.
+
+What to do:
+
+Write a script at src/migrations/setup-order-db.ts that connects to the deployed database and creates both tables. Use CREATE TABLE IF NOT EXISTS so re-running it is safe.
+
+Add an npm script that runs it. The script reads its connection values from environment variables:
+
+Endpoint address and port — from the RDS console.
+
+Database name — orders.
+
+Username and password — from the Secrets Manager console.
+
+Temporarily open inbound access to your own IP on the database's security group, run the script, then remove that rule again. Leaving it in place would contradict the Evaluation criteria below, which require no ingress from the public internet.
+
+**Checkpoint: is the schema in place and the script safe to re-run?**
+
+### Task 8.3 — Create Order Endpoint
+
+With the tables in place, this task adds the endpoint that writes to them. Placing an order inserts one row into orders plus one row per line item into order_items, which all have to succeed or fail together. A transaction gives you that: the database applies all of the statements or none of them. You define the Lambda, wire it to POST /orders, then implement the handler that validates the body and runs the transaction.
+
+What to do:
+
+Define a Lambda function in OrderServiceStack:
+
+Function name createOrder.
+
+Node.js 22.x runtime, handler.main entry point.
+
+256 MB of memory, 30-second timeout.
+
+Deployed inside the database's VPC, so it's allowed through the database's security group.
+
+Receives DB_HOST, DB_PORT, DB_NAME (orders), DB_USER and DB_PASSWORD as environment variables. They're read from the database construct's connection details and its generated secret, never typed in as plain text.
+
+`src/infra/lib/order-service-stack/create-order-lambda.ts`
+
+```ts
+export interface CreateOrderLambdaConstructProps {
+  readonly vpc: ec2.IVpc; // the OrderDbInstanceConstruct's VPC from Task 8.1
+  readonly dbInstance: rds.IDatabaseInstance;
+  readonly dbSecret: secretsmanager.ISecret;
+  readonly databaseName: string;
+}
+```
+
+```ts
+export class CreateOrderLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: CreateOrderLambdaConstructProps) { ... }
+}
+```
+
+Wire it to POST /orders on an API Gateway REST API, protected by the Module 7 authorizer, the same way GET /import is:
+
+`src/infra/lib/order-service-stack/rest-api.ts`
+
+```ts
+export interface RestApiConstructProps {
+  readonly createOrderLambda: IFunction;
+  readonly getOrderByIdLambda: IFunction; // the getOrderById Lambda from Task 8.4
+  readonly basicAuthorizerLambda: IFunction; // AuthorizationServiceStack's basicAuthorizerLambda from Module 7
+}
+```
+
+```ts
+export class RestApiConstruct extends apigateway.RestApi {
+  constructor(scope: Construct, id: string, props: RestApiConstructProps) { ... }
+}
+```
+
+Create the createOrder handler. On a valid request body it writes the orders row and all of its order_items rows in one transaction, then returns 201 with the created order and its items. createdAt comes from the database, not from the request body. See API Contract for the shapes:
+
+`src/app/handlers/create-order/handler.ts`
+
+```ts
+export const main = async (event: { body: string }) => { ... };
+```
+
+Return 400 for a request that breaks any rule in API Contract, without writing the order or any of its items. Even one invalid item in a multi-item request rejects the whole request.
+
+**Checkpoint: does the endpoint create orders and reject unauthenticated callers?**
+
+### Task 8.4 — Get Order By Id Endpoint
+
+Now that orders can be created, the last endpoint reads one back: the same shape POST returned, plus a total. You could fetch every line item and add them up in the handler, but an order with five hundred items would then move five hundred rows across the network to produce a single number. SUM computes that number inside the database and returns only the result. You build the same three pieces again: the Lambda, the route, then the handler.
+
+What to do:
+
+Define a Lambda function in OrderServiceStack:
+
+Function name getOrderById.
+
+Node.js 22.x runtime, handler.main entry point.
+
+256 MB of memory, 30-second timeout.
+
+Deployed inside the database's VPC, exactly like createOrder.
+
+Receives the same five DB_* environment variables from the same connection details and secret.
+
+`src/infra/lib/order-service-stack/get-order-by-id-lambda.ts`
+
+```ts
+export interface GetOrderByIdLambdaConstructProps {
+  readonly vpc: ec2.IVpc; // the OrderDbInstanceConstruct's VPC from Task 8.1
+  readonly dbInstance: rds.IDatabaseInstance;
+  readonly dbSecret: secretsmanager.ISecret;
+  readonly databaseName: string;
+}
+```
+
+```ts
+export class GetOrderByIdLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: GetOrderByIdLambdaConstructProps) { ... }
+}
+```
+
+Wire it to GET /orders/{orderId} on the same REST API construct as createOrder, protected by the same authorizer.
+
+Create the getOrderById handler. If the id matches an existing order, it returns 200 with the order, its items and a total. Compute that total in the SQL query with SUM, not by adding up the items in your handler code. See API Contract for the response shape:
+
+`src/app/handlers/get-order-by-id/handler.ts`
+
+```ts
+export const main = async (event: { pathParameters: { orderId: string } }) => { ... };
+```
+
+Return 404 when the id doesn't match any order.
+
+**Checkpoint: does the order come back with the right total?**
+
+## Evaluation criteria
+
+Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
+
+## Infrastructure
+
+OrderServiceStack contains one PostgreSQL RDS instance, the createOrder and getOrderById Lambda functions and one API Gateway REST API.
+
+The RDS instance runs PostgreSQL 18.3, holds the orders database, is publicly accessible and lives in its own VPC.
+
+The RDS instance uses a micro instance class and is destroyed with no final snapshot when its stack is torn down.
+
+The VPC has only public subnets, with no NAT Gateway.
+
+The database's username and password come from a generated Secrets Manager secret, never from hardcoded values.
+
+The database's security group allows inbound TCP traffic from the Order Service Lambdas' security group and opens no ingress to the public internet.
+
+Both Lambda functions run on the Node.js 22.x runtime with the handler.main entry point, 256 MB of memory and a 30-second timeout. Each is attached to the VPC.
+
+Both Lambda functions receive DB_NAME, DB_HOST, DB_PORT, DB_USER and DB_PASSWORD from the live DB instance and its secret, rather than from hardcoded values.
+
+POST /orders is wired to createOrder and GET /orders/{orderId} to getOrderById. Both use a CUSTOM authorization type backed by a TOKEN Lambda authorizer that reads the Authorization header and is wired to basicAuthorizer.
+
+An npm script creates the orders and order_items tables and is safe to re-run.
+
+## Behavior
+
+POST /orders returns a 201 response with the created order, its items and a database-generated createdAt, for a valid request.
+
+POST /orders writes the order and all of its items in a single transaction.
+
+POST /orders returns a 400 response with a { "message": "`<reason>`" } body, persisting neither the order nor any of its items, when userId is missing or empty, items is missing or empty, or any item has an empty productId, a count that isn't a positive integer or a price that isn't greater than 0.
+
+GET /orders/{orderId} returns a 200 response with the order, its items and a total computed in SQL with SUM, for an existing order.
+
+GET /orders/{orderId} returns a 404 response with a { "message": "`<reason>`" } body for an id that doesn't exist.
+
+Both routes return a 401 response when no Authorization header is sent and a 403 response when the credentials don't match a known login and password.
+
+## Promoted extensions — required (originally optional)
+
+The original course does not grade this extension; it is **mandatory in this learning path**.
+
+Order status: add a status column (CREATED/PAID/CANCELLED, defaulting new orders to CREATED) and an updated_at timestamp to orders, plus a PATCH /orders/{orderId}/status endpoint.
+
+Request body: { "status": "PAID" } (or "CANCELLED").
+
+A CREATED order transitions to PAID or CANCELLED: 200 with the updated order, including the new status and updated_at.
+
+A status value other than PAID/CANCELLED returns 400.
+
+An unknown order id returns 404.
+
+An order already in a terminal state can't transition again and returns 409.
+
+List orders by user: add a GET /orders?userId=... endpoint.
+
+200 with an array of that user's orders, each shaped like the required endpoints' orders but without items: { "id", "userId", "createdAt", "total" }.
+
+A userId with no orders returns 200 with an empty array.
+
+## Completion evidence
+
+Record each required task, the observed acceptance results, applicable test output, all promoted extensions, and cleanup. Original Autocode checks do not automatically verify the promoted extensions. See the [shared evidence rules](./index.md#evidence-for-every-required-module).

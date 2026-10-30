@@ -10,4 +10,4 @@ All learner practice remains outstanding. Follow [the shared increments](../inde
 - [How would you onboard new people on a project? What kind of documentation/style guide would you use?](./How_would_you_onboard_new_people_on_a_project%2C_What_kind_of_documentation%2C_style_guide_would_you_use.md)
 - [What is Observable and Observers? How does it work? What are the similarities, differences against Promise? When to use which?](./What_is_Observable_and_Observers._How_does_it_work._What_are_the_similarities%2C_differences_against_Promise._When_to_use_which.md)
 - [What is SEO? Why is important to have a good SEO? How can we improve it(like SSR) in different applications(like SPA)?](./What_is_SEO%2C_Why_is_important_to_have_a_good_SEO._How_can_we_improve_it_%28like_SSR%29_in_different_applications.md)
-- [What is an "opinionated" framework? How does it compare to "non-opinionated"? What are the pros and cons of each approach?](./What_is_an_opinionated_framework_How_does_it_compa_181e8106c24d80ada728f61b3a22d5ef.md)
+- [Opinionated and unopinionated frameworks: tradeoffs](./What_is_an_opinionated_framework_How_does_it_compa_181e8106c24d80ada728f61b3a22d5ef.md)

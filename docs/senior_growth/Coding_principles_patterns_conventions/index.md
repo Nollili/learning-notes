@@ -1,4 +1,4 @@
-# Coding_principles_patterns_conventions
+# Coding principles, patterns and conventions {#coding-principles-patterns-conventions}
 
 ## Recommended order and boundaries
 

@@ -7,7 +7,7 @@ This can result in **memory leaks**, **increased heap size**, and **slower perfo
 
 ---
 
-## 🧠 Quick Refresher: How Garbage Collection Works
+## Quick Refresher: How Garbage Collection Works {#%F0%9F%A7%A0-quick-refresher-how-garbage-collection-works}
 
 - JavaScript engines use automatic, reachability-based garbage collection with implementation-specific generational/incremental/concurrent strategies; one simple mark-and-sweep model is a teaching approximation.
 - The GC only removes objects that are **no longer reachable** from the root scope (like `window` or `document`).
@@ -16,9 +16,9 @@ A strong retaining path from a live root matters. An isolated unreachable cycle 
 
 ---
 
-## ⚠️ Common Sources of Memory Problems
+## Common Sources of Memory Problems {#%E2%9A%A0%EF%B8%8F-common-sources-of-memory-problems}
 
-### 1. Forgotten Event Listeners
+### Forgotten Event Listeners {#_1-forgotten-event-listeners}
 
 An element/listener cycle alone is not necessarily a leak after removal. A live window/document listener, timer, store or other root can retain a closure and its detached node. Diagnose that root path.
 
@@ -30,7 +30,7 @@ function init() {
 }
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Remove listeners when components unmount or elements are deleted:
 
 ```js
@@ -48,7 +48,7 @@ useEffect(() => {
 
 ---
 
-### 2. Unintended Global Variables
+### Unintended Global Variables {#_2-unintended-global-variables}
 
 Assigning an undeclared name in sloppy classic-script code can create a global property. Strict mode and modules throw instead; explicitly retained globals still require ownership.
 
@@ -58,12 +58,12 @@ function doSomething() {
 }
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Always use strict mode (`'use strict'`) and declare variables explicitly.
 
 ---
 
-### 3. Closures Holding References
+### Closures Holding References {#_3-closures-holding-references}
 
 A live closure can retain a captured value that its observable behavior needs; engines may optimize unused captures. Inspect the actual retaining path rather than assume the entire lexical environment is always retained.
 
@@ -75,13 +75,13 @@ function setup() {
 const leak = setup();
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Avoid keeping large data in closures unless necessary.  
 Nullify or reassign references when no longer needed.
 
 ---
 
-### 4. Detached DOM Nodes
+### Detached DOM Nodes {#_4-detached-dom-nodes}
 
 When DOM nodes are removed from the document but still referenced by JS variables or listeners.
 
@@ -91,12 +91,12 @@ document.body.removeChild(node); // removed from DOM
 // Still in memory because `node` references it
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Set `node = null` after removal if it’s no longer needed.
 
 ---
 
-### 5. Timers and Intervals
+### Timers and Intervals {#_5-timers-and-intervals}
 
 `setInterval()` and `setTimeout()` keep references to their callbacks, which may capture state or DOM references.
 
@@ -106,7 +106,7 @@ setInterval(() => {
 }, 1000);
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Always clear timers:
 
 ```js
@@ -118,7 +118,7 @@ Clean up intervals when components unmount (React `useEffect` cleanup).
 
 ---
 
-### 6. Caching Gone Wrong
+### Caching Gone Wrong {#_6-caching-gone-wrong}
 
 Storing large data in memory caches (like Redux, Context, or custom JS objects) without eviction logic.
 
@@ -129,7 +129,7 @@ function addToCache(key, value) {
 }
 ```
 
-**✅ Solution:**  
+** Solution:**\
 Use a WeakMap when the semantic key is an object and entries should not keep that key alive; it is not a bounded string/query-key cache:
 
 ```js
@@ -140,37 +140,37 @@ Implement cache limits or LRU (Least Recently Used) eviction.
 
 ---
 
-### 7. Third-Party Libraries or Listeners
+### Third-Party Libraries or Listeners {#_7-third-party-libraries-or-listeners}
 
 Some libraries (especially older DOM manipulation ones) attach global listeners or store references internally.
 
-**✅ Solution:**  
+** Solution:**\
 Check library docs for cleanup methods (e.g., `destroy()`, `dispose()`).  
 Wrap them inside lifecycle hooks for proper teardown.
 
 ---
 
-### 8. Over-retained React State
+### Over-retained React State {#_8-over-retained-react-state}
 
 State or refs holding large data (arrays, objects) that persist across re-renders or pages.
 
-**✅ Solution:**  
+** Solution:**\
 Place data with the owner whose lifetime needs it; component state becomes collectible after unmount if no other roots retain it. Moving data into a global store can prolong retention. Clear/evict long-lived caches and references deliberately; an unmount state update is not a cleanup requirement.
 
 ---
 
-### 9. Large In-Memory Data Structures
+### Large In-Memory Data Structures {#_9-large-in-memory-data-structures}
 
 Example: keeping all fetched API results in arrays/lists without pruning.  
 Especially common in data-heavy apps (dashboards, grids).
 
-**✅ Solution:**  
+** Solution:**\
 Paginate data.  
 Virtualization reduces mounted DOM, not necessarily retained data. Bound fetched pages separately using pagination/eviction; choose policy for scroll restoration and refetch cost.
 
 ---
 
-## 🧰 How to Detect and Diagnose Memory Leaks
+## How to Detect and Diagnose Memory Leaks {#%F0%9F%A7%B0-how-to-detect-and-diagnose-memory-leaks}
 
 1. **Chrome DevTools → Performance & Memory Tabs**  
    - Use Performance → record, look for steady heap growth.  
@@ -184,7 +184,7 @@ Virtualization reduces mounted DOM, not necessarily retained data. Bound fetched
 
 ---
 
-## ✅ Summary Table
+## Summary Table {#%E2%9C%85-summary-table}
 
 | Problem Source         | Why It Leaks                | How to Fix                        |
 |-----------------------|-----------------------------|-----------------------------------|
@@ -200,7 +200,7 @@ Virtualization reduces mounted DOM, not necessarily retained data. Bound fetched
 
 ---
 
-**🧠 Rule of thumb:**  
+** Rule of thumb:**\
 Memory leaks happen when you keep unintentional references to things that should’ve been forgotten.  
 Always clean up listeners, timers, closures, and caches when the component or feature is no longer in use.
 ## Bounded cache: identity, eviction and limitations

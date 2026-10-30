@@ -1,4 +1,4 @@
-### What is the temporal dead zone? Why is this happening?
+# What is the temporal dead zone? Why is this happening? {#what-is-the-temporal-dead-zone-why-is-this-happening}
 
 The **Temporal Dead Zone (TDZ)** in JavaScript refers to the period of time during which a `let` or `const` variable is declared but cannot be accessed. Attempting to access these variables during this time results in a `ReferenceError`.
 

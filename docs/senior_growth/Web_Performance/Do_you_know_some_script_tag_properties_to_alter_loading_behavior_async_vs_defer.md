@@ -1,4 +1,4 @@
-### Do you know some script tag properties to alter loading behavior? async vs defer
+# Do you know some script tag properties to alter loading behavior? async vs defer {#do-you-know-some-script-tag-properties-to-alter-loading-behavior-async-vs-defer}
 
 ### Script Tag Loading Behavior — `async` vs `defer` (and others)
 
@@ -7,7 +7,7 @@ Knowing `<script>` tag attributes like `async` and `defer` helps optimize the **
 
 ---
 
-## 🧩 Default Script Loading Behavior
+## Default Script Loading Behavior {#%F0%9F%A7%A9-default-script-loading-behavior}
 
 ### `<script src="main.js"></script>`
 - **Blocking by default.**
@@ -18,12 +18,12 @@ Use an early blocking script only for a justified ordering requirement; it canno
 
 ---
 
-## ⚡ `async` Attribute
+## `async` Attribute {#%E2%9A%A1-async-attribute}
 
 ```html
 <script src="script.js" async></script>
 ```
-🔹 Behavior:
+ Behavior:
 Script downloads while HTML is parsed.
 
 When ready and the main thread can run it, an async classic can interrupt parsing for execution; fetching in parallel does not move its JavaScript to a worker.
@@ -35,12 +35,12 @@ Step | Description
 3 | When script finishes downloading, HTML parsing pauses and script executes immediately
 4 | HTML parsing resumes after script execution
 
-✅ Use for:
+ Use for:
 Scripts that don’t depend on DOM or other scripts (e.g., analytics, ads, tracking pixels).
 
 External, non-critical JS.
 
-⚠️ Drawback:
+ Drawback:
 Execution order is not guaranteed.
 Scripts may run as soon as they finish downloading, out of order.
 
@@ -48,11 +48,11 @@ Example:
 ```html
 <script src="https://www.googletagmanager.com/gtag/js" async></script>
 ```
-🕓 defer Attribute
+ defer Attribute
 ```html
 <script src="main.js" defer></script>
 ```
-🔹 Behavior:
+ Behavior:
 Script downloads while HTML is parsed.
 
 Execution is deferred until after HTML is fully parsed (just before DOMContentLoaded).
@@ -63,12 +63,12 @@ Step	Description
 3	Script executes after parsing completes
 4	Deferred classic scripts finish; this alone does not prove the app is responsive or its async data is ready
 
-✅ Use for:
+ Use for:
 External classic scripts that need parsed DOM; modules have their own default deferred processing.
 
 Scripts that rely on others (executed in order they appear).
 
-⚡ Bonus:
+ Bonus:
 Execution order is preserved even with multiple deferred scripts.
 
 Example:
@@ -80,7 +80,7 @@ Example:
 
 The complete category table below also covers inline classic and async module scripts; do not apply an external-classic rule to every script element.
 
-🧠 Extra: type="module"
+ Extra: type="module"
 ```html
 <script type="module" src="app.js"></script>
 ```
@@ -98,7 +98,7 @@ The complete category table below also covers inline classic and async module sc
 
 ---
 
-### 🧾 Other Useful Script Attributes
+### Other Useful Script Attributes {#%F0%9F%A7%BE-other-useful-script-attributes}
 #### Other Useful Script Attributes
 
 - **`nomodule`**  
@@ -134,7 +134,7 @@ The complete category table below also covers inline classic and async module sc
     <script src="app.js" referrerpolicy="no-referrer"></script>
     ```
 
-### 🚀 Best Practices for Senior Developers
+### Best Practices for Senior Developers {#%F0%9F%9A%80-best-practices-for-senior-developers}
 For an external classic app script, defer is a useful default when parsed DOM/document order is needed; framework module output follows its own contract:
 
 ```html
@@ -151,7 +151,7 @@ For an external classic app script, defer is a useful default when parsed DOM/do
 ```
 Preload fetches a resource but does not execute it or change the consuming script's execution semantics. A script already discovered early may gain nothing, and competing requests can delay an LCP image/font. Match URL/destination/CORS/credentials with the consumer to avoid duplicate/unused work. For an ES module use modulepreload as described below; measure before retaining hints.
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 - **async**: Parallel fetch; execution can still occupy the main thread and affect parsing/paint  
     *Typical use*: Analytics, ads, tracking
 
@@ -167,7 +167,7 @@ Preload fetches a resource but does not execute it or change the consuming scrip
 - **None (blocking)**: Forces early execution  
     *Typical use*: Rare, critical inline code
 
-### ✅ Senior-level takeaway:
+### Senior-level takeaway: {#%E2%9C%85-senior-level-takeaway}
 Mastering async, defer, and type="module" lets you precisely control the JavaScript loading pipeline — balancing fast rendering, early interactivity, and predictable execution order.
 
 ## Script category and completion are separate axes

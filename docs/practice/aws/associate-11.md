@@ -1,0 +1,124 @@
+# A11 — CI/CD, quality gates and SAM
+
+**Learner status: not started. All supplied tasks on this page are mandatory in this learning path**, including items originally labelled optional or bonus. Repeating tasks still require the stated action or comparison; reuse earlier resources and code where suitable, and record the new evidence. Source optional labels describe the original course only.
+
+**Read first:** [delivery and operations](../../aws/delivery-and-operations.md).
+
+[Original supplied text](/aws-homework/sources/associate-11.txt). All original optional tasks and bonus challenges below are **required** here; apply [source corrections](./source-notes.md).
+
+Please read carefully instructions and complete all required tasks to finish the module.
+
+## What’s given
+
+your AWS account
+
+CloudFormation templates from previous modules
+
+a sample client app for this module
+
+a sample API back end for this module
+
+lambda handlers from previous modules
+
+## Demo tips
+
+It might take some time to make a commit and wait for the CodePipeline to fully complete. So, to save some time, it’s recommended to:
+
+make a commits and deployment of the code before the demo
+
+demonstrate that the commit and the active deployment are mentioned in the most recent CodePipeline execution
+
+## What to save money on
+
+In case you’re not planning to experiment with your AWS resources after the demo, remove your S3 bucket, VPC, SNS topic(s), SQS queue(s), RDS or DynamoDB instance(s), Lambda function(s), CodeBuild project(s), CodeDeploy resources, CodePipeline pipeline(s).
+
+### Task 1. Create a CodeBuild project to store code artifacts in S3
+
+Clone/Fork or create a new GitHub repository in your personal or Epam account with the client app’s source code. In AWS management console or using AWS CLI create a new S3 bucket with the name source-artifacts-GITHUB_PROFILE_NAME. Enable bucket versioning and configure a lifecycle policy to remove previous object versions.
+
+Create a new CodeBuild project named copy-shop-source-artifacts which will be triggered when some changes happen in your client app’s repo. Use your bucket name as a SOURCE_OUTPUT_BUCKET env variable and this build specification which be used by the project every time the code is changed. It should create a zip archive of the source code of the app. After the project is created, update its execution role, and give it write permissions to your artifacts bucket.
+
+All necessary instructions on how to set up a CodeBuild project are provided in the practice guide.
+
+Push some changes to your bucket or run the project in the CodeBuild console and ensure, that your source code is archived and copied to the bucket as expected.
+
+You have 100 build minutes per month within the Free tier plan.
+
+### Task 2. Build a CI/CD pipeline for static web application
+
+In the IAM console create a CodeBuild service role called release-client-app-codebuild-role which will allow write and delete operations over S3 buckets.
+
+Create a CodePipeline pipeline:
+
+as a name put GITHUB_PROFILE_NAME-shop. As a source choose S3 and path to the archive in the source artifacts bucket from the previous task.
+
+at a Build step, select the CodeBuild and create a new project called release-client-app which will use this buildspec file from the source code. Use the service role, which was created in the first step. This CodeBuild project will build and deploy your client app to S3 and invalidate CloudFront distribution’s cache.
+
+If you removed the S3 bucket for static website hosting and the CloudFront distribution, you can either create it again or follow additional instructions in the practice guide on how to set up necessary infrastructure right in your pipeline using CloudFormation, or you can create a CloudFormation stack using this template). After you create the CodeBuild project and return to the pipeline’s setup, add environment variables (S3_BUCKET, CLOUDFRONT_DISTRIBUTION_ID) which will refer to your app’s bucket and CloudFront distribution accordingly.
+
+then skip a _Deploy stage, review, and finish with pipeline creation. If everything is set up correctly, the initial pipeline should start immediately and Build/Deploy the source code from the artifacts bucket to S3/CloudFront. If not, check CodeBuild’s logs and troubleshoot issues.
+
+Modify the pipeline and add a section called QualityGate for running code quality tools before the Build/Deploy step. Use CodeBuid and this buildspec to create a new project named client-app-quality-check similarly you did it for previous steps. Modify the buildspec file to run code quality tools (linting, testing, npm packages scan, sonar, etc.) over the client app. Save pipeline and ensure that all the flow works correctly by pushing some changes to your repo.
+
+Required extension (originally optional): modify the release.yaml buildspec file to make client app deployment more user-friendly by showing users a maintenance page after the bucket is empty while new files are uploaded.
+
+### Task 3. Deploy a serverless (SAM) application
+
+Perform manual deployment of the serverless app from the previous module:
+
+Lambda handlers were moved to the front-end app’s repository for your convenience. Also, you need to delete the existing (Products) HTTP API and related resources.
+
+Install SAM CLI on your local machine
+
+Investigate the content of the serverless folder and its SAM template.yaml
+
+Using the terminal on your local machine, execute the sam package CLI command with appropriate flags to store the packaged lambdas in your artifacts’ S3 bucket and create a CloudFormation template template-export.yml. Investigate the content of the template and generated artifacts in the bucket.
+
+Using the sam deploy CLI command and generated output template file from the previous step, deploy the serverless app.
+
+In the AWS console, open the Lambda service and find the lambda function in the Functions section. Also, in the Applications tab, find your deployed SAM application and review all created resources. Check the API Gateway console and find the created HTTP API.
+
+Update the env configuration in the client app and check if it works as expected.
+
+Then find a CloudFormation stack, which was created by the sam deploy command, and destroy the stack. Also, remove the created artifacts from the S3 bucket.
+
+Modify or create a new pipeline to package and deploy the serverless app.
+
+Under Free tier limits you have only one free active pipeline per month. The next active CodePipelines will cost you each $1.00 per month
+
+Modify the pipeline and create a stage named ServerlessInfrastructure. Add a Package step that will package the serverless app with CodeBuild. Create a new CodeBuild project just in the pipeline using this buildspec. Name the project package-serverless-app. Investigate its content beforehand and provide the necessary env variables (S3_ARTIFACTS_BUCKET and S3_ARTIFACTS_PREFIX) after you create the CodeBuild project. As an Output artifact name set ServerlessPackageArtifact.
+
+Create another action with the name Infrastructure.Prepare, which will use the SourceArtifact, CloudFormation, and the output (ServerlessPackageArtifact) artifact from the previous step and its template-export.yml to create a CloudFormation change set to a shop-serverless stack. Set a name for changeset as ShopServerlessInfrastructureChange.
+
+Save the action and add another one with the name Infrastructure.Deploy. It should execute the change set from the previous step for shop-serverless stack.
+
+Save the pipeline and check if it works and deploys the apps as expected.
+
+Add or modify the QualityGate’s buildspec to run unit tests over the serverless app.
+
+After the deployment of serverless infrastructure, find API Gateway execution URL and update env configuration of client app to make the /products API requests working
+
+Required extension (originally optional): if you preferred to create a new pipeline, modify the copy-source-artifacts CodeBuild project so that it will copy the client’s and serverless app’s source code in different S3 objects, as it would be two different apps in a mono repo (e.g., shop-client/shop-client.zip and shop-serverless/shop-serverless.zip). Update the S3 Source path accordingly. Eventually, you will be able to set up pipelines only for separate parts of your infrastructure.
+
+Required extension (originally optional): to get more practice, you can try adding resources for other Lambdas from previous modules to the sam template and deploying more complex AWS infrastructure to the Cloud.
+
+Back-end deployment may incur additional charges depending on the deployment type you choose.
+
+All supplied tasks and extensions in this section are required locally; the original course allowed some of them to be skipped.
+
+## Required guide bonus — repeating pipeline setup through CLI
+
+- [ ] Export the CodePipeline definition, distinguish metadata from update input and inspect action dependencies.
+- [ ] Combine compatible infrastructure actions, use appropriate `runOrder` values to run independent preparation/deployment actions in parallel, update through CLI and start an execution.
+- [ ] Inspect history and compare correctness and elapsed behavior; never parallelize actions that consume unfinished outputs.
+
+**All source options are required:** maintenance-page deployment, separate client/serverless source archives and pipelines, broader SAM resources, plus this guide bonus. Source “push” actions remain user-owned.
+
+
+## Completion evidence
+
+- [ ] Record observed results for every section, including all promoted extensions.
+- [ ] Retain configuration/code, successful and denied/failing cases where specified, and actual cleanup state.
+- [ ] Link earlier evidence for repeating work and add the new interface/behavior comparison.
+
+Use the [shared evidence rules](./index.md#evidence-for-every-required-module); never claim screenshots or sample code complete independent work.

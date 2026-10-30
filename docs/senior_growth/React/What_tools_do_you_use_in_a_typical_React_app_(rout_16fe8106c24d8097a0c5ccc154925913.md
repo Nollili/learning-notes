@@ -1,4 +1,4 @@
-### What tools do you use in a typical React app (routing, render, etc)?
+# What tools do you use in a typical React app (routing, render, etc)? {#what-tools-do-you-use-in-a-typical-react-app-routing-render-etc}
 
 
 

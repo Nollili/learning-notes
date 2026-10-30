@@ -1,13 +1,13 @@
-# What is code standard? 
+# What is code standard? {#what-is-code-standard}
 ## What code standard is on your current project? Should we always work by code standard? Have you used linters and do you have any experience in configuring them?
 
-## 📏 Code Standards in Software Development
+## Code Standards in Software Development {#%F0%9F%93%8F-code-standards-in-software-development}
 
 **Code standards** are a set of agreed-upon **rules, conventions, and best practices** that developers follow to ensure code is **consistent, readable, and maintainable** across a project or team.
 
 ---
 
-## 1️⃣ What a Code Standard Means
+## What a Code Standard Means {#_1%EF%B8%8F%E2%83%A3-what-a-code-standard-means}
 
 - **Consistency:** Ensures all code looks and behaves similarly regardless of the author.
 - **Readability:** Makes it easier for team members and future developers to understand the code.
@@ -23,7 +23,7 @@
 
 ---
 
-## 2️⃣ Illustrative React/TypeScript Standard — Verify Against the Actual Project
+## Illustrative React/TypeScript Standard — Verify Against the Actual Project {#_2%EF%B8%8F%E2%83%A3-illustrative-react-typescript-standard-%E2%80%94-verify-against-the-actual-project}
 
 - **Language:** TypeScript + React
 - **Linting / Formatting:** ESLint + Prettier
@@ -37,7 +37,7 @@
 
 ---
 
-## 3️⃣ Should We Always Work by Code Standards?
+## Should We Always Work by Code Standards? {#_3%EF%B8%8F%E2%83%A3-should-we-always-work-by-code-standards}
 
 **Yes, always** — benefits include:
 
@@ -51,7 +51,7 @@
 
 ---
 
-## 4️⃣ Linters: Usage and Configuration Experience
+## Linters: Usage and Configuration Experience {#_4%EF%B8%8F%E2%83%A3-linters-usage-and-configuration-experience}
 
 - **Tools used:** ESLint, Prettier, Stylelint
 - **Usage:**
@@ -71,14 +71,14 @@
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Code standard = team-agreed conventions + best practices**
 - Working by code standard **improves maintainability, readability, and team efficiency**
 - **Linters + formatters** enforce code standards automatically
 - **CI/CD + pre-commit hooks** ensure compliance at all stages
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Think of code standards as **a contract between developers**—breaking it should be deliberate and justified, not accidental.
 
 

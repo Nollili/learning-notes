@@ -1,12 +1,12 @@
 # Release strategies. What strategy do you use on project? How will you build a release strategy for open source project?
 
-# 🚀 Release Strategies
+## Release Strategies {#%F0%9F%9A%80-release-strategies}
 
 A **release strategy** defines **how and when new versions of software are delivered** to users. Choosing the right strategy improves **stability, user experience, and developer workflow**.
 
 ---
 
-## 1️⃣ Common Release Strategies
+## Common Release Strategies {#_1%EF%B8%8F%E2%83%A3-common-release-strategies}
 
 ### 1.1 Semantic Versioning (SemVer)
 - Format: `MAJOR.MINOR.PATCH`
@@ -15,11 +15,11 @@ A **release strategy** defines **how and when new versions of software are deliv
   - **PATCH**: Bug fixes (backward compatible)
 - Example: `1.4.2`
 
-**Pros:**  
+ **Pros:**
 - Clear communication of changes.
 - Widely adopted in open source.
 
-**Cons:**  
+ **Cons:**
 - Requires discipline in tagging and updating versions.
 
 ---
@@ -28,11 +28,11 @@ A **release strategy** defines **how and when new versions of software are deliv
 - Release new features **hidden behind toggles**.
 - Can enable/disable features **per user, environment, or region**.
 
-**Pros:**  
+ **Pros:**
 - Safe deployment of incomplete or risky features.
 - Enables **gradual rollout**.
 
-**Cons:**  
+ **Cons:**
 - Extra code complexity for managing flags.
 
 ---
@@ -41,10 +41,10 @@ A **release strategy** defines **how and when new versions of software are deliv
 - Deploy new version to **a small subset of users** first.
 - Monitor for errors before full rollout.
 
-**Pros:**  
+ **Pros:**
 - Reduces risk of critical failures in production.
 
-**Cons:**  
+ **Cons:**
 - Requires monitoring infrastructure and user segmentation.
 
 ---
@@ -55,11 +55,11 @@ A **release strategy** defines **how and when new versions of software are deliv
   - Green (new version)
 - Switch traffic to Green when ready.
 
-**Pros:**  
+ **Pros:**
 - Near-zero downtime.
 - Fast traffic rollback only when the old application remains compatible with current data/configuration and side effects.
 
-**Cons:**  
+ **Cons:**
 - More infrastructure needed.
 
 ---
@@ -68,11 +68,11 @@ A **release strategy** defines **how and when new versions of software are deliv
 - A rolling deployment replaces application instances in batches while old/new versions coexist; this differs from a rolling-release version/support policy.
 - Common in **SaaS platforms**.
 
-**Pros:**  
+ **Pros:**
 - Smooth rollout with monitoring.
 - Avoids mass-impact failures.
 
-**Cons:**  
+ **Cons:**
 - Complex version management for users and servers.
 
 ---
@@ -87,13 +87,13 @@ A **release strategy** defines **how and when new versions of software are deliv
   - `main`: always deployable
   - `feature/*`: merged via PR when ready
 
-**Pros:**  
+ **Pros:**
 - Supports CI/CD pipelines.
 - Helps organize work on large teams.
 
 ---
 
-## 2️⃣ Example Release Strategy (adapt to an actual project)
+## Example Release Strategy (adapt to an actual project) {#_2%EF%B8%8F%E2%83%A3-example-release-strategy-adapt-to-an-actual-project}
 
 - **Versioning:** Semantic Versioning (`MAJOR.MINOR.PATCH`)  
 - **CI/CD Pipeline:**  
@@ -111,7 +111,7 @@ A **release strategy** defines **how and when new versions of software are deliv
 
 ---
 
-## 3️⃣ Release Strategy for an Open Source Project
+## Release Strategy for an Open Source Project {#_3%EF%B8%8F%E2%83%A3-release-strategy-for-an-open-source-project}
 
 Open source projects have additional considerations: **community usage, backward compatibility, and package managers**.
 
@@ -144,13 +144,13 @@ Open source projects have additional considerations: **community usage, backward
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **Internal project:** CI/CD + staging → manual production deploy → semantic versioning.  
 - **Open source:** Semantic versioning + pre-releases + automated publishing + clear changelog.  
 - **Key Goal:** Reduce risk, maintain stability, and communicate changes clearly to users.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Open source projects benefit from **automated release pipelines** with **pre-release tags**, allowing contributors to test before a stable release. This minimizes disruptions for end users.
 
 

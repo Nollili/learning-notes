@@ -1,4 +1,4 @@
-# Practice: 🔐 Important Web Security Headers
+# Practice: Important Web Security Headers {#practice-%F0%9F%94%90-important-web-security-headers}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

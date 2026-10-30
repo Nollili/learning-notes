@@ -1,12 +1,12 @@
 # Can SSR (Server-Side Rendering) Improve First Render?
 
-✅ **Yes — Server-Side Rendering (SSR) can improve the first useful render**, especially for large or JavaScript-heavy single-page applications (SPAs).
+ **Yes — Server-Side Rendering (SSR) can improve the first useful render**, especially for large or JavaScript-heavy single-page applications (SPAs).
 
 SSR shifts the initial rendering work **from the browser to the server**, delivering initial HTML to the client, potentially exposing useful content earlier. Streaming may deliver a shell and later boundaries; server/data/resource delays still matter.
 
 ---
 
-## 🧠 What Happens Without SSR (Client-Side Rendering)
+## What Happens Without SSR (Client-Side Rendering) {#%F0%9F%A7%A0-what-happens-without-ssr-client-side-rendering}
 
 In a typical React SPA:
 1. Browser downloads an **empty HTML shell**.
@@ -18,19 +18,19 @@ A shell can display useful static/loading content before client rendering; meani
 
 ---
 
-## ⚙️ How SSR Changes the Flow
+## How SSR Changes the Flow {#%E2%9A%99%EF%B8%8F-how-ssr-changes-the-flow}
 
 With **Server-Side Rendering**:
 1. Server executes React (or other framework) to render HTML markup.  
 2. Browser receives initial HTML after server/network delay → can parse/render before all client code is ready.  
 3. Client code can download in parallel with HTML/resources and hydrates interactive boundaries; native links/forms may already work.
 
-➡️ Potentially improved FCP/LCP; hydration and interaction responsiveness require separate measurement.  
-➡️ Crawlable content/status/metadata can improve discovery; indexing/rankings still depend on more than SSR.
+Potentially improved FCP/LCP; hydration and interaction responsiveness require separate measurement.\
+ Crawlable content/status/metadata can improve discovery; indexing/rankings still depend on more than SSR.
 
 ---
 
-## 📈 Benefits of SSR for First Render
+## Benefits of SSR for First Render {#%F0%9F%93%88-benefits-of-ssr-for-first-render}
 
 | Benefit | Description |
 |----------|--------------|
@@ -41,7 +41,7 @@ With **Server-Side Rendering**:
 
 ---
 
-## ⚠️ Trade-Offs & Pitfalls
+## Trade-Offs & Pitfalls {#%E2%9A%A0%EF%B8%8F-trade-offs-pitfalls}
 
 | Challenge | Description |
 |------------|--------------|
@@ -52,7 +52,7 @@ With **Server-Side Rendering**:
 
 ---
 
-## 🧩 When SSR Helps the Most
+## When SSR Helps the Most {#%F0%9F%A7%A9-when-ssr-helps-the-most}
 
 - **Content-heavy apps**: News, blogs, marketing sites, dashboards.
 - **SEO-reliant apps**: E-commerce, product listings, public pages.
@@ -61,7 +61,7 @@ With **Server-Side Rendering**:
 
 ---
 
-## 🧠 When SSR Might Not Help Much
+## When SSR Might Not Help Much {#%F0%9F%A7%A0-when-ssr-might-not-help-much}
 
 - Highly interactive private apps where shared public caching is inappropriate; scoped private caching may still be useful.  
 - Apps where **data fetching dominates** load time, not rendering.  
@@ -69,7 +69,7 @@ With **Server-Side Rendering**:
 
 ---
 
-## 🧰 Variations and Related Approaches
+## Variations and Related Approaches {#%F0%9F%A7%B0-variations-and-related-approaches}
 
 | Technique | Description |
 |------------|--------------|

@@ -1,7 +1,7 @@
 # Build tools for React, Vite, CRA, Webpack
 
 
-### **1. CRA (Create React App)**
+### **CRA (Create React App)** {#_1-cra-create-react-app}
 
 * **Overview:**
 
@@ -21,7 +21,7 @@
 
 ---
 
-### **2. Webpack**
+### **Webpack** {#_2-webpack}
 
 * **Overview:**
 
@@ -39,7 +39,7 @@
 
 ---
 
-### **3. Vite**
+### **Vite** {#_3-vite}
 
 * **Overview:**
 
@@ -59,7 +59,7 @@
 
 ---
 
-### **4. Best Practices / Modern Approach**
+### **Best Practices / Modern Approach** {#_4-best-practices-modern-approach}
 
 * **New projects:** Prefer **Vite** for speed, developer experience, and modern features.
 * **Legacy or enterprise projects:** Webpack may still be relevant for **complex custom builds**.
@@ -79,7 +79,7 @@
 ---
 
 
-### **1. CRA Status 2025**
+### **CRA Status 2025** {#_1-cra-status-2025}
 
 * **Create React App (CRA)** was officially deprecated for new apps on2025-02-14.
 * React’s official team has **shifted focus to modern tools like Vite and Next.js**.
@@ -87,7 +87,7 @@
 
 ---
 
-### **2. CRA is officially deprecated for new apps**
+### **CRA is officially deprecated for new apps** {#_2-cra-is-officially-deprecated-for-new-apps}
 
 * Slow dev server and HMR compared to Vite.
 * Ejecting to customize Webpack is cumbersome.
@@ -96,7 +96,7 @@
 
 ---
 
-### **3. Modern alternatives**
+### **Modern alternatives** {#_3-modern-alternatives}
 
 * **Vite:** Fast dev server, modern ES modules, TypeScript support.
 * **Next.js:** For React apps needing SSR, SSG, routing, and full-stack features.

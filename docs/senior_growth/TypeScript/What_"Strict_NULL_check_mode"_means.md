@@ -1,12 +1,12 @@
 # What "Strict NULL check mode" means?
 
-## ⚠️ TypeScript Strict Null Checks (`strictNullChecks`)
+## TypeScript Strict Null Checks (`strictNullChecks`) {#%E2%9A%A0%EF%B8%8F-typescript-strict-null-checks-strictnullchecks}
 
 The **`strictNullChecks`** compiler option in TypeScript is part of **strict mode** (`strict: true`) and enforces **safer handling of `null` and `undefined` values**.
 
 ---
 
-## 1️⃣ What It Does
+## What It Does {#_1%EF%B8%8F%E2%83%A3-what-it-does}
 
 - When `strictNullChecks` is **enabled**:
   - `null` and `undefined` are distinct types and are not assignable to an ordinary `string` or object type without an appropriate union. `unknown`/`any` and specific contracts such as `void` have different assignability rules.
@@ -16,22 +16,22 @@ The **`strictNullChecks`** compiler option in TypeScript is part of **strict mod
 
 ---
 
-## 2️⃣ Example
+## Example {#_2%EF%B8%8F%E2%83%A3-example}
 
 ### Without `strictNullChecks`
 
 ```ts
 let name: string;
-name = null;   // ✅ Allowed, can cause runtime errors later
+name = null;   // Allowed, can cause runtime errors later
 ```
 
 ### With `strictNullChecks`
 
 ```ts
 let name: string;
-name = null;   // ❌ Error: Type 'null' is not assignable to type 'string'
+name = null;   // Error: Type 'null' is not assignable to type 'string'
 
-let optionalName: string | null = null; // ✅ Must explicitly allow null
+let optionalName: string | null = null; // Must explicitly allow null
 ```
 
 * You must explicitly use **union types** to allow `null` or `undefined`:
@@ -48,7 +48,7 @@ function greet(name: string | null) {
 
 ---
 
-## 3️⃣ Why It Matters
+## Why It Matters {#_3%EF%B8%8F%E2%83%A3-why-it-matters}
 
 * **Detects unsafe typed uses** of null/undefined values (e.g., `Cannot read property 'x' of null`).
 * **Enforces explicit handling** of optional values.
@@ -56,7 +56,7 @@ function greet(name: string | null) {
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 * Always enable **`strict` mode**, which includes `strictNullChecks`.
 * Use **union types** to represent nullable values (`string | null`).
@@ -78,13 +78,13 @@ console.log(greetNullable("")); // Hello,  (empty string is retained)
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * `strictNullChecks` forces you to **explicitly handle `null` and `undefined`**.
 * It makes your code **safer, more predictable, and less prone to runtime errors**.
 * Essential for **large or team projects**, especially when working with external data.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Treat `null` and `undefined` **as separate types**, not just “empty” values. This mindset prevents subtle bugs in production.
 
 ## Presence is a domain decision (TypeScript 5.9+)

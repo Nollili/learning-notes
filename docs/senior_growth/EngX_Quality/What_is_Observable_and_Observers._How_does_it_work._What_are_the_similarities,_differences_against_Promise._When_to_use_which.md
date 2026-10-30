@@ -1,6 +1,6 @@
-### What is Observable and Observers? How does it work? What are the similarities, differences against Promise? When to use which?
+# What is Observable and Observers? How does it work? What are the similarities, differences against Promise? When to use which? {#what-is-observable-and-observers-how-does-it-work-what-are-the-similarities-differences-against-promise-when-to-use-which}
 
-### **1. What is an Observable?**
+### **What is an Observable?** {#_1-what-is-an-observable}
 
 An **Observable** is a data structure in reactive programming that represents a sequence of data or events that can be observed over time. Observables are used in frameworks like **RxJS** (commonly with Angular) to handle asynchronous programming.
 
@@ -9,7 +9,7 @@ An **Observable** is a data structure in reactive programming that represents a 
     - Can be synchronous, asynchronous, or both.
     - Producers of data/events in a stream.
 
-### **2. What is an Observer?**
+### **What is an Observer?** {#_2-what-is-an-observer}
 
 An **Observer** is an object that subscribes to an Observable to receive emitted data, errors, or completion notifications. Observers are essentially consumers of the data stream.
 

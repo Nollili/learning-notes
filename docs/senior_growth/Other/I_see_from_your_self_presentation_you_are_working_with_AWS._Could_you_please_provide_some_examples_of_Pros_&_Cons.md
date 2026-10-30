@@ -1,6 +1,6 @@
 # I see from your self presentation you are working with AWS. Could you please provide some examples of Pros & Cons?
 
-## 🔹 AWS: Pros & Cons
+## AWS: Pros & Cons {#%F0%9F%94%B9-aws-pros-cons}
 
 This is study material, not a claim of personal/employer AWS deployment experience. Use the [concrete service-slice lesson](../../node-js/aws-service-slice.md) for a locally linted topology/IAM/IaC and workload-cost example; cloud execution remains learner practice.
 
@@ -8,7 +8,7 @@ This is study material, not a claim of personal/employer AWS deployment experien
 
 ---
 
-## 1️⃣ Pros of AWS
+## Pros of AWS {#_1%EF%B8%8F%E2%83%A3-pros-of-aws}
 
 ### 1.1 Scalability & Flexibility
 - Scale capacity subject to startup time, configured policies, quotas and available resources; response is not instantaneous.
@@ -43,7 +43,7 @@ This is study material, not a claim of personal/employer AWS deployment experien
 
 ---
 
-## 2️⃣ Cons of AWS
+## Cons of AWS {#_2%EF%B8%8F%E2%83%A3-cons-of-aws}
 
 ### 2.1 Cost Complexity
 - Pay-as-you-go can be **hard to estimate**.
@@ -69,7 +69,7 @@ This is study material, not a claim of personal/employer AWS deployment experien
 
 ---
 
-## 3️⃣ Example Use Cases
+## Example Use Cases {#_3%EF%B8%8F%E2%83%A3-example-use-cases}
 
 | Use Case                        | AWS Service                     | Reason for Choosing                           |
 |---------------------------------|---------------------------------|-----------------------------------------------|
@@ -81,19 +81,19 @@ This is study material, not a claim of personal/employer AWS deployment experien
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
-**Pros:**  
+ **Pros:**
 - Scalable, reliable, globally available  
 - Broad range of services  
 - Pay-as-you-go, strong security & compliance  
 
-**Cons:**  
+ **Cons:**
 - Cost can grow unexpectedly  
 - Steep learning curve  
 - Vendor lock-in, service limits  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always **monitor costs** and use **Infrastructure as Code (IaC)** like **Terraform** or **CloudFormation** to manage AWS resources safely and reproducibly.
 
 ## Concrete learning checkpoint

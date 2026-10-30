@@ -1,4 +1,4 @@
-### What is TTFI (Time to first interaction). How can we improve TTFI?
+# What is TTFI (Time to first interaction). How can we improve TTFI? {#what-is-ttfi-time-to-first-interaction-how-can-we-improve-ttfi}
 
 “TTFI” is informal terminology, not a standardized synonym for TTI. Historical **Time to Interactive (TTI)** estimated a loading milestone using main-thread/network quiet windows; it did not prove that every control worked. Lighthouse removed TTI in version10 (2023). Keep this filename for existing links, but use current loading and responsiveness measurements below.
 
@@ -13,7 +13,7 @@ For field Core Web Vitals, evaluate the75th percentile, segmented by mobile/desk
 
 Use DevTools Performance to record both load and the specific slow interaction, then inspect input delay, handler work and rendering. Pin browser/tool versions, production artifact, device, cache/network/CPU conditions and scenario. Do not rely on a discontinued extension or an old Lighthouse screenshot as the current measurement contract.
 
-## 🔍 Why It Matters
+## Why It Matters {#%F0%9F%94%8D-why-it-matters}
 
 Even if the page **renders quickly (FCP/LCP)**, users will still perceive it as **slow** if it’s not interactive.  
 Slow loading/interaction can result from:
@@ -23,21 +23,21 @@ Slow loading/interaction can result from:
 
 ---
 
-## ⚙️ Causes of Poor Responsiveness
+## Causes of Poor Responsiveness {#%E2%9A%99%EF%B8%8F-causes-of-poor-responsiveness}
 
 | Problem                        | Description                                                                 |
 |---------------------------------|-----------------------------------------------------------------------------|
-| 🧱 **Main thread blocking**     | Long-running JS tasks (e.g., large frameworks, expensive initialization).   |
-| 🌀 **Too much JS on initial load** | Large bundles or unused code parsed before interaction.                  |
-| 🔗 **Synchronous third-party scripts** | Ads, analytics, or widgets loaded before app code.                  |
-| 🧩 **Rendering heavy components** | DOM-heavy React components rendered before user action.                  |
-| 🧠 **Unoptimized hydration**    | SSR/CSR mismatch or slow client-side hydration in React.                    |
+|  **Main thread blocking**     | Long-running JS tasks (e.g., large frameworks, expensive initialization).   |
+|  **Too much JS on initial load** | Large bundles or unused code parsed before interaction.                  |
+|  **Synchronous third-party scripts** | Ads, analytics, or widgets loaded before app code.                  |
+|  **Rendering heavy components** | DOM-heavy React components rendered before user action.                  |
+|  **Unoptimized hydration**    | SSR/CSR mismatch or slow client-side hydration in React.                    |
 
 ---
 
-## 🚀 Techniques to Improve Responsiveness
+## Techniques to Improve Responsiveness {#%F0%9F%9A%80-techniques-to-improve-responsiveness}
 
-### 1. **Code Splitting and Lazy Loading**
+### **Code Splitting and Lazy Loading** {#_1-code-splitting-and-lazy-loading}
 Only load what’s necessary for the initial view.
 
 ```js
@@ -48,7 +48,7 @@ const Dashboard = React.lazy(() => import('./Dashboard'));
 
 ---
 
-### 2. **Defer or Async Non-Critical JavaScript**
+### **Defer or Async Non-Critical JavaScript** {#_2-defer-or-async-non-critical-javascript}
 Reduce parser-blocking where appropriate; execution still occupies the main thread:
 
 ```html
@@ -60,7 +60,7 @@ Reduce parser-blocking where appropriate; execution still occupies the main thre
 
 ---
 
-### 3. **Minimize Main Thread Work**
+### **Minimize Main Thread Work** {#_3-minimize-main-thread-work}
 Break up long JavaScript tasks into smaller chunks:
 
 - Split work into bounded chunks and yield between them; delaying an indivisible long task only moves the stall. Use idle scheduling only for deferrable work with a fallback and a deliberate completion policy.
@@ -79,7 +79,7 @@ scheduleIdle(() => initializeOneSmallChunk()); // A bounded unit, not the whole 
 
 ---
 
-### 4. **Optimize Hydration in React Apps**
+### **Optimize Hydration in React Apps** {#_4-optimize-hydration-in-react-apps}
 In SSR/SSG apps, client-side hydration can delay interactivity.
 
 - Use a framework-supported rendering/hydration strategy. React streaming SSR and selective hydration are distinct from island/partial-hydration architectures; choose based on the framework/version.
@@ -87,7 +87,7 @@ In SSR/SSG apps, client-side hydration can delay interactivity.
 
 ---
 
-### 5. **Prioritize Event Listeners**
+### **Prioritize Event Listeners** {#_5-prioritize-event-listeners}
 Make critical controls useful early through native HTML/progressive enhancement. A JavaScript handler cannot run before its defining code is available.
 
 ```js
@@ -103,14 +103,14 @@ Signals are a reactivity model, not a guarantee of early event binding. Retain a
 
 ---
 
-### 6. **Remove or Optimize Third-Party Scripts**
+### **Remove or Optimize Third-Party Scripts** {#_6-remove-or-optimize-third-party-scripts}
 - Load them asynchronously or after interaction.
 - Use Google Tag Manager or defer marketing scripts.
 - Consider replacing blocking embeds (YouTube, maps) with placeholders or click-to-load patterns.
 
 ---
 
-### 7. **Use Web Workers for Heavy Computation**
+### **Use Web Workers for Heavy Computation** {#_7-use-web-workers-for-heavy-computation}
 Move CPU-intensive logic off the main thread:
 
 ```js
@@ -122,7 +122,7 @@ worker.onmessage = (e) => render(e.data);
 
 ---
 
-### 8. **Optimize Bundle and Parsing**
+### **Optimize Bundle and Parsing** {#_8-optimize-bundle-and-parsing}
 - Tree-shake unused code.
 - Minify JS and CSS.
 - Compare the actual imported functionality, correctness/security requirements and measured emitted bytes; package names alone do not establish size or suitability.
@@ -130,7 +130,7 @@ worker.onmessage = (e) => render(e.data);
 
 ---
 
-### 9. **Preload Critical Resources**
+### **Preload Critical Resources** {#_9-preload-critical-resources}
 Speed up early resource discovery:
 
 ```html
@@ -140,7 +140,7 @@ Preload fetches; it does not execute. A matching consuming script is still requi
 
 ---
 
-## 🧾 Example: Improved Initial Load Strategy
+## Example: Improved Initial Load Strategy {#%F0%9F%A7%BE-example-improved-initial-load-strategy}
 
 ```html
 <!DOCTYPE html>
@@ -169,7 +169,7 @@ This requests a loading order; it does not guarantee early rendering or readines
 
 ---
 
-## 📊 Summary
+## Summary {#%F0%9F%93%8A-summary}
 
 | Technique                        | Purpose                    | Expected effect; verify           |
 |-----------------------------------|----------------------------|--------------------------|
@@ -182,7 +182,7 @@ This requests a loading order; it does not guarantee early rendering or readines
 
 ---
 
-✅ **Senior-level takeaway:**
+ **Senior-level takeaway:**
 
 Responsiveness requires timely handlers and rendering, while loading has separate resource/server costs.  
 Every millisecond your JS monopolizes it delays user interaction.  

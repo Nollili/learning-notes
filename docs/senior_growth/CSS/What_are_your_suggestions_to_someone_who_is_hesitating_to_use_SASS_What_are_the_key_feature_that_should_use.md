@@ -1,6 +1,6 @@
 # What are your suggestions to someone who is hesitating to use SASS? What are the key feature that he/she should use?
 
-## 🔹 Using SASS: Recommendations & Key Features
+## Using SASS: Recommendations & Key Features {#%F0%9F%94%B9-using-sass-recommendations-key-features}
 
 SASS (Syntactically Awesome Stylesheets) is a **CSS preprocessor** that extends CSS with **variables, nesting, mixins, functions, and more**, helping write **scalable and maintainable styles**.
 
@@ -8,7 +8,7 @@ If someone is hesitating to use SASS, here’s how to approach it.
 
 ---
 
-## 1️⃣ Why Consider SASS
+## Why Consider SASS {#_1%EF%B8%8F%E2%83%A3-why-consider-sass}
 
 ### 1.1 Better Organization
 
@@ -92,7 +92,7 @@ $spacing: 8px;
 
 ---
 
-## 2️⃣ Key Features You Should Use
+## Key Features You Should Use {#_2%EF%B8%8F%E2%83%A3-key-features-you-should-use}
 
 1. **Variables** → centralize design tokens (colors, fonts, spacing).
 2. **Partials & Modules (`@use`/`@forward`)** → modularize styles for maintainability.
@@ -101,11 +101,11 @@ $spacing: 8px;
 5. **Inheritance / Extends** → avoid repetition for common patterns.
 6. **Operators & Logic** → compute responsive sizes, paddings, etc. dynamically.
 
-> ⚠️ Caution: Avoid **deeply nested selectors** (>3 levels) to prevent **specificity hell**.
+> Caution: Avoid **deeply nested selectors** (>3 levels) to prevent **specificity hell**.
 
 ---
 
-## 3️⃣ Integration in Modern Projects
+## Integration in Modern Projects {#_3%EF%B8%8F%E2%83%A3-integration-in-modern-projects}
 
 * Works with **React, Vue, Angular** via Webpack, Vite, or other bundlers.
 * Compatible with **CSS Modules**: `Button.module.scss` → scoped styles.
@@ -113,7 +113,7 @@ $spacing: 8px;
 
 ---
 
-## 4️⃣ Senior Advice / Best Practices
+## Senior Advice / Best Practices {#_4%EF%B8%8F%E2%83%A3-senior-advice-best-practices}
 
 1. **Keep it modular**: separate variables, mixins, and components.
 2. **Use variables for design tokens** (colors, fonts, spacing).
@@ -123,13 +123,13 @@ $spacing: 8px;
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * SASS improves **maintainability, readability, and reusability** of styles.
 * Key features: **variables, nesting, mixins, functions, inheritance, and operators**.
 * Hesitation usually comes from **learning overhead**—once core features are understood, SASS **boosts productivity** in medium-to-large projects.
 
-> 💡 Tip: Think of SASS as **structured CSS with programming power**—it’s especially useful for **large codebases or design systems**.
+> Tip: Think of SASS as **structured CSS with programming power**—it’s especially useful for **large codebases or design systems**.
 
 ## Namespaced module example (Dart Sass1.80+)
 

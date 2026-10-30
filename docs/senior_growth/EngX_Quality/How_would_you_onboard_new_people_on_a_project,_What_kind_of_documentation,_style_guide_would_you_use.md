@@ -1,10 +1,10 @@
-## How would you onboard new people on a project? What kind of documentation/style guide would you use?
+# How would you onboard new people on a project? What kind of documentation/style guide would you use? {#how-would-you-onboard-new-people-on-a-project-what-kind-of-documentation-style-guide-would-you-use}
 
 Onboarding new team members effectively is crucial for productivity and team cohesion. A well-structured onboarding process ensures that new members quickly understand the project, tools, and best practices, enabling them to contribute efficiently. Here's how to approach it:
 
 ---
 
-## **1. Prepare for Onboarding**
+## **Prepare for Onboarding** {#_1-prepare-for-onboarding}
 
 ### **Key Steps:**
 
@@ -14,7 +14,7 @@ Onboarding new team members effectively is crucial for productivity and team coh
 
 ---
 
-## **2. Provide a Comprehensive Overview**
+## **Provide a Comprehensive Overview** {#_2-provide-a-comprehensive-overview}
 
 ### **Project Overview**
 
@@ -24,7 +24,7 @@ Onboarding new team members effectively is crucial for productivity and team coh
 
 ---
 
-## **3. Documentation for Onboarding**
+## **Documentation for Onboarding** {#_3-documentation-for-onboarding}
 
 ### **Types of Documentation**
 
@@ -53,7 +53,7 @@ Onboarding new team members effectively is crucial for productivity and team coh
 
 ---
 
-## **4. Leverage Tools**
+## **Leverage Tools** {#_4-leverage-tools}
 
 ### **Documentation Tools**
 
@@ -69,7 +69,7 @@ Onboarding new team members effectively is crucial for productivity and team coh
 
 ---
 
-## **5. Onboarding Roadmap**
+## **Onboarding Roadmap** {#_5-onboarding-roadmap}
 
 ### **Day 1–3**
 
@@ -91,7 +91,7 @@ Onboarding new team members effectively is crucial for productivity and team coh
 
 ---
 
-## **6. Continuous Learning and Feedback**
+## **Continuous Learning and Feedback** {#_6-continuous-learning-and-feedback}
 
 - **Learning**: Encourage participation in workshops, code reviews, and pairing sessions.
 - **Feedback**: Regularly check in with the new hire to identify blockers and improve the onboarding process.

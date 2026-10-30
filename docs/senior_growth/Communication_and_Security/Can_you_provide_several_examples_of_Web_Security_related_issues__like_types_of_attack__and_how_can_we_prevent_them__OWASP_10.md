@@ -1,4 +1,4 @@
-# 🌐 Web Security — Common Vulnerabilities & Prevention (OWASP Top 10 Overview)
+# Web Security — Common Vulnerabilities & Prevention (OWASP Top 10 Overview) {#%F0%9F%8C%90-web-security-%E2%80%94-common-vulnerabilities-prevention-owasp-top-10-overview}
 
 As a **senior front-end developer**, it’s critical to understand **web security risks**, common **attack vectors**, and how to mitigate them — both in the frontend and backend integration.
 
@@ -25,9 +25,9 @@ As a **senior front-end developer**, it’s critical to understand **web securit
 
 The 2021 table is retained for historical mapping. The 2025 edition lists A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging and Alerting Failures, and A10 Mishandling of Exceptional Conditions. IDs change between editions; record the edition rather than silently relabel old findings. This is an awareness list, not a complete control or verification standard. [Official2025 release](https://top10.owasp.org/2025/), checked 2026-10-22.
 
-## ⚔️ Common Web Security Attacks & Prevention
+## Common Web Security Attacks & Prevention {#%E2%9A%94%EF%B8%8F-common-web-security-attacks-prevention}
 
-### 1. **Cross-Site Scripting (XSS)**
+### **Cross-Site Scripting (XSS)** {#_1-cross-site-scripting-xss}
 **Attack:**  
 An attacker injects malicious JavaScript into a trusted site (e.g., through user input or query params).  
 **Impact:**  
@@ -40,16 +40,16 @@ Steal cookies, tokens, or perform actions as the user.
 - React automatically escapes JSX → XSS harder but still possible via `dangerouslySetInnerHTML`.
 
 ```jsx
-// ❌ Risky
+// Risky
 <div dangerouslySetInnerHTML={{ __html: userComment }} />
 
-// ✅ Safe
+// Safe
 <div>{userComment}</div>
 ```
 
 ---
 
-### 2. **Cross-Site Request Forgery (CSRF)**
+### **Cross-Site Request Forgery (CSRF)** {#_2-cross-site-request-forgery-csrf}
 
 **Attack:**
 An attacker tricks a logged-in user into sending a forged request (e.g., through hidden forms or images).
@@ -63,7 +63,7 @@ An attacker tricks a logged-in user into sending a forged request (e.g., through
 
 ---
 
-### 3. **SQL / NoSQL Injection**
+### **SQL / NoSQL Injection** {#_3-sql-nosql-injection}
 
 **Attack:**
 Malicious input manipulates a database query.
@@ -79,7 +79,7 @@ Malicious input manipulates a database query.
 
 ---
 
-### 4. **Clickjacking**
+### **Clickjacking** {#_4-clickjacking}
 
 **Attack:**
 An attacker overlays a transparent iframe of your site to trick users into clicking hidden buttons.
@@ -100,7 +100,7 @@ An attacker overlays a transparent iframe of your site to trick users into click
 
 ---
 
-### 5. **Man-in-the-Middle (MITM)**
+### **Man-in-the-Middle (MITM)** {#_5-man-in-the-middle-mitm}
 
 **Attack:**
 Intercepting and altering data between client and server.
@@ -113,7 +113,7 @@ Intercepting and altering data between client and server.
 
 ---
 
-### 6. **Insecure Deserialization**
+### **Insecure Deserialization** {#_6-insecure-deserialization}
 
 **Attack:**
 Untrusted serialized data causes remote code execution when deserialized on backend.
@@ -125,7 +125,7 @@ Untrusted serialized data causes remote code execution when deserialized on back
 
 ---
 
-### 7. **Sensitive Data Exposure**
+### **Sensitive Data Exposure** {#_7-sensitive-data-exposure}
 
 **Attack:**
 Personal data (like tokens or passwords) exposed through logs, URLs, or localStorage.
@@ -138,7 +138,7 @@ Personal data (like tokens or passwords) exposed through logs, URLs, or localSto
 
 ---
 
-### 8. **Denial of Service (DoS / DDoS)**
+### **Denial of Service (DoS / DDoS)** {#_8-denial-of-service-dos-ddos}
 
 **Attack:**
 Overwhelming a server or client app with excessive requests or heavy computation.
@@ -150,7 +150,7 @@ Overwhelming a server or client app with excessive requests or heavy computation
 
 ---
 
-### 9. **Open Redirects**
+### **Open Redirects** {#_9-open-redirects}
 
 **Attack:**
 User is redirected to a malicious site via a crafted URL (e.g., `/redirect?to=http://evil.com`).
@@ -162,7 +162,7 @@ User is redirected to a malicious site via a crafted URL (e.g., `/redirect?to=ht
 
 ---
 
-### 10. **Supply Chain Attacks**
+### **Supply Chain Attacks** {#_10-supply-chain-attacks}
 
 **Attack:**
 Malicious dependency or compromised CI/CD pipeline injects unwanted code.
@@ -175,7 +175,7 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 
 ---
 
-## 🧱 Frontend Developer Security Practices
+## Frontend Developer Security Practices {#%F0%9F%A7%B1-frontend-developer-security-practices}
 
 | Area             | Best Practice                                                         |
 | ---------------- | --------------------------------------------------------------------- |
@@ -191,7 +191,7 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 
 ---
 
-## 🧠 Summary
+## Summary {#%F0%9F%A7%A0-summary}
 
 * OWASP Top 10 is a must-know foundation for secure web apps.
 * Security should be baked into the **design and development**, not an afterthought.
@@ -205,7 +205,7 @@ Malicious dependency or compromised CI/CD pipeline injects unwanted code.
 
 **Key Takeaway:**
 
-> 🧩 Security = Prevention (architecture) + Detection (monitoring) + Reaction (logging & updates)
+> Security = Prevention (architecture) + Detection (monitoring) + Reaction (logging & updates)
 
 
 ## Worked threat model: private note title

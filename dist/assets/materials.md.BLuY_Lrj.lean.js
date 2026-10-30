@@ -1,1 +1,0 @@
-import{_ as a,c as r,o as t,ag as o}from"./chunks/framework.CB_NIqHd.js";const h=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"materials.md","filePath":"materials.md"}'),l={name:"materials.md"};function n(i,e,s,c,p,d){return t(),r("div",null,[...e[0]||(e[0]=[o("",36)])])}const b=a(l,[["render",n]]);export{h as __pageData,b as default};

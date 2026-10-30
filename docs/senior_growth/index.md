@@ -1,22 +1,22 @@
-# senior_growth
+# Senior Growth {#senior-growth}
 
 ## Subfolders
 
 - [A11y](./A11y/)
-- [CD_CI](./CD_CI/)
+- [Continuous integration and delivery](./CD_CI/)
 - [CSS](./CSS/)
-- [Clean_code_and_Code_Quality](./Clean_code_and_Code_Quality/)
-- [Coding_principles_patterns_conventions](./Coding_principles_patterns_conventions/)
-- [Communication_and_Security](./Communication_and_Security/)
-- [EngX_Quality](./EngX_Quality/)
-- [General_ES6](./General_ES6/)
+- [Clean code and code quality](./Clean_code_and_Code_Quality/)
+- [Coding principles, patterns and conventions](./Coding_principles_patterns_conventions/)
+- [Communication and security](./Communication_and_Security/)
+- [Engineering practices and architecture](./EngX_Quality/)
+- [JavaScript and ECMAScript](./General_ES6/)
 - [Git](./Git/)
 - [Other](./Other/)
 - [React](./React/)
-- [State_management_and_Redux](./State_management_and_Redux/)
+- [State management and Redux](./State_management_and_Redux/)
 - [Testing](./Testing/)
 - [TypeScript](./TypeScript/)
-- [Web_Performance](./Web_Performance/)
+- [Web performance](./Web_Performance/)
 
 
 ## Frontend reading path

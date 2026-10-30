@@ -1,28 +1,28 @@
 # Could you explain why the concept of immutability is important for redux?
 
-# 🔒 Immutability in Redux
+## Immutability in Redux {#%F0%9F%94%92-immutability-in-redux}
 
 Immutability is **a key principle in Redux** and is essential for maintaining **predictable state updates, efficient rendering, and reliable debugging**.
 
 ---
 
-## 1️⃣ What is Immutability?
+## What is Immutability? {#_1%EF%B8%8F%E2%83%A3-what-is-immutability}
 
 - **Immutability** means published state snapshots are never modified directly. Toolkit case reducers may edit an owned Immer draft that produces the next snapshot.  
 - Instead, when state changes, **a new state object** is created.  
 - Example:
 
 ```ts
-// ❌ Mutable update (bad)
+// Mutable update (bad)
 state.count = state.count + 1;
 
-// ✅ Immutable update (good)
+// Immutable update (good)
 return { ...state, count: state.count + 1 };
 ```
 
 ---
 
-## 2️⃣ Why Immutability is Important in Redux
+## Why Immutability is Important in Redux {#_2%EF%B8%8F%E2%83%A3-why-immutability-is-important-in-redux}
 
 ### 2.1 Predictable State Updates
 
@@ -56,7 +56,7 @@ console.log(prevState === newState); // false: different objects; subscribed sel
 
 ---
 
-## 3️⃣ How to Maintain Immutability
+## How to Maintain Immutability {#_3%EF%B8%8F%E2%83%A3-how-to-maintain-immutability}
 
 * Use **spread operators** or `Object.assign()` for objects.
 * Use **array methods** that return new arrays (`map`, `filter`, `concat`) instead of mutating (`push`, `splice`).
@@ -78,14 +78,14 @@ const counterSlice = createSlice({
 
 ---
 
-## ✅ Key Takeaways
+## Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Immutability ensures **predictable, testable, and debuggable state**.
 * Stable unchanged references enable selector/memo bailouts when their equality contract applies.
 * Useful replay/history also requires deterministic reducers/actions, serializable conventions and an explicit history/debugging policy.
 * Using **Redux Toolkit** with Immer makes writing immutable updates easier without boilerplate.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Think of state in Redux as **read-only snapshots**. An actual semantic update creates changed paths; a no-op should preserve references where appropriate. Immutability supports reasoning but does not guarantee async ordering, correct business rules or rendering performance.
 
 

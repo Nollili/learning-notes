@@ -1,12 +1,12 @@
 # What practices/approaches do you know which helps to improve code quality? (style guides, coding principles)
 
-# 🛠 Practices & Approaches to Improve Code Quality
+## Practices & Approaches to Improve Code Quality {#%F0%9F%9B%A0-practices-approaches-to-improve-code-quality}
 
 Improving code quality is not just about writing fewer bugs—it’s about making code **readable, maintainable, consistent, and reliable**. There are several practices, principles, and tools that help achieve this.
 
 ---
 
-## 1️⃣ Coding Principles
+## Coding Principles {#_1%EF%B8%8F%E2%83%A3-coding-principles}
 
 | Principle | Description |
 |-----------|-------------|
@@ -21,7 +21,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-## 2️⃣ Style Guides & Conventions
+## Style Guides & Conventions {#_2%EF%B8%8F%E2%83%A3-style-guides-conventions}
 
 - **ESLint + typescript-eslint**: Enforce JavaScript/TypeScript correctness and team rules; TSLint is deprecated historical tooling.
 - **Prettier**: Automatic formatting for consistent code style.
@@ -36,7 +36,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-## 3️⃣ Testing Practices
+## Testing Practices {#_3%EF%B8%8F%E2%83%A3-testing-practices}
 
 - **Unit tests:** Verify core logic in isolation.
 - **Integration tests:** Check interaction between modules.
@@ -51,7 +51,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-## 4️⃣ Code Review Practices
+## Code Review Practices {#_4%EF%B8%8F%E2%83%A3-code-review-practices}
 
 - **Peer reviews:** Catch logic errors, style inconsistencies, and potential performance/security issues.  
 - **Pull request templates:** Encourage meaningful descriptions, testing instructions, and checklist adherence.  
@@ -64,7 +64,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-## 5️⃣ Tooling for Quality Assurance
+## Tooling for Quality Assurance {#_5%EF%B8%8F%E2%83%A3-tooling-for-quality-assurance}
 
 | Tool | Purpose |
 |------|---------|
@@ -77,7 +77,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-## 6️⃣ Refactoring Practices
+## Refactoring Practices {#_6%EF%B8%8F%E2%83%A3-refactoring-practices}
 
 - Regularly **improve readability and modularity** without changing functionality.
 - Apply **design patterns** where appropriate.
@@ -85,7 +85,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Coding principles + style guides** → consistent, maintainable code.  
 - **Automated testing** → reduces bugs and improves confidence.  
@@ -93,7 +93,7 @@ Improving code quality is not just about writing fewer bugs—it’s about makin
 - **Refactoring** → keeps code clean and scalable.  
 - **Tooling & CI/CD** → enforce quality standards automatically.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Quality is a **team responsibility**, not just a developer task. Combine principles, tools, and reviews to maintain a **healthy, scalable codebase**.
 
 

@@ -21,7 +21,7 @@
 
 ---
 
-## 1. Production readiness mental model
+## Production readiness mental model {#_1-production-readiness-mental-model}
 
 A useful production lifecycle is:
 
@@ -70,7 +70,7 @@ A Node.js process should shut down when it cannot continue safely. A supervisor,
 
 ---
 
-## 2. Where Node.js applications run
+## Where Node.js applications run {#_2-where-node-js-applications-run}
 
 ### Single server or virtual machine
 
@@ -138,7 +138,7 @@ Do not start a permanent listener inside a function handler unless the platform 
 
 ---
 
-## 3. The Twelve-Factor App
+## The Twelve-Factor App {#_3-the-twelve-factor-app}
 
 The Twelve-Factor App is a deployment-oriented methodology for applications that should be portable and easy to operate.
 
@@ -188,7 +188,7 @@ Use the factors as architectural guidance, not as proof that a system is product
 
 ---
 
-## 4. Configuration management
+## Configuration management {#_4-configuration-management}
 
 Configuration is everything that legitimately varies between deployments:
 
@@ -280,7 +280,7 @@ An `.env.example` may document required keys with empty or obviously fake values
 
 ---
 
-## 5. Startup and application lifecycle
+## Startup and application lifecycle {#_5-startup-and-application-lifecycle}
 
 Separate application construction from process startup:
 
@@ -367,7 +367,7 @@ Design migrations for rolling deployment compatibility:
 
 ---
 
-## 6. Structured logging
+## Structured logging {#_6-structured-logging}
 
 A production log is an event record intended for machines and people. Structured logs encode stable fields instead of hiding context inside prose.
 
@@ -462,7 +462,7 @@ Use the [retention and enforced deletion lab](./retention-and-deletion.md) to de
 
 ---
 
-## 7. Request logging and correlation IDs
+## Request logging and correlation IDs {#_7-request-logging-and-correlation-ids}
 
 ### Request completion middleware
 
@@ -560,7 +560,7 @@ A request ID groups local logs. Distributed tracing models a request across serv
 
 ---
 
-## 8. Health, readiness, and startup checks
+## Health, readiness, and startup checks {#_8-health-readiness-and-startup-checks}
 
 Health endpoints are machine-facing signals with operational consequences. A bad probe can create a restart loop or remove every replica during a shared dependency failure.
 
@@ -660,7 +660,7 @@ The [executed container/Compose lab](./container-deployment-lab.md) applies this
 
 ---
 
-## 9. Graceful shutdown
+## Graceful shutdown {#_9-graceful-shutdown}
 
 Graceful shutdown coordinates the process with its traffic manager and resource owners.
 
@@ -721,7 +721,7 @@ Do not inject process.exit into an ordinary test runner. Validate timeoutMs at s
 
 [Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 
-## 10. Application and process-level errors
+## Application and process-level errors {#_10-application-and-process-level-errors}
 
 ### Global Express error handler
 
@@ -804,7 +804,7 @@ Set `process.exitCode` when cleanup can complete naturally. `process.exit()` can
 
 ---
 
-## 11. Security headers and TLS
+## Security headers and TLS {#_11-security-headers-and-tls}
 
 ### TLS
 
@@ -861,7 +861,7 @@ An input can be syntactically valid and still consume unreasonable CPU, memory, 
 
 ---
 
-## 12. CORS
+## CORS {#_12-cors}
 
 Cross-Origin Resource Sharing tells browsers which origins may read responses from a different origin. It is not authentication, authorization, a firewall, or protection against non-browser clients.
 
@@ -907,7 +907,7 @@ app.use(cors(corsOptions));
 
 ---
 
-## 13. Rate limiting, proxies, and overload
+## Rate limiting, proxies, and overload {#_13-rate-limiting-proxies-and-overload}
 
 Rate limiting protects fairness and reduces abuse, but it cannot stop every denial-of-service attack. Upstream gateways/CDNs and infrastructure limits should absorb large attacks before traffic consumes application resources.
 
@@ -972,7 +972,7 @@ Rejecting work early with `429` or `503` is often safer than accepting more work
 
 ---
 
-## 14. Observability and production testing
+## Observability and production testing {#_14-observability-and-production-testing}
 
 ### Logs, metrics, and traces
 
@@ -1049,7 +1049,7 @@ Measure latency distributions, resource saturation, and recovery—not only tota
 
 [Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 
-## 15. Final review checklist
+## Final review checklist {#_15-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-10-production-ready-applications.md).
 

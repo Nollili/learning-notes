@@ -1,10 +1,10 @@
-### Could you suggest architectural approaches for showing thousands of data sets on UI?
+# Could you suggest architectural approaches for showing thousands of data sets on UI? {#could-you-suggest-architectural-approaches-for-showing-thousands-of-data-sets-on-ui}
 
 When displaying **thousands of data sets** in a user interface (UI), performance, usability, and responsiveness are crucial factors to consider. You need to ensure that the UI remains fast, user-friendly, and accessible, even as the amount of data grows. 
 
 ---
 
-### **1. Virtualization (Virtual Scrolling)**
+### **Virtualization (Virtual Scrolling)** {#_1-virtualization-virtual-scrolling}
 
 ### **Concept**:
 
@@ -35,7 +35,7 @@ Virtualization, also known as **virtual scrolling**, involves rendering only the
 
 ---
 
-### **2. Infinite Scrolling**
+### **Infinite Scrolling** {#_2-infinite-scrolling}
 
 ### **Concept**:
 
@@ -67,7 +67,7 @@ Infinite scrolling loads data in chunks as the user scrolls, fetching additional
 
 ---
 
-### **3. Pagination**
+### **Pagination** {#_3-pagination}
 
 ### **Concept**:
 
@@ -100,7 +100,7 @@ Pagination breaks up the dataset into smaller chunks, displaying a fixed number 
 
 ---
 
-### **4. Data Chunking & Lazy Loading**
+### **Data Chunking & Lazy Loading** {#_4-data-chunking-lazy-loading}
 
 ### **Concept**:
 
@@ -133,7 +133,7 @@ Data chunking involves loading large datasets in smaller, more manageable parts.
 
 ---
 
-### **5. Virtual Grids and Tables**
+### **Virtual Grids and Tables** {#_5-virtual-grids-and-tables}
 
 ### **Concept**:
 
@@ -163,7 +163,7 @@ Virtual grids or tables use the concept of **virtualization** but extend it to m
 
 ---
 
-### **6. Server-Side Rendering (SSR) with API Integration**
+### **Server-Side Rendering (SSR) with API Integration** {#_6-server-side-rendering-ssr-with-api-integration}
 
 ### **Concept**:
 

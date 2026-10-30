@@ -1,12 +1,12 @@
 # Why should we invest in automated testing?
 
-# 💡 Why Invest in Automated Testing
+## Why Invest in Automated Testing {#%F0%9F%92%A1-why-invest-in-automated-testing}
 
 Automated testing is a **critical practice** for modern software development, especially in medium-to-large projects where reliability, speed, and maintainability matter.
 
 ---
 
-## 1️⃣ Key Benefits
+## Key Benefits {#_1%EF%B8%8F%E2%83%A3-key-benefits}
 
 | Benefit | Explanation |
 |---------|------------|
@@ -21,7 +21,7 @@ Automated testing is a **critical practice** for modern software development, es
 
 ---
 
-## 2️⃣ Types of Automated Tests and Their Roles
+## Types of Automated Tests and Their Roles {#_2%EF%B8%8F%E2%83%A3-types-of-automated-tests-and-their-roles}
 
 | Test Type | Role in Quality Assurance |
 |-----------|--------------------------|
@@ -33,7 +33,7 @@ Automated testing is a **critical practice** for modern software development, es
 
 ---
 
-## 3️⃣ ROI of Automated Testing
+## ROI of Automated Testing {#_3%EF%B8%8F%E2%83%A3-roi-of-automated-testing}
 
 - **Short-term:** Slower initial development due to writing tests
 - **Medium-term:** Faster bug detection, reduced QA cycles
@@ -43,7 +43,7 @@ Automated testing is a **critical practice** for modern software development, es
 
 ---
 
-## 4️⃣ Senior-Level Insights
+## Senior-Level Insights {#_4%EF%B8%8F%E2%83%A3-senior-level-insights}
 
 - Automated testing is **not optional** in professional development; it is part of **technical debt prevention**.
 - Helps maintain **team velocity** even as the codebase grows.
@@ -52,7 +52,7 @@ Automated testing is a **critical practice** for modern software development, es
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 Investing in automated testing:
 
@@ -62,7 +62,7 @@ Investing in automated testing:
 4. Supports **scalable, maintainable, and refactorable codebases**.
 5. Enables **continuous delivery** and faster iteration cycles.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Treat tests as **first-class citizens**. They are not overhead—they are insurance and documentation rolled into one.
 
 

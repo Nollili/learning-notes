@@ -1,6 +1,6 @@
 # Please explain the git strategy in your project?
 
-## 🔹 Choosing a Git Strategy
+## Choosing a Git Strategy {#%F0%9F%94%B9-choosing-a-git-strategy}
 
 This is a study example, not a claim about an employer or this repository's configured protection rules. In this project only the user may push; no assistant push is permitted.
 
@@ -8,7 +8,7 @@ A **Git strategy** defines how developers collaborate, manage features, releases
 
 ---
 
-## 1️⃣ Common Git Strategies
+## Common Git Strategies {#_1%EF%B8%8F%E2%83%A3-common-git-strategies}
 
 ### 1.1 Git Flow
 
@@ -37,7 +37,7 @@ A **Git strategy** defines how developers collaborate, manage features, releases
 
 ---
 
-## 2️⃣ Example strategy for a versioned-release team
+## Example strategy for a versioned-release team {#_2%EF%B8%8F%E2%83%A3-example-strategy-for-a-versioned-release-team}
 
 - **Main Branch:** `main` → always deployable, protected by **PR reviews & CI checks**
 - **Development / Integration:** `develop` → merged features, tested in staging
@@ -47,7 +47,7 @@ A **Git strategy** defines how developers collaborate, manage features, releases
 
 ---
 
-## 3️⃣ Workflow Example
+## Workflow Example {#_3%EF%B8%8F%E2%83%A3-workflow-example}
 
 1. Inspect the actual base, current status and applicable instructions. Do not assume develop/main or a remote exists.
 2. Create/reuse a short-lived local branch such as codex/ln-demo-001 from the known base. Use a worktree when a separate checkout is useful; it does not copy uncommitted changes or isolate credentials/services.
@@ -59,7 +59,7 @@ The executed [local issue-to-review workflow](../../ai-assisted-engineering/loca
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 * **Small, focused commits** → easier to review and revert
 * **Descriptive branch names** → `feature/login`, `bugfix/navbar`
@@ -69,13 +69,13 @@ The executed [local issue-to-review workflow](../../ai-assisted-engineering/loca
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * Git strategy ensures **structured development, stable releases, and traceability**.
 * This example uses a **Git Flow-inspired strategy**: `main` (production), `develop` (integration), feature/hotfix/release branches.
 * Workflow emphasizes **code reviews, CI/CD, and small, incremental changes**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Choose from supported release lines, review/check policy and integration cadence. Team size alone does not select a branching model.
 
 ## Conflict, abort and recovery practice

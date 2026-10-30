@@ -1,6 +1,6 @@
-### Explain asynchronousity/event loop in JS to a newcomer?
+# Asynchronous execution and the JavaScript event loop {#explain-asynchronousity-event-loop-in-js-to-a-newcomer}
 
-### 1. **What is Asynchronousity?**
+### **What is Asynchronousity?** {#_1-what-is-asynchronousity}
 
 - In JavaScript, asynchronous APIs let your program continue while supported operations wait. Their JavaScript callbacks and CPU work can still block the event-loop thread.
 - This means your code can do multiple things at the same time, like fetching data from the internet or waiting for a timer, while still being able to handle other tasks.
@@ -12,7 +12,7 @@ Think of it like a restaurant:
 
 ---
 
-### 2. **The Event Loop: The Heart of Async in JS**
+### **The Event Loop: The Heart of Async in JS** {#_2-the-event-loop-the-heart-of-async-in-js}
 
 An ordinary JavaScript agent executes its jobs serially; the host and other workers can do other work concurrently. So how does it handle asynchronous tasks? Enter the **event loop**.
 
@@ -33,7 +33,7 @@ An ordinary JavaScript agent executes its jobs serially; the host and other work
 
 ---
 
-### 3. **Example in Action**
+### **Example in Action** {#_3-example-in-action}
 
 Here’s a simple example:
 
@@ -64,7 +64,7 @@ Async Task Finished!
 
 ---
 
-### 4. **Why Is This Important?**
+### **Why Is This Important?** {#_4-why-is-this-important}
 
 - **Responsiveness**: The page stays responsive even if you’re waiting for data.
 - **Scalability**: Helps you handle many tasks (like user interactions and network requests) efficiently.

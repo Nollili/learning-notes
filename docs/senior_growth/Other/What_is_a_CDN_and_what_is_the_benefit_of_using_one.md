@@ -1,12 +1,12 @@
 # What is a CDN and what is the benefit of using one?
 
-## 🔹 CDN (Content Delivery Network)
+## CDN (Content Delivery Network) {#%F0%9F%94%B9-cdn-content-delivery-network}
 
 A **CDN (Content Delivery Network)** is a **distributed network of servers** located in multiple geographical locations that **deliver web content to users based on their location**. It is commonly used for **static assets** like images, CSS, JavaScript, fonts, and sometimes even videos or APIs.
 
 ---
 
-## 1️⃣ How a CDN Works
+## How a CDN Works {#_1%EF%B8%8F%E2%83%A3-how-a-cdn-works}
 
 1. Your **website assets** are hosted on **origin servers**.
 2. CDN **replicates and caches** these assets across multiple **edge servers** worldwide.
@@ -21,7 +21,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 ---
 
-## 2️⃣ Benefits of Using a CDN
+## Benefits of Using a CDN {#_2%EF%B8%8F%E2%83%A3-benefits-of-using-a-cdn}
 
 ### 2.1 Improved Performance
 - Assets are served from **edge locations closer to users**.
@@ -45,7 +45,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 ---
 
-## 3️⃣ Example of CDNs
+## Example of CDNs {#_3%EF%B8%8F%E2%83%A3-example-of-cdns}
 
 - **Public CDNs** for libraries:
   - Google Hosted Libraries: `https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js`
@@ -58,7 +58,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 ---
 
-## 4️⃣ Historical syntax examples (not current library recommendations)
+## Historical syntax examples (not current library recommendations) {#_4%EF%B8%8F%E2%83%A3-historical-syntax-examples-not-current-library-recommendations}
 
 **Using jQuery from a CDN**
 ```html
@@ -76,7 +76,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **CDN** = network of distributed servers to serve content **closer to the user**.
 * **Benefits**:
@@ -87,7 +87,7 @@ A **CDN (Content Delivery Network)** is a **distributed network of servers** loc
   * Better SEO & UX
 * Ideal for **static assets, large media, or global applications**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use CDNs **for libraries, static assets, images, and videos**. Combine with **caching headers** to maximize performance and reduce server load.
 
 

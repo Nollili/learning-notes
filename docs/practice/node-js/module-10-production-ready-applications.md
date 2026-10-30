@@ -21,19 +21,19 @@ An automated integration test can:
 
 ## Graduated practice: logging and lifecycle
 
-### 1. Worked example
+### Worked example {#_1-worked-example}
 
 Run the retained application using its README, then exercise the lifecycle contract. Observe one request ID, two different health checks, and a signal-triggered shutdown. Follow `server.ts` → `createShutdown` → `db.close`; identify which function owns each resource.
 
-### 2. Guided failure
+### Guided failure {#_2-guided-failure}
 
 Start with an unreachable database port. Hint: metadata discovery does not establish connectivity. **Success:** HTTP never listens, startup reports only a stable diagnostic code, and the command terminates unsuccessfully. Then restore the database and repeat a successful start.
 
-### 3. Independent task
+### Independent task {#_3-independent-task}
 
 Add a bounded background job with explicit `stopIntake` and `drain` ownership. **Success:** SIGTERM prevents new jobs, lets an active job finish, and closes its database only after the job releases it. A stuck job reaches the process deadline. Use a child process to test forced termination.
 
-### 4. Optional depth: structured diagnostics
+### Optional depth: structured diagnostics {#_4-optional-depth-structured-diagnostics}
 
 Use the primary Node 24/Express 5 stack and a locked Winston 3 version. Route metadata must be developer-defined templates; no req.path/originalUrl fallback on matched, unmatched or aborted requests. A router mounted under a prefix may need explicit static route IDs to distinguish operations. Never derive a log/metric route label by partially redacting a raw URL. Keep request IDs bounded and accept an upstream value only under an explicit trusted-gateway policy; they are correlation metadata, never authorization.
 
@@ -45,7 +45,7 @@ Keep a short record of the emitted JSON and sentinel checks. Review retention/ac
 
 References checked 2026-10-21: [logform errors format contract](https://github.com/winstonjs/logform#errors), [Winston formats/transports](https://github.com/winstonjs/winston), [OWASP logging and sensitive data](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html), [Node 24 AsyncLocalStorage](https://nodejs.org/download/release/v24.18.0/docs/api/async_context.html).
 
-### 5. Optional depth: lifecycle failure matrix
+### Optional depth: lifecycle failure matrix {#_5-optional-depth-lifecycle-failure-matrix}
 
 **Acceptance:** start on an ephemeral port, hold a slow request/job, initiate shutdown twice and prove both calls share one promise. Intake stops immediately and readiness becomes false; active work finishes before database close; new connections are rejected. Force server-close/job/database failures separately and together: every eligible cleanup runs, failure exit status is nonzero and completed is absent. A job that cannot release its database ownership keeps drain pending until the final child-process deadline. Test deadline termination and uncaught startup rejection in disposable child processes, not the parent test runner.
 
@@ -57,7 +57,7 @@ References checked 2026-10-21: [Node 24 HTTP server lifecycle](https://nodejs.or
 
 ---
 
-## 15. Final review checklist
+## Final review checklist {#_15-final-review-checklist}
 
 ### Architecture and deployment
 

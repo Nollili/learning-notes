@@ -1,10 +1,10 @@
-# 🌐 REST — Representational State Transfer
+# REST — Representational State Transfer {#%F0%9F%8C%90-rest-%E2%80%94-representational-state-transfer}
 
 REST is an **architectural style** for designing networked applications, commonly used for web APIs. It defines a set of principles for **client-server communication** over HTTP.
 
 ---
 
-## 🔑 Key Concepts
+## Key Concepts {#%F0%9F%94%91-key-concepts}
 
 1. **Resource-Oriented**
     - Identify domain resources and exchange representations; a resource is not necessarily one database row.
@@ -40,7 +40,7 @@ REST is an **architectural style** for designing networked applications, commonl
 
 ---
 
-## ✅ Advantages of REST
+## Advantages of REST {#%E2%9C%85-advantages-of-rest}
 
 - Simple and widely adopted
 - Scales well (stateless design)
@@ -50,7 +50,7 @@ REST is an **architectural style** for designing networked applications, commonl
 
 ---
 
-## ⚠️ Limitations
+## Limitations {#%E2%9A%A0%EF%B8%8F-limitations}
 
 - Real-time delivery needs an explicit interaction/transport choice such as polling, streaming/SSE or WebSockets; REST statelessness does not prohibit persistent HTTP connections.
 - Statelessness may lead to repeated authentication on each request
@@ -58,7 +58,7 @@ REST is an **architectural style** for designing networked applications, commonl
 
 ---
 
-## 🔧 Example: RESTful API
+## Example: RESTful API {#%F0%9F%94%A7-example-restful-api}
 
 **Request:**
 ```http
@@ -78,7 +78,7 @@ Authorization: Bearer <token>
 
 ---
 
-**Summary:**
+ **Summary:**
 
 > REST is about **resources**, **stateless communication**, and using **HTTP standards** effectively. It is the foundation for most web APIs and works well with modern front-end applications.
 

@@ -80,22 +80,22 @@ Every remaining baseline inventory entry is listed here by exact path and role. 
 | [docs/practice/node-js/index.md](/practice/node-js/index) | node-js | outstanding |
 | [docs/python-for-ai/index.md](/python-for-ai/index) | hub | not applicable |
 | [docs/review/index.md](/review/index) | hub reconciliation | E01–E07; all outstanding |
-| [docs/senior_growth/A11y/index.md](/senior_growth/A11y/index) | hub | not applicable |
-| [docs/senior_growth/CD_CI/index.md](/senior_growth/CD_CI/index) | hub | not applicable |
-| [docs/senior_growth/CSS/index.md](/senior_growth/CSS/index) | hub | not applicable |
-| [docs/senior_growth/Clean_code_and_Code_Quality/index.md](/senior_growth/Clean_code_and_Code_Quality/index) | hub | not applicable |
-| [docs/senior_growth/Coding_principles_patterns_conventions/index.md](/senior_growth/Coding_principles_patterns_conventions/index) | hub | not applicable |
-| [docs/senior_growth/Communication_and_Security/index.md](/senior_growth/Communication_and_Security/index) | hub | not applicable |
-| [docs/senior_growth/EngX_Quality/index.md](/senior_growth/EngX_Quality/index) | hub | not applicable |
-| [docs/senior_growth/General_ES6/index.md](/senior_growth/General_ES6/index) | hub | not applicable |
-| [docs/senior_growth/Git/index.md](/senior_growth/Git/index) | hub | not applicable |
-| [docs/senior_growth/Other/index.md](/senior_growth/Other/index) | hub | not applicable |
-| [docs/senior_growth/React/index.md](/senior_growth/React/index) | hub | not applicable |
-| [docs/senior_growth/State_management_and_Redux/index.md](/senior_growth/State_management_and_Redux/index) | hub | not applicable |
-| [docs/senior_growth/Testing/index.md](/senior_growth/Testing/index) | hub | not applicable |
-| [docs/senior_growth/TypeScript/index.md](/senior_growth/TypeScript/index) | hub | not applicable |
-| [docs/senior_growth/Web_Performance/index.md](/senior_growth/Web_Performance/index) | hub | not applicable |
-| [docs/senior_growth/index.md](/senior_growth/index) | hub | not applicable |
+| [Accessibility](/senior_growth/A11y/index) | hub | not applicable |
+| [Continuous integration and delivery](/senior_growth/CD_CI/index) | hub | not applicable |
+| [CSS](/senior_growth/CSS/index) | hub | not applicable |
+| [Clean code and code quality](/senior_growth/Clean_code_and_Code_Quality/index) | hub | not applicable |
+| [Coding principles, patterns and conventions](/senior_growth/Coding_principles_patterns_conventions/index) | hub | not applicable |
+| [Communication and security](/senior_growth/Communication_and_Security/index) | hub | not applicable |
+| [Engineering practices and architecture](/senior_growth/EngX_Quality/index) | hub | not applicable |
+| [JavaScript and ECMAScript](/senior_growth/General_ES6/index) | hub | not applicable |
+| [Git](/senior_growth/Git/index) | hub | not applicable |
+| [Additional engineering topics](/senior_growth/Other/index) | hub | not applicable |
+| [React](/senior_growth/React/index) | hub | not applicable |
+| [State management and Redux](/senior_growth/State_management_and_Redux/index) | hub | not applicable |
+| [Testing](/senior_growth/Testing/index) | hub | not applicable |
+| [TypeScript](/senior_growth/TypeScript/index) | hub | not applicable |
+| [Web performance](/senior_growth/Web_Performance/index) | hub | not applicable |
+| [Senior Growth](/senior_growth/index) | hub | not applicable |
 | [docs/workbench/applied-ai/index.md](/workbench/applied-ai/index) | applied-ai | not applicable |
 | [docs/workbench/applied-ai/n8n/index.md](/workbench/applied-ai/n8n/index) | applied-ai | not applicable |
 | [docs/workbench/applied-ai/python/index.md](/workbench/applied-ai/python/index) | applied-ai | not applicable |
@@ -240,15 +240,15 @@ Every remaining baseline inventory entry is listed here by exact path and role. 
 | [docs/practice/engineering/git/Please_explain_the_git_strategy_in_your_project.md](/practice/engineering/git/Please_explain_the_git_strategy_in_your_project) | engineering | outstanding |
 | [docs/practice/engineering/git/What's_the_difference_between_merge_and_rebase_in_git_What's_prefferable.md](/practice/engineering/git/What%27s_the_difference_between_merge_and_rebase_in_git_What%27s_prefferable) | engineering | outstanding |
 | [docs/practice/engineering/git/What_is_GIT_hooks_Which_git_hooks_you_are_using_on_your_current_project_and_why.md](/practice/engineering/git/What_is_GIT_hooks_Which_git_hooks_you_are_using_on_your_current_project_and_why) | engineering | outstanding |
-| [docs/practice/engineering/patterns/Can_you_decipher_SOLID_acronym_What_is_"L".md](/practice/engineering/patterns/Can_you_decipher_SOLID_acronym_What_is_%22L%22) | engineering | outstanding |
-| [docs/practice/engineering/patterns/Composition_vs_inheritance_Shared_state_vs_immutability.md](/practice/engineering/patterns/Composition_vs_inheritance_Shared_state_vs_immutability) | engineering | outstanding |
-| [docs/practice/engineering/patterns/OOP_vs_FP.md](/practice/engineering/patterns/OOP_vs_FP) | engineering | outstanding |
-| [docs/practice/engineering/patterns/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it.md](/practice/engineering/patterns/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it) | engineering | outstanding |
-| [docs/practice/engineering/patterns/Please_describe_what_is_KISS,_DRY,_YAGNI.md](/practice/engineering/patterns/Please_describe_what_is_KISS%2C_DRY%2C_YAGNI) | engineering | outstanding |
-| [docs/practice/engineering/patterns/What_are_the_common_pitfalls_when_applying_a_design_pattern.md](/practice/engineering/patterns/What_are_the_common_pitfalls_when_applying_a_design_pattern) | engineering | outstanding |
-| [docs/practice/engineering/patterns/What_design_patterns_do_you_use_on_daily_basis_in_JS,_why_are_they_useful.md](/practice/engineering/patterns/What_design_patterns_do_you_use_on_daily_basis_in_JS%2C_why_are_they_useful) | engineering | outstanding |
-| [docs/practice/engineering/patterns/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it's_used.md](/practice/engineering/patterns/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it%27s_used) | engineering | outstanding |
-| [docs/practice/engineering/patterns/What_kind_of_creational_design_patterns_do_you_know.md](/practice/engineering/patterns/What_kind_of_creational_design_patterns_do_you_know) | engineering | outstanding |
+| [docs/practice/engineering/patterns/Can you decipher SOLID acronym What is "L"](/practice/engineering/patterns/Can_you_decipher_SOLID_acronym_What_is_%22L%22) | engineering | outstanding |
+| [docs/practice/engineering/patterns/Composition vs inheritance Shared state vs immutability](/practice/engineering/patterns/Composition_vs_inheritance_Shared_state_vs_immutability) | engineering | outstanding |
+| [docs/practice/engineering/patterns/OOP vs FP](/practice/engineering/patterns/OOP_vs_FP) | engineering | outstanding |
+| [docs/practice/engineering/patterns/Please describe Strategy design pattern. What are the valid use cases for it](/practice/engineering/patterns/Please_describe_Strategy_design_pattern._What_are_the_valid_use_cases_for_it) | engineering | outstanding |
+| [docs/practice/engineering/patterns/Please describe what is KISS, DRY, YAGNI](/practice/engineering/patterns/Please_describe_what_is_KISS%2C_DRY%2C_YAGNI) | engineering | outstanding |
+| [docs/practice/engineering/patterns/What are the common pitfalls when applying a design pattern](/practice/engineering/patterns/What_are_the_common_pitfalls_when_applying_a_design_pattern) | engineering | outstanding |
+| [docs/practice/engineering/patterns/What design patterns do you use on daily basis in JS, why are they useful](/practice/engineering/patterns/What_design_patterns_do_you_use_on_daily_basis_in_JS%2C_why_are_they_useful) | engineering | outstanding |
+| [docs/practice/engineering/patterns/What do you know about Decorator design pattern Where in React.js it's used](/practice/engineering/patterns/What_do_you_know_about_Decorator_design_pattern_Where_in_React.js_it%27s_used) | engineering | outstanding |
+| [docs/practice/engineering/patterns/What kind of creational design patterns do you know](/practice/engineering/patterns/What_kind_of_creational_design_patterns_do_you_know) | engineering | outstanding |
 | [docs/practice/engineering/performance/Can_SSR_improve_first_render.md](/practice/engineering/performance/Can_SSR_improve_first_render) | engineering | outstanding |
 | [docs/practice/engineering/performance/Can_you_describe_an_idea_of_debouncing,_throttling_When_we_need_them,_what_is_the_difference.md](/practice/engineering/performance/Can_you_describe_an_idea_of_debouncing%2C_throttling_When_we_need_them%2C_what_is_the_difference) | engineering | outstanding |
 | [docs/practice/engineering/performance/Can_you_describe_the_process_from_time_you_type_appliaction_url,_to_it_finished_state_on_your_screen.md](/practice/engineering/performance/Can_you_describe_the_process_from_time_you_type_appliaction_url%2C_to_it_finished_state_on_your_screen) | engineering | outstanding |

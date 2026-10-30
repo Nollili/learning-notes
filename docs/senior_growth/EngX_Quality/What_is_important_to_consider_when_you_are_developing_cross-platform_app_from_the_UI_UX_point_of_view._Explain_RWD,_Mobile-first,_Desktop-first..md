@@ -1,46 +1,46 @@
-### What is important to consider when you are developing cross-platform app from the UI/UX point of view? Explain RWD, Mobile-first, Desktop-first.
+# What is important to consider when you are developing cross-platform app from the UI/UX point of view? Explain RWD, Mobile-first, Desktop-first. {#what-is-important-to-consider-when-you-are-developing-cross-platform-app-from-the-ui-ux-point-of-view-explain-rwd-mobile-first-desktop-first}
 
 
 ---
 
-### **Key Considerations for Cross-Platform App UI/UX**
+## **Key Considerations for Cross-Platform App UI/UX** {#key-considerations-for-cross-platform-app-ui-ux}
 
-### **1. Consistency Across Platforms**
+## **Consistency Across Platforms** {#_1-consistency-across-platforms}
 
 - **Visual Consistency**: Use a shared design system (e.g., Material Design, Fluent Design) to ensure a uniform look and feel.
 - **Interaction Patterns**: Adapt platform-specific conventions, such as navigation gestures on mobile or keyboard shortcuts on desktop.
 - **Brand Identity**: Maintain consistent branding elements like colors, typography, and icons.
 
-### **2. Responsiveness**
+## **Responsiveness** {#_2-responsiveness}
 
 - Ensure the UI adapts fluidly to various screen sizes and orientations (portrait/landscape).
 - Test on a range of devices to verify consistent usability.
 
-### **3. Performance**
+## **Performance** {#_3-performance}
 
 - Minimize animations and complex UI elements on low-powered devices.
 - Optimize assets and use platform-specific tools (e.g., lazy loading for images).
 
-### **4. Touch vs. Click**
+## **Touch vs. Click** {#_4-touch-vs-click}
 
 - **Touch-Friendly Elements**: Choose comfortable hit areas/spacing for the product;48×48 is a design suggestion, not a universal WCAG minimum. WCAG2.2 AA2.5.8 uses24×24 CSS pixels or qualifying spacing/exception rules; AAA2.5.5 has a44×44 criterion with exceptions.
 - **Hover Effects**: Consider hover interactions on desktop while ensuring alternatives for touch interfaces.
 
-### **5. Native Feel vs. Universal Design**
+## **Native Feel vs. Universal Design** {#_5-native-feel-vs-universal-design}
 
 - Decide whether to use native components for each platform or design a universal interface.
 - Native components may enhance familiarity (e.g., iOS-specific sliders), while universal designs simplify development.
 
-### **6. Accessibility**
+## **Accessibility** {#_6-accessibility}
 
 - Ensure compliance with accessibility standards (e.g., WCAG).
 - Implement dynamic font scaling, voiceover compatibility, and high-contrast modes for visually impaired users.
 
 ---
 
-### **Key Design Strategies: RWD, Mobile-First, Desktop-First**
+## **Key Design Strategies: RWD, Mobile-First, Desktop-First** {#key-design-strategies-rwd-mobile-first-desktop-first}
 
-### **1. Responsive Web Design (RWD)**
+## **Responsive Web Design (RWD)** {#_1-responsive-web-design-rwd}
 
 RWD ensures that the UI adapts dynamically to different screen sizes and resolutions using flexible grids, layouts, and media queries.
 
@@ -54,7 +54,7 @@ RWD ensures that the UI adapts dynamically to different screen sizes and resolut
 
 ---
 
-### **2. Mobile-First Design**
+## **Mobile-First Design** {#_2-mobile-first-design}
 
 A **mobile-first** approach prioritizes designing for smaller screens first and then scaling up for larger devices.
 
@@ -68,7 +68,7 @@ A **mobile-first** approach prioritizes designing for smaller screens first and 
 
 ---
 
-### **3. Desktop-First Design**
+## **Desktop-First Design** {#_3-desktop-first-design}
 
 A **desktop-first** approach begins with designing for larger screens and scales down for smaller devices.
 
@@ -84,7 +84,7 @@ A **desktop-first** approach begins with designing for larger screens and scales
 
 ---
 
-### **Comparison: Mobile-First vs. Desktop-First**
+## **Comparison: Mobile-First vs. Desktop-First** {#comparison-mobile-first-vs-desktop-first}
 
 | **Aspect** | **Mobile-First** | **Desktop-First** |
 | --- | --- | --- |
@@ -95,13 +95,13 @@ A **desktop-first** approach begins with designing for larger screens and scales
 
 ---
 
-### **Tips for Balancing Cross-Platform Design**
+## **Tips for Balancing Cross-Platform Design** {#tips-for-balancing-cross-platform-design}
 
 1. **Start with RWD Principles**: This ensures adaptability by default.
 2. **Adopt Mobile-First When in Doubt**: Choose from the product's actual audience, content and input constraints; do not infer the right design from a global device-share claim.
 3. **Test on Real Devices**: Simulators don’t always capture performance or usability nuances.
 4. **Prototype and Gather Feedback**: Use tools like Figma or Adobe XD to create interactive mockups and validate designs early.
 
-### Worked baseline and verification
+## Worked baseline and verification {#worked-baseline-and-verification}
 
 The [rendering/capability workflow](./Rendering_and_Capability_Workflows.md#start-with-an-operable-html-baseline) provides a labeled server-search form, real links, block fallback and an `@supports` grid enhancement. It separates no-JS operability from viewport layout and lists exact reflow/zoom/keyboard/touch/assistive-technology checks. Layout and device behavior were not verified in a native browser; follow its acceptance checklist and retain real observations. Do not remove essential capabilities merely because a viewport is narrow, or assume a large viewport has a mouse. Learner practice remains required. [WCAG2.2](https://www.w3.org/TR/WCAG22/) defines the relevant target-size/reflow criteria; matching one CSS size does not establish conformance.

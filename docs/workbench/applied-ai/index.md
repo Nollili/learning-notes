@@ -4,6 +4,8 @@ These are reference implementations and controlled checks, separate from [textbo
 
 | Collection | What runs / what remains separate |
 |---|---|
+| [JavaScript beginner starter](./javascript/) | No-dependency console/HTTP/browser example, checked objects/tools and lexical retrieval; default mock, no streaming/full RAG |
+| [JavaScript SDK integrations](./javascript-integrations/) | Actual local MCP stdio capabilities and a RAM interrupt/resume graph; no model/write/remote host |
 | [Python components](./python/index.md) | Locked extraction/retrieval/evidence/state/approval/budget/security/evaluation modules and tests; mock provider transport and owned loopback services |
 | [n8n transform/adapter](./n8n/index.md) | Plain transformation and temporary HTTP fixture; installed n8n engine, expressions/webhooks/credentials are not tested by it |
 | `ui/generation-panel.tsx` | Retained React API-port example displayed in the streaming lesson; not a complete browser/backend/provider integration |

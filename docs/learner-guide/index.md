@@ -1,6 +1,6 @@
 # Your learning hub: start here
 
-This guide is an orientation and study plan for the current hub, prepared 2026-10-28. **Your current focus is Node.js. Start with [N-01 of the bounded log analyzer](./node-start.md#n-01-first-cli)**; the rest of the hub is available when a concrete need arises. Every learner assignment remains outstanding until you supply actual evidence.
+This guide is an orientation and study plan for the current hub, prepared 2026-10-28. **For your current AI goal, start with [Build AI Apps — JavaScript First](../applied-ai/) and use [AI for Software Development](../ai-assisted-engineering/) alongside it.** The [Node N-01 route](./node-start.md#n-01-first-cli) remains available; the rest of the hub is available when a concrete need arises. Every learner assignment remains outstanding until you supply actual evidence.
 
 ## Find your next action
 
@@ -13,7 +13,11 @@ This guide is an orientation and study plan for the current hub, prepared 2026-1
 - [Progress template and study cycle](./progress.md): five separate kinds of progress.
 - [Verification and exact gaps](./verification.md): what this guide checked and what remains unknown.
 
-## Your first session
+## Your first AI session
+
+Read [AI orientation](../applied-ai/javascript/orientation.md), copy/run the [JavaScript starter](../workbench/applied-ai/javascript/), and complete JS-01 offline. Then build the local chatbot before learning RAG or MCP. Keep [JS progress](../practice/applied-ai/javascript-assistant.md) separate from reference checks. Python remains [optional depth](../python-for-ai/).
+
+## A first Node.js session
 
 1. Open the [Node path](../node-js/) and confirm you can explain functions, scope, objects, promises and try/catch. Use [specific prerequisite references](../node-js/prerequisites-and-boundaries.md) for gaps; completing the frontend curriculum is unnecessary.
 2. Open [the analyzer specification](../practice/node-js/core-project.md). Read its input contract and N-01 only. Keep this tab beside the [minimum reading](./node-start.md).

@@ -1,12 +1,12 @@
 # Where do you prefer to store auth token? Where is it most secure?
 
-# 🔐 Storing Authentication Tokens — Best Practices
+## Storing Authentication Tokens — Best Practices {#%F0%9F%94%90-storing-authentication-tokens-%E2%80%94-best-practices}
 
 Choosing **where to store auth tokens** (like JWTs or session tokens) is critical for **security, XSS/CSRF protection, and performance**.
 
 ---
 
-## ⚙️ Common Storage Options
+## Common Storage Options {#%E2%9A%99%EF%B8%8F-common-storage-options}
 
 | Storage Location           | Description | Pros | Cons / Risks |
 |----------------------------|------------|------|--------------|
@@ -17,32 +17,32 @@ Choosing **where to store auth tokens** (like JWTs or session tokens) is critica
 
 ---
 
-## 🔑 Security Considerations
+## Security Considerations {#%F0%9F%94%91-security-considerations}
 
-### 1. XSS (Cross-Site Scripting)
+### XSS (Cross-Site Scripting) {#_1-xss-cross-site-scripting}
 - If token is accessible via JS (`localStorage`, `sessionStorage`, in-memory), malicious scripts can steal it.
 - Mitigation:
     - HttpOnly prevents JavaScript cookie reads; it does not prevent injected code from issuing authenticated requests.
     - Use contextual output encoding, safe DOM APIs and appropriate rich-content sanitization; validate inputs and apply a tested CSP as defense in depth.
 
-### 2. CSRF (Cross-Site Request Forgery)
+### CSRF (Cross-Site Request Forgery) {#_2-csrf-cross-site-request-forgery}
 - Eligible cookies can accompany attacker-triggered requests; scope, SameSite, credentials mode and browser policy determine sending.
 - Mitigation:
     - Use `SameSite=Lax` or `Strict` on cookies.
     - Use CSRF tokens for state-changing requests.
     - Consider sending tokens in **Authorization headers** instead of cookies for APIs.
 
-### 3. Persistence & Tab Sharing
+### Persistence & Tab Sharing {#_3-persistence-tab-sharing}
 - Cookies persist across tabs; localStorage persists even after browser close.
 - SessionStorage only lasts as long as the tab.
 
-### 4. Token Lifetime
+### Token Lifetime {#_4-token-lifetime}
 - Short-lived tokens reduce risk if stolen.
 - Use **refresh tokens** securely (preferably in HttpOnly cookies).
 
 ---
 
-## 🔧 Recommended Approaches
+## Recommended Approaches {#%F0%9F%94%A7-recommended-approaches}
 
 ### **A. Primary same-origin browser design: cookie session**
 - Keep an opaque session identifier in a host-scoped HttpOnly, Secure cookie; resolve authorization on the server.
@@ -73,7 +73,7 @@ Set-Cookie: __Host-session=<opaque-random-session-id>; HttpOnly; Secure; SameSit
 
 ---
 
-## 🔑 Summary Table
+## Summary Table {#%F0%9F%94%91-summary-table}
 
 | Storage         | XSS Risk | CSRF Risk | Persistence     | Best Use Case                        |
 | --------------- | -------- | --------- | --------------- | ------------------------------------ |

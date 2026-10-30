@@ -1,12 +1,12 @@
 # What is code coverage, how do you measure it, what kinds do you know? What do you think is the ideal amount?
 
-# 📝 Code Coverage in Software Testing
+## Code Coverage in Software Testing {#%F0%9F%93%9D-code-coverage-in-software-testing}
 
 **Code coverage** is a metric that shows **how much of your code is exercised by automated tests**. It helps identify **untested areas** and improve test quality.
 
 ---
 
-## 1️⃣ What Code Coverage Measures
+## What Code Coverage Measures {#_1%EF%B8%8F%E2%83%A3-what-code-coverage-measures}
 
 - Measures the **percentage of code executed** during tests.
 - Helps ensure that critical paths are tested and reduces the chance of **undetected bugs**.
@@ -14,7 +14,7 @@
 
 ---
 
-## 2️⃣ Types of Code Coverage
+## Types of Code Coverage {#_2%EF%B8%8F%E2%83%A3-types-of-code-coverage}
 
 | Type                        | What It Measures                                   | Example                                           |
 |------------------------------|--------------------------------------------------|--------------------------------------------------|
@@ -26,7 +26,7 @@
 
 ---
 
-## 3️⃣ How to Measure Code Coverage
+## How to Measure Code Coverage {#_3%EF%B8%8F%E2%83%A3-how-to-measure-code-coverage}
 
 **Frontend / JS Tools:**
 - **Jest:** Built-in coverage reporting (`--coverage`)
@@ -43,7 +43,7 @@ Generates a report showing coverage % for **lines, functions, branches, statemen
 
 ---
 
-## 4️⃣ Interpreting Coverage
+## Interpreting Coverage {#_4%EF%B8%8F%E2%83%A3-interpreting-coverage}
 
 A percentage must name its metric and denominator: which production files were included, what was excluded/generated, tool/provider/version and whether unimported files were counted. A low percentage can expose important gaps; a high one can still miss a critical assertion. Choose thresholds from risk and change scope rather than universal “good/bad” bands.
 
@@ -54,7 +54,7 @@ A percentage must name its metric and denominator: which production files were i
 
 ---
 
-## 5️⃣ Best Practices
+## Best Practices {#_5%EF%B8%8F%E2%83%A3-best-practices}
 
 1. **Combine with meaningful tests** — ensure tests check actual behavior, not just execution.
 2. **Use coverage to identify gaps**, not as a strict goal.
@@ -63,7 +63,7 @@ A percentage must name its metric and denominator: which production files were i
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Code coverage = metric of **executed instrumented code**, not verified behavior or test quality.
 * Types: **line, statement, branch, function, path**.
@@ -71,7 +71,7 @@ A percentage must name its metric and denominator: which production files were i
 * No universal ideal percentage: choose risk-based line/branch/function/statement gates, include/exclude rules and direct critical-behavior tests. 80% is only an example policy.
 * Coverage should **guide testing efforts**, not replace proper test design.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Always combine **high coverage with well-thought-out test cases**, focusing on **behavior and edge cases** rather than just percentage numbers.
 
 

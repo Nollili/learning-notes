@@ -10,29 +10,29 @@ This compatibility page preserves earlier URLs and section anchors. Learner prac
 
 - [Please describe quick sort algorithm. What complexity does it have?](../../cs-foundations/sorting.md)
 
-<a id="🔹-quick-sort-algorithm"></a>
+<a id="-quick-sort-algorithm"></a>
 
-- [🔹 Quick Sort Algorithm](../../cs-foundations/sorting.md)
+- [Quick Sort Algorithm](../../cs-foundations/sorting.md)
 
-<a id="_1️⃣-steps-of-quick-sort"></a>
+<a id="_1. -steps-of-quick-sort"></a>
 
-- [1️⃣ Steps of Quick Sort](../../cs-foundations/sorting.md)
+- [1. Steps of Quick Sort](../../cs-foundations/sorting.md)
 
-<a id="_2️⃣-example-in-javascript"></a>
+<a id="_2. -example-in-javascript"></a>
 
-- [2️⃣ Example in JavaScript](../../cs-foundations/sorting.md)
+- [2. Example in JavaScript](../../cs-foundations/sorting.md)
 
-<a id="_3️⃣-complexity-analysis"></a>
+<a id="_3. -complexity-analysis"></a>
 
-- [3️⃣ Complexity Analysis](../../cs-foundations/sorting.md)
+- [3. Complexity Analysis](../../cs-foundations/sorting.md)
 
-<a id="_4️⃣-characteristics"></a>
+<a id="_4. -characteristics"></a>
 
-- [4️⃣ Characteristics](../../cs-foundations/sorting.md)
+- [4. Characteristics](../../cs-foundations/sorting.md)
 
-<a id="✅-summary"></a>
+<a id="-summary"></a>
 
-- [✅ Summary](../../cs-foundations/sorting.md)
+- [Summary](../../cs-foundations/sorting.md)
 
 <a id="analyze-this-implementation-not-just-the-algorithm-name"></a>
 

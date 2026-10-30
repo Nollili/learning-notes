@@ -6,7 +6,7 @@ Large-project CSS needs explicit ownership of global rules, component styles and
 
 ---
 
-## **1️⃣ Adopt a Component-Based Structure**
+## **Adopt a Component-Based Structure** {#_1%EF%B8%8F%E2%83%A3-adopt-a-component-based-structure}
 
 If your project uses **React / Vue / Angular**, organize CSS **per component** whenever possible.
 
@@ -26,7 +26,7 @@ If your project uses **React / Vue / Angular**, organize CSS **per component** w
 
 ---
 
-## **2️⃣ Global Styles / Theme**
+## **Global Styles / Theme** {#_2%EF%B8%8F%E2%83%A3-global-styles-theme}
 
 Some things are **global** and should be centralized:
 
@@ -48,7 +48,7 @@ Example:
 
 ---
 
-## **3️⃣ Use a CSS Methodology**
+## **Use a CSS Methodology** {#_3%EF%B8%8F%E2%83%A3-use-a-css-methodology}
 
 Structured naming helps avoid conflicts:
 
@@ -65,14 +65,14 @@ Structured naming helps avoid conflicts:
 
 ---
 
-## **4️⃣ Preprocessor / PostCSS**
+## **Preprocessor / PostCSS** {#_4%EF%B8%8F%E2%83%A3-preprocessor-postcss}
 
 * Native CSS already supplies custom properties and nesting on supporting browsers; Sass remains useful for compile-time variables, mixins/functions and modules. Check the target browser/build support matrix instead of calling every such capability Sass-only. Use current Dart Sass @use/@forward rather than deprecated Sass @import.
 * Optionally use **PostCSS** for autoprefixing, minification, and modern CSS features.
 
 ---
 
-## **5️⃣ Modular & Lazy-Loaded Styles**
+## **Modular & Lazy-Loaded Styles** {#_5%EF%B8%8F%E2%83%A3-modular-lazy-loaded-styles}
 
 * Split CSS per **feature / route / page**.
 * Only load styles that are needed for the page → reduces initial load time.
@@ -80,14 +80,14 @@ Structured naming helps avoid conflicts:
 
 ---
 
-## **6️⃣ Utility / Atomic Classes (Optional)**
+## **Utility / Atomic Classes (Optional)** {#_6%EF%B8%8F%E2%83%A3-utility-atomic-classes-optional}
 
 * TailwindCSS or custom utility classes for repetitive styling.
 * Works well alongside component styles to reduce duplication.
 
 ---
 
-## **7️⃣ Theming & Dark Mode**
+## **Theming & Dark Mode** {#_7%EF%B8%8F%E2%83%A3-theming-dark-mode}
 
 * Use **CSS variables** for colors, fonts, spacing.
 * Switch themes by changing root variables.
@@ -104,7 +104,7 @@ Structured naming helps avoid conflicts:
 
 ---
 
-## **8️⃣ Folder Structure Example for Huge Project**
+## **Folder Structure Example for Huge Project** {#_8%EF%B8%8F%E2%83%A3-folder-structure-example-for-huge-project}
 
 ```
 /src
@@ -128,7 +128,7 @@ Structured naming helps avoid conflicts:
 
 ---
 
-## **9️⃣ Best Practices**
+## **Best Practices** {#_9%EF%B8%8F%E2%83%A3-best-practices}
 
 * Keep selectors **shallow**, avoid deep nesting.
 * Prefer **composition over inheritance**.
@@ -138,7 +138,7 @@ Structured naming helps avoid conflicts:
 
 ---
 
-✅ **Summary**:
+ **Summary**:
 
 * Component-level CSS (modules)
 * Global styles for themes, resets, utilities
@@ -213,7 +213,7 @@ graph TD
 
 ---
 
-✅ **Key Takeaways**
+ **Key Takeaways**
 
 1. **Local + Global balance** → component isolation + reusable themes.
 2. **Scalable folder structure** → easy to navigate and maintain.
@@ -299,7 +299,7 @@ graph TD
 
 ---
 
-✅ **Benefits of this structure**
+ **Benefits of this structure**
 
 * **Isolation + Scalability**: Components can use CSS Modules or Styled Components while global styles provide shared resources.
 * **Maintainable**: Clear ownership helps assess which unrelated consumers might be affected by a change.

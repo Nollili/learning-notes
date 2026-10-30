@@ -1,6 +1,6 @@
 # Can you decipher SOLID acronym? What is "L"?
 
-# 🏗️ SOLID Principles in OOP
+## SOLID Principles in OOP {#%F0%9F%8F%97%EF%B8%8F-solid-principles-in-oop}
 
 **SOLID** is an acronym describing **five principles for writing maintainable, scalable, and robust object-oriented code**.  
 
@@ -12,14 +12,14 @@
 
 ---
 
-## 🔹 L — Liskov Substitution Principle (LSP)
+## L — Liskov Substitution Principle (LSP) {#%F0%9F%94%B9-l-%E2%80%94-liskov-substitution-principle-lsp}
 
 **Definition:**  
 Behavioral subtyping means callers relying on a base contract can use a subtype while preserving that contract. This is a study paraphrase, not a verbatim quotation.
 
 In simple terms: **Subtypes must be substitutable for their base types.**
 
-### ✅ Key Idea
+### Key Idea {#%E2%9C%85-key-idea}
 - Subclasses should **honor the behavior** of their parent classes.
 - They should not **break expected functionality**.
 - No unexpected side effects when replacing a base class with a derived class.
@@ -41,7 +41,7 @@ function makeBirdFly(bird) {
 }
 
 const penguin = new Penguin();
-makeBirdFly(penguin); // ❌ Throws error, violates LSP
+makeBirdFly(penguin); // Throws error, violates LSP
 ```
 
 **Problem:** `Penguin` cannot fully substitute `Bird`.
@@ -60,7 +60,7 @@ class Penguin extends Bird {}
 const birds = [new FlyingBird(), new Penguin()];
 // Only call fly on birds that can fly
 birds.forEach(bird => {
-  if (bird.fly) bird.fly(); // ✅ safe
+  if (bird.fly) bird.fly(); // safe
 });
 ```
 
@@ -69,7 +69,7 @@ birds.forEach(bird => {
 
 ---
 
-### ✅ Why LSP Matters
+### Why LSP Matters {#%E2%9C%85-why-lsp-matters}
 
 * Makes **polymorphism reliable**
 * Avoids runtime errors from incompatible subclasses
@@ -83,7 +83,7 @@ birds.forEach(bird => {
 > *“If I replace the parent class with this subclass, will existing code still work correctly?”*
 
 
-## 1️⃣ S – Single Responsibility Principle (SRP)
+## S – Single Responsibility Principle (SRP) {#_1%EF%B8%8F%E2%83%A3-s-%E2%80%93-single-responsibility-principle-srp}
 
 - **Definition:** A class or module should have **only one reason to change**, meaning it should have **only one responsibility**.
 - **Why important:** Reduces complexity, improves maintainability, and makes code easier to test.
@@ -106,7 +106,7 @@ birds.forEach(bird => {
 
 ---
 
-## 2️⃣ O – Open/Closed Principle (OCP)
+## O – Open/Closed Principle (OCP) {#_2%EF%B8%8F%E2%83%A3-o-%E2%80%93-open-closed-principle-ocp}
 
 * **Definition:** Software entities (classes, modules, functions) should be **open for extension but closed for modification**.
 * **Why important:** Allows adding new functionality without changing existing code, reducing risk of bugs.
@@ -125,7 +125,7 @@ birds.forEach(bird => {
 
 ---
 
-## 4️⃣ I – Interface Segregation Principle (ISP)
+## I – Interface Segregation Principle (ISP) {#_4%EF%B8%8F%E2%83%A3-i-%E2%80%93-interface-segregation-principle-isp}
 
 * **Definition:** Clients should not be forced to depend on interfaces they **do not use**. Use multiple, small, specific interfaces instead of one large one.
 * **Why important:** Reduces coupling and improves maintainability.
@@ -140,7 +140,7 @@ birds.forEach(bird => {
 
 ---
 
-## 5️⃣ D – Dependency Inversion Principle (DIP)
+## D – Dependency Inversion Principle (DIP) {#_5%EF%B8%8F%E2%83%A3-d-%E2%80%93-dependency-inversion-principle-dip}
 
 * **Definition:** High-level modules should **not depend on low-level modules**; both should depend on **abstractions**. Abstractions should not depend on details; **details should depend on abstractions**.
 * **Why important:** Promotes decoupling and easier testing (e.g., via dependency injection).

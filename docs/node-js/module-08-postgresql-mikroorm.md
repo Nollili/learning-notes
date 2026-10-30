@@ -32,7 +32,7 @@
 
 ---
 
-## 1. Relational database mental model
+## Relational database mental model {#_1-relational-database-mental-model}
 
 A relational database stores structured data in tables. Rows represent individual records, columns represent attributes, and keys connect records across tables.
 
@@ -69,7 +69,7 @@ SQL is standardized, but databases have different types, functions, syntax exten
 
 ---
 
-## 2. Relational versus document databases
+## Relational versus document databases {#_2-relational-versus-document-databases}
 
 PostgreSQL and MongoDB solve overlapping problems with different primary models.
 
@@ -105,7 +105,7 @@ This is not a strict either/or. PostgreSQL supports `JSONB`; MongoDB supports tr
 
 ---
 
-## 3. PostgreSQL hierarchy and tools
+## PostgreSQL hierarchy and tools {#_3-postgresql-hierarchy-and-tools}
 
 PostgreSQL organizes data into four main levels:
 
@@ -182,7 +182,7 @@ GUI clients such as DBeaver, pgAdmin, and TablePlus complement `psql` for browsi
 
 ---
 
-## 4. Tables, columns, rows, and data types
+## Tables, columns, rows, and data types {#_4-tables-columns-rows-and-data-types}
 
 A table represents one kind of entity or relationship. A row is one record. A column has a name, type, and optional constraints.
 
@@ -245,7 +245,7 @@ statement_timestamp uses the statement start, while NOW()/CURRENT_TIMESTAMP uses
 
 ---
 
-## 5. Keys, constraints, and relationships
+## Keys, constraints, and relationships {#_5-keys-constraints-and-relationships}
 
 ### Primary keys
 
@@ -391,7 +391,7 @@ Before proceeding, complete the [Workbench fixture and parameterized CRUD](../wo
 
 ---
 
-## 6. Normalization: 1NF, 2NF, and 3NF
+## Normalization: 1NF, 2NF, and 3NF {#_6-normalization-1nf-2nf-and-3nf}
 
 Normalization organizes data to reduce redundancy and prevent anomalies.
 
@@ -467,7 +467,7 @@ Normalize around real functional dependencies, not mechanical table splitting.
 
 ---
 
-## 7. SQL joins
+## SQL joins {#_7-sql-joins}
 
 Joins reconstruct related views from normalized tables.
 
@@ -549,7 +549,7 @@ Join correctness comes before performance. Verify cardinality: joining two one-t
 
 ---
 
-## 8. Denormalization
+## Denormalization {#_8-denormalization}
 
 Denormalization intentionally duplicates or precomputes data for a measured requirement.
 
@@ -580,7 +580,7 @@ Views, materialized views, caches, and read-model tables are alternatives to dup
 
 ---
 
-## 9. Indexes and query plans
+## Indexes and query plans {#_9-indexes-and-query-plans}
 
 An index is an auxiliary data structure that helps PostgreSQL locate or order rows without scanning and sorting the whole table. B-tree is the default and supports equality, ranges, and ordered access.
 
@@ -702,7 +702,7 @@ Every index consumes storage, cache, and write work. Add indexes for real access
 
 ---
 
-## 10. Transactions and ACID
+## Transactions and ACID {#_10-transactions-and-acid}
 
 A transaction groups statements into one unit of work.
 
@@ -758,7 +758,7 @@ Savepoints allow partial rollback inside a larger transaction, but use them only
 
 ---
 
-## 11. Isolation and concurrency
+## Isolation and concurrency {#_11-isolation-and-concurrency}
 
 PostgreSQL exposes SQL isolation levels:
 
@@ -806,7 +806,7 @@ Prefer constraints and atomic SQL when they express the invariant. Keep transact
 
 ---
 
-## 12. ORM concepts and patterns
+## ORM concepts and patterns {#_12-orm-concepts-and-patterns}
 
 An **Object-Relational Mapper (ORM)** maps tables/rows to application types and generates SQL for common operations.
 
@@ -861,7 +861,7 @@ MikroORM is an ORM; Mongoose is an ODM.
 
 ---
 
-## 13. MikroORM setup
+## MikroORM setup {#_13-mikroorm-setup}
 
 ### One complete primary baseline
 
@@ -974,7 +974,7 @@ MikroORM 7 initializes metadata before it opens a connection. Successful `init()
 
 ---
 
-## 14. Entities, EntityManager, and Unit of Work
+## Entities, EntityManager, and Unit of Work {#_14-entities-entitymanager-and-unit-of-work}
 
 ### Entity
 
@@ -1041,7 +1041,7 @@ An `EntityRepository<User>` is a typed facade around an EntityManager for one en
 
 ---
 
-## 15. CRUD with MikroORM
+## CRUD with MikroORM {#_15-crud-with-mikroorm}
 
 Assume `em` is a request-scoped or explicitly forked EntityManager.
 
@@ -1126,7 +1126,7 @@ Translate known constraint violations into domain/application errors. Keep unexp
 
 ---
 
-## 16. Request context and identity map
+## Request context and identity map {#_16-request-context-and-identity-map}
 
 Never share one mutable Identity Map across concurrent HTTP requests. Each request needs an isolated EntityManager fork.
 
@@ -1171,7 +1171,7 @@ Pass the scoped EntityManager through a unit-of-work boundary when several repos
 
 ---
 
-## 17. MikroORM relationships
+## MikroORM relationships {#_17-mikroorm-relationships}
 
 Every bidirectional relationship has an **owning side**, which stores the foreign key or owns the join table, and an **inverse side**, which provides navigation.
 
@@ -1272,7 +1272,7 @@ Use cascade and `orphanRemoval` carefully. Removing an item from a collection ca
 
 ---
 
-## 18. Population and the N+1 problem
+## Population and the N+1 problem {#_18-population-and-the-n-1-problem}
 
 Relations are not all loaded automatically. Request the graph needed for a use case.
 
@@ -1333,7 +1333,7 @@ Query large child collections directly so they can be filtered and paginated. Po
 
 ---
 
-## 19. Migrations and seeds
+## Migrations and seeds {#_19-migrations-and-seeds}
 
 Migrations evolve a schema incrementally and reproducibly. Entity changes alone do not safely update production databases.
 
@@ -1417,7 +1417,7 @@ Run the real build/seed twice and concurrently, verify one row, existing-value p
 
 ---
 
-## 20. Transactions in MikroORM
+## Transactions in MikroORM {#_20-transactions-in-mikroorm}
 
 ### Implicit transaction on flush
 
@@ -1473,7 +1473,7 @@ Prefer callback-based transactions over manual `begin`/`commit`/`rollback`. Retr
 
 ---
 
-## 21. Architecture, testing, and production readiness
+## Architecture, testing, and production readiness {#_21-architecture-testing-and-production-readiness}
 
 ### Layering
 
@@ -1539,7 +1539,7 @@ Clean up reliably, avoid shared mutable fixtures, isolate parallel tests, close 
 
 ---
 
-## 22. Locking, deadlocks, and safe retries
+## Locking, deadlocks, and safe retries {#_22-locking-deadlocks-and-safe-retries}
 
 Transactions isolate work, but concurrent transactions can still compete for the same rows.
 
@@ -1626,7 +1626,7 @@ Do not send email, charge a card, or publish an irreversible event directly insi
 
 ---
 
-## 23. Connection pools and database diagnostics
+## Connection pools and database diagnostics {#_23-connection-pools-and-database-diagnostics}
 
 ### Pool mental model
 
@@ -1706,7 +1706,7 @@ This expand-and-contract sequence supports rolling deployments where old and new
 
 [Exercises and learner checklist](../practice/node-js/module-08-postgresql-mikroorm.md).
 
-## 24. Final review checklist
+## Final review checklist {#_24-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-08-postgresql-mikroorm.md).
 

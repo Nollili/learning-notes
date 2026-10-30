@@ -1,10 +1,10 @@
-### Composition and HOCs. Advantages and disadvantages? why composition is recommended against inheritance in react?
+# Composition and higher-order components in React {#composition-and-hocs-advantages-and-disadvantages-why-composition-is-recommended-against-inheritance-in-react}
 
 Canonical owner: slots, controlled tabs and typed HOC prop/ref transparency. [The short HOC decision guide](./HOC%2C_what_is_it%2C_when_to_use.md) compares hooks/adapters without duplicating this implementation.
 
-# Composition and Higher-Order Components (HOCs) in React
+## Composition and Higher-Order Components (HOCs) in React {#composition-and-higher-order-components-hocs-in-react}
 
-## **1. Composition**
+## **Composition** {#_1-composition}
 
 **Definition**:
 
@@ -51,7 +51,7 @@ const App = () => (
 
 ---
 
-### **2. Higher-Order Components (HOCs)**
+### **Higher-Order Components (HOCs)** {#_2-higher-order-components-hocs}
 
 **Definition**:
 

@@ -1,4 +1,4 @@
-### Explain JavaScript Code Execution
+# Explain JavaScript Code Execution {#explain-javascript-code-execution}
 
 JavaScript code execution involves several steps that are managed by the **JavaScript Engine**, which is responsible for interpreting and running the code. The process involves various components like **Call Stack**, **Heap**, **Event Loop**, **Execution Context**, and **Memory Management**.
 
@@ -6,7 +6,7 @@ Let’s break down the process to understand how JavaScript executes code from s
 
 ---
 
-### **1. JavaScript Execution Context**
+### **JavaScript Execution Context** {#_1-javascript-execution-context}
 
 https://www.youtube.com/watch?v=zdGfo6I1yrA&ab_channel=LydiaHallie
 
@@ -28,7 +28,7 @@ The host starts script/module evaluation; do not apply a classic browser-script 
 
 ---
 
-### **2. The Call Stack**
+### **The Call Stack** {#_2-the-call-stack}
 
 The **Call Stack** is a stack data structure that keeps track of all the execution contexts (i.e., function calls) in the correct order. It follows the **Last In, First Out (LIFO)** principle, meaning the last function called is the first one to be executed.
 
@@ -59,7 +59,7 @@ first();
 
 ---
 
-### **3. The Heap**
+### **The Heap** {#_3-the-heap}
 
 https://www.youtube.com/watch?v=5OJRqkYbK-4&t=79s&ab_channel=AlexHyett
 
@@ -76,7 +76,7 @@ let arr = [1, 2, 3]; // Observable binding + array identity; physical storage is
 
 ---
 
-### **4. The Event Loop**
+### **The Event Loop** {#_4-the-event-loop}
 
 https://www.youtube.com/watch?v=lqLSNG_79lI&ab_channel=JamesQQuick
 
@@ -131,7 +131,7 @@ Notice that even though `setTimeout` was set to 0 milliseconds, the callbacks we
 
 ---
 
-### **5. Memory Management and Garbage Collection**
+### **Memory Management and Garbage Collection** {#_5-memory-management-and-garbage-collection}
 
 https://www.youtube.com/watch?v=FZ42HMWG6xg&ab_channel=DanShykhov
 
@@ -141,19 +141,19 @@ JavaScript automatically handles memory management, and it has a **Garbage Colle
 
 ---
 
-### **6. Execution Phases in Detail**
+### **Execution Phases in Detail** {#_6-execution-phases-in-detail}
 
 https://www.youtube.com/watch?v=UmcJktbZOGM&ab_channel=procademy
 
 The **execution of JavaScript** can be divided into phases:
 
-### **1. Compilation Phase:**
+### **Compilation Phase:** {#_1-compilation-phase}
 
 - Parsing/early errors and binding/evaluation rules are specified; eager/lazy compilation and optimization strategies are engine-dependent. This includes:
     - **Declaration instantiation**: Bindings are established according to script/module/function/block rules; source text is not moved. var initializes to undefined, lexical let/const bindings remain uninitialized until their declaration executes, and ordinary function declarations can be callable earlier in scope. Block functions have additional strict/legacy rules.
     - **Creation of Execution Context**: The code is divided into different execution contexts (Global, Function).
 
-### **2. Execution Phase:**
+### **Execution Phase:** {#_2-execution-phase}
 
 - After compilation, JavaScript starts executing the code:
     - **Global Execution Context** is executed first.

@@ -4,11 +4,11 @@
 
 Prerequisite: [documents and browser behavior](../../frontend/html-browser.md).
 
-1. [Box model, flex/grid, positioning and layout shifts](./layout-and-responsive-design.md)
-2. [Cascade before specificity](./Can_you_describe_what_is_CSS_Specificity.md)
-3. [Relative and viewport units](./Difference_between_pixels%2C_ems_or_rems_Which_one_we_should_use.md)
-4. [Themes and React styling](./styling_react_apps.md)
-5. [Large-project architecture](./How_would_you_organize_CSS_on_huge_project.md)
+1. [Layout and Responsive Design: Reasoning and Debugging](./layout-and-responsive-design.md)
+2. [Can you describe what is CSS Specificity?](./Can_you_describe_what_is_CSS_Specificity.md)
+3. [Difference between pixels, ems or rems? Which one we should use?](./Difference_between_pixels%2C_ems_or_rems_Which_one_we_should_use.md)
+4. [Styling React applications](./styling_react_apps.md)
+5. [How would you organize CSS on huge project?](./How_would_you_organize_CSS_on_huge_project.md)
 
 Apply [the staged practice](../../practice/frontend/) after each explanation.
 
@@ -25,5 +25,5 @@ Apply [the staged practice](../../practice/frontend/) after each explanation.
 - [How would you organize CSS on huge project?](./How_would_you_organize_CSS_on_huge_project.md)
 - [What are your suggestions to someone who is hesitating to use SASS? What are the key feature that he/she should use?](./What_are_your_suggestions_to_someone_who_is_hesitating_to_use_SASS_What_are_the_key_feature_that_should_use.md)
 - [Layout and Responsive Design: Reasoning and Debugging](./layout-and-responsive-design.md)
-- [🧠 **Overview**](./styling_react_apps.md)
+- [Styling React applications](./styling_react_apps.md)
 

@@ -1,6 +1,6 @@
 # What is memoization?
 
-## 🔹 Memoization in JavaScript
+## Memoization in JavaScript {#%F0%9F%94%B9-memoization-in-javascript}
 
 **Memoization** is an **optimization technique** where the result of an expensive function call is **cached** so that future calls with the **same inputs** can return the cached result **instead of recomputing** it.
 
@@ -8,7 +8,7 @@ This improves performance, especially for **CPU-intensive or repetitive computat
 
 ---
 
-## 1️⃣ How Memoization Works
+## How Memoization Works {#_1%EF%B8%8F%E2%83%A3-how-memoization-works}
 
 1. Store results of function calls in a **cache** (usually an object or Map).
 2. When the function is called, check if the input exists in the cache:
@@ -17,7 +17,7 @@ This improves performance, especially for **CPU-intensive or repetitive computat
 
 ---
 
-## 2️⃣ Example: Fibonacci Sequence
+## Example: Fibonacci Sequence {#_2%EF%B8%8F%E2%83%A3-example-fibonacci-sequence}
 
 ### Without Memoization (Inefficient)
 ```javascript
@@ -35,7 +35,7 @@ console.log(fib(40)); // Slow for large n
 
 ---
 
-## 3️⃣ Benefits of Memoization
+## Benefits of Memoization {#_3%EF%B8%8F%E2%83%A3-benefits-of-memoization}
 
 * **Performance improvement:** Avoids redundant computations.
 * Repeated overlapping subproblems can benefit. A single factorial recursion has no overlapping subproblems; caching only helps repeated calls with reusable inputs.
@@ -43,7 +43,7 @@ console.log(fib(40)); // Slow for large n
 
 ---
 
-## 4️⃣ React-Specific Memoization
+## React-Specific Memoization {#_4%EF%B8%8F%E2%83%A3-react-specific-memoization}
 
 * **`React.memo(Component)`** → Usually skips parent-driven rendering when each prop compares equal with Object.is; own state/context updates can still render, and React may render anyway.
 * **`useMemo` hook** → Memoizes **computed values** between renders.
@@ -56,13 +56,13 @@ const memoizedHandler = useCallback(() => doSomething(value), [value]);
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Memoization:** Cache the result of function calls for efficiency.
 * **When to use:** Expensive calculations, recursive functions, or frequent re-renders in React.
 * **Caution:** Memoization adds memory overhead. Avoid caching **large or rarely used results** unnecessarily.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use memoization **strategically**, especially in **performance-critical paths**, but don’t over-optimize trivial computations.
 
 

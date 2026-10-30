@@ -1,12 +1,12 @@
 # TDD - pros and cons(red, green, refactor?)?
 
-# 🧪 Test-Driven Development (TDD) in JavaScript/Frontend
+## Test-Driven Development (TDD) in JavaScript/Frontend {#%F0%9F%A7%AA-test-driven-development-tdd-in-javascript-frontend}
 
 **Test-Driven Development (TDD)** is a development approach where **tests are written before the code**. The workflow follows the **Red → Green → Refactor** cycle.
 
 ---
 
-## 1️⃣ TDD Workflow: Red → Green → Refactor
+## TDD Workflow: Red → Green → Refactor {#_1%EF%B8%8F%E2%83%A3-tdd-workflow-red-%E2%86%92-green-%E2%86%92-refactor}
 
 1. **Red** – Write a failing test
    - Define the **expected behavior** before implementing functionality
@@ -36,11 +36,11 @@ function sum(a, b) { return a + b; }
 const sum = (a, b) => a + b; // stylistic alternative, not inherently a design improvement
 ```
 
-> 🔹 Repeat this cycle for every new feature or function.
+> Repeat this cycle for every new feature or function.
 
 ---
 
-## 2️⃣ Pros of TDD
+## Pros of TDD {#_2%EF%B8%8F%E2%83%A3-pros-of-tdd}
 
 | Advantage                    | Explanation                                             |
 | ---------------------------- | ------------------------------------------------------- |
@@ -53,7 +53,7 @@ const sum = (a, b) => a + b; // stylistic alternative, not inherently a design i
 
 ---
 
-## 3️⃣ Cons / Challenges of TDD
+## Cons / Challenges of TDD {#_3%EF%B8%8F%E2%83%A3-cons-challenges-of-tdd}
 
 | Disadvantage                      | Explanation                                                      |
 | --------------------------------- | ---------------------------------------------------------------- |
@@ -65,7 +65,7 @@ const sum = (a, b) => a + b; // stylistic alternative, not inherently a design i
 
 ---
 
-## 4️⃣ When to Use TDD
+## When to Use TDD {#_4%EF%B8%8F%E2%83%A3-when-to-use-tdd}
 
 * Critical business logic or algorithms
 * Backend services (API, calculations, transformations)
@@ -74,7 +74,7 @@ const sum = (a, b) => a + b; // stylistic alternative, not inherently a design i
 
 ---
 
-## 5️⃣ Tips for Effective TDD
+## Tips for Effective TDD {#_5%EF%B8%8F%E2%83%A3-tips-for-effective-tdd}
 
 1. **Start small:** Test one function or behavior at a time
 2. **Keep tests isolated and deterministic**
@@ -84,14 +84,14 @@ const sum = (a, b) => a + b; // stylistic alternative, not inherently a design i
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **TDD = Red → Green → Refactor**
 * Pros: better design, safety, coverage, documentation
 * Cons: slower upfront, maintenance, UI/async challenges
 * Goal: write code **driven by behavior** rather than implementation
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Even if TDD is not strictly followed, **thinking in tests first** improves design and leads to **more maintainable, reliable code**.
 
 

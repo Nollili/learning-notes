@@ -1,12 +1,12 @@
 # What is WCAG standard? What parts it contains? Web Content Accessibility Guidelines
 
-## 🔹 WCAG: Web Content Accessibility Guidelines
+## WCAG: Web Content Accessibility Guidelines {#%F0%9F%94%B9-wcag-web-content-accessibility-guidelines}
 
 **WCAG** (Web Content Accessibility Guidelines) is a set of **international standards** that define how to make web content **accessible to people with disabilities**. It is maintained by the **W3C Web Accessibility Initiative (WAI)**.
 
 ---
 
-## 1️⃣ Purpose of WCAG
+## Purpose of WCAG {#_1%EF%B8%8F%E2%83%A3-purpose-of-wcag}
 
 - Provides **guidelines and success criteria** for making web content:
   - **Perceivable** – users can see or hear content.
@@ -18,7 +18,7 @@
 
 ---
 
-## 2️⃣ Structure of WCAG
+## Structure of WCAG {#_2%EF%B8%8F%E2%83%A3-structure-of-wcag}
 
 WCAG is organized into **4 principles (POUR)**, **guidelines**, and **success criteria**.
 
@@ -31,7 +31,7 @@ WCAG is organized into **4 principles (POUR)**, **guidelines**, and **success cr
 
 ---
 
-## 3️⃣ WCAG Versions & Levels
+## WCAG Versions & Levels {#_3%EF%B8%8F%E2%83%A3-wcag-versions-levels}
 
 ### 3.1 Versions
 - **WCAG 2.0** (2008) – widely adopted, stable  
@@ -49,7 +49,7 @@ WCAG is organized into **4 principles (POUR)**, **guidelines**, and **success cr
 
 ---
 
-## 4️⃣ Examples of Success Criteria
+## Examples of Success Criteria {#_4%EF%B8%8F%E2%83%A3-examples-of-success-criteria}
 
 | Principle     | Example Criterion                                                                 |
 |---------------|----------------------------------------------------------------------------------|
@@ -60,21 +60,21 @@ WCAG is organized into **4 principles (POUR)**, **guidelines**, and **success cr
 
 ---
 
-## 5️⃣ Tools for WCAG Testing
+## Tools for WCAG Testing {#_5%EF%B8%8F%E2%83%A3-tools-for-wcag-testing}
 
 - **Automated:** Lighthouse, axe DevTools, WAVE, Pa11y  
 - **Manual:** Keyboard navigation, screen readers, color contrast checkers  
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **WCAG** = international standard for web accessibility.  
 - Organized by **4 principles (POUR)**: Perceivable, Operable, Understandable, Robust.  
 - Contains **guidelines and success criteria** with 3 conformance levels (A, AA, AAA).  
 - Provides testable criteria; meeting them does not address every user need or establish every legal obligation.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Use **WCAG2.2AA** as this study baseline, and state the actual assessment scope and supported technologies. Choose semantic HTML and necessary ARIA, then assess every applicable criterion and conformance requirement in the declared scope.
 
 ## Criteria mapped to implementation decisions

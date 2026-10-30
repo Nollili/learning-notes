@@ -1,4 +1,4 @@
-### Can you please compare SSR and CSR(pros and cons)?
+# Can you please compare SSR and CSR(pros and cons)? {#can-you-please-compare-ssr-and-csr-pros-and-cons}
 
 ### **Comparison of Server-Side Rendering (SSR) and Client-Side Rendering (CSR)**
 

@@ -2,6 +2,10 @@
 
 **Prerequisites:** Working browser path, async ownership and basic network/resource concepts. Review baseline: 2026-10-27. All learner practice remains outstanding.
 
+## Frontend course and hometasks
+
+Use the ordered [frontend performance path](../frontend/performance/) for the merged EPAM/self-study sequence, asset and caching explanations, and visual models. The [three core hometasks](../practice/frontend/performance/) expand E02 into investigation, loading/interaction experiments and regression prevention on the same app. The references below remain the deeper mechanism owners.
+
 ## Declare the experiment
 
 [Investigation ledger](../senior_growth/Web_Performance/How_would_you_start_the_investigation%2C_what_are_your_steps_after_the_customer%27s_feedback_is_that_the_application_is_really_slow.md) → [Metrics and tools](../senior_growth/Web_Performance/Which_tools_and_metrics_would_you_use_to_profile_and_measure_performance.md). Fix artifact, route/data/device/input, cache and network conditions; retain distributions and raw traces. Lab throttling is not a physical-device equivalence proof.

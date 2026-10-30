@@ -4,13 +4,13 @@ A fixed workflow chooses steps in application code. An agent-directed workflow l
 
 ## Reading order
 
-1. [Typed tool boundary](../../python-for-ai/tool-boundaries.md): exact allowlist, bounded complete arguments/results, authenticated current resource checks and call/result identity.
-2. [History/checkpoints](../../python-for-ai/history-and-workflows.md): lossy summaries remain data; persist checked artifact references rather than promises.
-3. [State and budgets](../../python-for-ai/tool-workflow-state.md): validated finite routes, local SQLite revisions and resource counters.
-4. [Approved writes](../../python-for-ai/approved-writes.md): command-bound trusted approval and local atomic effect/receipt.
-5. [Resumable runs](./resumable-runs.md): connect state, artifacts, approval, recovery, deadlines and reservations.
-6. [Diagnostics](../../python-for-ai/workflow-diagnostics.md), [oversight/audit](../../python-for-ai/provenance-and-oversight.md), [evaluation](../../python-for-ai/evaluation-lab.md): attempted steps, committed effects and supported task results are different evidence.
-7. Optional [LangGraph](../../python-for-ai/graph-memory.md) and [MCP](../../python-for-ai/mcp-primitives.md): framework/protocol adapters after the plain owner works.
+- [Typed tool boundary](../../python-for-ai/tool-boundaries.md): exact allowlist, bounded complete arguments/results, authenticated current resource checks and call/result identity.
+- [History/checkpoints](../../python-for-ai/history-and-workflows.md): lossy summaries remain data; persist checked artifact references rather than promises.
+- [State and budgets](../../python-for-ai/tool-workflow-state.md): validated finite routes, local SQLite revisions and resource counters.
+- [Approved writes](../../python-for-ai/approved-writes.md): command-bound trusted approval and local atomic effect/receipt.
+- [Resumable runs](./resumable-runs.md): connect state, artifacts, approval, recovery, deadlines and reservations.
+- [Diagnostics](../../python-for-ai/workflow-diagnostics.md), [oversight/audit](../../python-for-ai/provenance-and-oversight.md), [evaluation](../../python-for-ai/evaluation-lab.md): attempted steps, committed effects and supported task results are different evidence.
+- Optional [LangGraph](../../python-for-ai/graph-memory.md) and [MCP](../../python-for-ai/mcp-primitives.md): framework/protocol adapters after the plain owner works.
 
 ## Fixed versus model-directed execution
 

@@ -1,44 +1,39 @@
-# Applied AI: evidence, actions and automation
+# Build AI Apps — JavaScript First
 
-The shared domain is a small **authorized notes catalogue**. A RAG assistant answers from current note spans; a tool workflow may propose a versioned rename; n8n can deliver a bounded refresh event to a custom service. They reuse identities and failure policies without giving retrieved text control over permissions.
+Start here if you know some JavaScript but are new to AI development. Build a chatbot inside a web app, let it use a checked tool, teach it to answer from your notes, and expose those notes through your own MCP server. Python is an optional continuation, not an entrance requirement.
 
-## Reading order and prerequisites
+Want help **using AI to fix bugs, develop features and prepare PRs**? Follow [AI for Software Development](../ai-assisted-engineering/) alongside this path. That course teaches your development process; this one teaches the software you build.
 
-1. [Python prerequisites](../python-for-ai/index.md): typed functions, validation, owned async I/O and service boundaries. The existing JS/TypeScript/Node path remains a useful alternative implementation background.
-2. [Shared foundations](./shared/index.md): model adapter, structured outputs, tools, state, security, budgets, evaluation and safe diagnostics.
-3. [RAG](./rag/index.md): ingestion/provenance → representations/lifecycle → retrieval → checked answers → evaluation and deletion.
-4. [Agent workflows](./workflows/index.md): fixed workflow first, then bounded model proposals, durable artifacts, approvals, receipts and recovery.
-5. [n8n](./n8n/index.md): items/expressions/triggers, bounded service integration, testing/errors and deployment ownership.
+## Start with one small project
 
-The [coverage map](./coverage-map.md) links each requirement to inspected explanations, examples and practice. The [integrated practice sequence](../practice/applied-ai/index.md) refines P-334/P-335 before adding one n8n checkpoint. **All learner practice remains outstanding.** Material completion means usable explanations and specifications, not live model quality or a deployed product.
+The continuing project is a **learning-notes assistant** using three public synthetic notes. Begin in offline simulation mode: no account, key or paid model is required. A simulation teaches request flow and UI behavior; it cannot demonstrate model intelligence or quality. Try a real provider only after understanding the server boundary and recording a small experiment budget.
 
-## Separate the responsibilities
+**Your first session:** read [0. Understand the pieces](./javascript/orientation.md), run the console in [1. First call](./javascript/first-call.md), ask one question, reset the conversation and exit. Do not install a graph framework or study every Python chapter first.
 
-| Layer | Owns | Must not infer |
+## Follow this sequence
+
+| Stage | Learn and build | Done when you can… |
 |---|---|---|
-| Shared application boundaries | Authenticated identity, schemas, current permissions, budgets, logs and evaluation policy | A valid schema is true or authorized |
-| RAG | Selecting and attributing current permitted evidence | Relevance grants tool/action authority |
-| Agent workflow | Allowed next steps, persisted progress/artifacts and exact effect recovery | A model's plan or claimed approval is permission |
-| n8n automation | Trigger/dataflow/integration orchestration under configured credentials | A canvas or an AI node supplies idempotency, current source ACL or human consent |
+| 0 | [Understand the pieces](./javascript/orientation.md) | Explain model, application, prompt, context, tool, workflow, agent, RAG and MCP in your own words |
+| 1 | [First request and console chat](./javascript/first-call.md) | Run offline, locate the provider boundary and explain where the key belongs |
+| 2 | [Chatbot inside a web app](./javascript/chatbot.md) | Trace browser→server→model, handle failure, retain bounded history and stop a request |
+| 3 | [Reliable structured output](./javascript/structured-output.md) | Validate a result and reject a fabricated quote |
+| 4 | [Tools and workflows](./javascript/tools-workflows.md) | Dispatch only an allowed read and prepare a proposal without executing it |
+| 5 | [RAG from your notes](./javascript/rag.md) | Compare lexical and semantic retrieval, cite sources and decline unsupported answers |
+| 6 | [Build an MCP server](./javascript/mcp.md) | Discover and call an SDK tool, read a resource and retrieve a prompt |
+| 7 | [Stateful graph workflows](./javascript/stateful-workflows.md) | Branch, interrupt and resume a graph; distinguish RAM from durable state |
+| 8 | [Choose your next extension](./javascript/extensions.md) | Choose Python, hosted storage, n8n, multimedia or A2A for a concrete need |
 
-```mermaid
-flowchart TD
-    Shared[Shared contracts and security] --> RAG[RAG evidence pipeline]
-    Shared --> Workflow[Bounded tool workflow]
-    Shared --> Automation[n8n integration]
-    Automation --> API[Authenticated custom service]
-    API --> RAG
-    API --> Workflow
-    RAG --> Data[Checked evidence remains data]
-    Workflow --> Gate[Current authorization and approval gate]
-    Gate --> Receipt[Authoritative effect and receipt]
-```
+Use the [JavaScript practice milestones](../practice/applied-ai/javascript-assistant.md) for independent implementation. The [starter workbench](../workbench/applied-ai/javascript/) is a worked reference, not a completed learner submission. Each lesson separates supplied behavior from the extension you implement.
 
-## Where the material lives
+## Keep the deeper material
 
-- `docs/applied-ai/shared/`, `rag/`, `workflows/`, `n8n/`: topic homes and missing integration explanations.
-- `docs/python-for-ai/`: established detailed Python lessons, with their existing URLs preserved. Grouped indexes replace the old flat forty-step reading list; there is no second copy of each lesson.
-- [Applied-AI workbench](../workbench/applied-ai/index.md): canonical Python source/checks and dependency-complete optional labs; n8n transformation/local-adapter fixtures are separate.
-- [Practice](../practice/applied-ai/index.md): staged projects and relocated chapter assignments. Historical author observations remain labeled observations in the textbook.
+The existing lessons and URLs remain available. Visit them when a project reaches the relevant problem:
 
-Start with lexical search or direct database lookup when it meets the question. Add embeddings, learned reranking, autonomous routing or a visual orchestrator only for a measured need. Multiple agents, PDF/OCR, production ANN and distributed workflow hosting are optional extensions rather than prerequisites.
+- [Shared foundations](./shared/): model schemas, budgets, security, evaluation and diagnostics.
+- [RAG engineering](./rag/): provenance, retrieval quality, access control and index lifecycle.
+- [Workflow engineering](./workflows/): approvals, durable recovery, receipts and controlled autonomy.
+- [n8n](./n8n/): visual automation and service integration.
+- [Python for AI — Optional Deep Dive](../python-for-ai/): language prerequisites and existing detailed implementations.
+
+The [coverage map](./coverage-map.md) distinguishes beginner JavaScript examples, deeper Python mechanisms and integrations still left to the learner. Reading, a mock response and passing reference checks are different observations; none completes your independent project.

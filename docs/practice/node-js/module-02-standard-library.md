@@ -19,7 +19,7 @@ It must:
 
 ---
 
-## 13. Final review checklist
+## Final review checklist {#_13-final-review-checklist}
 
 You should be able to explain and demonstrate each item without looking it up:
 
@@ -46,7 +46,7 @@ You should be able to explain and demonstrate each item without looking it up:
 - Remember that cluster workers have separate process memory and worker threads only share memory explicitly.
 - Handle child and worker startup errors as well as non-zero exits.
 
-## 14. Boundary and ownership labs
+## Boundary and ownership labs {#_14-boundary-and-ownership-labs}
 
 Baselines: Node24.18.0 runtime and TypeScript5.9.3 for isolated type checks; official Node24 API contracts checked2026-10-21. Use scratch fixtures and temporary app-owned directories, not production paths.
 

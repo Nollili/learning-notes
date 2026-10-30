@@ -1,10 +1,10 @@
-# ⚡ How Redux Works
+# How Redux Works {#%E2%9A%A1-how-redux-works}
 
 **Redux** is a predictable state management library commonly used with React (or other frameworks) to manage **application state** in a centralized and consistent way. Its core idea is **one authoritative owner for the state assigned to Redux**, and **state changes are predictable** because they are handled via pure functions.
 
 ---
 
-## 1️⃣ Core Concepts
+## Core Concepts {#_1%EF%B8%8F%E2%83%A3-core-concepts}
 
 | Concept | Description |
 |---------|------------|
@@ -17,7 +17,7 @@
 
 ---
 
-## 2️⃣ How Redux Flow Works
+## How Redux Flow Works {#_2%EF%B8%8F%E2%83%A3-how-redux-flow-works}
 
 1. **User triggers an event** (e.g., clicks a button).
 2. **Action is created** describing the event:
@@ -47,7 +47,7 @@ function todoReducer(state = [], action) {
 
 ---
 
-## 3️⃣ Key Principles
+## Key Principles {#_3%EF%B8%8F%E2%83%A3-key-principles}
 
 1. **Single Source of Truth**
 
@@ -69,7 +69,7 @@ function todoReducer(state = [], action) {
 
 ---
 
-## 4️⃣ Example with React
+## Example with React {#_4%EF%B8%8F%E2%83%A3-example-with-react}
 
 ```js
 import { createStore } from 'redux';
@@ -113,7 +113,7 @@ function App() {
 
 ---
 
-## 5️⃣ Advantages of Redux
+## Advantages of Redux {#_5%EF%B8%8F%E2%83%A3-advantages-of-redux}
 
 * Predictable state updates (debuggable and testable)
 * Centralized state (easy to share across components)
@@ -123,7 +123,7 @@ function App() {
 
 ---
 
-## 6️⃣ Considerations / Trade-offs
+## Considerations / Trade-offs {#_6%EF%B8%8F%E2%83%A3-considerations-trade-offs}
 
 * Can be **boilerplate-heavy** for small projects
 * Requires understanding **actions, reducers, and immutability**
@@ -132,13 +132,13 @@ function App() {
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Redux **centralizes state** and makes changes **predictable via actions and reducers**.
 * Core ideas: **single source of truth, immutable state, pure reducers**.
 * Evaluate shared update/debugging/consistency requirements; application size alone does not determine whether Redux is useful.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Learn to **combine Redux with modern patterns** like Redux Toolkit + slices to reduce boilerplate while keeping state predictable.
 
 

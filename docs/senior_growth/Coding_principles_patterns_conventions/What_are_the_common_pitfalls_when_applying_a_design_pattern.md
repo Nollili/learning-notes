@@ -1,11 +1,11 @@
 # What are the common pitfalls when applying a design pattern?
-# ⚠️ Common Pitfalls When Applying Design Patterns in JavaScript
+## Common Pitfalls When Applying Design Patterns in JavaScript {#%E2%9A%A0%EF%B8%8F-common-pitfalls-when-applying-design-patterns-in-javascript}
 
 Design patterns are powerful tools, but **misusing them can introduce complexity, reduce maintainability, or hurt performance**. Here’s a detailed overview of common pitfalls to avoid.
 
 ---
 
-## 1️⃣ Overengineering / Premature Optimization
+## Overengineering / Premature Optimization {#_1%EF%B8%8F%E2%83%A3-overengineering-premature-optimization}
 - Applying patterns **before there’s a real need**.
 - Example: Using Observer or Decorator for a small component that doesn’t require dynamic behavior.
 - **Consequence:** Extra abstraction makes code harder to read, maintain, and debug.
@@ -15,7 +15,7 @@ Design patterns are powerful tools, but **misusing them can introduce complexity
 
 ---
 
-## 2️⃣ Misusing Inheritance Instead of Composition
+## Misusing Inheritance Instead of Composition {#_2%EF%B8%8F%E2%83%A3-misusing-inheritance-instead-of-composition}
 - Over-reliance on class hierarchies can lead to:
   - Deep, rigid inheritance trees
   - Fragile base classes where changes propagate unexpectedly
@@ -26,7 +26,7 @@ Design patterns are powerful tools, but **misusing them can introduce complexity
 
 ---
 
-## 3️⃣ Ignoring Single Responsibility Principle
+## Ignoring Single Responsibility Principle {#_3%EF%B8%8F%E2%83%A3-ignoring-single-responsibility-principle}
 - Using a pattern but packing too much functionality into a single class/object.
 - Example: A Singleton that handles logging, caching, and API requests all in one.
 - **Consequence:** Difficult to test, extend, or replace.
@@ -36,7 +36,7 @@ Design patterns are powerful tools, but **misusing them can introduce complexity
 
 ---
 
-## 4️⃣ Overusing HOCs or Decorators in React
+## Overusing HOCs or Decorators in React {#_4%EF%B8%8F%E2%83%A3-overusing-hocs-or-decorators-in-react}
 - Excessive nesting of HOCs can lead to:
   - “Wrapper hell”
   - Hard-to-debug component trees
@@ -55,7 +55,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 5️⃣ Breaking Liskov Substitution Principle (LSP)
+## Breaking Liskov Substitution Principle (LSP) {#_5%EF%B8%8F%E2%83%A3-breaking-liskov-substitution-principle-lsp}
 - Creating subclasses that **cannot fully replace their base classes**.
 - Example: Subclass overriding method in a way that throws errors for valid base-class calls.
 
@@ -64,7 +64,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 6️⃣ Overcomplicating with Patterns for Simple Problems
+## Overcomplicating with Patterns for Simple Problems {#_6%EF%B8%8F%E2%83%A3-overcomplicating-with-patterns-for-simple-problems}
 - Applying patterns like Strategy, Factory, or Observer for trivial functionality.
 - **Consequence:** Code becomes harder to understand and maintain.
 
@@ -73,7 +73,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 7️⃣ Ignoring Immutability with State Patterns
+## Ignoring Immutability with State Patterns {#_7%EF%B8%8F%E2%83%A3-ignoring-immutability-with-state-patterns}
 - When combining patterns with **shared mutable state**, it can lead to:
   - Unexpected side effects
   - Hard-to-trace bugs in reactive apps (React, Redux)
@@ -84,7 +84,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 8️⃣ Mixing Multiple Patterns Indiscriminately
+## Mixing Multiple Patterns Indiscriminately {#_8%EF%B8%8F%E2%83%A3-mixing-multiple-patterns-indiscriminately}
 - Applying too many patterns together without clear boundaries.
 - Example: Singleton + Factory + Observer in one module without clear separation.
 - **Consequence:** Increases cognitive load, debugging difficulty, and coupling.
@@ -94,7 +94,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 9️⃣ Performance Pitfalls
+## Performance Pitfalls {#_9%EF%B8%8F%E2%83%A3-performance-pitfalls}
 - Some patterns introduce **extra objects, wrappers, or function calls**.
 - Example:
   - Deeply nested Decorators or HOCs in React
@@ -106,7 +106,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-## 10️⃣ Not Considering Testing Implications
+## Not Considering Testing Implications {#_10%EF%B8%8F%E2%83%A3-not-considering-testing-implications}
 - Patterns that introduce hidden state or complex interactions can make testing harder.
 - Example: Singleton storing global state across tests.
 - **Tip:**  
@@ -117,7 +117,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 1. Patterns are **tools, not rules**; apply them only when necessary.  
 2. **Keep it simple** — don’t overcomplicate solutions.  
@@ -125,7 +125,7 @@ Create the enhanced component at module scope when appropriate; recreating a com
 4. Use **composition, immutability, and modular design** to avoid pitfalls.  
 5. Always evaluate **performance and side effects**, especially in reactive apps like React.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > A true sign of mastery is knowing **when NOT to use a pattern**.
 
 

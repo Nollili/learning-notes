@@ -1,12 +1,12 @@
-# 🌍 HTTP Versions & Modern Web Protocols — Comparison and Performance Impact
+# HTTP Versions & Modern Web Protocols — Comparison and Performance Impact {#%F0%9F%8C%8D-http-versions-modern-web-protocols-%E2%80%94-comparison-and-performance-impact}
 
 Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explain how browsers load pages faster and why frontend optimization techniques have changed.
 
 ---
 
-## ⚙️ HTTP/1.0 and HTTP/1.1 — The Old Guard
+## HTTP/1.0 and HTTP/1.1 — The Old Guard {#%E2%9A%99%EF%B8%8F-http-1-0-and-http-1-1-%E2%80%94-the-old-guard}
 
-### 🧩 HTTP/1.0 (1996)
+### HTTP/1.0 (1996) {#%F0%9F%A7%A9-http-1-0-1996}
 - Original default behavior did not reuse a connection for multiple outstanding requests; historical keep-alive extensions existed.
 - Distinguish original defaults from later extensions.
 - Header compression not supported.
@@ -19,7 +19,7 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 ---
 
-### ⚙️ HTTP/1.1 (1997–present)
+### HTTP/1.1 (1997–present) {#%E2%9A%99%EF%B8%8F-http-1-1-1997%E2%80%93present}
 - **Persistent connections (Keep-Alive)** → multiple requests per TCP connection.
 - **Pipelining** → requests sent without waiting for responses (rarely used due to head-of-line blocking).
 - **Chunked transfer encoding** → allows streaming data.
@@ -34,12 +34,12 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 ---
 
-## 🚀 HTTP/2 — The Modern Default
+## HTTP/2 — The Modern Default {#%F0%9F%9A%80-http-2-%E2%80%94-the-modern-default}
 
 **Released:** 2015  
 **Based on:** SPDY (Google’s protocol)
 
-### 🔑 Key Improvements
+### Key Improvements {#%F0%9F%94%91-key-improvements}
 
 | Feature | Description |
 |----------|-------------|
@@ -50,19 +50,19 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 | **Stream prioritization** | Browser can prioritize critical resources (CSS, above-the-fold content). |
 | **Single connection per origin** | Reduces connection overhead and improves latency. |
 
-### 🧠 Frontend Impact
+### Frontend Impact {#%F0%9F%A7%A0-frontend-impact}
 - No need for image sprites or domain sharding.
 - Fewer TCP connections → faster SSL/TLS negotiation.
 - Still affected by **TCP-level head-of-line blocking** if packets are lost.
 
 ---
 
-## ⚡ HTTP/3 — The Next Generation
+## HTTP/3 — The Next Generation {#%E2%9A%A1-http-3-%E2%80%94-the-next-generation}
 
 **Based on:** QUIC (built on UDP)  
 **Adopted:** 2022 onward
 
-### 🔑 Key Features
+### Key Features {#%F0%9F%94%91-key-features}
 
 | Feature | Benefit |
 |----------|----------|
@@ -72,25 +72,25 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 | **Multiplexing at transport level** | Independent transport streams reduce cross-stream loss blocking; per-stream ordering, flow/congestion limits and header dependencies remain. |
 | **Connection migration** | Maintains session even when network changes (e.g., WiFi → 4G). |
 
-### ⚙️ Browser Support
+### Browser Support {#%E2%9A%99%EF%B8%8F-browser-support}
 - Widely supported in Chrome, Edge, Firefox, Safari.
 - Supported by most CDNs (Cloudflare, Fastly, Akamai).
 
-### 🧠 Frontend Benefits
+### Frontend Benefits {#%F0%9F%A7%A0-frontend-benefits}
 - Lower latency, especially on mobile and high-latency networks.
 - Faster TLS handshake.
 - Ideal for modern web apps with frequent small requests (APIs, streaming).
 
 ---
 
-## 🧩 Comparison Summary
+## Comparison Summary {#%F0%9F%A7%A9-comparison-summary}
 
 | Feature | HTTP/1.1 | HTTP/2 | HTTP/3 |
 |----------|-----------|--------|--------|
 | **Transport** | TCP | TCP | UDP (QUIC) |
-| **Multiplexing** | ❌ | ✅ | ✅ |
-| **Header Compression** | ❌ | ✅ (HPACK) | ✅ (QPACK) |
-| **Server Push** | ❌ | ✅ | ✅ (limited) |
+| **Multiplexing** | No | Yes | Yes |
+| **Header Compression** | No |  (HPACK) |  (QPACK) |
+| **Server Push** | No | Yes |  (limited) |
 | **Encryption** | Optional (TLS) | Usually via TLS | Built-in TLS 1.3 |
 | **Connection Setup** | Reuse/handshake policy varies | Reused TCP; TLS/ALPN where used | QUIC handshake; optional resumed early data |
 | **Head-of-Line Blocking** | Ordered HTTP responses and TCP | TCP loss affects multiplexed streams | Loss ordering within a stream; QPACK/flow/congestion dependencies can remain |
@@ -98,7 +98,7 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 ---
 
-## 🔒 Related Protocols and Layers
+## Related Protocols and Layers {#%F0%9F%94%92-related-protocols-and-layers}
 
 | Protocol | Purpose | Description |
 |-----------|----------|-------------|
@@ -112,7 +112,7 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 ---
 
-## 🧠 Takeaway for a Senior Developer
+## Takeaway for a Senior Developer {#%F0%9F%A7%A0-takeaway-for-a-senior-developer}
 
 | Area | What It Means for You |
 |------|-----------------------|
@@ -124,7 +124,7 @@ Understanding the evolution from **HTTP/1.x → HTTP/2 → HTTP/3** helps explai
 
 ---
 
-**Summary:**
+ **Summary:**
 > HTTP evolved from many simple TCP connections (1.x) → multiplexed single connection (2) → UDP-based fast and resilient transport (3).  
 > Protocol capabilities do not guarantee a faster application; verify negotiated protocol, connection reuse, losses, resource discovery and application work.
 

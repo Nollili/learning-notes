@@ -1,4 +1,4 @@
-# Practice: 🌐 REST — Representational State Transfer
+# Practice: REST — Representational State Transfer {#practice-%F0%9F%8C%90-rest-%E2%80%94-representational-state-transfer}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

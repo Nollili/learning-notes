@@ -1,12 +1,12 @@
 # What kind of creational design patterns do you know?
 
-# 🏗️ Creational Design Patterns in JavaScript
+## Creational Design Patterns in JavaScript {#%F0%9F%8F%97%EF%B8%8F-creational-design-patterns-in-javascript}
 
 **Creational design patterns** deal with **object creation mechanisms**. They **abstract the instantiation process**, making code more flexible and reusable.
 
 ---
 
-## 1️⃣ Singleton
+## Singleton {#_1%EF%B8%8F%E2%83%A3-singleton}
 
 **Purpose:** Ensure a class has **only one instance** and provide a global access point.
 
@@ -33,7 +33,7 @@ console.log(log1 === log2); // true
 
 ---
 
-## 2️⃣ Simple factory and Factory Method
+## Simple factory and Factory Method {#_2%EF%B8%8F%E2%83%A3-simple-factory-and-factory-method}
 
 **Purpose:** Define an interface for creating objects, but **let subclasses decide which class to instantiate**.
 
@@ -59,7 +59,7 @@ const user = createUser('admin');
 
 ---
 
-## 3️⃣ Abstract Factory
+## Abstract Factory {#_3%EF%B8%8F%E2%83%A3-abstract-factory}
 
 **Purpose:** Provide an **interface for creating families of related objects** without specifying concrete classes.
 
@@ -90,7 +90,7 @@ class WinFactory extends GUIFactory {
 
 ---
 
-## 4️⃣ Builder Pattern
+## Builder Pattern {#_4%EF%B8%8F%E2%83%A3-builder-pattern}
 
 **Purpose:** Construct **complex objects step by step**, allowing different representations using the same construction process.
 
@@ -116,7 +116,7 @@ console.log(car); // { engine: 'V8', wheels: 4 }
 
 ---
 
-## 5️⃣ Prototype Pattern
+## Prototype Pattern {#_5%EF%B8%8F%E2%83%A3-prototype-pattern}
 
 **Purpose:** Create **new objects by cloning existing ones**, rather than instantiating via a constructor.
 
@@ -139,7 +139,7 @@ console.log(Object.hasOwn(clone, 'age')); // false
 
 ---
 
-## 6️⃣ Summary Table
+## Summary Table {#_6%EF%B8%8F%E2%83%A3-summary-table}
 
 | Pattern          | Purpose                                   | Key Use Case                              |
 | ---------------- | ----------------------------------------- | ----------------------------------------- |
@@ -151,7 +151,7 @@ console.log(Object.hasOwn(clone, 'age')); // false
 
 ---
 
-### ✅ Senior Tips
+### Senior Tips {#%E2%9C%85-senior-tips}
 
 1. **Prefer composition over inheritance** in object creation when possible.
 2. Use **Factory/Builder** to encapsulate creation logic and avoid exposing constructors.

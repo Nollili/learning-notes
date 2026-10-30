@@ -1,4 +1,4 @@
-### Data Binding in React and Comparison to Other Major Frameworks
+# Data Binding in React and Comparison to Other Major Frameworks {#data-binding-in-react-and-comparison-to-other-major-frameworks}
 
 ### **What is Data Binding?**
 

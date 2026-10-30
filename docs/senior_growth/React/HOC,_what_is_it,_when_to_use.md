@@ -1,15 +1,15 @@
-# HOC, what is it, when to use
+# Higher-order components: purpose and use cases {#hoc-what-is-it-when-to-use}
 
 Summary: When to Choose What
 
 | Scenario                                 | Use HOCs | Use Hooks |
 |-------------------------------------------|:--------:|:---------:|
-| Legacy Codebase with Class Components     |   ✅     |    ❌     |
+| Legacy Codebase with Class Components     |   Yes |    No |
 | Modern Function Components               | Component adapter when justified | Logic reuse inside components |
-| State Management Libraries (e.g., Redux)  |   ✅     |    ✅     |
+| State Management Libraries (e.g., Redux)  |   Yes |    Yes |
 | Cross-Cutting Concerns                    | Explicit component contract | Explicit hook contract |
-| Avoiding Wrapper Hell                     |   ❌     |    ✅     |
-| Complex Component Composition             |   ✅     |    ✅     |
+| Avoiding Wrapper Hell                     |   No |    Yes |
+| Complex Component Composition             |   Yes |    Yes |
 
 ## A decision, not a framework-age rule
 

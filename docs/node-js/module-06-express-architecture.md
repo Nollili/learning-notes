@@ -21,7 +21,7 @@
 
 ---
 
-## 1. Why use a web framework?
+## Why use a web framework? {#_1-why-use-a-web-framework}
 
 Node's built-in `node:http` module provides the low-level primitives needed to create a server. It does not provide application-level conventions for routing, parsing bodies, composing cross-cutting behavior, or formatting responses.
 
@@ -86,7 +86,7 @@ A framework removes transport boilerplate. It does **not** decide business rules
 
 ---
 
-## 2. Choosing a Node.js framework
+## Choosing a Node.js framework {#_2-choosing-a-node-js-framework}
 
 The right choice depends on application size, team experience, deployment environment, performance constraints, and how much structure the team wants the framework to enforce.
 
@@ -130,7 +130,7 @@ Choose based on measured needs, not popularity alone.
 
 ---
 
-## 3. Express setup and application lifecycle
+## Express setup and application lifecycle {#_3-express-setup-and-application-lifecycle}
 
 ### Install Express and TypeScript support
 
@@ -222,7 +222,7 @@ If a parser is registered after a route, that route will not receive the parsed 
 
 ---
 
-## 4. Requests, responses, and routing
+## Requests, responses, and routing {#_4-requests-responses-and-routing}
 
 Each handler receives a `Request` and `Response`. Regular middleware also receives `next`, which transfers control to the next matching function.
 
@@ -361,7 +361,7 @@ An API may consistently choose `400` or `422` for schema validation. The importa
 
 ---
 
-## 5. Routers and route organization
+## Routers and route organization {#_5-routers-and-route-organization}
 
 An Express `Router` is a modular middleware and routing unit. Define paths relative to the mount point.
 
@@ -420,7 +420,7 @@ Use nesting only when the resource relationship is meaningful. Deeply nested URL
 
 ---
 
-## 6. Middleware
+## Middleware {#_6-middleware}
 
 Middleware forms an ordered pipeline. A middleware function can:
 
@@ -522,7 +522,7 @@ Every package adds behavior and risk. Configure it deliberately and keep it upda
 
 ---
 
-## 7. Error handling
+## Error handling {#_7-error-handling}
 
 Centralized error handling keeps controllers focused and gives clients a consistent response format.
 
@@ -683,7 +683,7 @@ Machine-readable codes let clients react without parsing human-readable prose.
 
 ---
 
-## 8. Three-layer architecture
+## Three-layer architecture {#_8-three-layer-architecture}
 
 Architecture is the design of responsibilities and dependencies, not merely a folder layout. Its practical goal is to keep likely changes local.
 
@@ -814,7 +814,7 @@ Some defense-in-depth checks may exist in both places, but the domain rule must 
 
 ---
 
-## 9. Input validation
+## Input validation {#_9-input-validation}
 
 TypeScript checks code during development. Requests arrive at runtime from untrusted clients, so they require runtime validation.
 
@@ -946,7 +946,7 @@ Never mass-assign an unvalidated request body into a database update. A client c
 
 ---
 
-## 10. Feature-based project structure
+## Feature-based project structure {#_10-feature-based-project-structure}
 
 Organizing only by technical layer creates large global folders:
 
@@ -995,11 +995,11 @@ Do not create abstractions solely to satisfy a diagram. Small features can use f
 
 ---
 
-## 11. Complete Products API
+## Complete Products API {#_11-complete-products-api}
 
 [This reference collection now lives in the Node.js workbench](../workbench/node-js/backend/products-api.md).
 
-## 12. Testing and production readiness
+## Testing and production readiness {#_12-testing-and-production-readiness}
 
 ### Test each boundary at the right level
 
@@ -1080,7 +1080,7 @@ it('returns 400 for an invalid product', async () => {
 
 ---
 
-## 13. Transaction and consistency boundaries
+## Transaction and consistency boundaries {#_13-transaction-and-consistency-boundaries}
 
 A service method often coordinates several repository operations. If those operations protect one invariant, they usually need one transaction boundary.
 
@@ -1133,7 +1133,7 @@ Do not leak driver messages to clients. Preserve the original error as a cause f
 
 ---
 
-## 14. Idempotency and request context
+## Idempotency and request context {#_14-idempotency-and-request-context}
 
 ### Idempotent use cases
 
@@ -1228,7 +1228,7 @@ Do not cancel a committed business workflow merely because the HTTP client disap
 
 ---
 
-## 15. Architecture failure modes
+## Architecture failure modes {#_15-architecture-failure-modes}
 
 ### Thin layers with no purpose
 
@@ -1282,7 +1282,7 @@ Ask for every multi-step use case:
 
 [Exercises and learner checklist](../practice/node-js/module-06-express-architecture.md).
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-06-express-architecture.md).
 

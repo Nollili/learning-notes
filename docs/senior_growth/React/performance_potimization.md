@@ -51,13 +51,13 @@ An unchanged user reference can skip parent-driven work; state/context changes c
 
 ### When to Use
 
-✅ Pure Components: Components that render the same output for the same props.
-✅ Frequent Re-renders: Components in a frequently re-rendered subtree.
+ Pure Components: Components that render the same output for the same props.
+ Frequent Re-renders: Components in a frequently re-rendered subtree.
 
 ### Limitations
 
-❎ Shallow Comparison: Only compares top-level props. Preserve immutable snapshots and compare the actual prop identities; a library does not make shallow comparison deep.
-❎ Overhead: Avoid using for rarely re-rendered components, as memoization cost may outweigh benefits.
+ Shallow Comparison: Only compares top-level props. Preserve immutable snapshots and compare the actual prop identities; a library does not make shallow comparison deep.
+ Overhead: Avoid using for rarely re-rendered components, as memoization cost may outweigh benefits.
 
 ### Custom Comparison
 
@@ -104,9 +104,9 @@ return (
 
 Defining functions inside JSX can lead to performance costs:
 
-* ❗ Prop Diff Failure: Creates new references on each render, triggering unnecessary re-renders.
-* ❗ Garbage Collection Overhead: Each render generates a new function instance.
-* ❗ Unintended Side Effects: May cause child components using `React.memo` or `useEffect` to re-render.
+* Prop Diff Failure: Creates new references on each render, triggering unnecessary re-renders.
+* Garbage Collection Overhead: Each render generates a new function instance.
+* Unintended Side Effects: May cause child components using `React.memo` or `useEffect` to re-render.
 
 ### Inefficient Example
 
@@ -151,9 +151,9 @@ Frequent user events like scrolling, typing, or resizing can trigger expensive o
 
 Delays function execution to at most once every `n` milliseconds. Useful for:
 
-✅ Infinite scrolling
-✅ Resize events
-✅ Scroll events
+ Infinite scrolling
+ Resize events
+ Scroll events
 
 ```javascript
 import { throttle } from "lodash";
@@ -169,8 +169,8 @@ const handleScroll = throttle(() => {
 
 Delays execution until the event stops firing. Useful for:
 
-✅ Search input
-✅ Auto-saving
+ Search input
+ Auto-saving
 
 ```javascript
 import { debounce } from "lodash";
@@ -208,9 +208,9 @@ Avoid using array index as a key:
 
 ### Problems
 
-* ❗ Incorrect DOM updates
-* ❗ Re-rendering issues
-* ❗ Impacts stateful components
+* Incorrect DOM updates
+* Re-rendering issues
+* Impacts stateful components
 
 ### Best Practices
 
@@ -240,15 +240,15 @@ const CommentsText = ({ text, className, id }) => <div id={id} className={classN
 
 ### Use CSS when:
 
-✅ One-shot transitions (tooltips, hover effects)
-✅ Smaller, self-contained UI element animations
+ One-shot transitions (tooltips, hover effects)
+ Smaller, self-contained UI element animations
 
 ### Use JS when:
 
-✅ Advanced effects (bounce, pause, rewind)
-✅ Need precise control over animation
-✅ Triggering animations via events
-✅ Using `requestAnimationFrame`
+ Advanced effects (bounce, pause, rewind)
+ Need precise control over animation
+ Triggering animations via events
+ Using `requestAnimationFrame`
 
 ---
 

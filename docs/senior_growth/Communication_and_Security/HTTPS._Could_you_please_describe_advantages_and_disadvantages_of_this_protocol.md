@@ -1,12 +1,12 @@
-### HTTPS — Advantages and Disadvantages
+# HTTPS — Advantages and Disadvantages {#https-—-advantages-and-disadvantages}
 
-#### 🔒 What is HTTPS?
+#### What is HTTPS? {#%F0%9F%94%92-what-is-https}
 HTTPS (Hypertext Transfer Protocol Secure) is HTTP protected by **TLS** (SSL is obsolete historical terminology), providing **encryption**, **data integrity**, and **authentication** between client and server.
 It ensures secure communication over the web.
 
 ---
 
-### ✅ **Advantages**
+### **Advantages** {#%E2%9C%85-advantages}
 
 1. **Data Encryption**
     - Application content is encrypted between TLS endpoints; endpoint/CDN termination, logs and visible traffic metadata remain separate boundaries.
@@ -29,7 +29,7 @@ It ensures secure communication over the web.
 
 ---
 
-### ❌ **Disadvantages**
+### **Disadvantages** {#%E2%9D%8C-disadvantages}
 
 1. **Performance Overhead**
     - Slight increase in CPU usage due to encryption/decryption.
@@ -48,7 +48,7 @@ It ensures secure communication over the web.
 
 ---
 
-### ⚙️ **Summary Table**
+### **Summary Table** {#%E2%9A%99%EF%B8%8F-summary-table}
 
 | Aspect              | HTTP                     | HTTPS                                |
 |---------------------|--------------------------|--------------------------------------|
@@ -61,7 +61,7 @@ It ensures secure communication over the web.
 
 ---
 
-### 💡 **Best Practice**
+### **Best Practice** {#%F0%9F%92%A1-best-practice}
 Always use HTTPS — the minor cost of setup and overhead is far outweighed by the security, trust, and compatibility benefits.
 
 ## TLS1.3 handshake: separate key establishment and authentication

@@ -19,7 +19,7 @@
 
 ---
 
-## 1. `process`
+## `process` {#_1-process}
 
 `process` is a global object that describes and controls the current Node.js process. Do not import it unless an explicit import improves clarity or typing.
 
@@ -179,7 +179,7 @@ These handlers are last-resort logging hooks. Do not attempt to resume normal wo
 
 ---
 
-## 2. Errors
+## Errors {#_2-errors}
 
 Errors communicate that an operation could not produce its promised result. The handling mechanism should match the execution style: synchronous throw, rejected promise, callback error, or an EventEmitter `'error'` event.
 
@@ -318,7 +318,7 @@ Return after handling the callback error so the success path cannot accidentally
 
 ---
 
-## 3. Buffers and the file system
+## Buffers and the file system {#_3-buffers-and-the-file-system}
 
 ### Buffers
 
@@ -481,7 +481,7 @@ Use `readFile()` when the file is comfortably small and you need all of it. Use 
 
 ---
 
-## 4. `path`
+## `path` {#_4-path}
 
 The `node:path` module constructs and inspects paths without hardcoding platform separators. Use it instead of joining path strings with `'/'` or `'\\'`.
 
@@ -588,7 +588,7 @@ For public uploads, prefer server-generated opaque filenames under a private ser
 
 ---
 
-## 5. `crypto`
+## `crypto` {#_5-crypto}
 
 `node:crypto` supplies hashing, HMAC, secure random values, encryption primitives, and password key-derivation functions.
 
@@ -698,7 +698,7 @@ Use `node:crypto` for ergonomic Node.js backend code. Use Web Crypto when sharin
 
 ---
 
-## 6. `child_process`
+## `child_process` {#_6-child-process}
 
 `node:child_process` launches external programs. Choose the function according to whether you need a shell, streaming output, or Node-to-Node messaging.
 
@@ -819,7 +819,7 @@ On Windows, `.bat` and `.cmd` files need a shell. Use `exec()` or carefully use 
 
 ---
 
-## 7. `cluster`
+## `cluster` {#_7-cluster}
 
 `node:cluster` runs multiple Node.js processes that can share a server port. A primary process manages workers, while workers handle requests.
 
@@ -891,7 +891,7 @@ What to know:
 
 ---
 
-## 8. `worker_threads`
+## `worker_threads` {#_8-worker-threads}
 
 `node:worker_threads` runs JavaScript in parallel inside one process. Use it for CPU-intensive JavaScript that would otherwise block the main event loop.
 
@@ -994,7 +994,7 @@ Use `Atomics` for synchronized reads and updates. Unsynchronized shared-memory a
 
 ---
 
-## 9. Choosing a concurrency tool
+## Choosing a concurrency tool {#_9-choosing-a-concurrency-tool}
 
 ```mermaid
 flowchart TD
@@ -1025,7 +1025,7 @@ flowchart TD
 
 ---
 
-## 10. Safe subprocess design
+## Safe subprocess design {#_10-safe-subprocess-design}
 
 Child processes cross a security boundary. Treat command names, arguments, environment values, input, and output as untrusted data.
 
@@ -1070,7 +1070,7 @@ The helper owns only the direct child. Descendants, platform signal differences 
 
 ---
 
-## 11. Worker pools and bounded CPU work
+## Worker pools and bounded CPU work {#_11-worker-pools-and-bounded-cpu-work}
 
 Creating one worker per request is expensive. Under load it can create too many threads and duplicate too much memory.
 
@@ -1121,7 +1121,7 @@ Measure:
 
 ---
 
-## 12. Resource ownership and diagnostics
+## Resource ownership and diagnostics {#_12-resource-ownership-and-diagnostics}
 
 Every resource should have one clear owner responsible for closing it.
 
@@ -1148,10 +1148,10 @@ Every resource should have one clear owner responsible for closing it.
 
 [Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).
 
-## 13. Final review checklist
+## Final review checklist {#_13-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).
 
-## 14. Boundary and ownership labs
+## Boundary and ownership labs {#_14-boundary-and-ownership-labs}
 
 [Exercises and learner checklist](../practice/node-js/module-02-standard-library.md).

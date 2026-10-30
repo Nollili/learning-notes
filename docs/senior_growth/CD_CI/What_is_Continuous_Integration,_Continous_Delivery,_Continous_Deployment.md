@@ -1,12 +1,12 @@
 # What is Continuous Integration, Continous Delivery, Continous Deployment?
 
-## 🔹 CI/CD Concepts: Continuous Integration, Delivery, and Deployment
+## CI/CD Concepts: Continuous Integration, Delivery, and Deployment {#%F0%9F%94%B9-ci-cd-concepts-continuous-integration-delivery-and-deployment}
 
 CI/CD is a set of **practices to automate the build, testing, and delivery of software**, improving quality and reducing release risk. Each part focuses on a different stage of the process.
 
 ---
 
-## 1️⃣ Continuous Integration (CI)
+## Continuous Integration (CI) {#_1%EF%B8%8F%E2%83%A3-continuous-integration-ci}
 
 **Definition:**  
 Continuous Integration is the practice of **frequently integrating code changes into a shared repository**. Every integration triggers **automated builds and tests**.
@@ -32,7 +32,7 @@ Continuous Integration is the practice of **frequently integrating code changes 
 
 ---
 
-## 2️⃣ Continuous Delivery (CD)
+## Continuous Delivery (CD) {#_2%EF%B8%8F%E2%83%A3-continuous-delivery-cd}
 
 **Definition:**  
 Continuous Delivery ensures that changes are kept in a releasable state through the delivery process; the production release decision remains explicit and need not be automatic.
@@ -54,7 +54,7 @@ Continuous Delivery ensures that changes are kept in a releasable state through 
 
 ---
 
-## 3️⃣ Continuous Deployment (CD)
+## Continuous Deployment (CD) {#_3%EF%B8%8F%E2%83%A3-continuous-deployment-cd}
 
 **Definition:**  
 Continuous Deployment takes Continuous Delivery **one step further**: eligible changes that pass the complete configured release gates are automatically deployed to production.
@@ -76,7 +76,7 @@ Continuous Deployment takes Continuous Delivery **one step further**: eligible c
 
 ---
 
-## 4️⃣ Key Differences
+## Key Differences {#_4%EF%B8%8F%E2%83%A3-key-differences}
 
 | Aspect                 | CI                          | Continuous Delivery          | Continuous Deployment        |
 |------------------------|----------------------------|-----------------------------|-----------------------------|
@@ -87,13 +87,13 @@ Continuous Deployment takes Continuous Delivery **one step further**: eligible c
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - **CI:** Frequent integration + automated tests.  
 - **Continuous Delivery:** keep changes releasable with an explicit production release decision and repeatable deployment execution.  
 - **Continuous Deployment:** CI + automated deployment; code goes to production automatically.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > The **main difference** between Delivery and Deployment is **manual vs automatic release to production**. Both require **strong CI and test automation** to be safe.
 
 ## Isolated jobs, artifact identity and safe rollback

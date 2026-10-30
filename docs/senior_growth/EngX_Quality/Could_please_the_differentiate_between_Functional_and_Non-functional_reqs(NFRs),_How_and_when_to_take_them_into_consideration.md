@@ -1,4 +1,4 @@
-### Could you please the differentiate between Functional and Non-functional reqs(NFRs)? How and when to take them into consideration?
+# Could you please the differentiate between Functional and Non-functional reqs(NFRs)? How and when to take them into consideration? {#could-you-please-the-differentiate-between-functional-and-non-functional-reqs-nfrs-how-and-when-to-take-them-into-consideration}
 
 ### **Functional vs. Non-Functional Requirements**
 
@@ -6,7 +6,7 @@ Both **functional** and **non-functional requirements (NFRs)** are critical in t
 
 ---
 
-### **1. Functional Requirements**
+### **Functional Requirements** {#_1-functional-requirements}
 
 ### **Definition**
 
@@ -34,7 +34,7 @@ Functional requirements define **what the system should do**. They describe the 
 
 ---
 
-### **2. Non-Functional Requirements (NFRs)**
+### **Non-Functional Requirements (NFRs)** {#_2-non-functional-requirements-nfrs}
 
 ### **Definition**
 
@@ -79,31 +79,31 @@ NFRs define **how the system should perform**. They describe the quality attribu
 
 ### **How and When to Take Them into Consideration**
 
-### **1. During Requirements Gathering**
+### **During Requirements Gathering** {#_1-during-requirements-gathering}
 
 - **Functional Requirements**: Engage stakeholders (e.g., product owners, business analysts) to gather user stories, use cases, and workflows.
 - **NFRs**: Work with architects, DevOps engineers, and compliance teams to identify quality goals and constraints.
 
-### **2. During Architecture and Design**
+### **During Architecture and Design** {#_2-during-architecture-and-design}
 
 - Define how the system will achieve both functional goals (features) and non-functional goals (e.g., performance, reliability).
 - Select tech stacks, frameworks, and tools that support NFRs (e.g., load balancers for scalability, encryption libraries for security).
 
-### **3. Prioritize Requirements**
+### **Prioritize Requirements** {#_3-prioritize-requirements}
 
 - Use techniques like **MoSCoW (Must Have, Should Have, Could Have, Won’t Have)** to ensure critical functional and non-functional requirements are addressed early.
 
-### **4. During Development**
+### **During Development** {#_4-during-development}
 
 - Ensure functional requirements are implemented as specified in user stories or documentation.
 - Continuously validate NFRs using automated tests, code reviews, and adherence to coding standards.
 
-### **5. During Testing and Validation**
+### **During Testing and Validation** {#_5-during-testing-and-validation}
 
 - **Functional Testing**: Validate that features meet user requirements.
 - **Non-Functional Testing**: Perform performance testing (e.g., stress, load testing), security audits, and usability testing.
 
-### **6. Post-Deployment**
+### **Post-Deployment** {#_6-post-deployment}
 
 - Monitor NFRs like availability, performance, and scalability using tools like New Relic, Datadog, or Prometheus.
 - Gather user feedback to refine both functional and non-functional aspects.

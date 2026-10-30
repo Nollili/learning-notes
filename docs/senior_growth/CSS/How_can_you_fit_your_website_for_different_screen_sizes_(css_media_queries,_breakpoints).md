@@ -1,12 +1,12 @@
 # How can you fit your website for different screen sizes? (css media queries, breakpoints)
 
-## 🔹 Making Websites Responsive: Media Queries & Breakpoints
+## Making Websites Responsive: Media Queries & Breakpoints {#%F0%9F%94%B9-making-websites-responsive-media-queries-breakpoints}
 
 Ensuring your website looks good on **different screen sizes** is a key aspect of modern web development. This is achieved through **responsive design**, primarily using **CSS media queries** and **breakpoints**.
 
 ---
 
-## 1️⃣ Media Queries
+## Media Queries {#_1%EF%B8%8F%E2%83%A3-media-queries}
 
 **Media queries** allow you to **apply CSS rules conditionally** based on media features such as viewport width/height, resolution, orientation and user preferences. Viewport CSS pixels are not hardware screen pixels.
 
@@ -34,7 +34,7 @@ Ensuring your website looks good on **different screen sizes** is a key aspect o
 
 ---
 
-## 2️⃣ Breakpoints
+## Breakpoints {#_2%EF%B8%8F%E2%83%A3-breakpoints}
 
 **Breakpoints** are **specific screen widths** where your layout changes to fit different devices.
 
@@ -52,7 +52,7 @@ Ensuring your website looks good on **different screen sizes** is a key aspect o
 
 ---
 
-## 3️⃣ Mobile-First Approach
+## Mobile-First Approach {#_3%EF%B8%8F%E2%83%A3-mobile-first-approach}
 
 * Start with **base styles for mobile** (smallest screen)
 * Use **min-width media queries** to add enhancements for larger screens.
@@ -82,7 +82,7 @@ Ensuring your website looks good on **different screen sizes** is a key aspect o
 
 ---
 
-## 4️⃣ Flexible Layout Techniques
+## Flexible Layout Techniques {#_4%EF%B8%8F%E2%83%A3-flexible-layout-techniques}
 
 * **Relative units:** `%, em, rem` instead of px
 * **Flexbox:** for adaptable row/column layouts
@@ -92,7 +92,7 @@ Ensuring your website looks good on **different screen sizes** is a key aspect o
 
 ---
 
-## 5️⃣ Advanced Tips
+## Advanced Tips {#_5%EF%B8%8F%E2%83%A3-advanced-tips}
 
 * Combine **media queries with CSS variables** for scalable theming.
 
@@ -112,14 +112,14 @@ Ensuring your website looks good on **different screen sizes** is a key aspect o
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Media queries** control styles based on device characteristics.
 * **Breakpoints** define key points where layouts change.
 * Use **mobile-first approach**, relative units, and flexible layouts to ensure your site looks great on all screen sizes.
 * Modern techniques (CSS Grid, container queries, responsive images) enhance responsiveness and maintainability.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Focus on **content-driven breakpoints**, not just device widths. Adjust layout when the **design breaks**, not arbitrarily at device resolutions.
 
 ## Container-query example and fallback

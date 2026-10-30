@@ -1,4 +1,6 @@
-# Python prerequisites and applied-AI lessons
+# Python for AI — Optional Deep Dive
+
+**New to AI development? Start with [Build AI Apps — JavaScript First](../applied-ai/).** Python is optional: introduce it for a concrete document-processing, data or integration need after you understand the JavaScript request flow. These existing lessons and examples remain available as deeper study.
 
 Python supplies one implementation path for the notes assistant. Learn deterministic typed data preparation and resource ownership before model integration. The established detailed lesson URLs remain stable; [the applied-AI home](../applied-ai/index.md) now organizes shared foundations, RAG, agent workflows and n8n.
 
@@ -6,13 +8,13 @@ Python supplies one implementation path for the notes assistant. Learn determini
 
 ## Python prerequisite order
 
-1. [Setup, syntax, collections and functions](./setup-and-basics.md).
-2. [Typed modules and explicit errors](./typed-modules-and-errors.md).
-3. [Configuration, safe logs and fixtures](./configuration-and-logging.md).
-4. [Bounded document streams](./bounded-document-streams.md).
-5. [Async HTTP and owned integrations](./async-http.md).
-6. [Pydantic/FastAPI boundaries](./fastapi-boundaries.md).
-7. [Deployment and recovery](./deployment.md) when running a service; local functions do not require deployment first.
+- [Setup, syntax, collections and functions](./setup-and-basics.md).
+- [Typed modules and explicit errors](./typed-modules-and-errors.md).
+- [Configuration, safe logs and fixtures](./configuration-and-logging.md).
+- [Bounded document streams](./bounded-document-streams.md).
+- [Async HTTP and owned integrations](./async-http.md).
+- [Pydantic/FastAPI boundaries](./fastapi-boundaries.md).
+- [Deployment and recovery](./deployment.md) when running a service; local functions do not require deployment first.
 
 ## Continue by concept
 

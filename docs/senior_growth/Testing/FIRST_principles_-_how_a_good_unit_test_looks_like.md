@@ -1,12 +1,12 @@
 # FIRST principles - how a good unit test looks like?
 
-# 🧪 FIRST Principles for Unit Tests
+## FIRST Principles for Unit Tests {#%F0%9F%A7%AA-first-principles-for-unit-tests}
 
 **Unit tests** verify the behavior of **small, isolated units of code** (functions, methods, or components). Writing **good unit tests** is critical for maintainable, reliable software. The **FIRST principles** provide a guideline.
 
 ---
 
-## 1️⃣ What are FIRST Principles?
+## What are FIRST Principles? {#_1%EF%B8%8F%E2%83%A3-what-are-first-principles}
 
 The acronym **FIRST** describes **qualities of high-quality unit tests**:
 
@@ -20,7 +20,7 @@ The acronym **FIRST** describes **qualities of high-quality unit tests**:
 
 ---
 
-## 2️⃣ Characteristics of a Good Unit Test
+## Characteristics of a Good Unit Test {#_2%EF%B8%8F%E2%83%A3-characteristics-of-a-good-unit-test}
 
 1. **Small and focused**
    - Tests **one coherent behavior** per test; it may involve multiple functions or assertions
@@ -39,7 +39,7 @@ The acronym **FIRST** describes **qualities of high-quality unit tests**:
 
 ---
 
-## 3️⃣ Example of a Good Unit Test
+## Example of a Good Unit Test {#_3%EF%B8%8F%E2%83%A3-example-of-a-good-unit-test}
 
 ```js
 // Simple pure function
@@ -53,15 +53,15 @@ test('sum adds two numbers correctly', () => {
 });
 ```
 
-* ✅ **Fast:** Runs in milliseconds
-* ✅ **Independent:** No shared state
-* ✅ **Repeatable:** Always passes with same inputs
-* ✅ **Self-Validating:** Uses assertion
-* ✅ **Timely:** Can be written while implementing `sum`
+* **Fast:** Runs in milliseconds
+* **Independent:** No shared state
+* **Repeatable:** Always passes with same inputs
+* **Self-Validating:** Uses assertion
+* **Timely:** Can be written while implementing `sum`
 
 ---
 
-## 4️⃣ Example with a React Component
+## Example with a React Component {#_4%EF%B8%8F%E2%83%A3-example-with-a-react-component}
 
 ```js
 import { render, screen } from '@testing-library/react';
@@ -80,14 +80,14 @@ test('renders button with label', () => {
 
 ---
 
-## ✅ Key Takeaways
+## Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * **FIRST = Fast, Independent, Repeatable, Self-Validating, Timely**
 * A **good unit test** is small, focused, deterministic, and readable
 * Focus on **behavior verification** rather than implementation details
 * Proper unit tests make **refactoring safe** and **catch bugs early**
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Strive for a **suite of FIRST unit tests** covering all **critical business logic**, then complement with **integration and E2E tests** to check important cross-boundary behavior; no suite establishes every possible outcome.
 
 

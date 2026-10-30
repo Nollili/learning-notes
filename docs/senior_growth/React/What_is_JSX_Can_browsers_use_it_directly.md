@@ -1,4 +1,4 @@
-### What is JSX? Can browsers use it directly?
+# What is JSX? Can browsers use it directly? {#what-is-jsx-can-browsers-use-it-directly}
 
 ### **What is JSX?**
 

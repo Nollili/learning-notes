@@ -1,6 +1,6 @@
 # What is GIT hooks? Which git hooks you are using on your current project and why?
 
-## 🔹 Git Hooks
+## Git Hooks {#%F0%9F%94%B9-git-hooks}
 
 This is an example policy, not evidence of installed hooks in this repository. Local hooks provide feedback; required CI/protected-branch/server policy must independently enforce acceptance. No push is permitted here.
 
@@ -8,7 +8,7 @@ This is an example policy, not evidence of installed hooks in this repository. L
 
 ---
 
-## 1️⃣ Types of Git Hooks
+## Types of Git Hooks {#_1%EF%B8%8F%E2%83%A3-types-of-git-hooks}
 
 Git hooks are divided into **client-side** and **server-side** hooks:
 
@@ -24,7 +24,7 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 ---
 
-## 2️⃣ Hooks Commonly Used in Projects
+## Hooks Commonly Used in Projects {#_2%EF%B8%8F%E2%83%A3-hooks-commonly-used-in-projects}
 
 ### Client-Side Hooks
 
@@ -71,7 +71,7 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 ---
 
-## 3️⃣ Example hook policy
+## Example hook policy {#_3%EF%B8%8F%E2%83%A3-example-hook-policy}
 
 * **pre-commit:** Runs **ESLint, Prettier, and format checks** to ensure clean code before commit.
 * **commit-msg:** Enforces **Conventional Commit messages** to maintain clear changelog.
@@ -87,14 +87,14 @@ Git hooks are divided into **client-side** and **server-side** hooks:
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Git hooks** = scripts triggered at specific Git events.
 * **Client-side hooks**: pre-commit, commit-msg, pre-push (quality checks, formatting, tests).
 * **Server-side hooks**: pre-receive, post-receive (enforce rules, trigger CI/CD).
 * **Best Practice:** Use hooks to **automate checks**, enforce **standards**, and prevent **bad code** from entering the repository.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Combine **linting, formatting, testing, and commit conventions** in Git hooks for **clean, reliable, and maintainable code** across the team.
 
 ## Install deliberately and check staged content

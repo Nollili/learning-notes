@@ -1,12 +1,12 @@
 # What does clean code/code quality mean to you? Why do you think it's important?
 
-## 🧹 Clean Code / Code Quality
+## Clean Code / Code Quality {#%F0%9F%A7%B9-clean-code-code-quality}
 
 **Clean code** and **high code quality** mean writing code that is **readable, maintainable, efficient, and reliable**, following best practices, design patterns, and team conventions. It’s not just about making code “work,” but making it **understandable and sustainable** over time.
 
 ---
 
-## 1️⃣ Key Principles of Clean Code
+## Key Principles of Clean Code {#_1%EF%B8%8F%E2%83%A3-key-principles-of-clean-code}
 
 | Principle                | Description                                                                                   |
 |--------------------------|----------------------------------------------------------------------------------------------|
@@ -22,7 +22,7 @@
 
 ---
 
-## 2️⃣ Why Clean Code / High Quality is Important
+## Why Clean Code / High Quality is Important {#_2%EF%B8%8F%E2%83%A3-why-clean-code-high-quality-is-important}
 
 | Reason                   | Explanation                                                                                  |
 |--------------------------|----------------------------------------------------------------------------------------------|
@@ -37,7 +37,7 @@
 
 ---
 
-## 3️⃣ Senior-Level Perspective
+## Senior-Level Perspective {#_3%EF%B8%8F%E2%83%A3-senior-level-perspective}
 
 - **Clean code is a professional responsibility** — it’s not optional in serious projects.
 - **Quality isn’t just about style**; it’s about designing systems that are **robust, maintainable, and scalable**.
@@ -46,14 +46,14 @@
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 1. **Clean code = readability + simplicity + maintainability + reliability**
 2. It reduces bugs, speeds up development, and lowers technical debt.
 3. High-quality code is **a cornerstone of sustainable software engineering**, especially in team environments.
 4. Think of code as a **long-term asset**, not a quick solution — clean code protects that investment.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always ask: *“Will someone understand this in 3 months, or will I?”* If the answer is no, it’s time to refactor.
 
 

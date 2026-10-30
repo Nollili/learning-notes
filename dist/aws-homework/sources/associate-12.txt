@@ -1,0 +1,416 @@
+AWS AI tools and servicesPractical Lab 11: Amazon Q Developer and AWS AI services
+Practical Lab 11: Amazon Q Developer and AWS AI services
+Overview
+In this hands-on lab, you will set up Amazon Q Developer in your IDE and use it to build a simple application that integrates AWS AI services. You'll experience how AI-powered development tools can accelerate your workflow and explore key AWS AI capabilities.
+
+Estimated time: 45-60 minutes
+
+Prerequisites:
+
+AWS account with appropriate permissions
+Visual Studio Code or JetBrains IDE installed
+Node.js 18+ installed
+Basic knowledge of JavaScript/TypeScript
+AWS CLI configured
+Task 1: Amazon Q Developer setup
+Estimated time: 15 minutes
+
+Objective
+Install and configure Amazon Q Developer in your IDE to experience AI-assisted coding.
+
+Steps
+Step 1: Install Amazon Q Extension
+For Visual Studio Code:
+
+Open VS Code
+Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
+Search for "Amazon Q"
+Click "Install" on the Amazon Q extension
+Restart VS Code if prompted
+For JetBrains IDEs (IntelliJ IDEA, PyCharm, WebStorm):
+
+Go to Settings/Preferences → Plugins
+Search for "Amazon Q"
+Click "Install"
+Restart your IDE
+Step 2: Authenticate with AWS
+Click on the Amazon Q icon in your IDE sidebar
+Choose one of the authentication methods:
+AWS Builder ID (Free tier - recommended for this lab)
+IAM Identity Center (if your organization uses it)
+Follow the browser authentication flow
+Return to your IDE once authenticated
+Step 3: Verify Installation
+Open the Amazon Q chat panel
+Ask a simple question: "How do I create a Lambda function in Node.js?"
+Verify you receive a response
+Validation
+ Amazon Q extension is installed and active
+ Successfully authenticated
+ Can interact with Amazon Q chat
+ Code suggestions appear when typing
+Task 2: Build an AI-powered sentiment analysis API
+Estimated time: 30 minutes
+
+Objective
+Use Amazon Q Developer to help you build a serverless API that analyzes text sentiment using Amazon Comprehend.
+
+Architecture
+API Gateway → Lambda Function → Amazon Comprehend → Response
+
+Steps
+Step 1: Project Setup (5 minutes)
+Create a new project directory:
+mkdir sentiment-analyzer
+cd sentiment-analyzer
+npm init -y
+
+Ask Amazon Q: "Set up a Node.js project with AWS SDK for Comprehend"
+
+Install required dependencies:
+
+npm install @aws-sdk/client-comprehend
+npm install --save-dev @types/node
+
+Step 2: Create Lambda Function with Amazon Q (10 minutes)
+Create a new file: index.js
+
+Use Amazon Q to generate code. Try these prompts:
+
+"Create a Lambda function that analyzes sentiment using Amazon Comprehend"
+"Add error handling for invalid input"
+"Add support for batch sentiment analysis"
+Your function should:
+
+Accept text input from API Gateway event
+Call Amazon Comprehend DetectSentiment API
+Return sentiment (POSITIVE, NEGATIVE, NEUTRAL, MIXED) with confidence scores
+Handle errors gracefully
+Expected structure:
+
+import { ComprehendClient, DetectSentimentCommand } from '@aws-sdk/client-comprehend';
+
+const client = new ComprehendClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+export const handler = async (event) => {
+  // Your implementation with Amazon Q's help
+};
+
+Step 3: Add Input Validation (5 minutes)
+Ask Amazon Q: "Add input validation to check text length and language code"
+
+Implement validation:
+
+Text must be between 1 and 5000 characters
+Language code must be valid (en, es, fr, de, etc.)
+Return appropriate error messages
+Step 4: Test Locally (5 minutes)
+Create a test file: test.js
+
+Ask Amazon Q: "Create a test script to invoke the Lambda function locally"
+
+Test with sample inputs:
+
+const testCases = [
+  { text: "I love this product! It's amazing!", languageCode: 'en' },
+  { text: "This is terrible and disappointing.", languageCode: 'en' },
+  { text: "The weather is okay today.", languageCode: 'en' }
+];
+
+Run tests:
+node test.js
+
+Step 5: Deploy to AWS (5 minutes)
+Create IAM role for Lambda with Comprehend permissions
+
+Ask Amazon Q: "Create AWS CLI commands to deploy this Lambda function"
+
+Package and deploy:
+
+zip -r function.zip index.js node_modules/
+
+aws lambda create-function \
+  --function-name sentiment-analyzer \
+  --runtime nodejs18.x \
+  --role arn:aws:iam::YOUR_ACCOUNT_ID:role/lambda-comprehend-role \
+  --handler index.handler \
+  --zip-file fileb://function.zip
+
+Test deployed function:
+aws lambda invoke \
+  --function-name sentiment-analyzer \
+  --payload '{"text":"I love AWS!","languageCode":"en"}' \
+  response.json
+
+cat response.json
+
+Validation
+ Lambda function created with Amazon Q assistance
+ Function successfully calls Amazon Comprehend
+ Input validation works correctly
+ Local tests pass
+ Function deployed to AWS
+ Remote invocation returns correct sentiment analysis
+Expected Output
+{
+  "statusCode": 200,
+  "body": {
+    "sentiment": "POSITIVE",
+    "sentimentScores": {
+      "Positive": 0.98,
+      "Negative": 0.01,
+      "Neutral": 0.01,
+      "Mixed": 0.00
+    },
+    "text": "I love AWS!"
+  }
+}
+
+Task 3: Explore Amazon Q features
+Estimated time: 10 minutes
+
+Objective
+Experience key Amazon Q Developer capabilities.
+
+Sub-tasks
+Task 1: Code Explanation
+Select your Lambda function code
+Right-click → Amazon Q → Explain
+Review the explanation provided
+Task 2: Security Scan
+Run Amazon Q security scan on your code
+Review any findings
+Ask Amazon Q to fix identified issues
+Task 3: Generate Tests
+Ask Amazon Q: "Generate unit tests for the sentiment analyzer function"
+Review generated tests
+Run tests and verify coverage
+Task 4: Code Optimization
+Ask Amazon Q: "Optimize this Lambda function for better performance"
+Review suggestions (caching, connection reuse, etc.)
+Implement one optimization
+Task 5: Documentation
+Ask Amazon Q: "Generate JSDoc comments for this function"
+Review and apply documentation
+Validation
+ Successfully used code explanation feature
+ Ran security scan and reviewed findings
+ Generated unit tests
+ Received optimization suggestions
+ Added documentation with Amazon Q help
+Deliverables (all or some of them)
+Screenshot: Amazon Q installed and authenticated in your IDE
+Code: Complete Lambda function with:
+Sentiment analysis implementation
+Input validation
+Error handling
+Tests
+Documentation
+Test Results: Screenshots or logs showing:
+Local test execution
+AWS Lambda invocation results
+Security scan results
+Optional task 1: Explore AWS AI services in Management Console
+Estimated time: 30-45 minutes
+
+Extend your learning by exploring additional AWS AI services through the AWS Console.
+
+Optional Task 1: Amazon Rekognition - Image Analysis (10 minutes)
+Objective: Detect objects and text in images.
+
+Steps:
+
+Navigate to Amazon Rekognition in AWS Console
+Go to "Label detection" demo
+Upload a sample image (or use provided samples)
+Observe detected labels, confidence scores, and bounding boxes
+Try "Text in image" detection with an image containing text
+Experiment with "Face detection" and "Face comparison"
+Questions to explore:
+
+What confidence threshold would you use in production?
+How would you handle images with multiple objects?
+What use cases fit your current projects?
+Optional task 2: Amazon Polly - text-to-Speech
+Estimated time: 10 minutes
+
+Objective: Convert text to natural-sounding speech.
+
+Steps:
+
+Navigate to Amazon Polly in AWS Console
+Enter sample text: "Welcome to AWS AI services. This is a demonstration of Amazon Polly's neural text-to-speech capabilities."
+Try different voices:
+Neural voices (Joanna, Matthew, Amy)
+Standard voices
+Different languages
+Experiment with SSML tags:
+<speak>
+  Hello! <break time="1s"/> 
+  This is <emphasis level="strong">important</emphasis>.
+  <prosody rate="slow">Speaking slowly now.</prosody>
+</speak>
+
+Download the audio file
+Test speech marks for lip-syncing applications
+Questions to explore:
+
+Which voice sounds most natural for your use case?
+How would you integrate this into an application?
+What are the cost implications for high-volume usage?
+Optional task 3: Amazon Translate - language translation
+Estimated time: 10 minutes
+
+Objective: Translate text between languages.
+
+Steps:
+
+Navigate to Amazon Translate in AWS Console
+Test real-time translation:
+Source: English
+Target: Spanish, French, German, Japanese
+Text: "AWS provides powerful AI services that help developers build intelligent applications without requiring deep machine learning expertise."
+Try auto-detect source language
+Test with technical terminology
+Experiment with custom terminology:
+Create a custom terminology file
+Add domain-specific terms (e.g., "Lambda" → "Lambda" not translated)
+Test translation with custom terminology
+Questions to explore:
+
+How accurate is technical term translation?
+When would you use custom terminology?
+How would you handle unsupported languages?
+Optional task 4: Amazon Textract - document analysis
+Estimated time: 10 minutes
+
+Objective: Extract text and data from documents.
+
+Steps:
+
+Navigate to Amazon Textract in AWS Console
+Upload a sample document:
+Invoice or receipt
+Form with key-value pairs
+Table-based document
+Run "Analyze Document" with:
+Text detection
+Form extraction
+Table extraction
+Review extracted data:
+Key-value pairs
+Table structure
+Confidence scores
+Download results in JSON format
+Analyze the structure for programmatic processing
+Questions to explore:
+
+How would you handle low-confidence extractions?
+What post-processing would improve accuracy?
+How would you integrate this into a workflow?
+Optional task 5: Amazon Bedrock - generative AI
+Estimated time: 15 minutes
+
+Objective: Experiment with foundation models for text generation.
+
+Steps:
+
+Navigate to Amazon Bedrock in AWS Console
+Request model access (if not already enabled):
+Claude (Anthropic)
+Titan (Amazon)
+Go to "Text playground"
+Test different prompts:
+Prompt 1 - Code Generation:
+
+Write a Python function that validates email addresses using regex.
+Include error handling and unit tests.
+
+Prompt 2 - Content Summarization:
+
+Summarize the following text in 3 bullet points:
+[Paste a technical article or documentation]
+
+Prompt 3 - Data Transformation:
+
+Convert this JSON to a SQL CREATE TABLE statement:
+{"users": {"id": "integer", "name": "string", "email": "string"}}
+
+Compare responses from different models (Claude vs Titan)
+Experiment with parameters:
+Temperature (0.0 - 1.0)
+Top P
+Max tokens
+Test with your own use case
+Questions to explore:
+
+Which model performs better for your use case?
+How do temperature settings affect output?
+What are the cost differences between models?
+Deliverable: Comparison table of model responses and parameter effects.
+
+Optional bonus challenge: Combine multiple AI services (30 minutes)
+Estimated time: 30-45 minutes
+
+Objective: Build a multi-service AI pipeline.
+
+Scenario: Create a document processing pipeline that:
+
+Extracts text from an uploaded image (Textract)
+Translates the text to English if needed (Translate)
+Analyzes sentiment of the content (Comprehend)
+Generates a summary (Bedrock)
+Steps:
+
+Use Amazon Q to help design the architecture
+Create a Step Functions workflow or Lambda orchestrator
+Implement each service integration
+Test with sample documents in different languages
+Measure end-to-end latency
+Troubleshooting
+Amazon Q Not Responding
+Check internet connection
+Verify authentication status
+Restart IDE
+Check AWS service status
+Lambda Deployment Fails
+Verify IAM role has correct permissions
+Check function package size (< 50MB)
+Ensure runtime matches code (Node.js 18.x)
+Review CloudWatch logs for errors
+Comprehend API Errors
+Verify text length (1-5000 characters)
+Check language code is supported
+Ensure IAM role has comprehend:DetectSentiment permission
+Check service quotas
+AWS Console Access Issues
+Verify IAM user has console access
+Check service is available in your region
+Some services require explicit access request (Bedrock)
+Learning Resources
+Amazon Q Developer Documentation
+Amazon Comprehend Developer Guide
+AWS Lambda Best Practices
+AWS AI Services Workshops
+Submission Checklist
+ Amazon Q installed and configured
+ Sentiment analysis Lambda function implemented
+ Function tested locally and in AWS
+ Security scan completed
+ Unit tests generated and passing
+ Screenshots of all deliverables
+ Reflection notes completed
+ (Optional) AWS Console exploration tasks completed
+ Code pushed to repository
+ Documentation updated
+Next Steps
+After completing this lab:
+
+Explore Amazon Q's code transformation features for legacy code modernization
+Try Amazon Q in AWS Console for infrastructure questions
+Experiment with other AWS AI services (Rekognition, Lex, Personalize)
+Build a more complex application combining multiple AI services
+Review AWS AI/ML certification paths
+info
+*Optional tasks are not mandatory for completion. If you don’t have a time to complete it - just skip it. It's highly recommended if you want to develop strong skills in given topic.
+

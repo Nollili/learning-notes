@@ -8,7 +8,11 @@ Local learning notes, navigators, assets, workbench sources/setup, practice star
 
 [Engineering order](../engineering/) · [All practice](../practice/learning-projects.md) · [Current verification](./verification.md)
 
-## Current file counts
+## AI curriculum update after this inventory
+
+On 2026-10-28, [Build AI Apps — JavaScript First](../applied-ai/) became the beginner route and [AI for Software Development](../ai-assisted-engineering/) gained bug/feature/review lessons. Python remains optional depth. The new [verification and change record](../applied-ai/javascript/verification.md) covers those additions. The 2026-10-27 inventory/counts below remain a dated snapshot and do not include the new files.
+
+## File counts at the inventory date
 
 Accounted files: **1077**.
 

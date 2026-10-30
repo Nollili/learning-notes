@@ -1,4 +1,4 @@
-# Practice: Please compare JS inheritance mehanisms and classic OOP style classes. What about es6 "class"?
+# Practice: JavaScript inheritance, prototypes and ES2015 classes {#practice-please-compare-js-inheritance-mehanisms-and-classic-oop-style-classes-what-about-es6-class}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

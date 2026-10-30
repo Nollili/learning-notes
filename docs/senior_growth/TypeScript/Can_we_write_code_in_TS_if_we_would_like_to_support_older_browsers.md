@@ -1,12 +1,12 @@
 # Can we write code in TS if we would like to support older browsers?
 
-# ⚡ TypeScript and Older Browser Support
+## TypeScript and Older Browser Support {#%E2%9A%A1-typescript-and-older-browser-support}
 
 Yes! **TypeScript can be used to write code that runs on older browsers**, but compatibility must cover emitted syntax, module loading, runtime APIs, dependencies and browser behavior. TypeScript output alone is insufficient.
 
 ---
 
-## 1️⃣ How It Works
+## How It Works {#_1%EF%B8%8F%E2%83%A3-how-it-works}
 
 - TypeScript is a **superset of JavaScript**.  
 - ES3 targeting was disabled in TypeScript 5.5. TypeScript 6.0 deprecates ES5 targeting; use a supported modern target and a separate legacy transform when required. The ES5 example below is explicitly a TypeScript 5.9 compatibility demonstration.
@@ -28,7 +28,7 @@ Yes! **TypeScript can be used to write code that runs on older browsers**, but c
 
 ---
 
-## 2️⃣ Polyfills for Modern Features
+## Polyfills for Modern Features {#_2%EF%B8%8F%E2%83%A3-polyfills-for-modern-features}
 
 * TypeScript only **transpiles syntax**, it does **not automatically polyfill APIs** (e.g., `Promise`, `fetch`, `Array.includes`).
 * Select only the runtime features/targets that need an implementation. The broad imports below illustrate a legacy setup; they are not a universal requirement to install both packages or ship every polyfill:
@@ -46,7 +46,7 @@ import 'regenerator-runtime/runtime';
 
 ---
 
-## 3️⃣ Tooling and Bundling
+## Tooling and Bundling {#_3%EF%B8%8F%E2%83%A3-tooling-and-bundling}
 
 * TypeScript works well with **Webpack, Vite, or Rollup**.
 * Bundlers + TS can:
@@ -57,7 +57,7 @@ import 'regenerator-runtime/runtime';
 
 ---
 
-## 4️⃣ Example
+## Example {#_4%EF%B8%8F%E2%83%A3-example}
 
 ```ts
 // TypeScript code
@@ -75,14 +75,14 @@ var greet = function (name) { return "Hello, " + name + "!"; };
 
 ---
 
-## ✅ Key Takeaways
+## Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * TypeScript **supports older browsers** through transpilation (`target` option).
 * Always check **modern APIs**; polyfills may be required.
 * Configure the complete toolchain and verify built dependencies too; a bundler name is not a compatibility guarantee.
 * Using TS does **not block legacy support**; it enhances maintainability and type safety.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Choose a measured browser support policy. New evergreen-browser applications normally use modern output; legacy support needs an explicit budget and maintained transform/polyfill strategy.
 
 ## Compatibility workflow and debugging

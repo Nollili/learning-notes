@@ -1,4 +1,4 @@
-### Could you explain how change detection mechanism works in React, tradeoffs and benefits?
+# Could you explain how change detection mechanism works in React, tradeoffs and benefits? {#could-you-explain-how-change-detection-mechanism-works-in-react-tradeoffs-and-benefits}
 
 This companion owns editable entity identity and reconciliation trade-offs. Study [the canonical render/queue explanation](./Change_Detection_in_React.md) first; stable keys preserve identity rather than automatically skipping renders.
 
@@ -7,7 +7,7 @@ This companion owns editable entity identity and reconciliation trade-offs. Stud
 React uses a **virtual DOM (VDOM)** and a **reconciliation algorithm** to efficiently detect and apply UI changes.  
 Instead of directly manipulating the real DOM, React maintains an in-memory representation (the VDOM) that is updated whenever component state or props change.
 
-#### 🔹 How it works
+#### How it works {#%F0%9F%94%B9-how-it-works}
 
 1. **Render Phase**
    - When a component’s state or props change, React calls its render function to produce a new virtual DOM tree.
@@ -30,7 +30,7 @@ Instead of directly manipulating the real DOM, React maintains an in-memory repr
 
 ---
 
-#### 🔹 Benefits
+#### Benefits {#%F0%9F%94%B9-benefits}
 
 - **Performance efficiency:**  
   Declarative reconciliation can avoid replacing unchanged host nodes; render calculations, layout and paint still have costs.
@@ -46,7 +46,7 @@ Instead of directly manipulating the real DOM, React maintains an in-memory repr
 
 ---
 
-#### 🔹 Trade-offs
+#### Trade-offs {#%F0%9F%94%B9-trade-offs}
 
 | Trade-off | Description |
 |------------|--------------|
@@ -58,7 +58,7 @@ Instead of directly manipulating the real DOM, React maintains an in-memory repr
 
 ---
 
-#### 🔹 Summary
+#### Summary {#%F0%9F%94%B9-summary}
 
 React’s change detection = **Virtual DOM + Diffing + Fiber Reconciliation**
 

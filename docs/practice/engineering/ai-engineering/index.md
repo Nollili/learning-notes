@@ -1,4 +1,6 @@
-# ai-engineering focused requirements
+# AI for Software Development practice
+
+Start with [DEV-01–05: bug fix, feature, review and local handoff](./development-project.md).
 
 All learner practice remains outstanding. Follow [the shared increments](../index.md).
 

@@ -2,15 +2,24 @@
 
 Build a usable document before adding a type system, component runtime or full-stack framework. The shared domain is a small public course catalogue; P-328 grows it into an authenticated management screen. **All learner practice remains outstanding.**
 
-## Reading order
+## Frontend foundations
 
-1. [HTML, browser behavior and accessibility](./html-browser.md), then the ordered [accessibility lessons](../senior_growth/A11y/).
-2. [CSS layout and cascade](../senior_growth/CSS/), including intrinsic sizing and visible interaction states.
-3. [JavaScript ownership and asynchronous execution](./javascript.md), then [TypeScript contracts](./typescript.md).
-4. [React rendering and synchronization](./react.md), followed by forms, routing and component contracts.
-5. [Next.js and UI architecture](./next.md): use React and HTTP prerequisites before server/client caching or mutations.
+- [HTML, browser behavior and accessibility](./html-browser.md), then the ordered [accessibility lessons](../senior_growth/A11y/).
+- [CSS layout and cascade](../senior_growth/CSS/), including intrinsic sizing and visible interaction states.
+- [JavaScript ownership and asynchronous execution](./javascript.md), then [TypeScript contracts](./typescript.md).
 
-[Coverage and ownership map](./coverage-map.md) identifies canonical explanations and overlap decisions. [Workbench](../workbench/frontend/) contains reference implementations; [practice sequence](../practice/frontend/) defines learner deliverables separately.
+## Components and application architecture
+
+- [React rendering and synchronization](./react.md), followed by forms, routing and component contracts.
+- [Next.js and UI architecture](./next.md): use React and HTTP prerequisites before server/client caching or mutations.
+
+## Performance and senior investigation
+
+Follow the required [frontend performance path](./performance/) after browser/JavaScript foundations, then apply the React/Next sections after those prerequisites. It merges the EPAM performance modules with existing references: measurement, loading and bundles, images, CSS/fonts, responsiveness and caching. Complete the [three performance hometasks](../practice/frontend/performance/) on the same application; optional specialist extensions follow observed needs.
+
+## Examples, practice and verification
+
+[Coverage and ownership map](./coverage-map.md) identifies canonical explanations and overlap decisions. [Workbench](../workbench/frontend/) contains reference implementations; [practice sequence](../practice/frontend/) defines learner deliverables separately. [Verification and limits](./verification.md) records the evidence behind the references.
 
 ## Boundaries
 

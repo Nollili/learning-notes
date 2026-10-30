@@ -1,12 +1,12 @@
 # Do you know other solutions for state management?
 
-## 🌐 State Management Solutions in Frontend Development
+## State Management Solutions in Frontend Development {#%F0%9F%8C%90-state-management-solutions-in-frontend-development}
 
 While **Redux** and **Flux** are popular, there are many other ways to manage state in modern JavaScript/TypeScript applications, especially React. The right choice depends on **app complexity, size, and team preferences**.
 
 ---
 
-## 1️⃣ React Built-in Solutions
+## React Built-in Solutions {#_1%EF%B8%8F%E2%83%A3-react-built-in-solutions}
 
 | Solution | Description | Pros | Cons |
 |----------|------------|------|------|
@@ -16,7 +16,7 @@ While **Redux** and **Flux** are popular, there are many other ways to manage st
 
 ---
 
-## 2️⃣ External State Management Libraries
+## External State Management Libraries {#_2%EF%B8%8F%E2%83%A3-external-state-management-libraries}
 
 | Library | Description | Pros | Cons |
 |---------|------------|------|------|
@@ -29,7 +29,7 @@ While **Redux** and **Flux** are popular, there are many other ways to manage st
 
 ---
 
-## 3️⃣ Server State Management
+## Server State Management {#_3%EF%B8%8F%E2%83%A3-server-state-management}
 
 | Library | Description | Pros | Cons |
 |---------|------------|------|------|
@@ -38,7 +38,7 @@ While **Redux** and **Flux** are popular, there are many other ways to manage st
 
 ---
 
-## 4️⃣ Comparison: Local vs Global vs Server State
+## Comparison: Local vs Global vs Server State {#_4%EF%B8%8F%E2%83%A3-comparison-local-vs-global-vs-server-state}
 
 | State Type | Typical Tools | Notes |
 |------------|--------------|------|
@@ -48,7 +48,7 @@ While **Redux** and **Flux** are popular, there are many other ways to manage st
 
 ---
 
-## 5️⃣ Senior-Level Considerations
+## Senior-Level Considerations {#_5%EF%B8%8F%E2%83%A3-senior-level-considerations}
 
 1. **Use built-in hooks for small/local state** — avoid over-engineering.  
 2. **Choose Redux / MobX / Zustand for complex, shared state**.  
@@ -60,14 +60,14 @@ While **Redux** and **Flux** are popular, there are many other ways to manage st
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **No one-size-fits-all solution**; choice depends on app complexity, team size, and patterns.  
 - **React built-in state** + **Context** is often sufficient for small apps.  
 - For large apps, **Redux Toolkit, MobX, or Zustand** are common choices.  
 - For server data, a dedicated query/cache owner can avoid manually duplicating freshness/invalidation logic in a generic store.  
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always separate **UI state, global client state, and server state**. It improves maintainability and reduces unnecessary re-renders.
 
 ## Apply the distinction to an actual workflow

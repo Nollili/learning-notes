@@ -1,8 +1,12 @@
-# Web_Performance
+# Web performance {#web-performance}
 
 ## Recommended order and boundaries
 
 Use [the prerequisite-led guide](../../engineering/performance.md) and [shared practice increments](../../practice/engineering/). The catalogue below retains contextual explanations and optional alternatives. See [the file inventory](../../review/) for each file’s owner and scope.
+
+## Merged learning path and hometasks
+
+The [ordered performance course](../../frontend/performance/) combines these references with the supplied EPAM modules, updates historical guidance and adds image/CSS/font/cache lessons and diagrams. Complete [H1–H3](../../practice/frontend/performance/) on one app; [source mapping](../../frontend/performance/sources.md) distinguishes modern exercises from the original course rubric.
 
 ## Notes
 

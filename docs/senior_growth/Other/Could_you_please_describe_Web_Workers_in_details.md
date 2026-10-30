@@ -1,10 +1,10 @@
-# 🔹 Web Workers
+# Web Workers {#%F0%9F%94%B9-web-workers}
 
 **Web Workers** are a browser feature that allows **JavaScript to run in background threads** separate from the main execution thread (UI thread). This is useful for **offloading heavy computations**, so the UI remains responsive.
 
 ---
 
-## 1️⃣ Key Concepts
+## Key Concepts {#_1%EF%B8%8F%E2%83%A3-key-concepts}
 
 - JavaScript is **single-threaded** by default. Heavy computations can **block the main thread**, causing laggy UI.
 - **Web Workers** run in a **separate thread**, meaning they **don’t block the main thread**.
@@ -12,7 +12,7 @@
 
 ---
 
-## 2️⃣ Types of Web Workers
+## Types of Web Workers {#_2%EF%B8%8F%E2%83%A3-types-of-web-workers}
 
 1. **Dedicated Worker**
    - Only accessible by the script that created it.
@@ -27,7 +27,7 @@
 
 ---
 
-## 3️⃣ Creating a Dedicated Web Worker
+## Creating a Dedicated Web Worker {#_3%EF%B8%8F%E2%83%A3-creating-a-dedicated-web-worker}
 
 ### worker.js
 ```javascript
@@ -61,7 +61,7 @@ worker.onerror = function(error) {
 
 ---
 
-## 4️⃣ Key Characteristics
+## Key Characteristics {#_4%EF%B8%8F%E2%83%A3-key-characteristics}
 
 * **No access to DOM**: Workers cannot manipulate the DOM directly.
 * **Isolated global scope**: They run in their own scope (`self` instead of `window`).
@@ -71,7 +71,7 @@ worker.onerror = function(error) {
 
 ---
 
-## 5️⃣ Benefits
+## Benefits {#_5%EF%B8%8F%E2%83%A3-benefits}
 
 * **Non-blocking UI** → smooth interactions and animations.
 * **Parallel processing** → can handle heavy computations efficiently.
@@ -79,7 +79,7 @@ worker.onerror = function(error) {
 
 ---
 
-## 6️⃣ Limitations
+## Limitations {#_6%EF%B8%8F%E2%83%A3-limitations}
 
 * **Cannot access DOM** → cannot directly update the UI.
 * **Overhead of message passing** → copying large objects can be expensive.
@@ -88,7 +88,7 @@ worker.onerror = function(error) {
 
 ---
 
-## 7️⃣ Use Cases
+## Use Cases {#_7%EF%B8%8F%E2%83%A3-use-cases}
 
 | Use Case                 | Explanation                                   |
 | ------------------------ | --------------------------------------------- |
@@ -100,7 +100,7 @@ worker.onerror = function(error) {
 
 ---
 
-### ✅ Best Practices
+### Best Practices {#%E2%9C%85-best-practices}
 
 * **Terminate workers** when they are no longer needed.
 * Use **Transferable objects** (`ArrayBuffer`) to avoid copying large data.
@@ -109,14 +109,14 @@ worker.onerror = function(error) {
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **Web Workers** = background threads for JS → keeps UI thread free.
-* **Main thread ↔ Worker** communication via **postMessage/onmessage**.
+* **Main thread <-> Worker** communication via **postMessage/onmessage**.
 * Great for **heavy computation, data processing, and maintaining responsive UI**.
 * Cannot access DOM, has message passing overhead, but very powerful for parallelism in web apps.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Consider **Web Workers** when you notice UI freezes or long-running tasks. Use **Transferable objects** and terminate workers when done to optimize memory and performance.
 
 

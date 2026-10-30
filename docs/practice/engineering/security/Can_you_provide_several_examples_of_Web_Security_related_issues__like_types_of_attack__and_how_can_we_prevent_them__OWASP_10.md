@@ -1,4 +1,4 @@
-# Practice: 🌐 Web Security — Common Vulnerabilities & Prevention (OWASP Top 10 Overview)
+# Practice: Web Security — Common Vulnerabilities & Prevention (OWASP Top 10 Overview) {#practice-%F0%9F%8C%90-web-security-%E2%80%94-common-vulnerabilities-prevention-owasp-top-10-overview}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

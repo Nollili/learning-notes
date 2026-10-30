@@ -1,0 +1,298 @@
+# P07 — Authorization
+
+**Learner status: not started. All supplied tasks on this page are mandatory in this learning path**, including items originally labelled optional or bonus. Repeating tasks still require the stated action or comparison; reuse earlier resources and code where suitable, and record the new evidence. Source optional labels describe the original course only.
+
+**Read first:** [authentication](../../aws/authentication.md). **Overlap:** Cognito was optional in the source and is mandatory here. IAM infrastructure identity repeats in A02 but does not replace application authentication.
+
+[Original supplied text](/aws-homework/sources/practitioner-07.txt) preserves the source wording. Apply the [corrections](./source-notes.md) and this path’s mandatory status when interpreting it.
+
+Your store can already create real products from an uploaded CSV file, but it doesn't check who sent it. That could be you or it could be someone who was never supposed to have access. This module puts a guard in front of it: a new Authorization Service with a Lambda function that reads the request's Authorization header and checks it against a known set of users.
+
+## Prerequisites
+
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+
+Make sure to use Node.js version 22 — this matches the Lambda runtime required for this module.
+
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+
+## Workflow
+
+Make sure you're working in your fork of the template repository.
+
+Create a branch named task-7 off the latest main and work there for this module.
+
+Run npm run sync-tests -- module-7 to pull this module's Autocode tests into your local src/test/.
+
+Implement all the tasks described in Tasks below.
+
+Deploy and seed your stack for testing:
+
+Deploy: npm run deploy.
+
+Run your seed script, the one you write in Task 7.2, to fill UsersTable with the provided data/users.ts fixture. UsersTable starts out empty, so skipping this step means basicAuthorizer has nothing to check credentials against. Every request gets a 403, even one with the correct login and password.
+
+e2e.config.ts doesn't need any new URLs for this module. It reuses IMPORT_API_URL from previous modules.
+
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+
+Validate your work:
+
+```bash
+npm run test:unit # infrastructure tests.
+npm run test:e2e # endpoint tests against your deployed API.
+npm test # runs both.
+```
+
+You can also test the live endpoints manually with a tool like Postman. Remember to pass an Authorization: Basic {base64(login:password)} header.
+
+**User-owned submission:** after local validation, the user pushes and submits the branch in Autocode and waits for grading. The assistant must never push.
+
+After grading, the learner follows the course pull-request and merge workflow.
+
+## Architecture
+
+See the [course-wide system diagram](../../aws/index.md#one-application-several-responsibilities). The pasted source contains an image label rather than an embedded diagram.
+
+## Project structure
+
+Files marked (unchanged) already exist and need no changes. Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Tasks below.
+
+```text
+src/
+  infra/
+    bin/
+      app.ts                         # CDK app entry point (update)
+    lib/
+      index.ts                       # stack barrel (update)
+      authorization-service-stack/
+        index.ts                     # AuthorizationServiceStack
+        users-table.ts               # UsersTableConstruct
+        basic-authorizer-lambda.ts   # BasicAuthorizerLambdaConstruct
+      import-service-stack/
+        index.ts                     # ImportServiceStack (update)
+        rest-api.ts                  # RestApiConstruct (update)
+  app/
+    handlers/
+      basic-authorizer/
+        handler.ts                   # basicAuthorizer handler
+    data/
+      users.ts                       # `USERS` array, fixture login/password pairs (unchanged)
+  seeds/
+    seed-users.ts                    # seeds UsersTable from data/users.ts
+```
+
+## Data Models
+
+UsersTable model:
+
+```text
+users:
+  login - text (primary key)
+  password - text, required, a salted hash of the user's password (never stored as plaintext)
+  salt - text, required, random salt, unique per user
+```
+
+## Tasks
+
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+### Task 7.1 — Authorization Service Stack
+
+You start the Authorization Service here: a CDK stack of its own, so ImportServiceStack can reuse basicAuthorizer without depending on the rest of it. It owns two things: basicAuthorizer, a Lambda authorizer that checks credentials, and UsersTable, the table that stores them. You create the stack now, then fill in the table and the Lambda over the next two tasks.
+
+What to do:
+
+Create a new CDK stack named AuthorizationServiceStack at the same level as your existing ProductServiceStack and ImportServiceStack. Expose the basicAuthorizer Lambda as a public readonly property, so ImportServiceStack can receive it as a prop:
+
+`src/infra/lib/authorization-service-stack/index.ts`
+
+```ts
+export class AuthorizationServiceStack extends Stack {
+  public readonly basicAuthorizerLambda: lambda.Function;
+
+  constructor(scope: Construct, id: string, props?: StackProps) { ... }
+}
+```
+
+**Checkpoint: did the stack deploy?**
+
+### Task 7.2 — UsersTable and Seeding
+
+The stack exists, but nothing lives in it yet. This task creates UsersTable and fills it with real logins and passwords, so there are real users for the authorizer to check against. Each password is stored as a salted hash, never as plain text, so a leak doesn't expose anyone's real credentials. You create the table first, then a script that seeds it from the provided data/users.ts file.
+
+What to do:
+
+Create the UsersTable DynamoDB table described in Data Models in AuthorizationServiceStack:
+
+Table name users.
+
+On-demand (pay-per-request) billing.
+
+login (string) partition key, no sort key.
+
+Destroyed along with the stack (RemovalPolicy.DESTROY).
+
+`src/infra/lib/authorization-service-stack/users-table.ts`
+
+```ts
+export class UsersTableConstruct extends dynamodb.Table {
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+Add a script that reads data/users.ts. For each entry, hash password with a freshly generated random salt (e.g. with Node's built-in crypto.scrypt), then write the login, hashed password and salt into UsersTable.
+
+**Checkpoint: does UsersTable hold real data?**
+
+### Task 7.3 — basicAuthorizer Lambda
+
+Logins and passwords are stored now, but nothing checks them yet. This task adds basicAuthorizer, a Lambda authorizer that API Gateway invokes to decide whether a request is allowed through. Unlike the other Lambdas in your app, it doesn't return 200 or 403 directly: it returns an IAM policy, which API Gateway turns into an Allow or Deny decision for the caller. You define the Lambda and grant it read access to UsersTable, then implement the logic that checks a request's credentials against it.
+
+What to do:
+
+Define a Lambda function in AuthorizationServiceStack:
+
+Function name basicAuthorizer.
+
+Node.js 22.x runtime, handler.main entry point.
+
+128 MB memory and a 10-second timeout, matching API Gateway's own fixed 10-second limit for Lambda authorizers.
+
+Receives UsersTable's name through the USERS_TABLE_NAME environment variable.
+
+`src/infra/lib/authorization-service-stack/basic-authorizer-lambda.ts`
+
+```ts
+export interface BasicAuthorizerLambdaConstructProps {
+  readonly usersTable: dynamodb.ITable; // the UsersTableConstruct from Task 7.2
+}
+```
+
+```ts
+export class BasicAuthorizerLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: BasicAuthorizerLambdaConstructProps) { ... }
+}
+```
+
+Grant basicAuthorizer read-only access to UsersTable in AuthorizationServiceStack's CloudFormation stack, with no write actions and no dynamodb:* wildcard.
+
+Set AuthorizationServiceStack's public readonly basicAuthorizerLambda property to this Lambda, so ImportServiceStack can use it.
+
+Create the basicAuthorizer handler: it decodes the request's Basic Authorization token, looks up the credentials in UsersTable and returns an IAM policy for the requested methodArn:
+
+A request whose credentials match a row in UsersTable is allowed through.
+
+A request whose credentials don't match any row, or whose Authorization header isn't a valid Basic token at all, is denied with a Deny policy. API Gateway turns that into a 403 response.
+
+A request with no Authorization header at all never reaches basicAuthorizer. It gets a 401 response directly.
+
+`src/app/handlers/basic-authorizer/handler.ts`
+
+```ts
+export const main = async (event: { authorizationToken: string; methodArn: string }) => { ... };
+```
+
+**Checkpoint: does basicAuthorizer allow and deny correctly?**
+
+### Task 7.4 — Import Service Authorization
+
+The authorizer exists now, but no route uses it yet. This task wires basicAuthorizer onto GET /import, the route it's meant to guard. Two things are needed to attach basicAuthorizer as a Lambda authorizer: a reference to it in ImportServiceStack and an API Gateway service role allowed to invoke it. You add that reference and the role, then confirm the protected route still returns a signed URL.
+
+What to do:
+
+Add a basicAuthorizerLambda prop to ImportServiceStack's constructor, next to the catalogItemsQueue prop it already takes. In the CDK app's entry point instantiate AuthorizationServiceStack before ImportServiceStack, then pass its basicAuthorizer into the new prop:
+
+`src/infra/lib/import-service-stack/index.ts`
+
+```ts
+export interface ImportServiceStackProps extends StackProps {
+  readonly catalogItemsQueue: sqs.IQueue;
+  readonly basicAuthorizerLambda: IFunction; // AuthorizationServiceStack's basicAuthorizerLambda from Task 7.3
+}
+```
+
+```ts
+export class ImportServiceStack extends Stack {
+  constructor(scope: Construct, id: string, props: ImportServiceStackProps) { ... }
+}
+```
+
+Protect the /import GET method in the Import Service API Gateway with a TOKEN-type Lambda authorizer backed by basicAuthorizer:
+
+identitySource: 'method.request.header.Authorization', so the authorizer reads the request's Authorization header as its token.
+
+resultsCacheTtl: 0, so every request runs through basicAuthorizer again instead of reusing an earlier result for the same token.
+
+assumeRole: an iam.Role you create, assumed by the API Gateway service and granted invoke access to basicAuthorizer.
+
+Without it, CDK grants that invoke permission a different way. It attaches the permission directly to basicAuthorizer, referencing this API's ID. That creates a cycle: ImportServiceStack would depend on AuthorizationServiceStack for the permission, but AuthorizationServiceStack already depends on ImportServiceStack through the basicAuthorizerLambda prop. CDK can't deploy two stacks that depend on each other, so the deploy fails.
+
+The explicit role breaks the cycle. Invoke access lives in the role's policy instead of on basicAuthorizer, so the dependency only points one way: from AuthorizationServiceStack to ImportServiceStack.
+
+`src/infra/lib/import-service-stack/rest-api.ts`
+
+```ts
+export interface RestApiConstructProps {
+  readonly importProductsFileLambda: IFunction;
+  readonly basicAuthorizerLambda: IFunction; // AuthorizationServiceStack's basicAuthorizerLambda from Task 7.3
+}
+```
+
+```ts
+export class RestApiConstruct extends apigateway.RestApi {
+  constructor(scope: Construct, id: string, props: RestApiConstructProps) { ... }
+}
+```
+
+Confirm GET /import still returns the signed upload URL for a valid fileName and a valid Authorization header, exactly as it did in Module 5 and Module 6.
+
+**Checkpoint: does the authorizer actually protect the route?**
+
+## Evaluation criteria
+
+## Infrastructure
+
+AuthorizationServiceStack contains the basicAuthorizer Lambda function and the users DynamoDB table. It exposes the Lambda as a public basicAuthorizerLambda property.
+
+basicAuthorizer runs on the Node.js 22.x runtime with the handler.main entry point, 128 MB of memory and a 10-second timeout. It receives the table name through the USERS_TABLE_NAME environment variable.
+
+The users table uses on-demand billing with login (string) as its partition key. It's destroyed along with the stack.
+
+basicAuthorizer has read-only access to the users table, with no write actions granted.
+
+An npm script seeds the users table from data/users.ts, storing each password as a salted hash with its own random salt, never as plaintext.
+
+ImportServiceStack takes the basicAuthorizer Lambda in as a prop and protects GET /import with it.
+
+GET /import uses a CUSTOM authorization type backed by a TOKEN Lambda authorizer that reads the Authorization header as its identity source, with result caching turned off.
+
+## Behavior
+
+GET /import returns a 200 response with a signed URL when the Authorization header matches a known login/password pair and fileName is provided.
+
+GET /import returns a 400 response when fileName is missing, even with a valid Authorization header.
+
+GET /import returns a 401 response when no Authorization header is sent.
+
+GET /import returns a 403 response when the Authorization header carries an unknown login, a known login with the wrong password or a token that isn't Basic.
+
+## Promoted extensions — required (originally optional)
+
+The original course does not grade this extension; it is **mandatory in this learning path**.
+
+Protect getProductsList with a Cognito Authorizer, following the User Pool → App Client → Hosted UI walkthrough from the previous sections:
+
+Set up the User Pool, App Client and domain as shown there.
+
+Add a Cognito authorizer to getProductsList, using Authorization as the token source.
+
+Sign up, verify your email, log in via the Hosted UI and call getProductsList with the resulting id_token as the Authorization header.
+
+Remove the authorization once you've confirmed it works.
+
+## Completion evidence
+
+Record each required task, the observed acceptance results, applicable test output, all promoted extensions, and cleanup. Original Autocode checks do not automatically verify the promoted extensions. See the [shared evidence rules](./index.md#evidence-for-every-required-module).

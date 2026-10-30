@@ -1,24 +1,24 @@
-# 🔄 Polling vs WebSockets — Real-Time Communication
+# Polling vs WebSockets — Real-Time Communication {#%F0%9F%94%84-polling-vs-websockets-%E2%80%94-real-time-communication}
 
 Modern web apps often need to **receive updates from the server in real-time**. Two common approaches are **polling** and **WebSockets**.
 
 ---
 
-## 1️⃣ Polling
+## Polling {#_1%EF%B8%8F%E2%83%A3-polling}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is}
 Polling is a technique where the client **repeatedly sends HTTP requests** to the server at regular intervals to check for updates.
 
 **Example:**
 Use the [completion-driven scheduler](../../node-js/realtime-transports.md#completion-driven-polling-with-bounded-backoff), whose next attempt starts only after the current attempt settles. Its owner cancels the request and timer; the adapter validates status, body and schema. Never turn an async request into an overlapping setInterval loop.
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages}
 
 * Simple to implement.
 * Works with **all browsers** and standard HTTP.
 * No special server setup required.
 
-### ❌ Disadvantages
+### Disadvantages {#%E2%9D%8C-disadvantages}
 
 * High overhead → repeated requests/headers; transport connections can be reused or multiplexed.
 * Latency → updates are only received on the next poll.
@@ -27,9 +27,9 @@ Use the [completion-driven scheduler](../../node-js/realtime-transports.md#compl
 
 ---
 
-## 2️⃣ WebSockets
+## WebSockets {#_2%EF%B8%8F%E2%83%A3-websockets}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is-1}
 
 WebSockets provide a **persistent, full-duplex message channel** (the common HTTP/1.1 upgrade uses TCP) between client and server.
 
@@ -39,14 +39,14 @@ Use the [owned socket example](./RESTful_API_HTTP__and_WebSockets_-_why_and_when
 
 * Server can push updates **without waiting for the next poll** whenever they occur.
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages-1}
 
 * Low application latency is possible; transport congestion and slow consumers still matter.
 * Bi-directional → client and server can send messages any time.
 * Efficient → single connection, no repeated headers.
 * Can reduce request overhead for frequent events, but needs connection and fan-out capacity planning.
 
-### ❌ Disadvantages
+### Disadvantages {#%E2%9D%8C-disadvantages-1}
 
 * More complex to implement on backend.
 * Stateful → harder to scale horizontally.
@@ -55,7 +55,7 @@ Use the [owned socket example](./RESTful_API_HTTP__and_WebSockets_-_why_and_when
 
 ---
 
-## ⚖️ Polling vs WebSockets — Comparison Table
+## Polling vs WebSockets — Comparison Table {#%E2%9A%96%EF%B8%8F-polling-vs-websockets-%E2%80%94-comparison-table}
 
 | Feature         | Polling                    | WebSockets                                  |
 | --------------- | -------------------------- | ------------------------------------------- |
@@ -71,7 +71,7 @@ Use the [owned socket example](./RESTful_API_HTTP__and_WebSockets_-_why_and_when
 
 ---
 
-## 🧠 Best Practices
+## Best Practices {#%F0%9F%A7%A0-best-practices}
 
 * Use **polling** for:
 

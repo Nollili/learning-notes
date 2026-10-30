@@ -1,6 +1,6 @@
 # Why code review is important and how does it work on your project, what is your own work flow for it?
 
-# 📝 Code Review: Importance and Workflow (Complete Overview)
+## Code Review: Importance and Workflow (Complete Overview) {#%F0%9F%93%9D-code-review-importance-and-workflow-complete-overview}
 
 This describes a possible team workflow, not a record of personal employer experience. Remote steps below are generic team activities; in this project only the user may push.
 
@@ -8,7 +8,7 @@ This describes a possible team workflow, not a record of personal employer exper
 
 ---
 
-## 1️⃣ Why Code Review is Important
+## Why Code Review is Important {#_1%EF%B8%8F%E2%83%A3-why-code-review-is-important}
 
 | Reason | Explanation |
 |--------|-------------|
@@ -22,7 +22,7 @@ This describes a possible team workflow, not a record of personal employer exper
 
 ---
 
-## 2️⃣ How Code Review Typically Works
+## How Code Review Typically Works {#_2%EF%B8%8F%E2%83%A3-how-code-review-typically-works}
 
 1. **Developer writes code**
    - Implements a feature or fixes a bug on a branch.
@@ -48,7 +48,7 @@ This describes a possible team workflow, not a record of personal employer exper
 
 ---
 
-## 3️⃣ Example reviewer workflow
+## Example reviewer workflow {#_3%EF%B8%8F%E2%83%A3-example-reviewer-workflow}
 
 1. **Before PR**
    - Ensure code passes all **local tests**.
@@ -73,7 +73,7 @@ This describes a possible team workflow, not a record of personal employer exper
 
 ---
 
-## 4️⃣ Best Practices
+## Best Practices {#_4%EF%B8%8F%E2%83%A3-best-practices}
 
 - **Small PRs:** Easier to review, faster feedback.
 - **Meaningful comments:** Focus on behavior, readability, and maintainability rather than personal style.
@@ -83,14 +83,14 @@ This describes a possible team workflow, not a record of personal employer exper
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - Code reviews **improve quality, knowledge sharing, and maintainability**.
 - They **reduce bugs and technical debt**.
 - A **structured workflow** with clear responsibilities and constructive feedback ensures the process is efficient.
 - Small, frequent reviews with automated tests are the most effective.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Treat code reviews as **collaboration, not criticism** — focus on improving the codebase, not pointing fingers.
 
 ## Worked review, disagreement and mentoring

@@ -1,19 +1,19 @@
 # RESTful API(HTTP) and WebSockets - why and when we need them. Limitations?
 
-# 🌐 RESTful APIs vs WebSockets — When and Why to Use Each
+## RESTful APIs vs WebSockets — When and Why to Use Each {#%F0%9F%8C%90-restful-apis-vs-websockets-%E2%80%94-when-and-why-to-use-each}
 
 Understanding the trade-offs between **RESTful APIs** and **WebSockets** is key to designing scalable, performant, and maintainable front-end architectures.
 
 ---
 
-## ⚙️ RESTful API (HTTP)
+## RESTful API (HTTP) {#%E2%9A%99%EF%B8%8F-restful-api-http}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is}
 - **REST (Representational State Transfer)** is an architectural style commonly implemented over HTTP; HTTP transport alone does not make an API RESTful.
 - Each request is **stateless** — all info needed to process it is included in the request.
 - Communication pattern: **request → response**.
 
-### 🧩 Core Characteristics
+### Core Characteristics {#%F0%9F%A7%A9-core-characteristics}
 | Principle | Meaning |
 |------------|----------|
 | **Stateless** | Server doesn’t keep client session state. |
@@ -22,21 +22,21 @@ Understanding the trade-offs between **RESTful APIs** and **WebSockets** is key 
 | **Cacheable** | Responses can be cached via HTTP headers. |
 | **Uniform interface** | Resource identification, representations, self-descriptive messages and hypermedia-driven transitions; JSON alone is insufficient. |
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages}
 - Simple and widely supported (HTTP everywhere).
 - Scales easily via stateless design.
 - Works with CDNs and caching layers.
 - Easy to test and debug.
 - Ideal for traditional CRUD operations and static data fetching.
 
-### ⚠️ Limitations
+### Limitations {#%E2%9A%A0%EF%B8%8F-limitations}
 - A conventional JSON endpoint returns one response to a request; HTTP also supports streaming and SSE server events.
 - **Latency from polling**: repeated HTTP requests.
 - Repeated snapshot requests can be wasteful for high-frequency events; consider conditional polling, SSE or WebSocket based on interaction needs.
 - Overhead from headers in every request.
 - HTTP/1.1 can reuse persistent connections; HTTP/2 multiplexes streams. A resource request is not synonymous with a new transport connection.
 
-### 🧠 Best Use Cases
+### Best Use Cases {#%F0%9F%A7%A0-best-use-cases}
 - Standard web apps or APIs (CRUD operations).
 - Static or infrequently changing data.
 - Microservices APIs.
@@ -44,33 +44,33 @@ Understanding the trade-offs between **RESTful APIs** and **WebSockets** is key 
 
 ---
 
-## 🔄 WebSockets
+## WebSockets {#%F0%9F%94%84-websockets}
 
-### 🔑 What It Is
+### What It Is {#%F0%9F%94%91-what-it-is-1}
 - A **full-duplex, persistent** communication channel over a message channel (commonly over TCP after an HTTP/1.1 upgrade).
 - Allows **real-time, bi-directional** communication between client and server.
 - Protocol: `ws://` or `wss://` (secure).
 
-### 🔧 How It Works
+### How It Works {#%F0%9F%94%A7-how-it-works}
 1. The common HTTP/1.1 form starts with Upgrade: websocket; extended CONNECT is a separate HTTP/2/3 deployment path, so do not assume every transport uses that header.
 2. Once upgraded, both client and server can send data anytime — no polling.
 3. Connection remains open until closed by either side.
 
-### ✅ Advantages
+### Advantages {#%E2%9C%85-advantages-1}
 - **Low latency** can be useful, but congestion, server queues and consumer work still cause delay.
 - **Bi-directional** → both sides can send messages freely.
 - **Efficient** → no repeated HTTP headers.
 - Ideal for **real-time updates** and event-driven systems.
 - Works well with streaming or continuous feeds.
 
-### ⚠️ Limitations
+### Limitations {#%E2%9A%A0%EF%B8%8F-limitations-1}
 - **Stateful connection** → harder to scale horizontally.
 - Not cacheable via CDNs.
 - Requires a WebSocket-capable backend and proxy setup.
 - Harder to debug and secure than HTTP.
 - Load balancers, firewalls, and proxies sometimes block or break persistent connections.
 
-### 🧠 Best Use Cases
+### Best Use Cases {#%F0%9F%A7%A0-best-use-cases-1}
 - Real-time apps:
     - Chat/messaging systems
     - Live dashboards / financial tickers
@@ -81,7 +81,7 @@ Understanding the trade-offs between **RESTful APIs** and **WebSockets** is key 
 
 ---
 
-## 🧩 REST vs WebSocket — Comparison Table
+## REST vs WebSocket — Comparison Table {#%F0%9F%A7%A9-rest-vs-websocket-%E2%80%94-comparison-table}
 
 | Feature | RESTful API | WebSocket |
 |----------|--------------|-----------|
@@ -98,7 +98,7 @@ Understanding the trade-offs between **RESTful APIs** and **WebSockets** is key 
 
 ---
 
-## ⚙️ Hybrid Approach (Common in Modern Apps)
+## Hybrid Approach (Common in Modern Apps) {#%E2%9A%99%EF%B8%8F-hybrid-approach-common-in-modern-apps}
 
 Many modern architectures combine both:
 
@@ -112,7 +112,7 @@ Example: fetch an authorized, schema-validated snapshot over HTTP, then subscrib
 
 ---
 
-## 🔒 Security Considerations
+## Security Considerations {#%F0%9F%94%92-security-considerations}
 
 Use HTTPS/WSS in production. The server authenticates the handshake, allows only exact trusted browser Origins and authorizes each message/resource subscription. Origin is a browser cross-site defense, not proof of identity for non-browser clients. Cookie-authenticated sockets can suffer cross-site WebSocket hijacking; WSS does not prevent it. Choose a session/CSRF strategy deliberately, expire/revoke sessions and close affected connections. Browser WebSocket cannot set arbitrary Authorization headers; avoid long-lived tokens in URLs/logs.
 
@@ -122,13 +122,13 @@ Both HTTP and sockets accept untrusted input and require validation. A client ch
 
 ---
 
-## 🧠 Summary
+## Summary {#%F0%9F%A7%A0-summary}
 
 | When To Use                                   | Choose          |
 | --------------------------------------------- | --------------- |
-| Simple CRUD, scalable APIs                    | ✅ **REST**      |
-| Real-time interactions                        | ✅ **WebSocket** |
-| Combination of both (initial fetch + updates) | ✅ **Hybrid**    |
+| Simple CRUD, scalable APIs                    |  **REST**      |
+| Real-time interactions                        |  **WebSocket** |
+| Combination of both (initial fetch + updates) |  **Hybrid**    |
 
 ---
 

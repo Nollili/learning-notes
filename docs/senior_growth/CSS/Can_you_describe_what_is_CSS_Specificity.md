@@ -4,7 +4,7 @@
 
 ---
 
-## 1️⃣ How Specificity Works
+## How Specificity Works {#_1%EF%B8%8F%E2%83%A3-how-specificity-works}
 
 - Every CSS selector has a **specificity value**, usually represented as **a 4-part score: (a, b, c, d)**:
 
@@ -35,7 +35,7 @@ p { color: blue; }
 
 ---
 
-## 2️⃣ Selector hierarchy within the same cascade precedence
+## Selector hierarchy within the same cascade precedence {#_2%EF%B8%8F%E2%83%A3-selector-hierarchy-within-the-same-cascade-precedence}
 
 1. Inline styles (`style=""`) → **most specific**
 2. ID selectors (`#id`)
@@ -44,7 +44,7 @@ p { color: blue; }
 
 ---
 
-## 3️⃣ Examples
+## Examples {#_3%EF%B8%8F%E2%83%A3-examples}
 
 ```css
 /* Element selector */
@@ -69,7 +69,7 @@ div.text { color: red; } /* (0,0,1,1) */
 
 ---
 
-## 4️⃣ Important Notes
+## Important Notes {#_4%EF%B8%8F%E2%83%A3-important-notes}
 
 * `!important` changes cascade importance; it is not an extra selector specificity digit. User important rules outrank author important rules, preserving user needs.
 
@@ -82,7 +82,7 @@ p { color: blue !important; }
 
 ---
 
-## 5️⃣ Best Practices
+## Best Practices {#_5%EF%B8%8F%E2%83%A3-best-practices}
 
 1. Prefer **class-based selectors** over IDs or element selectors.
 2. Avoid overly **deep nesting** (≤3 levels) to maintain control.
@@ -92,13 +92,13 @@ p { color: blue !important; }
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 * **CSS Specificity** determines which styles are applied when multiple rules target the same element.
 * Calculated by **inline styles > IDs > classes/attributes/pseudo-classes > elements/pseudo-elements**.
 * Understanding specificity is crucial for **maintainable, predictable CSS**, especially in large projects.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Combine **specificity knowledge with a methodology like BEM or CSS Modules** to avoid style conflicts and maintain a clean, scalable CSS architecture.
 
 ## Cascade debugging at senior depth

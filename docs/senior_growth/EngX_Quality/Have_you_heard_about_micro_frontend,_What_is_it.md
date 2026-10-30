@@ -1,4 +1,4 @@
-## Have you heard about micro frontend? What is it?
+# Have you heard about micro frontend? What is it? {#have-you-heard-about-micro-frontend-what-is-it}
 
 It's an architectural approach in which a front-end application is divided into smaller, independent pieces, each representing a specific feature or domain. Each of these smaller applications (micro frontends) can be developed, deployed, and maintained by different teams, potentially with different technologies and frameworks, while still being part of the same overall application.
 
@@ -6,7 +6,7 @@ The concept of **Micro Frontends** extends the principles of **Microservices** (
 
 ---
 
-### **Key Concepts of Micro Frontends**
+## **Key Concepts of Micro Frontends** {#key-concepts-of-micro-frontends}
 
 1. **Separation of Concerns**: Just as microservices break up the back end, micro frontends break up the UI. Each micro frontend can be responsible for a particular feature or page of the application.
 2. **Independent Deployments**: Micro frontends are deployed independently, allowing each team to release updates without having to wait for other parts of the system to be updated.
@@ -16,7 +16,7 @@ The concept of **Micro Frontends** extends the principles of **Microservices** (
 
 ---
 
-### **How Micro Frontends Work**
+## **How Micro Frontends Work** {#how-micro-frontends-work}
 
 Micro frontends allow you to split your large front-end codebase into several smaller, self-contained units. Each unit is responsible for a specific section of the user interface. They are typically integrated into the main UI at runtime.
 
@@ -26,7 +26,7 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 ---
 
-### **Benefits of Micro Frontends**
+## **Benefits of Micro Frontends** {#benefits-of-micro-frontends}
 
 1. **Scalability**:
     - Teams can work on different features or sections of the application in parallel, improving scalability.
@@ -42,7 +42,7 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 ---
 
-### **Challenges of Micro Frontends**
+## **Challenges of Micro Frontends** {#challenges-of-micro-frontends}
 
 1. **Complexity in Integration**:
     - Integrating multiple micro frontends seamlessly into a single unified user interface can be challenging, particularly with regard to handling state, routing, and consistency in design.
@@ -57,7 +57,7 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 ---
 
-### **Micro Frontend Architecture Patterns**
+## **Micro Frontend Architecture Patterns** {#micro-frontend-architecture-patterns}
 
 1. **Vertical Split**:
     - Each micro frontend corresponds to a vertical slice of the application (e.g., a specific feature or page). For example, a team might build the **user profile**, while another handles the **search feature**, and another works on the **shopping cart** in an e-commerce app.
@@ -66,7 +66,7 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 ---
 
-### **Technologies and Tools for Micro Frontends**
+## **Technologies and Tools for Micro Frontends** {#technologies-and-tools-for-micro-frontends}
 
 1. **Web Components**:
     - Web components are a natural fit for micro frontends since they are encapsulated, reusable UI elements that can work across various frameworks and technologies.
@@ -81,7 +81,7 @@ Micro frontends allow you to split your large front-end codebase into several sm
 
 ---
 
-### **When to Use Micro Frontends**
+## **When to Use Micro Frontends** {#when-to-use-micro-frontends}
 
 Micro frontends are particularly useful in the following scenarios:
 
@@ -96,11 +96,11 @@ Micro frontends are particularly useful in the following scenarios:
 
 ---
 
-### **Conclusion**
+## **Conclusion** {#conclusion}
 
 Micro frontends are an architectural pattern that allows you to split a complex front-end application into smaller, independent modules, making it easier to manage, scale, and develop. They promote flexibility, faster development cycles, and independent deployment. However, they also introduce challenges like performance overhead, consistency, and integration complexity. Micro frontends work best for large-scale applications with multiple domains, teams, and frequent releases, but require careful planning to implement effectively.
 
-### Worked introductory contract and failure boundary
+## Worked introductory contract and failure boundary {#worked-introductory-contract-and-failure-boundary}
 
 Use [the versioned custom-element example](./Rendering_and_Capability_Workflows.md#optional-microfrontend-contract-one-versioned-custom-element) for a real event payload/version/allowlist/lifecycle contract. Its JSDOM check covers safe text, rejected versions/extra fields/IDs and disconnect/reconnect cleanup. The host keeps ordinary links on module-load failure and still relies on server authorization. Same-page custom elements/Shadow DOM do not sandbox a malicious remote module; independent releases need compatibility and rollback evidence.
 

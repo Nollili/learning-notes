@@ -1,6 +1,6 @@
 # Please describe what is KISS, DRY, YAGNI
 
-# 📝 Key Software Development Principles: KISS, DRY, YAGNI
+## Key Software Development Principles: KISS, DRY, YAGNI {#%F0%9F%93%9D-key-software-development-principles-kiss-dry-yagni}
 
 These are **foundational principles** for writing **clean, maintainable, and efficient code**, often referenced in **senior-level discussions**.
 
@@ -19,7 +19,7 @@ Here’s a breakdown of the acronyms:
 
 ---
 
-## 1️⃣ KISS — Keep It Simple, Stupid
+## KISS — Keep It Simple, Stupid {#_1%EF%B8%8F%E2%83%A3-kiss-%E2%80%94-keep-it-simple-stupid}
 
 **Definition:**  
 > Favor simplicity over complexity. Avoid overengineering or making things more complicated than necessary.
@@ -52,7 +52,7 @@ function getEvenNumbers(arr) {
 
 ---
 
-## 2️⃣ DRY — Don’t Repeat Yourself
+## DRY — Don’t Repeat Yourself {#_2%EF%B8%8F%E2%83%A3-dry-%E2%80%94-don-t-repeat-yourself}
 
 **Definition:**
 
@@ -90,7 +90,7 @@ const volume = multiply(3, 4, 5); // 60
 
 ---
 
-## 3️⃣ YAGNI — You Aren’t Gonna Need It
+## YAGNI — You Aren’t Gonna Need It {#_3%EF%B8%8F%E2%83%A3-yagni-%E2%80%94-you-aren-t-gonna-need-it}
 
 **Definition:**
 
@@ -128,7 +128,7 @@ function fetchData() {
 
 ---
 
-## ⚖️ Comparison Table
+## Comparison Table {#%E2%9A%96%EF%B8%8F-comparison-table}
 
 | Principle | Focus      | Benefits                            | Risks if Ignored                 |
 | --------- | ---------- | ----------------------------------- | -------------------------------- |
@@ -138,14 +138,14 @@ function fetchData() {
 
 ---
 
-### ✅ Senior Developer Tips
+### Senior Developer Tips {#%E2%9C%85-senior-developer-tips}
 
 1. **KISS:** Start simple, then refactor as needed.
 2. **DRY:** Look for patterns to abstract, but avoid **premature generalization**.
 3. **YAGNI:** Implement features **only when there is a concrete requirement**.
 4. Together, these principles promote **clean, maintainable, and pragmatic software design**.
 
-> 💡 Remember: Following these principles reduces complexity while keeping code flexible for future changes.
+> Remember: Following these principles reduces complexity while keeping code flexible for future changes.
 
 
 ## Decide what must change together

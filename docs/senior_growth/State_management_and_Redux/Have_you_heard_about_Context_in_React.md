@@ -1,12 +1,12 @@
 # Have you heard about Context in React?
 
-# 🌐 React Context API
+## React Context API {#%F0%9F%8C%90-react-context-api}
 
 The **Context API** in React is a **built-in mechanism to share state across the component tree** without having to pass props down manually at every level (avoiding "prop drilling").
 
 ---
 
-## 1️⃣ What is React Context?
+## What is React Context? {#_1%EF%B8%8F%E2%83%A3-what-is-react-context}
 
 - **Context** provides a way to **share data globally** for a tree of React components.
 - Useful for:
@@ -17,7 +17,7 @@ The **Context API** in React is a **built-in mechanism to share state across the
 
 ---
 
-## 2️⃣ Core Concepts
+## Core Concepts {#_2%EF%B8%8F%E2%83%A3-core-concepts}
 
 | Concept | Description |
 |---------|------------|
@@ -27,13 +27,13 @@ The **Context API** in React is a **built-in mechanism to share state across the
 
 ---
 
-## 3️⃣ Basic Example
+## Basic Example {#_3%EF%B8%8F%E2%83%A3-basic-example}
 
 <<< ../../workbench/engineering/state/theme-context.tsx{tsx}
 
 ---
 
-## 4️⃣ When to Use Context
+## When to Use Context {#_4%EF%B8%8F%E2%83%A3-when-to-use-context}
 
 * **Global/shared state** that many components need access to.
 * **Settings/configuration** like theme, language, or authentication.
@@ -41,7 +41,7 @@ The **Context API** in React is a **built-in mechanism to share state across the
 
 ---
 
-## 5️⃣ Advantages
+## Advantages {#_5%EF%B8%8F%E2%83%A3-advantages}
 
 * Built into React; no extra library needed.
 * Simple API for **moderate global state**.
@@ -50,7 +50,7 @@ The **Context API** in React is a **built-in mechanism to share state across the
 
 ---
 
-## 6️⃣ Limitations / Disadvantages
+## Limitations / Disadvantages {#_6%EF%B8%8F%E2%83%A3-limitations-disadvantages}
 
 * **Not ideal for large-scale global state** with complex logic.
 * Updates can cause **all consuming components to re-render** even if they only use part of the context.
@@ -59,13 +59,13 @@ The **Context API** in React is a **built-in mechanism to share state across the
 
 ---
 
-## ✅ Key Takeaways
+## Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Context is great for **moderate shared state**.
 * For **complex, frequently updated, or async global state**, consider selector-based stores such as Redux Toolkit or Zustand when profiling/ownership needs justify them. Recoil is archived, not a current primary choice.
 * Can be combined with local state and centralized stores for **hybrid solutions**.
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Use Context for **settings, themes, or auth info**, and **Redux/Zustand** for complex shared data with async operations.
 
 

@@ -2,6 +2,8 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 import { mermaidPlugin } from './plugins/mermaid.mjs'
+import { applyContentPolicy, cleanTitle, getPageTitle } from './content-policy.mjs'
+import { sectionNumberingPlugin } from './plugins/section-numbering.mjs'
 
 // helper to generate sidebar dynamically
 function generateSidebar(dir, baseRoute) {
@@ -23,13 +25,13 @@ function generateSidebar(dir, baseRoute) {
           return { text: 'Sorting and quicksort', link: '/cs-foundations/sorting' }
         }
         return {
-          text: (fs.readFileSync(path.join(folderFullPath, file), 'utf8').match(/^#{1,3}\s+(.+)$/m)?.[1] ?? file.replace(/_[a-f0-9]{32}\.md$/, '').replace(/_/g, ' ')).replace(/\*\*|`/g, '').trim(),
+          text: getPageTitle(fs.readFileSync(path.join(folderFullPath, file), 'utf8'), file),
           link: `/${dir}/${folder}/${file.replace('.md', '')}`
         }
       })
 
     return {
-      text: folder.replace(/_/g, ' '),
+      text: cleanTitle(folder),
       collapsed: true,
       items: [
         { text: 'Overview', link: `/${dir}/${folder}/` },
@@ -39,13 +41,177 @@ function generateSidebar(dir, baseRoute) {
   })
 }
 
-export default defineConfig({
+const performanceLearningSidebar = {
+  text: 'Frontend performance',
+  items: [
+    { text: 'Reading order and outcomes', link: '/frontend/performance/' },
+    { text: 'Metrics and investigation', link: '/frontend/performance/measurement' },
+    { text: 'Loading, scripts and bundles', link: '/frontend/performance/delivery' },
+    { text: 'Responsive images', link: '/frontend/performance/images' },
+    { text: 'Critical CSS and fonts', link: '/frontend/performance/css-fonts' },
+    { text: 'Runtime responsiveness', link: '/frontend/performance/runtime' },
+    { text: 'Caching and repeat visits', link: '/frontend/performance/caching' },
+    { text: 'Sources and corrections', link: '/frontend/performance/sources' },
+    { text: 'Author verification', link: '/frontend/performance/verification' }
+  ]
+}
+const performanceHomeworkSidebar = {
+  text: 'Performance hometasks',
+  items: [
+    { text: 'Core sequence and extensions', link: '/practice/frontend/performance/' },
+    { text: 'H1 — Investigate', link: '/practice/frontend/performance/01-investigate' },
+    { text: 'H2 — Improve', link: '/practice/frontend/performance/02-improve' },
+    { text: 'H3 — Verify and prevent regressions', link: '/practice/frontend/performance/03-verify' }
+  ]
+}
+
+const aiAppSidebar = [
+  {
+    "text": "Build AI Apps — JavaScript First",
+    "items": [
+      {
+        "text": "Start here: JavaScript first",
+        "link": "/applied-ai/"
+      },
+      {
+        "text": "0. Understand the pieces",
+        "link": "/applied-ai/javascript/orientation"
+      },
+      {
+        "text": "1. First request and console",
+        "link": "/applied-ai/javascript/first-call"
+      },
+      {
+        "text": "2. Chatbot inside an app",
+        "link": "/applied-ai/javascript/chatbot"
+      },
+      {
+        "text": "3. Structured output",
+        "link": "/applied-ai/javascript/structured-output"
+      },
+      {
+        "text": "4. Tools and workflows",
+        "link": "/applied-ai/javascript/tools-workflows"
+      },
+      {
+        "text": "5. RAG from your notes",
+        "link": "/applied-ai/javascript/rag"
+      },
+      {
+        "text": "6. Build an MCP server",
+        "link": "/applied-ai/javascript/mcp"
+      },
+      {
+        "text": "7. Stateful graph workflows",
+        "link": "/applied-ai/javascript/stateful-workflows"
+      },
+      {
+        "text": "8. Choose an extension",
+        "link": "/applied-ai/javascript/extensions"
+      },
+      {
+        "text": "JavaScript workbench",
+        "link": "/workbench/applied-ai/javascript/"
+      },
+      {
+        "text": "MCP and graph workbench",
+        "link": "/workbench/applied-ai/javascript-integrations/"
+      },
+      {
+        "text": "Practice milestones",
+        "link": "/practice/applied-ai/javascript-assistant"
+      },
+      {
+        "text": "Company course mapping",
+        "link": "/applied-ai/javascript/company-course"
+      },
+      {
+        "text": "Verification and limits",
+        "link": "/applied-ai/javascript/verification"
+      }
+    ]
+  }
+]
+
+const aiDevelopmentSidebar = [
+  {
+    "text": "AI for Software Development",
+    "items": [
+      {
+        "text": "Start here",
+        "link": "/ai-assisted-engineering/"
+      },
+      {
+        "text": "1. Get started",
+        "link": "/ai-assisted-engineering/getting-started"
+      },
+      {
+        "text": "2. Fix a bug",
+        "link": "/ai-assisted-engineering/bug-fixing"
+      },
+      {
+        "text": "3. Develop a feature",
+        "link": "/ai-assisted-engineering/feature-development"
+      },
+      {
+        "text": "4. Test and debug",
+        "link": "/ai-assisted-engineering/testing-debugging"
+      },
+      {
+        "text": "5. Review and prepare a PR",
+        "link": "/ai-assisted-engineering/review-pr"
+      },
+      {
+        "text": "6. Workflows and tools",
+        "link": "/ai-assisted-engineering/reusable-tools"
+      },
+      {
+        "text": "7. Advanced coordination",
+        "link": "/ai-assisted-engineering/advanced-coordination"
+      },
+      {
+        "text": "Independent projects",
+        "link": "/practice/engineering/ai-engineering/development-project"
+      },
+      {
+        "text": "TypeScript catalogue workbench",
+        "link": "/workbench/engineering/ai-engineering/catalogue/"
+      }
+    ]
+  },
+  {
+    "text": "Deeper engineering references",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "Issue to reviewed change",
+        "link": "/ai-assisted-engineering/issue-to-reviewed-change"
+      },
+      {
+        "text": "Verification and permissions",
+        "link": "/ai-assisted-engineering/verification-and-permissions"
+      },
+      {
+        "text": "Local workflow and Git",
+        "link": "/ai-assisted-engineering/local-workflow-and-git"
+      },
+      {
+        "text": "Traceability and evaluation",
+        "link": "/ai-assisted-engineering/traceability-and-evaluation"
+      }
+    ]
+  }
+]
+
+export default defineConfig(applyContentPolicy({
   title: 'My Notes for Bench Learning',
   description: 'Professional growth and technical notes.',
   outDir: '../dist',
   markdown: {
     config(md) {
+      md.core.ruler.disable('emoji')
       md.use(mermaidPlugin)
+      md.use(sectionNumberingPlugin)
     }
   },
   themeConfig: {
@@ -53,11 +219,12 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Hub map', link: '/review/' },
       { text: 'Learning paths', items: [
-        { text: 'Frontend', link: '/frontend/' },
+        { text: 'Frontend performance', link: '/frontend/performance/' },
         { text: 'CS foundations', link: '/cs-foundations/' },
         { text: 'Node.js', link: '/node-js/' },
-        { text: 'Applied AI', link: '/applied-ai/' },
-        { text: 'AI Engineering', link: '/ai-assisted-engineering/' },
+        { text: 'AWS Cloud', link: '/aws/' },
+        { text: 'Build AI Apps — JavaScript First', link: '/applied-ai/' },
+        { text: 'AI for Software Development', link: '/ai-assisted-engineering/' },
         { text: 'Engineering foundations', link: '/engineering/' }
       ] },
       { text: 'Practice projects', link: '/practice/learning-projects' },
@@ -75,6 +242,238 @@ export default defineConfig({
       ]
     },
     sidebar: {
+      "/workbench/applied-ai/javascript/": aiAppSidebar,
+      "/workbench/applied-ai/javascript-integrations/": aiAppSidebar,
+      "/workbench/engineering/ai-engineering/catalogue/": aiDevelopmentSidebar,
+      "/practice/engineering/ai-engineering/": aiDevelopmentSidebar,
+
+      "/practice/aws/": [
+  {
+    "text": "AWS homework",
+    "items": [
+      {
+        "text": "Overview and evidence",
+        "link": "/practice/aws/"
+      },
+      {
+        "text": "Practitioner track",
+        "link": "/practice/aws/practitioner"
+      },
+      {
+        "text": "Associate track",
+        "link": "/practice/aws/associate"
+      },
+      {
+        "text": "Repeating tasks",
+        "link": "/practice/aws/repeat-map"
+      },
+      {
+        "text": "Optional additions",
+        "link": "/practice/aws/optional-extensions"
+      },
+      {
+        "text": "Source corrections",
+        "link": "/practice/aws/source-notes"
+      }
+    ]
+  },
+  {
+    "text": "Practitioner modules",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "P01 \u2014 Account setup",
+        "link": "/practice/aws/practitioner-01"
+      },
+      {
+        "text": "P02 \u2014 Frontend hosting",
+        "link": "/practice/aws/practitioner-02"
+      },
+      {
+        "text": "P03 \u2014 Serverless product API",
+        "link": "/practice/aws/practitioner-03"
+      },
+      {
+        "text": "P04 \u2014 DynamoDB integration",
+        "link": "/practice/aws/practitioner-04"
+      },
+      {
+        "text": "P05 \u2014 S3 file imports",
+        "link": "/practice/aws/practitioner-05"
+      },
+      {
+        "text": "P06 \u2014 SQS and SNS integration",
+        "link": "/practice/aws/practitioner-06"
+      },
+      {
+        "text": "P07 \u2014 Authorization",
+        "link": "/practice/aws/practitioner-07"
+      },
+      {
+        "text": "P08 \u2014 RDS order service",
+        "link": "/practice/aws/practitioner-08"
+      }
+    ]
+  },
+  {
+    "text": "Associate labs",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "A01 \u2014 Account, security, CLI and budgets",
+        "link": "/practice/aws/associate-01"
+      },
+      {
+        "text": "A02 \u2014 IAM groups, policies and roles",
+        "link": "/practice/aws/associate-02"
+      },
+      {
+        "text": "A03 \u2014 EC2, EBS, load balancing and Auto Scaling",
+        "link": "/practice/aws/associate-03"
+      },
+      {
+        "text": "A04 \u2014 S3 management, hosting and SDK access",
+        "link": "/practice/aws/associate-04"
+      },
+      {
+        "text": "A05 \u2014 CloudFront origins, behaviors and invalidation",
+        "link": "/practice/aws/associate-05"
+      },
+      {
+        "text": "A06 \u2014 CloudFormation and CDK infrastructure",
+        "link": "/practice/aws/associate-06"
+      },
+      {
+        "text": "A07 \u2014 Custom VPC and connectivity",
+        "link": "/practice/aws/associate-07"
+      },
+      {
+        "text": "A08 \u2014 DynamoDB and RDS application integration",
+        "link": "/practice/aws/associate-08"
+      },
+      {
+        "text": "A09 \u2014 SQS orders, DynamoDB streams and SNS",
+        "link": "/practice/aws/associate-09"
+      },
+      {
+        "text": "A10 \u2014 Serverless APIs, versions and S3 triggers",
+        "link": "/practice/aws/associate-10"
+      },
+      {
+        "text": "A11 \u2014 CI/CD, quality gates and SAM",
+        "link": "/practice/aws/associate-11"
+      },
+      {
+        "text": "A12 \u2014 Q Developer and AWS AI integrations",
+        "link": "/practice/aws/associate-12"
+      }
+    ]
+  },
+  {
+    "text": "Reading",
+    "items": [
+      {
+        "text": "AWS chapters",
+        "link": "/aws/"
+      }
+    ]
+  }
+],
+      "/aws/": [
+  {
+    "text": "Cloud foundations",
+    "items": [
+      {
+        "text": "Reading order",
+        "link": "/aws/"
+      },
+      {
+        "text": "Beginner guide: understand the cloud before the services",
+        "link": "/aws/beginner-guide"
+      },
+      {
+        "text": "Account, development tools and cost awareness",
+        "link": "/aws/account-and-tools"
+      },
+      {
+        "text": "IAM: identities, roles and permissions",
+        "link": "/aws/iam-and-security"
+      },
+      {
+        "text": "CDK and CloudFormation: infrastructure as code",
+        "link": "/aws/infrastructure-as-code"
+      }
+    ]
+  },
+  {
+    "text": "Application services",
+    "items": [
+      {
+        "text": "S3 and CloudFront: storage and frontend delivery",
+        "link": "/aws/storage-and-frontend"
+      },
+      {
+        "text": "Lambda and API Gateway: serverless application boundaries",
+        "link": "/aws/serverless-and-apis"
+      },
+      {
+        "text": "DynamoDB and RDS: choose persistence by access pattern",
+        "link": "/aws/databases"
+      },
+      {
+        "text": "S3 uploads and event-driven imports",
+        "link": "/aws/file-imports"
+      },
+      {
+        "text": "SQS and SNS: asynchronous communication",
+        "link": "/aws/messaging"
+      },
+      {
+        "text": "Cognito and application access",
+        "link": "/aws/authentication"
+      }
+    ]
+  },
+  {
+    "text": "Infrastructure and operations",
+    "items": [
+      {
+        "text": "VPC networking: trace the path before changing rules",
+        "link": "/aws/networking"
+      },
+      {
+        "text": "EC2, load balancing and scaling",
+        "link": "/aws/compute-and-scaling"
+      },
+      {
+        "text": "Delivery, observability and resource cleanup",
+        "link": "/aws/delivery-and-operations"
+      }
+    ]
+  },
+  {
+    "text": "Optional depth and references",
+    "items": [
+      {
+        "text": "AWS AI services: optional integration",
+        "link": "/aws/ai-services"
+      },
+      {
+        "text": "Coverage, source notes and certification",
+        "link": "/aws/coverage-and-sources"
+      }
+    ]
+  },
+  {
+    "text": "Homework",
+    "items": [
+      {
+        "text": "Required tracks and optional additions",
+        "link": "/practice/aws/"
+      }
+    ]
+  }
+],
 "/review/": [
   {
     "text": "Hub reconciliation",
@@ -128,16 +527,8 @@ export default defineConfig({
 ],
 "/engineering/": [
   {
-    "text": "Hub reconciliation",
+    "text": "Engineering foundations",
     "items": [
-      {
-        "text": "Current inventory",
-        "link": "/review/"
-      },
-      {
-        "text": "Verification and limitations",
-        "link": "/review/verification"
-      },
       {
         "text": "Engineering reading order",
         "link": "/engineering/"
@@ -165,30 +556,40 @@ export default defineConfig({
       {
         "text": "Design",
         "link": "/engineering/design"
+      }
+    ]
+  },
+  {
+    "text": "Examples and independent practice",
+    "items": [
+      {
+        "text": "Workbench",
+        "link": "/workbench/engineering/"
       },
       {
         "text": "Shared practice",
         "link": "/practice/engineering/"
+      }
+    ]
+  },
+  {
+    "text": "Hub inventory and verification",
+    "items": [
+      {
+        "text": "Current inventory",
+        "link": "/review/"
       },
       {
-        "text": "Workbench",
-        "link": "/workbench/engineering/"
+        "text": "Verification and limitations",
+        "link": "/review/verification"
       }
     ]
   }
 ],
 "/practice/engineering/": [
   {
-    "text": "Hub reconciliation",
+    "text": "Engineering foundations",
     "items": [
-      {
-        "text": "Current inventory",
-        "link": "/review/"
-      },
-      {
-        "text": "Verification and limitations",
-        "link": "/review/verification"
-      },
       {
         "text": "Engineering reading order",
         "link": "/engineering/"
@@ -216,30 +617,40 @@ export default defineConfig({
       {
         "text": "Design",
         "link": "/engineering/design"
+      }
+    ]
+  },
+  {
+    "text": "Examples and independent practice",
+    "items": [
+      {
+        "text": "Workbench",
+        "link": "/workbench/engineering/"
       },
       {
         "text": "Shared practice",
         "link": "/practice/engineering/"
+      }
+    ]
+  },
+  {
+    "text": "Hub inventory and verification",
+    "items": [
+      {
+        "text": "Current inventory",
+        "link": "/review/"
       },
       {
-        "text": "Workbench",
-        "link": "/workbench/engineering/"
+        "text": "Verification and limitations",
+        "link": "/review/verification"
       }
     ]
   }
 ],
 "/workbench/engineering/": [
   {
-    "text": "Hub reconciliation",
+    "text": "Engineering foundations",
     "items": [
-      {
-        "text": "Current inventory",
-        "link": "/review/"
-      },
-      {
-        "text": "Verification and limitations",
-        "link": "/review/verification"
-      },
       {
         "text": "Engineering reading order",
         "link": "/engineering/"
@@ -267,33 +678,56 @@ export default defineConfig({
       {
         "text": "Design",
         "link": "/engineering/design"
+      }
+    ]
+  },
+  {
+    "text": "Examples and independent practice",
+    "items": [
+      {
+        "text": "Workbench",
+        "link": "/workbench/engineering/"
       },
       {
         "text": "Shared practice",
         "link": "/practice/engineering/"
+      }
+    ]
+  },
+  {
+    "text": "Hub inventory and verification",
+    "items": [
+      {
+        "text": "Current inventory",
+        "link": "/review/"
       },
       {
-        "text": "Workbench",
-        "link": "/workbench/engineering/"
+        "text": "Verification and limitations",
+        "link": "/review/verification"
       }
     ]
   }
 ],
+"/frontend/performance/": [performanceLearningSidebar, performanceHomeworkSidebar],
+"/practice/frontend/performance/": [performanceHomeworkSidebar, performanceLearningSidebar],
+"/senior_growth/Web_Performance/": [performanceLearningSidebar, performanceHomeworkSidebar, ...generateSidebar('senior_growth', '/senior_growth').filter(group => group.text === 'Web Performance')],
 "/frontend/": [
+  performanceLearningSidebar,
+  performanceHomeworkSidebar,
   {
-    "text": "Frontend path",
+    "text": "Frontend foundations",
     "items": [
       {
         "text": "Reading order",
         "link": "/frontend/"
       },
       {
-        "text": "Coverage and ownership",
-        "link": "/frontend/coverage-map"
-      },
-      {
         "text": "HTML and browser",
         "link": "/frontend/html-browser"
+      },
+      {
+        "text": "CSS layout and cascade",
+        "link": "/senior_growth/CSS/"
       },
       {
         "text": "JavaScript",
@@ -302,7 +736,12 @@ export default defineConfig({
       {
         "text": "TypeScript",
         "link": "/frontend/typescript"
-      },
+      }
+    ]
+  },
+  {
+    "text": "Components and application architecture",
+    "items": [
       {
         "text": "React",
         "link": "/frontend/react"
@@ -310,10 +749,6 @@ export default defineConfig({
       {
         "text": "Next and UI architecture",
         "link": "/frontend/next"
-      },
-      {
-        "text": "Verification and limits",
-        "link": "/frontend/verification"
       }
     ]
   },
@@ -339,25 +774,39 @@ export default defineConfig({
       {
         "text": "Staged practice",
         "link": "/practice/frontend/"
+      }
+    ]
+  },
+  {
+    "text": "Coverage and verification",
+    "items": [
+      {
+        "text": "Coverage and ownership",
+        "link": "/frontend/coverage-map"
+      },
+      {
+        "text": "Verification and limits",
+        "link": "/frontend/verification"
       }
     ]
   }
 ],
 "/workbench/frontend/": [
+  performanceHomeworkSidebar,
   {
-    "text": "Frontend path",
+    "text": "Frontend foundations",
     "items": [
       {
         "text": "Reading order",
         "link": "/frontend/"
       },
       {
-        "text": "Coverage and ownership",
-        "link": "/frontend/coverage-map"
-      },
-      {
         "text": "HTML and browser",
         "link": "/frontend/html-browser"
+      },
+      {
+        "text": "CSS layout and cascade",
+        "link": "/senior_growth/CSS/"
       },
       {
         "text": "JavaScript",
@@ -366,7 +815,12 @@ export default defineConfig({
       {
         "text": "TypeScript",
         "link": "/frontend/typescript"
-      },
+      }
+    ]
+  },
+  {
+    "text": "Components and application architecture",
+    "items": [
       {
         "text": "React",
         "link": "/frontend/react"
@@ -374,10 +828,6 @@ export default defineConfig({
       {
         "text": "Next and UI architecture",
         "link": "/frontend/next"
-      },
-      {
-        "text": "Verification and limits",
-        "link": "/frontend/verification"
       }
     ]
   },
@@ -403,25 +853,39 @@ export default defineConfig({
       {
         "text": "Staged practice",
         "link": "/practice/frontend/"
+      }
+    ]
+  },
+  {
+    "text": "Coverage and verification",
+    "items": [
+      {
+        "text": "Coverage and ownership",
+        "link": "/frontend/coverage-map"
+      },
+      {
+        "text": "Verification and limits",
+        "link": "/frontend/verification"
       }
     ]
   }
 ],
 "/practice/frontend/": [
+  performanceHomeworkSidebar,
   {
-    "text": "Frontend path",
+    "text": "Frontend foundations",
     "items": [
       {
         "text": "Reading order",
         "link": "/frontend/"
       },
       {
-        "text": "Coverage and ownership",
-        "link": "/frontend/coverage-map"
-      },
-      {
         "text": "HTML and browser",
         "link": "/frontend/html-browser"
+      },
+      {
+        "text": "CSS layout and cascade",
+        "link": "/senior_growth/CSS/"
       },
       {
         "text": "JavaScript",
@@ -430,7 +894,12 @@ export default defineConfig({
       {
         "text": "TypeScript",
         "link": "/frontend/typescript"
-      },
+      }
+    ]
+  },
+  {
+    "text": "Components and application architecture",
+    "items": [
       {
         "text": "React",
         "link": "/frontend/react"
@@ -438,10 +907,6 @@ export default defineConfig({
       {
         "text": "Next and UI architecture",
         "link": "/frontend/next"
-      },
-      {
-        "text": "Verification and limits",
-        "link": "/frontend/verification"
       }
     ]
   },
@@ -469,11 +934,26 @@ export default defineConfig({
         "link": "/practice/frontend/"
       }
     ]
+  },
+  {
+    "text": "Coverage and verification",
+    "items": [
+      {
+        "text": "Coverage and ownership",
+        "link": "/frontend/coverage-map"
+      },
+      {
+        "text": "Verification and limits",
+        "link": "/frontend/verification"
+      }
+    ]
   }
 ],
       "/applied-ai/": [
+  ...aiAppSidebar,
   {
-    "text": "Applied AI",
+    "text": "Applied AI foundations",
+    "collapsed": true,
     "items": [
       {
         "text": "Reading order",
@@ -484,47 +964,19 @@ export default defineConfig({
         "link": "/applied-ai/coverage-map"
       },
       {
+        "text": "Python — optional deep dive",
+        "link": "/python-for-ai/"
+      },
+      {
         "text": "Shared foundations",
         "link": "/applied-ai/shared/"
-      },
-      {
-        "text": "RAG",
-        "link": "/applied-ai/rag/"
-      },
-      {
-        "text": "Answering and failures",
-        "link": "/applied-ai/rag/answering-and-failures"
-      },
-      {
-        "text": "Agent workflows",
-        "link": "/applied-ai/workflows/"
-      },
-      {
-        "text": "Resumable runs",
-        "link": "/applied-ai/workflows/resumable-runs"
-      },
-      {
-        "text": "n8n fundamentals",
-        "link": "/applied-ai/n8n/"
-      },
-      {
-        "text": "n8n integration",
-        "link": "/applied-ai/n8n/integration"
-      },
-      {
-        "text": "n8n errors and operations",
-        "link": "/applied-ai/n8n/operations"
       }
     ]
   },
   {
-    "text": "Detailed shared lessons",
+    "text": "Model integration and execution",
     "collapsed": true,
     "items": [
-      {
-        "text": "Python prerequisites",
-        "link": "/python-for-ai/"
-      },
       {
         "text": "Model SDK",
         "link": "/python-for-ai/model-sdk"
@@ -552,6 +1004,20 @@ export default defineConfig({
       {
         "text": "Task economics",
         "link": "/python-for-ai/model-economics"
+      }
+    ]
+  },
+  {
+    "text": "Security, evaluation and oversight",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "Injection scope",
+        "link": "/python-for-ai/prompt-injection-boundaries"
+      },
+      {
+        "text": "Source/output security",
+        "link": "/python-for-ai/source-and-output-security"
       },
       {
         "text": "Evaluation",
@@ -560,14 +1026,6 @@ export default defineConfig({
       {
         "text": "Measurements",
         "link": "/python-for-ai/evaluation-measurements"
-      },
-      {
-        "text": "Injection scope",
-        "link": "/python-for-ai/prompt-injection-boundaries"
-      },
-      {
-        "text": "Source/output security",
-        "link": "/python-for-ai/source-and-output-security"
       },
       {
         "text": "Audit and oversight",
@@ -580,9 +1038,12 @@ export default defineConfig({
     ]
   },
   {
-    "text": "Detailed RAG lessons",
-    "collapsed": true,
+    "text": "RAG: ingestion, retrieval and answers",
     "items": [
+      {
+        "text": "RAG",
+        "link": "/applied-ai/rag/"
+      },
       {
         "text": "Extraction/chunk provenance",
         "link": "/python-for-ai/document-processing"
@@ -604,6 +1065,10 @@ export default defineConfig({
         "link": "/python-for-ai/retrieval-pipeline"
       },
       {
+        "text": "Answering and failures",
+        "link": "/applied-ai/rag/answering-and-failures"
+      },
+      {
         "text": "Retrieval debugging",
         "link": "/python-for-ai/retrieval-debugging"
       },
@@ -611,12 +1076,16 @@ export default defineConfig({
         "text": "Cache and batch",
         "link": "/python-for-ai/cache-and-batch"
       }
-    ]
+    ],
+    "collapsed": true
   },
   {
-    "text": "Detailed workflow lessons",
-    "collapsed": true,
+    "text": "Agent workflows and recovery",
     "items": [
+      {
+        "text": "Agent workflows",
+        "link": "/applied-ai/workflows/"
+      },
       {
         "text": "State and revisions",
         "link": "/python-for-ai/tool-workflow-state"
@@ -626,29 +1095,35 @@ export default defineConfig({
         "link": "/python-for-ai/approved-writes"
       },
       {
-        "text": "Graph/memory optional",
-        "link": "/python-for-ai/graph-memory"
+        "text": "Resumable runs",
+        "link": "/applied-ai/workflows/resumable-runs"
       },
       {
         "text": "Workflow diagnostics",
         "link": "/python-for-ai/workflow-diagnostics"
+      },
+      {
+        "text": "Graph/memory optional",
+        "link": "/python-for-ai/graph-memory"
       }
-    ]
+    ],
+    "collapsed": true
   },
   {
-    "text": "References and practice",
+    "text": "n8n automation",
+    "collapsed": true,
     "items": [
       {
-        "text": "Workbench",
-        "link": "/workbench/applied-ai/"
+        "text": "n8n fundamentals",
+        "link": "/applied-ai/n8n/"
       },
       {
-        "text": "Staged projects",
-        "link": "/practice/applied-ai/"
+        "text": "n8n integration",
+        "link": "/applied-ai/n8n/integration"
       },
       {
-        "text": "Chapter exercises",
-        "link": "/practice/applied-ai/chapters/"
+        "text": "n8n errors and operations",
+        "link": "/applied-ai/n8n/operations"
       }
     ]
   },
@@ -693,6 +1168,24 @@ export default defineConfig({
         "link": "/python-for-ai/graphs-and-adaptation"
       }
     ]
+  },
+  {
+    "text": "References and practice",
+    "items": [
+      {
+        "text": "Workbench",
+        "link": "/workbench/applied-ai/"
+      },
+      {
+        "text": "Staged projects",
+        "link": "/practice/applied-ai/"
+      },
+      {
+        "text": "Chapter exercises",
+        "link": "/practice/applied-ai/chapters/"
+      }
+    ],
+    "collapsed": true
   }
 ],
       "/workbench/applied-ai/": [
@@ -723,6 +1216,19 @@ export default defineConfig({
   }
 ],
       "/practice/applied-ai/": [
+{
+  "text": "Beginner JavaScript project",
+  "items": [
+    {
+      "text": "JS-00\u201309 milestones",
+      "link": "/practice/applied-ai/javascript-assistant"
+    },
+    {
+      "text": "JavaScript course",
+      "link": "/applied-ai/"
+    }
+  ]
+},
   {
     "text": "Applied-AI practice",
     "items": [
@@ -751,15 +1257,11 @@ export default defineConfig({
 ],
       "/cs-foundations/": [
   {
-    "text": "CS foundations",
+    "text": "Reasoning and representations",
     "items": [
       {
         "text": "Course and reading order",
         "link": "/cs-foundations/"
-      },
-      {
-        "text": "Coverage map",
-        "link": "/cs-foundations/coverage-map"
       },
       {
         "text": "Complexity and cost",
@@ -772,7 +1274,12 @@ export default defineConfig({
       {
         "text": "Data structures",
         "link": "/cs-foundations/data-structures"
-      },
+      }
+    ]
+  },
+  {
+    "text": "Algorithms and traversal",
+    "items": [
       {
         "text": "Binary search",
         "link": "/cs-foundations/binary-search"
@@ -788,7 +1295,12 @@ export default defineConfig({
       {
         "text": "Priority queues",
         "link": "/cs-foundations/priority-queues"
-      },
+      }
+    ]
+  },
+  {
+    "text": "Examples and independent practice",
+    "items": [
       {
         "text": "Worked sources and checks",
         "link": "/workbench/cs-foundations/"
@@ -796,6 +1308,15 @@ export default defineConfig({
       {
         "text": "Independent practice",
         "link": "/practice/cs-foundations/"
+      }
+    ]
+  },
+  {
+    "text": "Coverage and boundaries",
+    "items": [
+      {
+        "text": "Coverage map",
+        "link": "/cs-foundations/coverage-map"
       }
     ]
   }
@@ -878,31 +1399,31 @@ export default defineConfig({
                                 "link": "/node-js/prerequisites-and-boundaries"
                         },
                         {
-                                "text": "1. Runtime and modules",
+                                "text": "Runtime and modules",
                                 "link": "/node-js/module-01-nodejs-foundations"
                         },
                         {
-                                "text": "2. Standard library and ownership",
+                                "text": "Standard library and ownership",
                                 "link": "/node-js/module-02-standard-library"
                         },
                         {
-                                "text": "3. Events, buffers and streams",
+                                "text": "Events, buffers and streams",
                                 "link": "/node-js/module-03-events-buffers-streams"
                         },
                         {
-                                "text": "4. Testing",
+                                "text": "Testing",
                                 "link": "/node-js/module-04-testing"
                         },
                         {
-                                "text": "5. HTTP and networking",
+                                "text": "HTTP and networking",
                                 "link": "/node-js/module-05-networking"
                         },
                         {
-                                "text": "6. Runtime diagnostics",
+                                "text": "Runtime diagnostics",
                                 "link": "/node-js/module-11-performance-diagnostics"
                         },
                         {
-                                "text": "7. Lifecycle and operations",
+                                "text": "Lifecycle and operations",
                                 "link": "/node-js/module-10-production-ready-applications"
                         }
                 ]
@@ -934,6 +1455,11 @@ export default defineConfig({
                                 "text": "Dates and time zones",
                                 "link": "/node-js/dates-and-time-zones"
                         },
+                ]
+        },
+        {
+                "text": "Security and data handling",
+                "items": [
                         {
                                 "text": "Bounded text uploads",
                                 "link": "/node-js/safe-text-uploads"
@@ -954,6 +1480,11 @@ export default defineConfig({
                                 "text": "OIDC and CSRF alternatives",
                                 "link": "/node-js/oidc-and-csrf-lab"
                         },
+                ]
+        },
+        {
+                "text": "API transports and adapters",
+                "items": [
                         {
                                 "text": "SSE, polling and gRPC",
                                 "link": "/node-js/realtime-transports"
@@ -1101,18 +1632,10 @@ export default defineConfig({
                 ]
         }
 ],
-      '/ai-assisted-engineering/': [
-        { text: 'AI-Assisted Engineering', items: [
-          { text: 'Overview', link: '/ai-assisted-engineering/' },
-          { text: 'Issue to Local Change', link: '/ai-assisted-engineering/issue-to-reviewed-change' },
-          { text: 'Verification and Permissions', link: '/ai-assisted-engineering/verification-and-permissions' },
-          { text: 'Local Workflow and Git', link: '/ai-assisted-engineering/local-workflow-and-git' },
-          { text: 'Traceability and Evaluation', link: '/ai-assisted-engineering/traceability-and-evaluation' }
-        ] }
-      ],
+      '/ai-assisted-engineering/': aiDevelopmentSidebar,
       '/python-for-ai/': [
   {
-    "text": "Python prerequisites",
+    "text": "Python — optional deep dive",
     "items": [
       {
         "text": "Overview",
@@ -1149,7 +1672,7 @@ export default defineConfig({
     ]
   },
   {
-    "text": "Applied AI",
+    "text": "Applied AI foundations",
     "items": [
       {
         "text": "Reading order",
@@ -1162,45 +1685,12 @@ export default defineConfig({
       {
         "text": "Shared foundations",
         "link": "/applied-ai/shared/"
-      },
-      {
-        "text": "RAG",
-        "link": "/applied-ai/rag/"
-      },
-      {
-        "text": "Answering and failures",
-        "link": "/applied-ai/rag/answering-and-failures"
-      },
-      {
-        "text": "Agent workflows",
-        "link": "/applied-ai/workflows/"
-      },
-      {
-        "text": "Resumable runs",
-        "link": "/applied-ai/workflows/resumable-runs"
-      },
-      {
-        "text": "n8n fundamentals",
-        "link": "/applied-ai/n8n/"
-      },
-      {
-        "text": "n8n integration",
-        "link": "/applied-ai/n8n/integration"
-      },
-      {
-        "text": "n8n errors and operations",
-        "link": "/applied-ai/n8n/operations"
       }
     ]
   },
   {
-    "text": "Detailed shared lessons",
-    "collapsed": true,
+    "text": "Model integration and execution",
     "items": [
-      {
-        "text": "Python prerequisites",
-        "link": "/python-for-ai/"
-      },
       {
         "text": "Model SDK",
         "link": "/python-for-ai/model-sdk"
@@ -1228,6 +1718,20 @@ export default defineConfig({
       {
         "text": "Task economics",
         "link": "/python-for-ai/model-economics"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "Security, evaluation and oversight",
+    "items": [
+      {
+        "text": "Injection scope",
+        "link": "/python-for-ai/prompt-injection-boundaries"
+      },
+      {
+        "text": "Source/output security",
+        "link": "/python-for-ai/source-and-output-security"
       },
       {
         "text": "Evaluation",
@@ -1238,14 +1742,6 @@ export default defineConfig({
         "link": "/python-for-ai/evaluation-measurements"
       },
       {
-        "text": "Injection scope",
-        "link": "/python-for-ai/prompt-injection-boundaries"
-      },
-      {
-        "text": "Source/output security",
-        "link": "/python-for-ai/source-and-output-security"
-      },
-      {
         "text": "Audit and oversight",
         "link": "/python-for-ai/provenance-and-oversight"
       },
@@ -1253,12 +1749,16 @@ export default defineConfig({
         "text": "Provider lifecycle",
         "link": "/python-for-ai/provider-data-lifecycle"
       }
-    ]
+    ],
+    "collapsed": true
   },
   {
-    "text": "Detailed RAG lessons",
-    "collapsed": true,
+    "text": "RAG: ingestion, retrieval and answers",
     "items": [
+      {
+        "text": "RAG",
+        "link": "/applied-ai/rag/"
+      },
       {
         "text": "Extraction/chunk provenance",
         "link": "/python-for-ai/document-processing"
@@ -1280,6 +1780,10 @@ export default defineConfig({
         "link": "/python-for-ai/retrieval-pipeline"
       },
       {
+        "text": "Answering and failures",
+        "link": "/applied-ai/rag/answering-and-failures"
+      },
+      {
         "text": "Retrieval debugging",
         "link": "/python-for-ai/retrieval-debugging"
       },
@@ -1290,9 +1794,12 @@ export default defineConfig({
     ]
   },
   {
-    "text": "Detailed workflow lessons",
-    "collapsed": true,
+    "text": "Agent workflows and recovery",
     "items": [
+      {
+        "text": "Agent workflows",
+        "link": "/applied-ai/workflows/"
+      },
       {
         "text": "State and revisions",
         "link": "/python-for-ai/tool-workflow-state"
@@ -1302,29 +1809,33 @@ export default defineConfig({
         "link": "/python-for-ai/approved-writes"
       },
       {
-        "text": "Graph/memory optional",
-        "link": "/python-for-ai/graph-memory"
+        "text": "Resumable runs",
+        "link": "/applied-ai/workflows/resumable-runs"
       },
       {
         "text": "Workflow diagnostics",
         "link": "/python-for-ai/workflow-diagnostics"
+      },
+      {
+        "text": "Graph/memory optional",
+        "link": "/python-for-ai/graph-memory"
       }
     ]
   },
   {
-    "text": "References and practice",
+    "text": "n8n automation",
     "items": [
       {
-        "text": "Workbench",
-        "link": "/workbench/applied-ai/"
+        "text": "n8n fundamentals",
+        "link": "/applied-ai/n8n/"
       },
       {
-        "text": "Staged projects",
-        "link": "/practice/applied-ai/"
+        "text": "n8n integration",
+        "link": "/applied-ai/n8n/integration"
       },
       {
-        "text": "Chapter exercises",
-        "link": "/practice/applied-ai/chapters/"
+        "text": "n8n errors and operations",
+        "link": "/applied-ai/n8n/operations"
       }
     ]
   },
@@ -1369,9 +1880,26 @@ export default defineConfig({
         "link": "/python-for-ai/graphs-and-adaptation"
       }
     ]
+  },
+  {
+    "text": "References and practice",
+    "items": [
+      {
+        "text": "Workbench",
+        "link": "/workbench/applied-ai/"
+      },
+      {
+        "text": "Staged projects",
+        "link": "/practice/applied-ai/"
+      },
+      {
+        "text": "Chapter exercises",
+        "link": "/practice/applied-ai/chapters/"
+      }
+    ]
   }
 ],
       '/senior_growth/': generateSidebar('senior_growth', '/senior_growth/')
     }
   }
-})
+}))

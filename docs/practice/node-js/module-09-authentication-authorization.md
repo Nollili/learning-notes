@@ -6,19 +6,19 @@
 
 ## Graduated practice: identity and access
 
-### 1. Worked example
+### Worked example {#_1-worked-example}
 
 Follow the browser-session walkthrough near the start of this chapter: anonymous CSRF bootstrap, registration, session regeneration on login, an owner-scoped write and logout. Compare every expected status and cookie change.
 
-### 2. Guided build
+### Guided build {#_2-guided-build}
 
 Use the retained session application with two independent cookie jars. Hint: a session identifies the caller; the `owner_id` predicate authorizes the task. **Success:** the owner can update, another signed-in user gets the same 404 as a missing task, and a missing CSRF token returns 403.
 
-### 3. Independent task
+### Independent task {#_3-independent-task}
 
 Add an authenticated endpoint that renames a task using an allowlisted title. Keep ownership in the UPDATE predicate. **Success:** a hostile title is stored as text, an unknown field is rejected, and another user cannot rename the task even if they know its ID.
 
-### 4. Optional depth: JWT and concurrent access boundaries
+### Optional depth: JWT and concurrent access boundaries {#_4-optional-depth-jwt-and-concurrent-access-boundaries}
 
 Use Node 24, TypeScript 5.9, Express 5 and jsonwebtoken 9.0.3 (lock exact resolved versions). Put the verifier, header parser and middleware in separate typed modules and wire the principal adapter shown above. Keep test fixtures outside any Autocode-owned src/tests directory. No actual key or provider credential belongs in the notes.
 
@@ -30,7 +30,7 @@ References checked 2026-10-21: [jsonwebtoken verification/options/errors](https:
 
 ---
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 ### Fundamentals
 

@@ -19,7 +19,7 @@ Compatibility baseline: Node.js 22.7+; examples below also checked on Node.js 24
 
 ---
 
-## 1. What Node.js is
+## What Node.js is {#_1-what-node-js-is}
 
 Node.js is an open-source, cross-platform runtime for executing JavaScript outside a web browser. It combines the V8 JavaScript engine with native APIs for files, networking, processes, timers, and other operating-system capabilities.
 
@@ -124,7 +124,7 @@ Do not assume an API exists merely because both environments run JavaScript. Che
 
 ---
 
-## 2. Installation and project setup
+## Installation and project setup {#_2-installation-and-project-setup}
 
 Use a version manager when possible. It allows several Node.js versions to coexist and makes project version requirements reproducible.
 
@@ -223,7 +223,7 @@ Commit `package-lock.json`. Do not commit `node_modules`, generated build output
 
 ---
 
-## 3. Running Node.js and using globals
+## Running Node.js and using globals {#_3-running-node-js-and-using-globals}
 
 ### Run a script
 
@@ -369,7 +369,7 @@ Use the REPL to inspect values and try small API calls. Use tests or a scratch f
 
 ---
 
-## 4. Module systems: CommonJS and ES modules
+## Module systems: CommonJS and ES modules {#_4-module-systems-commonjs-and-es-modules}
 
 Modules divide a program into files with explicit public interfaces. Node.js supports CommonJS (CJS) and ECMAScript modules (ESM).
 
@@ -590,7 +590,7 @@ Every `require()` of that resolved file generally shares the same counter. Avoid
 
 ---
 
-## 5. npm, `package.json`, lockfiles, and npx
+## npm, `package.json`, lockfiles, and npx {#_5-npm-package-json-lockfiles-and-npx}
 
 npm is both a package registry and a command-line tool installed with Node.js. It installs dependencies, runs project scripts, and manages package metadata.
 
@@ -788,7 +788,7 @@ This keeps the tool version recorded and reproducible. For unfamiliar package na
 
 ---
 
-## 6. Asynchronous programming patterns
+## Asynchronous programming patterns {#_6-asynchronous-programming-patterns}
 
 Node.js code uses three major asynchronous styles: callbacks, promises, and `async`/`await`. Understand all three; prefer promise-based APIs and `async`/`await` for new application code.
 
@@ -1041,7 +1041,7 @@ Do not swallow a failure. Recover, add context, convert it, log it at an applica
 
 ---
 
-## 7. Event loop basics
+## Event loop basics {#_7-event-loop-basics}
 
 The event loop decides when ready JavaScript callbacks can run. It allows one JavaScript thread to coordinate many pending timers and I/O operations.
 
@@ -1089,7 +1089,7 @@ Calling `readFile()` registers asynchronous work and returns. Its callback canno
 ```text
 ┌────────────────────┐       ┌─────────────────────────┐
 │ JavaScript stack   │       │ OS / libuv worker pool │
-│ one callback runs  │──────▶│ performs delegated work │
+│ one callback runs  │──────>│ performs delegated work │
 │ at a time          │       └────────────┬────────────┘
 └─────────┬──────────┘                    │ completion
           │                               ▼
@@ -1167,7 +1167,7 @@ The callback cannot run at 10 ms because JavaScript is busy. A timer becomes eli
 
 ---
 
-## 8. Event loop deep dive
+## Event loop deep dive {#_8-event-loop-deep-dive}
 
 > The older event-loop illustration (`assets/nodejs-event-loop-deep-dive.png` in the source tree) is retained as a historical aid. Its uniform next-tick-first checkpoint and timer routing are simplified; use the context-specific rules and diagrams below as the scheduling reference.
 
@@ -1256,7 +1256,7 @@ The following diagram lists the conceptual phases, not a fixed starting point fo
 ┌───────────────┐
 │ 6. close      │  selected close callbacks
 └───────┬───────┘
-        └──────────────▶ next iteration while work remains
+        └──────────────> next iteration while work remains
 ```
 
 | Phase             | Main responsibility                                                     |
@@ -1418,7 +1418,7 @@ When predicting output:
 
 ---
 
-## 9. Cancellation and time budgets
+## Cancellation and time budgets {#_9-cancellation-and-time-budgets}
 
 Promises describe eventual completion. They do not cancel the underlying work by themselves.
 
@@ -1478,7 +1478,7 @@ The remote server may have completed a write after the client stopped waiting. R
 
 ---
 
-## 10. Bounded concurrency
+## Bounded concurrency {#_10-bounded-concurrency}
 
 Concurrent work can reduce total latency. Unbounded concurrency can exhaust sockets, memory, database connections, or third-party quotas.
 
@@ -1520,7 +1520,7 @@ Measure latency and saturation. Increase concurrency until throughput stops impr
 
 ---
 
-## 11. Diagnosing event-loop problems
+## Diagnosing event-loop problems {#_11-diagnosing-event-loop-problems}
 
 ### Symptom: every request becomes slow together
 
@@ -1564,7 +1564,7 @@ Measure heap, external/Buffer memory, queue depth, and active operations separat
 
 [Exercises and learner checklist](../practice/node-js/module-01-nodejs-foundations.md).
 
-## 12. Final review checklist
+## Final review checklist {#_12-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-01-nodejs-foundations.md).
 

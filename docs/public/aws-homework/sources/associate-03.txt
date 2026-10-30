@@ -1,0 +1,103 @@
+Practical Lab 3
+Please read carefully instructions and complete all required tasks to finish the module.
+
+What’s given
+Your AWS account.
+IAM roles and users from the IAM module.
+Ready-to-use static web apps:
+simple static web page
+shop-angular-cloudfront
+shop-react-redux-cloudfront
+shop-vue-vuex-cloudfront
+Ready-to-use node.js RESTful API back-end for your front-end app (for given repos/apps above):
+nestjs-rest-api
+What to save money on
+Make sure to remove the EC2 instance manually created throughout the tasks 1-2.
+Remove EBS volume created in the task 4.
+Configure the auto-scaling group to scale between 0-1 instances. Also, make sure to set the desired instance count in it to 0 while you’re not working with EC2.
+Remove a load balancer if you're not going to use it
+Remove you AMIs if you are not going to use them.
+Task 1. Create an EC2 instance for static Web application
+Configure two security groups which will:
+CloudX-Web-SG:
+allows access over HTTP and HTTPS from anywhere
+allows access over SSH from your IP address only
+allows any outbound traffic
+CloudX-App-Private-SG:
+allows access on all ports from the CloudX-Web-SG
+allows any outbound traffic
+Create a Linux or Ubuntu EC2 instance (choose any free-tier eligible AMI).
+Create a new key pair which you will use all along this lab. Use the CloudX-Web-SG security group from the previous step.
+Use the content of this file for Ubuntu AMI or this file for Amazon Linux AMI as user data. It will set up an Apache webserver for you.
+tip
+You can install and configure Nginx web server if you wish in pretty the same way.
+
+After the instance is launched check if webserver works: using instance's public IP address or DNS name (NB: using HTTP protocol!) open the web page in browser tab.
+Then upload a static website from this archive to the EC2 instance's server folder /var/www/html.
+tip
+You can use Git, or Secure copy tool (or its analogue for Windows), or other command line tools for uploading files to the instance.
+
+Here you can find a sample script for Amazon Linux AMI. Some of its commands work with Ubuntu Server AMI as well.
+
+After uploading new static content of Web server check if changes took place.
+Deploy the shop-angular-cloudfront app (or shop-react-redux-cloudfront, shop-vue-vuex-cloudfront) using this script as a reference. Make sure you've switched to feat/ec2-lab branch if such one exists in the repository. Ensure that your changes appear in the Web.
+Using different user profiles from the IAM lab try to stop and start your instance through AWS CLI.
+OPTIONALLY*, launch the EC2 instance with user data through AWS CLI. Check whether it works as it's expected and terminate the instance with CLI.
+OPTIONALLY*, create a shell script which would update the security group based on your current IP address (very useful if you don’t have a static IP address)
+An example script for Windows:
+
+$ rem .\task-3-auth-win.bat <your-profile-name> <security-group-id> <region>
+
+for /f %%a in ('powershell Invoke-RestMethod api.ipify.org') do set PublicIP=%%a
+aws ec2 authorize-security-group-ingress --group-id %2 --protocol tcp –port 22 --cidr %PublicIP%/32 --profile %1 --region %3
+
+
+warning
+Windows might block connections by its firewall by default.
+
+An example script for Unix:
+
+$ sh .\task-3-auth-unix.sh <your-profile-name> <security-group-id> <region>
+
+#!/usr/bin/env bash
+
+profile=$1
+groupId=$2
+region=$3
+
+dig @resolver1.opendns.com ANY myip.opendns.com +short | aws ec2 authorize-security-group-ingress --group-id $groupId --protocol tcp --port 22 –cidr $1/32 --profile $profile --region $region
+
+
+Task 2. Create a custom Node.js AMI
+Create a new EC2 instance based on free-tier Amazon Linux AMI. Use the CloudX-Web-SG security group and the key pair from previous task.
+Connect to the instance via SSH (from your local machine or from the AWS instance's console (Connect page)). -Install Node.js (through nvm, or n-install) and necessary tools (e.g. pm2 or forever) which will be useful for further hosting of any Node.js back-end application.
+info
+Keep in mind that nvm, Node.js and tools are installed per user. Consequently, if you want nvm, Node.js and tools to be installed for several users (e.g. ec2-user and root) you need to repeat the installation process for each one.
+
+Create a custom AMI named CloudXNodejsAMI which is based on EC2 instance with Node.js tools.
+Wait until the AMI is ready and delete the EC2 instance then.
+Run a new EC2 instance based on this AMI. Connect to the back-end instance and check if the installed tools (nvm, Node.js, etc.) are available for you.
+Task 3. Node.js back-end app deployment
+Based on the EC2 instance from the previous step upload a back-end application (based on the given repository; make sure you've switched to feat/ec2-lab branch) or your own Node.js back-end), build (if necessary) and run it on port 80. Use this script as a reference. You can also use Git to pull the source code to your instance.
+Check if the app is available over the Internet by visiting the instance's public API or DNS address.
+OPTIONALLY*. If you used given shop app in the first task and Node.js RESTful API from this task.
+Modify the front-end app by providing the public DNS address of your Node.js back-end instance, so that it will make its API call there.
+Build and re-deploy the app, and check if it makes API requests to the given back-end.
+warning
+The CORS issue might happen when making API calls from the client app to the API, so you’ll probably need to update CORS setting of your RESTful API server and re-deploy it.
+
+Task 4. Elastic Block Storage (EBS) basics
+Create EBS volume and attach it to any EC2 instance from previous tasks.
+Write any file(s) to it and detach from the instance. Attach it to the instance from other task and check whether the file is visible and accessible here. Detach the EBS volume and delete it as it's no longer needed.
+Task 5. Elastic Load Balancing (ELB) and Auto Scaling basics.
+Create a security group named CloudX-ALB-SG for the Application Load Balancer permitting HTTP traffic on 80 port from 0.0.0.0/0. Then create a security group named CloudX-EC2-SG for EC2 instances permitting HTTP traffic on port 80 from the CloudX-ALB-SG security group.
+Launch a new EC2 instance with the content of this for Ubuntu Server AMI or this Amazon Linux AMI as user data. Keep the rest of configuration similar to the task's 1. Create a new AMI (CloudXWebAMI) based on this instance. Terminate the instance when the AMI is ready.
+Configure a launch template named CloudXALBLaunchConfig using the CloudXWebAMI AMI. Use the CloudX-EC2-SG security group in this launch configuration. Select t2.micro for instance type.
+Create an Application Load Balancer named CloudX-ALB. During the ALB configuration, leave the default listener rules. Configure the ALB to use 2 Availability Zones. Configure the ALB to use the CloudX-ALB-SG security group you created earlier. In the creation process, create a target group named CloudXTargetGroup. Configure the health check path to /index.html.
+Configure an Auto Scaling group named CloudX-ASG. Use the launch configuration you created earlier. Configure your Auto Scaling group to use your existing VPC, subnets, and the ALB. Configure a target tracking scaling policy to trigger when the average CPU utilization is 75%. Minimum hosts should be 2, maximum should be 4. After everything is done check the ALB's public DNS address. Check how ALB distributes traffic across instances.
+OPTIONALLY*, enable session stickiness for ALB and observe how the ALB distributes traffic now.
+info
+*Optional tasks are not mandatory for completion. If you don’t have a time to complete it - just skip it. It's highly recommended if you want to develop strong skills in given topic.
+
+Clean up resources
+Once you've done and attached results of your work in Learn portal, terminate/remove/stop created resources (S3 bucket(s), EC2 instance(s), CloudFront distributions, Elastic Load Balancer(s), etc.) in all regions to avoid unexpected charges at the end of month.

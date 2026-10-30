@@ -1,12 +1,12 @@
 # Can we test/measure a11y somehow?
 
-## 🔹 Testing and Measuring Accessibility (a11y)
+## Testing and Measuring Accessibility (a11y) {#%F0%9F%94%B9-testing-and-measuring-accessibility-a11y}
 
 Accessibility (a11y) can and should be **tested and measured** to ensure that websites and applications are usable by everyone, including users with disabilities.
 
 ---
 
-## 1️⃣ Automated Testing Tools
+## Automated Testing Tools {#_1%EF%B8%8F%E2%83%A3-automated-testing-tools}
 
 Automated tools can **quickly catch common accessibility issues**, though they cannot cover everything.
 
@@ -22,7 +22,7 @@ Automated tools can **quickly catch common accessibility issues**, though they c
 
 ---
 
-## 2️⃣ Manual Testing Techniques
+## Manual Testing Techniques {#_2%EF%B8%8F%E2%83%A3-manual-testing-techniques}
 
 ### 2.1 Keyboard Navigation
 
@@ -46,7 +46,7 @@ Automated tools can **quickly catch common accessibility issues**, though they c
 
 ---
 
-## 3️⃣ Metrics & Scoring
+## Metrics & Scoring {#_3%EF%B8%8F%E2%83%A3-metrics-scoring}
 
 - **Accessibility Score (0–100)**: Provided by tools like Lighthouse.  
 - **Number of Violations**: Count of failed rules (missing alt, ARIA errors, contrast issues).  
@@ -55,7 +55,7 @@ Automated tools can **quickly catch common accessibility issues**, though they c
 
 ---
 
-## 4️⃣ Integrating Accessibility Testing in Development
+## Integrating Accessibility Testing in Development {#_4%EF%B8%8F%E2%83%A3-integrating-accessibility-testing-in-development}
 
 1. **During Development**
    - Use **eslint-plugin-jsx-a11y** in React or similar linters.
@@ -71,13 +71,13 @@ Automated tools can **quickly catch common accessibility issues**, though they c
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - Accessibility can be measured using **automated tools** (Lighthouse, axe, WAVE) and **manual testing** (keyboard, screen readers, contrast checks).  
 - **Metrics** include accessibility score, number of violations, keyboard coverage, and screen reader usability.  
 - **Best practice:** Combine **automated testing + manual testing** early and throughout development.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Treat accessibility as **part of the definition of done** for every feature. Continuous checks expose regressions; conformance needs scoped evidence and human evaluation, not a score alone.
 
 ## Reproducible audit workflow

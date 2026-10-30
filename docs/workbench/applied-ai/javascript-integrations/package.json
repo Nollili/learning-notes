@@ -1,0 +1,16 @@
+{
+  "name": "learning-notes-ai-integrations",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node --check mcp-server.mjs && node --check graph.mjs && node --check check.mjs",
+    "test": "node check.mjs",
+    "mcp": "node mcp-server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@langchain/langgraph": "1.5.3",
+    "zod": "3.25.76"
+  }
+}

@@ -1,4 +1,4 @@
-### Are all functional components pure?
+# Are all functional components pure? {#are-all-functional-components-pure}
 
 No, not all functional components in React are **pure**. While functional components can be written as **pure functions**, their purity depends on how they are implemented.
 

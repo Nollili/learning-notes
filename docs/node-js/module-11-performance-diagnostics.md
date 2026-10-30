@@ -21,7 +21,7 @@
 
 ---
 
-## 1. A performance investigation is an experiment
+## A performance investigation is an experiment {#_1-a-performance-investigation-is-an-experiment}
 
 Performance work begins with a symptom, not an optimization idea.
 
@@ -65,7 +65,7 @@ A faster response is not an improvement if it returns stale, incomplete, or inco
 
 ---
 
-## 2. Throughput, latency, concurrency, and saturation
+## Throughput, latency, concurrency, and saturation {#_2-throughput-latency-concurrency-and-saturation}
 
 These terms describe different parts of system behavior.
 
@@ -110,7 +110,7 @@ An unbounded queue hides overload temporarily. It converts a clear rejection int
 
 ---
 
-## 3. Latency distributions and percentiles
+## Latency distributions and percentiles {#_3-latency-distributions-and-percentiles}
 
 An average can hide a poor user experience.
 
@@ -156,7 +156,7 @@ Prefer a tool or mode that can schedule arrivals independently of response compl
 
 ---
 
-## 4. Classifying the bottleneck
+## Classifying the bottleneck {#_4-classifying-the-bottleneck}
 
 Do not assume that a slow Node.js service has a slow event loop. First classify the evidence.
 
@@ -198,7 +198,7 @@ If the request handler awaits a downstream API for two seconds, the Node.js proc
 
 ---
 
-## 5. Measuring application work
+## Measuring application work {#_5-measuring-application-work}
 
 Use a monotonic clock for durations. A monotonic clock is not affected by wall-clock corrections.
 
@@ -256,7 +256,7 @@ Instrumentation explains known operations. Sampling finds unexpected hot paths. 
 
 ---
 
-## 6. Event-loop delay and utilization
+## Event-loop delay and utilization {#_6-event-loop-delay-and-utilization}
 
 Node.js executes JavaScript callbacks on an event-loop thread. A long-running callback delays unrelated timers, requests, and promise continuations handled by that loop.
 
@@ -295,7 +295,7 @@ Fix the design before adding workers. Smaller batches, streaming, bounds, or a b
 
 ---
 
-## 7. Memory, garbage collection, and leaks
+## Memory, garbage collection, and leaks {#_7-memory-garbage-collection-and-leaks}
 
 Node.js memory is more than the JavaScript heap.
 
@@ -371,7 +371,7 @@ A larger heap may postpone the crash. It can also increase garbage-collection pa
 
 ---
 
-## 8. CPU profiles and flame graphs
+## CPU profiles and flame graphs {#_8-cpu-profiles-and-flame-graphs}
 
 A CPU profile samples stack traces while the program runs. A flame graph visualizes the aggregated stacks.
 
@@ -413,7 +413,7 @@ Replacing repeated linear searches with an indexed lookup can matter more than r
 
 ---
 
-## 9. Worker threads and process scaling
+## Worker threads and process scaling {#_9-worker-threads-and-process-scaling}
 
 Worker threads run JavaScript in parallel threads within one process. Each worker has its own JavaScript environment and event loop.
 
@@ -467,7 +467,7 @@ Do not use in-process workers as a durable job queue. A process crash loses in-m
 
 ---
 
-## 10. Database and connection-pool diagnosis
+## Database and connection-pool diagnosis {#_10-database-and-connection-pool-diagnosis}
 
 Database time has several components:
 
@@ -526,7 +526,7 @@ Pool metrics should include:
 
 ---
 
-## 11. Load testing without fooling yourself
+## Load testing without fooling yourself {#_11-load-testing-without-fooling-yourself}
 
 A load test is a controlled experiment. It is not simply “send as many requests as possible.”
 
@@ -588,7 +588,7 @@ The point where latency accelerates or errors rise is more informative than one 
 
 ---
 
-## 12. Logs, metrics, traces, and profiles
+## Logs, metrics, traces, and profiles {#_12-logs-metrics-traces-and-profiles}
 
 Each signal answers different questions.
 
@@ -634,7 +634,7 @@ Logs should carry trace and span identifiers when tracing is active. Metrics sho
 
 ---
 
-## 13. Diagnostic playbooks
+## Diagnostic playbooks {#_13-diagnostic-playbooks}
 
 ### The service becomes slow under load
 
@@ -692,7 +692,7 @@ Do not dismiss tail latency because the average is good. One user workflow may c
 
 ---
 
-## 14. Common optimization mistakes
+## Common optimization mistakes {#_14-common-optimization-mistakes}
 
 | Mistake | Why it fails | Better approach |
 | --- | --- | --- |
@@ -725,11 +725,11 @@ A timeout longer than the caller's remaining budget cannot produce a useful answ
 
 ---
 
-## 15. Practice exercises
+## Practice exercises {#_15-practice-exercises}
 
 [Exercises and learner checklist](../practice/node-js/module-11-performance-diagnostics.md).
 
-## 16. Final review checklist
+## Final review checklist {#_16-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-11-performance-diagnostics.md).
 

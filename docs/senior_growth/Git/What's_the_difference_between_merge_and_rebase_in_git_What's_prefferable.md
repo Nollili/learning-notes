@@ -1,12 +1,12 @@
 # What's the difference between merge and rebase in git? What's prefferable?
 
-## 🔹 Git: Merge vs Rebase
+## Git: Merge vs Rebase {#%F0%9F%94%B9-git-merge-vs-rebase}
 
 Both **merge** and **rebase** are Git operations used to integrate changes from one branch into another, but they work differently and produce different commit histories.
 
 ---
 
-## 1️⃣ Merge
+## Merge {#_1%EF%B8%8F%E2%83%A3-merge}
 
 **Definition:** Integrates another history into the current branch. If the current tip is an ancestor of the other tip, the default merge can fast-forward by moving the branch pointer without a new commit. A divergent successful merge normally creates a commit with both parents; `--no-ff` requests a merge commit even when fast-forwarding is possible, while `--ff-only` refuses divergence. Configuration and options affect policy.
 
@@ -39,7 +39,7 @@ git merge feature/login
 
 ---
 
-## 2️⃣ Rebase
+## Rebase {#_2%EF%B8%8F%E2%83%A3-rebase}
 
 **Definition:** Re-applies commits from one branch **on top of another branch**, creating a **linear history**.
 
@@ -71,7 +71,7 @@ git rebase main
 
 ---
 
-## 3️⃣ Merge vs Rebase Summary
+## Merge vs Rebase Summary {#_3%EF%B8%8F%E2%83%A3-merge-vs-rebase-summary}
 
 | Aspect                  | Merge                         | Rebase                                   |
 | ----------------------- | ----------------------------- | ---------------------------------------- |
@@ -83,7 +83,7 @@ git rebase main
 
 ---
 
-## 4️⃣ Which is Preferable?
+## Which is Preferable? {#_4%EF%B8%8F%E2%83%A3-which-is-preferable}
 
 **Rule of Thumb:**
 
@@ -102,7 +102,7 @@ git rebase main
 
 ---
 
-### ✅ Senior Tip
+### Senior Tip {#%E2%9C%85-senior-tip}
 
 * Avoid rebasing shared history; any exception requires explicit coordination with every affected collaborator. In this repository only the user may push, and no remote action is part of this exercise.
 * Prefer **rebase for local cleanup** and **merge for collaborative merges**.

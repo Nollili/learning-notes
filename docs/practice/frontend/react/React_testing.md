@@ -1,4 +1,4 @@
-# Practice: Jest, Vite, and React Testing Library (RTL)
+# Practice: React testing with Jest, Vite and React Testing Library {#practice-jest-vite-and-react-testing-library-rtl}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

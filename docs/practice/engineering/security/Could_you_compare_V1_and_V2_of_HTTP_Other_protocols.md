@@ -1,4 +1,4 @@
-# Practice: 🌍 HTTP Versions & Modern Web Protocols — Comparison and Performance Impact
+# Practice: HTTP Versions & Modern Web Protocols — Comparison and Performance Impact {#practice-%F0%9F%8C%8D-http-versions-modern-web-protocols-%E2%80%94-comparison-and-performance-impact}
 
 **Learner status: outstanding.** Author verification does not complete these criteria.
 

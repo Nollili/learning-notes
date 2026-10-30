@@ -1,10 +1,10 @@
 # Please describe Strategy design pattern. What are the valid use cases for it?
 
-# 🎯 Strategy Design Pattern in JavaScript
+## Strategy Design Pattern in JavaScript {#%F0%9F%8E%AF-strategy-design-pattern-in-javascript}
 
 ---
 
-## 1️⃣ What is the Strategy Pattern?
+## What is the Strategy Pattern? {#_1%EF%B8%8F%E2%83%A3-what-is-the-strategy-pattern}
 
 The **Strategy pattern** is a **behavioral design pattern** that allows you to **define a family of algorithms or behaviors**, encapsulate each one, and **make them interchangeable** at runtime.
 
@@ -18,7 +18,7 @@ The **Strategy pattern** is a **behavioral design pattern** that allows you to *
 
 ---
 
-## 2️⃣ Classic JavaScript Example
+## Classic JavaScript Example {#_2%EF%B8%8F%E2%83%A3-classic-javascript-example}
 
 ```js
 // Strategy Interface: all strategies must implement `execute`
@@ -64,44 +64,44 @@ console.log(calc.calculate(2, 3)); // 6
 
 ---
 
-## 3️⃣ Use Cases for Strategy Pattern
+## Use Cases for Strategy Pattern {#_3%EF%B8%8F%E2%83%A3-use-cases-for-strategy-pattern}
 
-### 1. Dynamic Algorithms
+### Dynamic Algorithms {#_1-dynamic-algorithms}
 
 * When multiple algorithms exist for the same task and need to be chosen at runtime.
 * Example: Sorting strategies (`quickSort`, `mergeSort`, `bubbleSort`) based on data size.
 
-### 2. Varying Business Rules
+### Varying Business Rules {#_2-varying-business-rules}
 
 * When behavior changes based on **conditions, user roles, or configurations**.
 * Example: Pricing strategies, tax calculation, discount rules.
 
-### 3. Payment Gateways / APIs
+### Payment Gateways / APIs {#_3-payment-gateways-apis}
 
 * Abstract multiple payment methods under a single interface.
 * Example: Stripe, PayPal, BankTransfer — all implement `pay()`.
 
-### 4. Logging / Analytics
+### Logging / Analytics {#_4-logging-analytics}
 
 * Switch logging strategies dynamically (console, file, remote server).
 
-### 5. UI Rendering / Formatting
+### UI Rendering / Formatting {#_5-ui-rendering-formatting}
 
 * Apply different formatting/rendering strategies based on type or device.
 * Example: Date formatting for different locales, theme-based rendering.
 
 ---
 
-## 4️⃣ Benefits of Strategy Pattern
+## Benefits of Strategy Pattern {#_4%EF%B8%8F%E2%83%A3-benefits-of-strategy-pattern}
 
-* ✅ **Encapsulation:** Keeps algorithms separate from client code.
-* ✅ **Flexibility:** Swap behaviors at runtime without modifying the context.
-* ✅ **Maintainability:** Easy to add new strategies without touching existing code.
-* ✅ **Testable:** Each strategy can be tested independently.
+* **Encapsulation:** Keeps algorithms separate from client code.
+* **Flexibility:** Swap behaviors at runtime without modifying the context.
+* **Maintainability:** Easy to add new strategies without touching existing code.
+* **Testable:** Each strategy can be tested independently.
 
 ---
 
-## 5️⃣ Strategy Pattern vs If-Else / Switch
+## Strategy Pattern vs If-Else / Switch {#_5%EF%B8%8F%E2%83%A3-strategy-pattern-vs-if-else-switch}
 
 **Without Strategy:**
 
@@ -125,7 +125,7 @@ function calculate(a, b, type) {
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * **Strategy pattern = dynamic behavior selection**
 * Best for **interchangeable algorithms**, **configurable behavior**, and **runtime decision-making**
@@ -136,7 +136,7 @@ function calculate(a, b, type) {
   * Sorting / filtering functions
   * UI rendering logic based on state or props
 
-> 💡 Senior Tip:
+> Senior Tip:
 > Extract strategies when independently changing algorithms share a useful contract. A short, exhaustive switch can be the clearest design for a fixed set; adding classes alone does not improve it.
 
 

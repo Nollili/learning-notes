@@ -27,7 +27,7 @@
 
 ---
 
-## 1. NoSQL mental model
+## NoSQL mental model {#_1-nosql-mental-model}
 
 **NoSQL** means “not only SQL.” It is an umbrella term for databases that do not primarily use the traditional relational table model. Depending on the database, records may be documents, key-value entries, wide rows, or graph nodes and edges.
 
@@ -63,7 +63,7 @@ The best database is the one whose model and guarantees fit these requirements. 
 
 ---
 
-## 2. Relational and NoSQL databases
+## Relational and NoSQL databases {#_2-relational-and-nosql-databases}
 
 Relational databases organize data into tables with declared columns and relationships. Document databases organize it into nested records that resemble application objects. Neither model is universally superior.
 
@@ -98,7 +98,7 @@ Polyglot persistence uses more than one database model. An application might use
 
 ---
 
-## 3. The four main NoSQL types
+## The four main NoSQL types {#_3-the-four-main-nosql-types}
 
 ### Document databases
 
@@ -185,7 +185,7 @@ Graph databases are useful when traversing relationships is the main workload: s
 
 ---
 
-## 4. MongoDB fundamentals
+## MongoDB fundamentals {#_4-mongodb-fundamentals}
 
 MongoDB is a document database. Its hierarchy is:
 
@@ -238,7 +238,7 @@ Learn MongoDB concepts underneath Mongoose. An ODM does not remove the need to u
 
 ---
 
-## 5. Connecting to and exploring MongoDB
+## Connecting to and exploring MongoDB {#_5-connecting-to-and-exploring-mongodb}
 
 A Node.js application reaches MongoDB through a connection URI. Keep the URI in configuration because hosts, credentials, and database names differ between development, testing, and production.
 
@@ -283,7 +283,7 @@ Atlas commonly supplies a DNS seed-list URI beginning with `mongodb+srv://`. Tre
 
 ---
 
-## 6. BSON, ObjectId, and indexes
+## BSON, ObjectId, and indexes {#_6-bson-objectid-and-indexes}
 
 ### BSON
 
@@ -352,7 +352,7 @@ Every index consumes storage and memory and must be updated on writes. Do not in
 
 ---
 
-## 7. ODM and Mongoose fundamentals
+## ODM and Mongoose fundamentals {#_7-odm-and-mongoose-fundamentals}
 
 An **Object Document Mapper (ODM)** maps application objects to documents and provides a structured API around database operations. An **Object Relational Mapper (ORM)** serves a similar role for relational tables and rows.
 
@@ -387,7 +387,7 @@ Mongoose includes TypeScript declarations; a separate `@types/mongoose` package 
 
 ---
 
-## 8. Mongoose schemas and models
+## Mongoose schemas and models {#_8-mongoose-schemas-and-models}
 
 A **schema** declares document shape and behavior. A **model** is the query and construction API connected to a collection. A **document** is a hydrated instance returned or created by a model.
 
@@ -461,7 +461,7 @@ Each layer has a different role:
 
 ---
 
-## 9. Connections and application lifecycle
+## Connections and application lifecycle {#_9-connections-and-application-lifecycle}
 
 Keep database connection code separate and fail startup before accepting requests.
 
@@ -565,7 +565,7 @@ seed().catch((error) => {
 
 ---
 
-## 10. CRUD repositories and queries
+## CRUD repositories and queries {#_10-crud-repositories-and-queries}
 
 The repository isolates Mongoose and MongoDB details from services and controllers.
 
@@ -659,7 +659,7 @@ Returning a meaningful result lets the service distinguish deletion from “not 
 
 ---
 
-## 11. Updates, validation, hooks, and virtuals
+## Updates, validation, hooks, and virtuals {#_11-updates-validation-hooks-and-virtuals}
 
 ### Update operators
 
@@ -766,7 +766,7 @@ Enable `{ toJSON: { virtuals: true } }` when virtuals should appear in JSON resp
 
 ---
 
-## 12. Aggregation pipelines
+## Aggregation pipelines {#_12-aggregation-pipelines}
 
 An aggregation pipeline sends documents through ordered transformation stages.
 
@@ -821,7 +821,7 @@ Aggregation returns plain result objects shaped by the pipeline, not normal hydr
 
 ---
 
-## 13. Embedding and referencing
+## Embedding and referencing {#_13-embedding-and-referencing}
 
 MongoDB relationships are modeled by embedding related data inside a parent document, referencing other documents by ID, or combining both.
 
@@ -931,7 +931,7 @@ MongoDB guarantees atomicity for a single-document write. This is a major reason
 
 ---
 
-## 14. `populate()` and `$lookup`
+## `populate()` and `$lookup` {#_14-populate-and-lookup}
 
 ### Mongoose population
 
@@ -976,7 +976,7 @@ Neither is automatically faster. Measure with realistic cardinality, indexes, se
 
 ---
 
-## 15. CAP theorem
+## CAP theorem {#_15-cap-theorem}
 
 CAP describes distributed data systems when a **network partition** prevents nodes from communicating.
 
@@ -1010,7 +1010,7 @@ Classifications describe defaults and failure behavior, not every possible confi
 
 ---
 
-## 16. ACID and BASE
+## ACID and BASE {#_16-acid-and-base}
 
 CAP discusses distributed behavior during partitions. ACID discusses transaction guarantees. They answer different questions.
 
@@ -1050,7 +1050,7 @@ This is not a strict SQL-versus-NoSQL divide. Relational systems can use asynchr
 
 ---
 
-## 17. Architecture, testing, and production readiness
+## Architecture, testing, and production readiness {#_17-architecture-testing-and-production-readiness}
 
 ### Layer boundaries
 
@@ -1119,7 +1119,7 @@ Always close Mongoose connections after tests so Jest can terminate. Isolate tes
 
 ---
 
-## 18. Concurrency, atomicity, and transactions
+## Concurrency, atomicity, and transactions {#_18-concurrency-atomicity-and-transactions}
 
 Application code often performs a read, makes a decision, and then writes. Another request can change the document between those steps.
 
@@ -1227,7 +1227,7 @@ Transactions require a suitable MongoDB deployment. They add coordination cost a
 
 ---
 
-## 19. Read/write concerns and schema evolution
+## Read/write concerns and schema evolution {#_19-read-write-concerns-and-schema-evolution}
 
 ### Write concern
 
@@ -1314,7 +1314,7 @@ Build new indexes before code depends on them. Watch index-build impact and stor
 
 ---
 
-## 20. Diagnosing MongoDB applications
+## Diagnosing MongoDB applications {#_20-diagnosing-mongodb-applications}
 
 ### Slow query workflow
 
@@ -1358,7 +1358,7 @@ Total possible connections equal roughly pool size multiplied by replica count. 
 
 [Exercises and learner checklist](../practice/node-js/module-07-mongodb-mongoose.md).
 
-## 21. Final review checklist
+## Final review checklist {#_21-final-review-checklist}
 
 [Exercises and learner checklist](../practice/node-js/module-07-mongodb-mongoose.md).
 

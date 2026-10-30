@@ -20,7 +20,7 @@ Requirements:
 
 ---
 
-## 19. Final review checklist
+## Final review checklist {#_19-final-review-checklist}
 
 You should be able to explain and demonstrate each item:
 
@@ -106,7 +106,7 @@ You should be able to explain and demonstrate each item:
 - Close servers, connections, timers, and subscriptions on every lifecycle path.
 - Test ordinary behavior, malformed input, dependency failure, timeout, disconnect, retry, and shutdown.
 
-## 20. Boundary failure labs
+## Boundary failure labs {#_20-boundary-failure-labs}
 
 **HTTP acceptance:** run the handler on an ephemeral loopback port in a separate fixture. Valid UTF-8 application/json with parameters succeeds; application/jsonjunk, an unsupported charset, malformed media type and missing type reject415; malformed/empty/BOM/invalid-UTF8 JSON reject400. A tiny chunked upload exceeding the configured byte bound receives best-effort413 with Connection:close without waiting for unbounded input; a stalled body receives408 under the application deadline. A peer abort does not produce an unhandled error or leave a referenced timer. Confirm source listeners/collector buffers are released. The actual proxy/Expect100/HTTP2 policy still requires integration evidence.
 

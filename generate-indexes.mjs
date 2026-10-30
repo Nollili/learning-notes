@@ -1,24 +1,15 @@
 import fs from 'fs';
 import path from 'path';
+import { cleanTitle, getPageTitle } from './docs/.vitepress/content-policy.mjs';
 
 const rootDir = path.resolve(process.argv[2] ?? './docs/senior_growth');
 
 function getTitleFromFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    // Match the first line starting with one or more #
-    const match = content.match(/^#{1,6}\s*(.+)/m);
-    if (match && match[1]) {
-      return match[1].trim();
-    }
-
-    // fallback: first non-empty line, stripped of any leading # and spaces
-    const firstLine = content.split('\n').find(line => line.trim().length > 0);
-    return firstLine
-      ? firstLine.trim().replace(/^#{1,6}\s*/, '').trim()
-      : path.basename(filePath);
+    return getPageTitle(content, path.basename(filePath));
   } catch {
-    return path.basename(filePath);
+    return cleanTitle(path.basename(filePath));
   }
 }
 
@@ -31,7 +22,7 @@ function generateOverview(dir) {
     i => i.isFile() && i.name.endsWith('.md') && i.name !== 'index.md'
   );
 
-  let content = `# ${path.basename(dir)}\n\n`;
+  let content = `# ${cleanTitle(path.basename(dir))}\n\n`;
 
   if (files.length > 0) {
     content += `## Notes\n\n`;
@@ -54,7 +45,7 @@ function generateOverview(dir) {
     for (const folder of subfolders) {
       if (folder.name.startsWith('.')) continue;
       const folderName = folder.name;
-      content += `- [${folderName}](./${folderName}/)\n`;
+      content += `- [${cleanTitle(folderName)}](./${folderName}/)\n`;
     }
   }
 
@@ -72,4 +63,4 @@ function traverse(dir) {
 }
 
 traverse(rootDir);
-console.log(`✅ index.md files generated successfully under ${rootDir}`);
+console.log(`index.md files generated successfully under ${rootDir}`);

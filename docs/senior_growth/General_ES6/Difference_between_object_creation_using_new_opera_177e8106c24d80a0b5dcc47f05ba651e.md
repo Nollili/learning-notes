@@ -1,10 +1,10 @@
-### Difference between object creation using new operator and function constructor?
+# Difference between object creation using new operator and function constructor? {#difference-between-object-creation-using-new-operator-and-function-constructor}
 
 The new operator invokes a constructor; these are not competing creation mechanisms. Compare construction with new against a factory function that explicitly returns an object.
 
 ---
 
-### **1. Object Creation Using the `new` Operator**
+### **Object Creation Using the `new` Operator** {#_1-object-creation-using-the-new-operator}
 
 The **`new` operator** is used to create an object from a constructor function. It sets up the newly created object to inherit from the prototype of the constructor function and executes the constructor function with the provided arguments.
 
@@ -31,7 +31,7 @@ console.log(person1); // Output: Person { name: 'John', age: 30 }
 
 ---
 
-### **2. Object Creation Using a Factory Function**
+### **Object Creation Using a Factory Function** {#_2-object-creation-using-a-factory-function}
 
 A **function constructor** is a function intended to be used with the `new` operator to initialize a newly created object. When a function is called with `new`, it acts as a constructor function.
 

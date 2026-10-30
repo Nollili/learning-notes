@@ -1,12 +1,12 @@
 # Which tags did HTML 5 introduce?
 
-## 🔹 HTML5 New Semantic & Structural Tags
+## HTML5 New Semantic & Structural Tags {#%F0%9F%94%B9-html5-new-semantic-structural-tags}
 
 HTML5 introduced several **new elements** to improve **semantic structure, accessibility, and multimedia support**. These tags help browsers, developers, and assistive technologies understand the **purpose and structure of content**.
 
 ---
 
-## 1️⃣ Structural / Semantic Elements
+## Structural / Semantic Elements {#_1%EF%B8%8F%E2%83%A3-structural-semantic-elements}
 
 | Tag          | Purpose / Description                                    |
 |-------------|---------------------------------------------------------|
@@ -27,7 +27,7 @@ HTML5 introduced several **new elements** to improve **semantic structure, acces
 
 ---
 
-## 2️⃣ Multimedia Elements
+## Multimedia Elements {#_2%EF%B8%8F%E2%83%A3-multimedia-elements}
 
 | Tag          | Purpose / Description                                    |
 |-------------|---------------------------------------------------------|
@@ -40,7 +40,7 @@ HTML5 introduced several **new elements** to improve **semantic structure, acces
 
 ---
 
-## 3️⃣ Form / Input Enhancements
+## Form / Input Enhancements {#_3%EF%B8%8F%E2%83%A3-form-input-enhancements}
 
 | Tag / Attribute | Purpose / Description                                  |
 |-----------------|--------------------------------------------------------|
@@ -53,14 +53,14 @@ HTML5 introduced several **new elements** to improve **semantic structure, acces
 
 ---
 
-## 4️⃣ Deprecated / Removed in HTML5
+## Deprecated / Removed in HTML5 {#_4%EF%B8%8F%E2%83%A3-deprecated-removed-in-html5}
 
 - Obsolete presentational elements include `<center>`, `<font>`, `<big>`, `<strike>`  
   → replaced by **CSS for styling**.
 
 ---
 
-## 5️⃣ Benefits of HTML5 Tags
+## Benefits of HTML5 Tags {#_5%EF%B8%8F%E2%83%A3-benefits-of-html5-tags}
 
 1. **Better semantics & structure** → easier for search engines and screen readers.  
 2. **Improved accessibility** → ARIA roles are often implied.  
@@ -69,7 +69,7 @@ HTML5 introduced several **new elements** to improve **semantic structure, acces
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 HTML5 introduced **semantic, multimedia, and enhanced form tags** to:
 
@@ -77,7 +77,7 @@ HTML5 introduced **semantic, multimedia, and enhanced form tags** to:
 - Improve **accessibility and SEO**.
 - Enable **rich media experiences** without extra plugins.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always use **semantic HTML5 tags over generic `<div>`s** whenever possible; it improves **a11y, SEO, and maintainability**.
 
 ## Living HTML semantics and practical choices

@@ -2,15 +2,18 @@
 
 The core target is to choose a representation, implement a small algorithm, explain **why it is correct**, and account for its time and storage. JavaScript functions, arrays/objects, loops, references and basic TypeScript types are sufficient prerequisites; a framework, database or completed Node service is not required.
 
-## Recommended reading order
+## Reasoning and representations
 
-1. [Complexity and cost models](./complexity-and-cost.md): define input sizes and distinguish worst, expected and amortized costs.
-2. [Correctness, iteration and recursion](./reasoning-and-recursion.md): contracts, invariants, progress and counterexamples.
-3. [Data structures](./data-structures.md): arrays/maps/sets, stacks/FIFO/deques, linked nodes and ownership.
-4. [Binary search](./binary-search.md): a complete half-open interval proof and boundary trace.
-5. [Sorting and quicksort](./sorting.md): partition correctness, comparator/stability policy and allocation costs.
-6. [Trees, graphs and traversal](./trees-graphs-traversal.md): representation, BFS/DFS/inorder and their different guarantees.
-7. [Priority queues](./priority-queues.md): heap invariants and a bounded local scheduler.
+- [Complexity and cost models](./complexity-and-cost.md): define input sizes and distinguish worst, expected and amortized costs.
+- [Correctness, iteration and recursion](./reasoning-and-recursion.md): contracts, invariants, progress and counterexamples.
+- [Data structures](./data-structures.md): arrays/maps/sets, stacks/FIFO/deques, linked nodes and ownership.
+
+## Algorithms and traversal
+
+- [Binary search](./binary-search.md): a complete half-open interval proof and boundary trace.
+- [Sorting and quicksort](./sorting.md): partition correctness, comparator/stability policy and allocation costs.
+- [Trees, graphs and traversal](./trees-graphs-traversal.md): representation, BFS/DFS/inorder and their different guarantees.
+- [Priority queues](./priority-queues.md): heap invariants and a bounded local scheduler.
 
 The [coverage map](./coverage-map.md) reconciles the existing hub sources, prerequisites, depth, examples and practice, including runtime/network/database continuations. It distinguishes what was retained from what was expanded or added. The old Big O/quicksort URLs remain compatibility pages.
 

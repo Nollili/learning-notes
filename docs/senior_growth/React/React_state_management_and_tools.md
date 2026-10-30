@@ -3,7 +3,7 @@
 
 While Redux is a powerful and widely-used state management library, it's not the only option available. Depending on your project's needs, you might find that another solution fits better.
 
-### 1. MobX
+### MobX {#_1-mobx}
 
 **What is MobX?**  
 MobX is a simple and scalable state management library that makes state management transparent by applying functional reactive programming (FRP). It uses observable data structures to automatically track and update state changes in your application.
@@ -19,7 +19,7 @@ If you prefer an object-oriented approach and want to minimize boilerplate code,
 
 ---
 
-### 2. Recoil — archived legacy context
+### Recoil — archived legacy context {#_2-recoil-—-archived-legacy-context}
 
 **What is Recoil?**  
 Developed by Facebook, Recoil is a state management library designed specifically for React. It provides a way to share state across components with minimal friction, using atoms and selectors to manage state and derived data.
@@ -34,7 +34,7 @@ The official repository was archived on2025-01-01. Preserve concepts when mainta
 
 ---
 
-### 3. Effector
+### Effector {#_3-effector}
 
 **What is Effector?**  
 Effector is a reactive state manager designed for predictable and efficient state management. It focuses on high performance and scalability by using reactive principles and avoiding unnecessary re-renders.
@@ -50,7 +50,7 @@ Effector is ideal for applications that require high performance and efficient s
 
 ---
 
-### 4. Reatom
+### Reatom {#_4-reatom}
 
 **What is Reatom?**  
 Reatom is a tiny and powerful state manager inspired by Redux but designed to be more efficient and developer-friendly. It emphasizes modularity and reusability, allowing you to compose your application state using small, independent units.
@@ -66,7 +66,7 @@ If you're looking for a state management solution that combines the predictabili
 
 ---
 
-### 5. Apollo Client
+### Apollo Client {#_5-apollo-client}
 
 **What is Apollo Client?**  
 Apollo Client is a comprehensive state management library that enables you to manage both local and remote data with GraphQL. It's designed to work seamlessly with React and simplifies data fetching and caching.
@@ -81,7 +81,7 @@ If your application relies heavily on GraphQL APIs, Apollo Client is a strong ch
 
 ---
 
-### 6. XState
+### XState {#_6-xstate}
 
 **What is XState?**  
 XState is a library for creating, interpreting, and executing finite state machines and statecharts. It brings the formalism and power of state machines to React applications, allowing for more predictable state management.
@@ -96,7 +96,7 @@ XState is ideal for applications with complex state logic, such as multi-step wo
 
 ---
 
-### 7. Jotai
+### Jotai {#_7-jotai}
 
 **What is Jotai?**  
 Jotai is a primitive and flexible state management library for React that focuses on atomic state pieces. It's inspired by Recoil and offers a minimalistic API for managing state with atoms.

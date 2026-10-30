@@ -1,4 +1,4 @@
-# State
+# Stateless and stateful React components {#state}
 
 The typical rules of dividing components into stateful/stateless are the following:
 
@@ -34,17 +34,17 @@ In React, a component should never change its own props directly. A parent compo
 
 Excellent — this is another **fundamental React interview topic**, and how you explain it really shows your *depth of understanding* and whether you think in terms of **component architecture and data flow**.
 
-Let’s break it down the way a **senior developer** would explain it 👇
+Let’s break it down the way a **senior developer** would explain it
 
 ---
 
-## 🧠 **Core idea**
+## **Core idea** {#%F0%9F%A7%A0-core-idea}
 
 In React, components can be **stateful** or **stateless**, depending on whether they **hold and manage internal state**.
 
 ---
 
-### 🔹 **Stateless (or “Presentational”) Component**
+### **Stateless (or “Presentational”) Component** {#%F0%9F%94%B9-stateless-or-presentational-component}
 
 * **Has no internal state.**
 * Receives all data via **props**.
@@ -59,12 +59,12 @@ function Greeting({ name }) {
 }
 ```
 
-✅ **Use when:**
+ **Use when:**
 You just need to display data passed in from a parent (e.g., buttons, labels, UI cards).
 
 ---
 
-### 🔸 **Stateful (or “Container”) Component**
+### **Stateful (or “Container”) Component** {#%F0%9F%94%B8-stateful-or-container-component}
 
 * **Manages its own state** using `useState`, `useReducer`, or other hooks.
 * Can have **logic**, **side effects**, and **event handlers**.
@@ -84,12 +84,12 @@ function Counter() {
 }
 ```
 
-✅ **Use when:**
+ **Use when:**
 The component needs to track or update data internally (like open/closed state, input values, etc.).
 
 ---
 
-### ⚙️ **In modern React**
+### **In modern React** {#%E2%9A%99%EF%B8%8F-in-modern-react}
 
 Function and class components are both supported; new code commonly uses functions. Either can own state:
 
@@ -100,13 +100,13 @@ Hook usage alone does not define statefulness: useRef does not schedule renders 
 
 ---
 
-### 🧩 **Architecture insight (senior-level point)**
+### **Architecture insight (senior-level point)** {#%F0%9F%A7%A9-architecture-insight-senior-level-point}
 
 > “In a well-structured React app, I like to separate **stateful** ‘container’ components that handle logic from **stateless** ‘presentational’ components that handle UI. This separation improves reusability and makes testing and refactoring easier.”
 
 ---
 
-### 🗣️ **Interview-ready 30-second answer**
+### **Interview-ready 30-second answer** {#%F0%9F%97%A3%EF%B8%8F-interview-ready-30-second-answer}
 
 > “A stateful component manages its own data using state or hooks, while a stateless component just receives data via props and renders UI.
 > Functions and classes are both supported; the ownership distinction is whether they manage render state.

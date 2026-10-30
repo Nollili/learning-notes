@@ -1,4 +1,4 @@
-### Differences between and pros/cons of SPA, MPA? Other app types? PWA?
+# Differences between and pros/cons of SPA, MPA? Other app types? PWA? {#differences-between-and-pros-cons-of-spa-mpa-other-app-types-pwa}
 
 Here’s a breakdown of the differences, pros, cons, and use cases for **Single-Page Applications (SPA)**, **Multi-Page Applications (MPA)**, **Progressive Web Applications (PWA)**, and other types of applications.
 

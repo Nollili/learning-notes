@@ -1,4 +1,20 @@
-# Applied-AI coverage and ownership map
+# AI app coverage and ownership map
+
+## Beginner JavaScript route added 2026-10-28
+
+[Build AI Apps — JavaScript First](./index.md) is now the primary beginner entry. Existing sections below describe the deeper retained Python/reference mechanisms, not prerequisites to a first chatbot.
+
+| New owner | Implemented reference / remaining work |
+|---|---|
+| [JS foundations and chatbot](./javascript/first-call.md), [app lesson](./javascript/chatbot.md) | Runnable console/HTTP/browser simulation and optional fixed Responses adapter; streaming/React/auth/persistent conversations remain learner extensions |
+| [Structured output](./javascript/structured-output.md), [tools](./javascript/tools-workflows.md), [RAG](./javascript/rag.md) | Checked synthetic classification/quotes, public read dispatch, proposal-only state and lexical retrieval; generated classifier/tool loop/full cited RAG/embeddings remain integration practice |
+| [MCP](./javascript/mcp.md), [graphs](./javascript/stateful-workflows.md) | Actual pinned JS SDK stdio tool/resource/prompt and RAM interruption/resume fixtures; trusted write approval, durable state and desktop/HTTP host integration remain separate |
+| [Extensions](./javascript/extensions.md) | Python/hosted-store/n8n/multimedia/A2A decision guide and optional A2A exercise; no A2A or multimedia service implementation claimed |
+| [Practice](../practice/applied-ai/javascript-assistant.md) | JS-00–09 specifications; all independent learner work outstanding |
+
+[Verification record](./javascript/verification.md) states what actually ran. [AI for Software Development](../ai-assisted-engineering/) is the separate coding workflow path, including bug and feature references.
+
+## Retained deeper coverage
 
 Coverage below is based on actual explanations, contracts and worked source/tests, not headings alone. **Confirmed component coverage** means the boundary is taught and inspectable; it does not mean a full product, live provider or learner outcome was demonstrated. “Expanded” marks this round's connecting explanations; “new” marks the previously absent n8n material.
 

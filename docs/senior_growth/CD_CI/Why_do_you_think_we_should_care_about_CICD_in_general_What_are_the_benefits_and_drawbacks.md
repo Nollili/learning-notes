@@ -1,12 +1,12 @@
 # Why do you think we should care about CI/CD in general? What are the benefits and drawbacks?
 
-## 🔹 Why CI/CD Matters: Benefits & Drawbacks
+## Why CI/CD Matters: Benefits & Drawbacks {#%F0%9F%94%B9-why-ci-cd-matters-benefits-drawbacks}
 
 CI/CD (Continuous Integration / Continuous Delivery / Continuous Deployment) is a **modern software development practice** that automates testing, building, and deploying code. It’s a critical part of professional, high-quality software development.
 
 ---
 
-## 1️⃣ Benefits of CI/CD
+## Benefits of CI/CD {#_1%EF%B8%8F%E2%83%A3-benefits-of-ci-cd}
 
 ### 1.1 Faster Feedback and Reduced Bugs
 - Automated tests run **on every commit**, catching bugs early.
@@ -38,7 +38,7 @@ CI/CD (Continuous Integration / Continuous Delivery / Continuous Deployment) is 
 
 ---
 
-## 2️⃣ Drawbacks / Challenges of CI/CD
+## Drawbacks / Challenges of CI/CD {#_2%EF%B8%8F%E2%83%A3-drawbacks-challenges-of-ci-cd}
 
 ### 2.1 Initial Setup Complexity
 - Setting up pipelines, CI servers, and deployment scripts requires **time and expertise**.
@@ -64,7 +64,7 @@ CI/CD (Continuous Integration / Continuous Delivery / Continuous Deployment) is 
 
 ---
 
-## 3️⃣ Summary
+## Summary {#_3%EF%B8%8F%E2%83%A3-summary}
 
 | Aspect              | Benefit                                                                 | Drawback/Challenge                                         |
 |---------------------|------------------------------------------------------------------------|-----------------------------------------------------------|
@@ -76,13 +76,13 @@ CI/CD (Continuous Integration / Continuous Delivery / Continuous Deployment) is 
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - CI/CD is **not just tooling**, it’s a **software development philosophy** that encourages automation, testing, and fast delivery.
 - Well-chosen CI/CD checks can reduce risk and feedback time; measure outcomes rather than assuming the presence of a pipeline guarantees quality.
 - Drawbacks exist but are **offset by long-term benefits**, especially for medium-to-large teams or production-critical projects.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Measure CI/CD effectiveness using **pipeline duration, deployment frequency, and failure rate**. Use these metrics to continuously improve the process.
 
 

@@ -25,7 +25,7 @@ Pydantic fields are evaluated after parsing; a field limit alone does not cap th
 
 A pure ASGI key guard rejects unauthenticated requests before body parsing. This private API uses a separate inbound X-Study-Key credential, not the outbound SERVICE_TOKEN or a model key. Compare bounded bytes in constant time, reject duplicate credential headers and keep per-request state local. Supply a random key through the trusted startup configuration; never put it into a browser bundle.
 
-The custom request/route below reuses [strict decode_json](./bounded-document-streams.md), so duplicate keys/nonfinite values/invalid UTF-8 cannot be normalized away before validation. Automatic FastAPI request models/OpenAPI remain available through the route handler.
+The custom request/route below reuses [strict decode json](./bounded-document-streams.md), so duplicate keys/nonfinite values/invalid UTF-8 cannot be normalized away before validation. Automatic FastAPI request models/OpenAPI remain available through the route handler.
 
 <<< ../workbench/applied-ai/python/study_ai/api_transport.py
 

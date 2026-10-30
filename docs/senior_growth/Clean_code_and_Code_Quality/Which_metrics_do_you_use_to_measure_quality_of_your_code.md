@@ -1,12 +1,12 @@
 # Which metrics do you use to measure quality of your code?
 
-# 📊 Code Quality Metrics
+## Code Quality Metrics {#%F0%9F%93%8A-code-quality-metrics}
 
 Measuring code quality is essential for **maintainability, reliability, and scalability**. These are candidate signals for a project; they are not a claim of personal project experience or universal thresholds:
 
 ---
 
-## 1️⃣ Code Coverage
+## Code Coverage {#_1%EF%B8%8F%E2%83%A3-code-coverage}
 
 - **Definition:** Percentage of code executed by automated tests.
 - **Tools:** Jest, Vitest, Mocha + NYC/Istanbul, SonarQube
@@ -15,7 +15,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 2️⃣ Cyclomatic Complexity
+## Cyclomatic Complexity {#_2%EF%B8%8F%E2%83%A3-cyclomatic-complexity}
 
 - **Definition:** Measures the number of **independent paths** through a function or method.
 - **Tools:** SonarQube, ESLint plugins, Plato
@@ -24,7 +24,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 3️⃣ Code Duplication
+## Code Duplication {#_3%EF%B8%8F%E2%83%A3-code-duplication}
 
 - **Definition:** Percentage of repeated code across the codebase.
 - **Tools:** SonarQube, PMD, ESLint plugins
@@ -33,7 +33,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 4️⃣ Linting / Style Compliance
+## Linting / Style Compliance {#_4%EF%B8%8F%E2%83%A3-linting-style-compliance}
 
 - **Definition:** Adherence to coding standards and style guides.
 - **Tools:** ESLint, Prettier, Stylelint
@@ -42,7 +42,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 5️⃣ Test Pass Rate
+## Test Pass Rate {#_5%EF%B8%8F%E2%83%A3-test-pass-rate}
 
 - **Definition:** Percentage of tests passing in the CI pipeline.
 - **Tools:** Jest, Vitest, Cypress, Playwright
@@ -51,7 +51,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 6️⃣ Security Vulnerabilities
+## Security Vulnerabilities {#_6%EF%B8%8F%E2%83%A3-security-vulnerabilities}
 
 - **Definition:** Detection of known vulnerabilities in code or dependencies.
 - **Tools:** SonarQube, Snyk, npm audit, Dependabot
@@ -60,7 +60,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 7️⃣ Maintainability / Technical Debt
+## Maintainability / Technical Debt {#_7%EF%B8%8F%E2%83%A3-maintainability-technical-debt}
 
 - **Definition:** A composite metric often calculated by tools like SonarQube.
 - **Goal:** High maintainability rating, low technical debt
@@ -68,7 +68,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-## 8️⃣ Performance / Bundle Metrics (Optional for Frontend)
+## Performance / Bundle Metrics (Optional for Frontend) {#_8%EF%B8%8F%E2%83%A3-performance-bundle-metrics-optional-for-frontend}
 
 - **Definition:** Measures load time, bundle size, and runtime performance.
 - **Tools:** Webpack Bundle Analyzer, Lighthouse, Chrome DevTools
@@ -77,7 +77,7 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-### ✅ Summary Table
+### Summary Table {#%E2%9C%85-summary-table}
 
 | Metric | Tool | Goal | Importance |
 |--------|------|------|------------|
@@ -92,13 +92,13 @@ Measuring code quality is essential for **maintainability, reliability, and scal
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - **Quality metrics** provide signals that need behavioral evidence and context.
 - They help **detect risks early**, enforce standards, and improve maintainability.
 - Use **CI/CD pipelines** to enforce these metrics automatically for every merge.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Focus on **meaningful metrics**—coverage alone isn’t enough; combine with complexity, duplication, and maintainability to get a full picture.
 
 

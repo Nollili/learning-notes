@@ -1,4 +1,4 @@
-# Practice: Modals in react, portal or not.md
+# Practice: React modals and portals {#practice-modals-in-react-portal-or-not-md}
 
 **Status: outstanding learner practice.** Author checks do not complete these requirements.
 

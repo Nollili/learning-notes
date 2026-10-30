@@ -19,7 +19,7 @@ Prove that:
 
 ---
 
-## 21. Final review checklist
+## Final review checklist {#_21-final-review-checklist}
 
 ### Concurrency and operations
 

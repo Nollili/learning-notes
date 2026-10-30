@@ -1,4 +1,4 @@
-### What is Virtual DOM, why is it in React, why does it improve performance?
+# What is Virtual DOM, why is it in React, why does it improve performance? {#what-is-virtual-dom-why-is-it-in-react-why-does-it-improve-performance}
 
 ## What is the Virtual DOM?
 

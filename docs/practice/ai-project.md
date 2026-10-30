@@ -1,4 +1,6 @@
-# Applied AI, Python and assisted engineering projects
+# Deeper AI application, Python and development projects
+
+**Beginner entry:** use [JS-00–09](./applied-ai/javascript-assistant.md) for JavaScript AI apps and [DEV-01–05](./engineering/ai-engineering/development-project.md) for assistant-driven bug/feature work. The P-334–337 specifications below are retained deeper integrations; Python is optional for the beginner route.
 
 Build on the same notes/course product and the existing Python companion lessons. The primary control design is a bounded single-owner workflow, current source authorization and typed tool/model boundaries. LangGraph is the one framework example; plain functions/state transitions remain the baseline. These four specifications integrate the existing substantive lessons; they do not require mastering several agent SDKs, training a model or paying for cloud infrastructure.
 

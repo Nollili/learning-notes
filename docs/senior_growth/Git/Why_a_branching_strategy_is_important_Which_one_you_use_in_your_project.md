@@ -1,12 +1,12 @@
 # Why a branching strategy is important? Which one you use in your project?
 
-## 🔹 Importance of Branching Strategy in Git
+## Importance of Branching Strategy in Git {#%F0%9F%94%B9-importance-of-branching-strategy-in-git}
 
 A **branching strategy** defines how developers manage and organize branches in a Git repository. It ensures **team collaboration, code stability, and release management**.
 
 ---
 
-## 1️⃣ Why a Branching Strategy is Important
+## Why a Branching Strategy is Important {#_1%EF%B8%8F%E2%83%A3-why-a-branching-strategy-is-important}
 
 1. **Organized Development**
    - Clear separation of **features, bug fixes, and releases**.
@@ -30,7 +30,7 @@ A **branching strategy** defines how developers manage and organize branches in 
 
 ---
 
-## 2️⃣ Example Branching Strategy
+## Example Branching Strategy {#_2%EF%B8%8F%E2%83%A3-example-branching-strategy}
 
 This study example uses a **Git Flow-inspired strategy**; it is not evidence of an employer workflow or configured branch protections:
 
@@ -54,7 +54,7 @@ This study example uses a **Git Flow-inspired strategy**; it is not evidence of 
 
 ---
 
-## 3️⃣ Benefits of This Strategy
+## Benefits of This Strategy {#_3%EF%B8%8F%E2%83%A3-benefits-of-this-strategy}
 
 - Clear **separation between stable code and ongoing work**.
 - Supports **QA/testing before production**.
@@ -63,13 +63,13 @@ This study example uses a **Git Flow-inspired strategy**; it is not evidence of 
 
 ---
 
-### ✅ Summary
+### Summary {#%E2%9C%85-summary}
 
 - A branching strategy is critical to ensure **organization, stability, and smooth collaboration**.
 - This example uses a **Git Flow-inspired approach**: `main`, `develop`, feature/release/hotfix branches.
 - It balances **structured development** with **support for CI/CD and code review**.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always **protect main and release branches** and enforce **merge requests with CI/CD checks** to maintain high-quality production code.
 
 

@@ -2,7 +2,7 @@ if(!process.env.STUDY_DATABASE_URL)throw new Error('Use a disposable STUDY_DATAB
 import assert from 'node:assert/strict';import {Readable} from 'node:stream';import pg from 'pg';import {once} from 'node:events';import {schema,parseNote,multipartApp,sweepExpired} from './multipart.mjs';
 const headers={'content-type':'multipart/form-data; boundary=study'};
 function multipart(bytes,name='note'){return Buffer.concat([Buffer.from(`--study\r\nContent-Disposition: form-data; name="${name}"; filename="../../private.txt"\r\nContent-Type: text/plain\r\n\r\n`),bytes,Buffer.from('\r\n--study--\r\n')]);}
-assert.equal((await parseNote(Readable.from(multipart(Buffer.from('hello 🌍'))),headers)).toString(),'hello 🌍');
+assert.equal((await parseNote(Readable.from(multipart(Buffer.from('hello notes π'))),headers)).toString(),'hello notes π');
 for(const bytes of [Buffer.alloc(8193,65),Buffer.from([0xff]),Buffer.from(' \n'),Buffer.from([0])])await assert.rejects(parseNote(Readable.from(multipart(bytes)),headers));
 await assert.rejects(parseNote(Readable.from(multipart(Buffer.from('ok'),'wrong')),headers));
 await assert.rejects(parseNote(Readable.from(Buffer.from('--broken')),headers));

@@ -1,4 +1,4 @@
-### Can you explain to me what "arrow functions" are and how they are working? What kind of issues could be solved by using them as event handlers?
+# Can you explain to me what "arrow functions" are and how they are working? What kind of issues could be solved by using them as event handlers? {#can-you-explain-to-me-what-arrow-functions-are-and-how-they-are-working-what-kind-of-issues-could-be-solved-by-using-them-as-event-handlers}
 
 **Arrow functions** (introduced in **ES6**) are a more concise way of writing functions in JavaScript. They have a slightly different syntax and behavior compared to traditional function expressions, especially when it comes to handling the `this` keyword.
 
@@ -48,7 +48,7 @@ greet(); // "Hello, World!"
 
 Arrow functions have two important features that differentiate them from traditional functions:
 
-### **1. No Own `this` (Lexical Scoping of `this`)**
+### **No Own `this` (Lexical Scoping of `this`)** {#_1-no-own-this-lexical-scoping-of-this}
 
 One of the biggest differences between arrow functions and traditional functions is how they handle the **`this`** keyword. In regular functions, the value of `this` depends on how the function is invoked. In arrow functions, **`this` is lexically bound**, meaning it inherits `this` from the surrounding context (where the arrow function is defined).
 
@@ -90,15 +90,15 @@ In this case, the arrow function inside `setInterval` doesn’t create its own `
 
 ## **Advantages of Arrow Functions**
 
-### **1. Shorter Syntax**
+### **Shorter Syntax** {#_1-shorter-syntax}
 
 - Arrow functions provide a more concise syntax compared to traditional function expressions, making your code cleaner and easier to read.
 
-### **2. Lexical `this` Binding**
+### **Lexical `this` Binding** {#_2-lexical-this-binding}
 
 - As mentioned earlier, arrow functions inherit `this` from the surrounding context. This is especially useful when working with event handlers, setTimeout, setInterval, and callbacks, where traditional functions often lose the reference to the correct `this`.
 
-### **3. No Need for `.bind()` in Certain Cases**
+### **No Need for `.bind()` in Certain Cases** {#_3-no-need-for-bind-in-certain-cases}
 
 - When using regular functions as event handlers, you often need to use `.bind()` to manually bind `this` to the desired context. Arrow functions eliminate the need for this.
 
@@ -173,7 +173,7 @@ button.addEventListener('click', function() {
 - For functions that don’t require their own `this`, like **simple event handlers** or **functional callbacks**.
 
 
-## **1. Arrow Functions with Event Handlers**
+## **Arrow Functions with Event Handlers** {#_1-arrow-functions-with-event-handlers}
 
 Let’s first explore how **arrow functions** can solve issues with `this` in event handlers.
 
@@ -233,7 +233,7 @@ button.addEventListener('click', function() {
 
 ---
 
-## **2. Arrow Functions with Callbacks**
+## **Arrow Functions with Callbacks** {#_2-arrow-functions-with-callbacks}
 
 Another common situation where arrow functions shine is when you have a **callback function** that needs to access `this` from the parent scope.
 
@@ -278,7 +278,7 @@ const obj = new MyObject();
 
 ---
 
-## **3. Arrow Functions with `this` in Loops**
+## **Arrow Functions with `this` in Loops** {#_3-arrow-functions-with-this-in-loops}
 
 A common pitfall occurs when using **traditional functions inside loops**, especially when those functions need to access the `this` context of an object.
 
@@ -329,7 +329,7 @@ person.greet();
 
 ---
 
-## **4. Arrow Functions with Methods (Caution)**
+## **Arrow Functions with Methods (Caution)** {#_4-arrow-functions-with-methods-caution}
 
 While arrow functions are great for event handlers and callbacks, they should not be used when an object property function needs a dynamic receiver, because they do not have their own `this` (they inherit `this` from the surrounding context). This can cause issues when trying to access `this` inside a method of an object.
 

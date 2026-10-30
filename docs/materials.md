@@ -17,7 +17,15 @@
 - [Content of course](https://learn.epam.com/content/path?rootId=5231411&mode=preview)
 - [Node.js (LevelUP)](https://kb.epam.com/pages/viewpage.action?pageId=1456526283)
 
-## AI
+## AI: choose your goal
+
+- [Build AI Apps — JavaScript First](/applied-ai/): the beginner app-building path, with [independent JS milestones](/practice/applied-ai/javascript-assistant).
+- [AI for Software Development](/ai-assisted-engineering/): bug fixing, features, tests, review and local PR preparation.
+- [Python for AI — Optional Deep Dive](/python-for-ai/): retained language course and detailed implementation references.
+- [Company JavaScript AI course mapping](/applied-ai/javascript/company-course): how the supplied learning path fits these lessons and Autocode requirements.
+
+### Other company resources
+
 - [AI for JS](https://ebook.learn.epam.com/ai-for-js/docs/chat-gpt-in-requirements-gathering/introduction)
 - [Gen AI Assisted Development](https://levelup.epam.com/skill/externalUserId=8760000000000278538&skillId=7770000000002743659&skillLevelId=7770000000000001003)
 
@@ -28,6 +36,7 @@
 - [Complete SQL and Databases Bootcamp - udemy](https://www.udemy.com/course/complete-sql-databases-bootcamp-zero-to-mastery/?couponCode=MT251103G1)
 
 ## Cloud
+- [AWS learning path: beginner foundations through application development](/aws/)
 - [CloudX: AWS Practitioner for JS](https://learn.epam.com/content/path?rootId=2693255)
 
 - [CloudX Associate: AWS Developer (Self-paced)](https://elearn.epam.com/learning/course/course-v1:EPAM+CX_AWS_Dev+0222/block-v1:EPAM+CX_AWS_Dev+0222+type@sequential+block@3cd09cf467d3438b91029684c2177dc4/block-v1:EPAM+CX_AWS_Dev+0222+type@vertical+block@fb901d20a3ca44b491b3c8b8fb2eb681)

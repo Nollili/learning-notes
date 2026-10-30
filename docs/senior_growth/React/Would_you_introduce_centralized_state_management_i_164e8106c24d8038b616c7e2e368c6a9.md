@@ -1,4 +1,4 @@
-### Would you introduce centralized state management in a React project which does not have it, and how?
+# Would you introduce centralized state management in a React project which does not have it, and how? {#would-you-introduce-centralized-state-management-in-a-react-project-which-does-not-have-it-and-how}
 
 Introducing centralized state management to a React project is justified only when the project has specific needs or challenges that centralized management can solve.
 
@@ -20,14 +20,14 @@ If the project is small and the above issues are absent, centralized state manag
 
 ### **Steps to Introduce Centralized State Management**
 
-### **1. Assess the Existing State Management**
+### **Assess the Existing State Management** {#_1-assess-the-existing-state-management}
 
 - Identify the state that needs to be shared or global (e.g., user data, notifications, settings).
 - Determine whether existing local state management is sufficient for certain parts of the app.
 
 ---
 
-### **2. Choose the Right Solution**
+### **Choose the Right Solution** {#_2-choose-the-right-solution}
 
 The solution depends on the project scale and requirements:
 
@@ -40,7 +40,7 @@ The solution depends on the project scale and requirements:
 
 ---
 
-### **3. Implement the Chosen Solution**
+### **Implement the Chosen Solution** {#_3-implement-the-chosen-solution}
 
 ### **Option 1: React Context API**
 
@@ -224,14 +224,14 @@ The solution depends on the project scale and requirements:
 
 ---
 
-### **4. Test and Monitor Performance**
+### **Test and Monitor Performance** {#_4-test-and-monitor-performance}
 
 - Ensure the centralized state doesn't overburden the application with frequent re-renders.
 - Use tools like **React DevTools** or **Redux DevTools** to monitor state changes.
 
 ---
 
-### **5. Incremental Migration**
+### **Incremental Migration** {#_5-incremental-migration}
 
 - Migrate parts of the app needing centralized state first (e.g., authentication or theme).
 - Gradually refactor local state logic to use the centralized state.

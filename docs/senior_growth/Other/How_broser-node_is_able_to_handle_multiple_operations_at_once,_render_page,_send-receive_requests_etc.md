@@ -1,12 +1,12 @@
-# How broser/node is able to handle multiple operations at once, render page, send/receive requests etc.?
+# Concurrency in the browser and Node.js {#how-broser-node-is-able-to-handle-multiple-operations-at-once-render-page-send-receive-requests-etc}
 
-## 🔹 How Browsers and Node.js Handle Multiple Operations
+## How Browsers and Node.js Handle Multiple Operations {#%F0%9F%94%B9-how-browsers-and-node-js-handle-multiple-operations}
 
 Both **browsers** and **Node.js** are capable of handling multiple operations “at the same time” even though **JavaScript is single-threaded**. This is achieved through **asynchronous programming** and the **event loop**.
 
 ---
 
-## 1️⃣ JavaScript: Single-Threaded
+## JavaScript: Single-Threaded {#_1%EF%B8%8F%E2%83%A3-javascript-single-threaded}
 
 - Ordinary page/Node callbacks execute on one JavaScript thread per agent/isolate; explicit workers have their own execution contexts.
 - Only **one operation runs at a time**.
@@ -14,7 +14,7 @@ Both **browsers** and **Node.js** are capable of handling multiple operations �
 
 ---
 
-## 2️⃣ Event Loop
+## Event Loop {#_2%EF%B8%8F%E2%83%A3-event-loop}
 
 - The **event loop** allows JS to **schedule tasks asynchronously** without blocking the main thread.
 - Tasks are placed in **queues**:
@@ -26,7 +26,7 @@ Both **browsers** and **Node.js** are capable of handling multiple operations �
 
 ---
 
-## 3️⃣ Web APIs / Node APIs
+## Web APIs / Node APIs {#_3%EF%B8%8F%E2%83%A3-web-apis-node-apis}
 
 - **Browsers** provide Web APIs (DOM, fetch, timers, events).
 - **Node.js** provides built-in async APIs (fs, http, timers).
@@ -69,7 +69,7 @@ Timeout 1
 
 ---
 
-## 4️⃣ Rendering in Browsers
+## Rendering in Browsers {#_4%EF%B8%8F%E2%83%A3-rendering-in-browsers}
 
 * Browsers have a **separate rendering engine** (e.g., Blink, WebKit):
 
@@ -85,7 +85,7 @@ Timeout 1
 
 ---
 
-## 5️⃣ Node.js Concurrency
+## Node.js Concurrency {#_5%EF%B8%8F%E2%83%A3-node-js-concurrency}
 
 * Node.js uses **libuv** to handle **I/O operations** asynchronously.
 * Network sockets commonly use OS event notification. Many filesystem/crypto operations and `dns.lookup` use libuv's native worker pool. Timers use event-loop scheduling, not one worker thread per timer. The `worker_threads` module is a separate explicit mechanism for JavaScript work.
@@ -93,7 +93,7 @@ Timeout 1
 
 ---
 
-## 6️⃣ Summary
+## Summary {#_6%EF%B8%8F%E2%83%A3-summary}
 
 * JS is **single-threaded** but achieves concurrency via:
 
@@ -111,14 +111,14 @@ Timeout 1
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 * Browsers and Node.js are **non-blocking environments**.
 * **Async tasks** free the main thread while waiting.
 * **Event loop + Web/Node APIs** enable “multiple operations” at once.
 * Understanding this is **critical for performance optimization** (avoid blocking main thread, use async wisely).
 
-> 💡 Senior Tip:
+> Senior Tip:
 > First reduce unnecessary work and measure blocking. For substantial CPU work, compare bounded chunking with workers; include transfer/serialization, startup and cleanup costs in that decision.
 
 

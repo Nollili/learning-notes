@@ -1,4 +1,4 @@
-### What are pure / impure functions?
+# What are pure / impure functions? {#what-are-pure-impure-functions}
 
 ## **Pure Functions**
 

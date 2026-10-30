@@ -27,6 +27,10 @@ The [Node.js practice map](./node-js/index.md) starts with a small [log-analyzer
 
 The [CS-P01–06 sequence](./cs-foundations/index.md) starts with cost/search/sort experiments and builds a bounded queue, note dependency explorer and priority scheduler. Existing algorithm/cache exercises are mapped there before new work is added. All independent learner practice remains **still required**.
 
+## Beginner AI projects
+
+Start AI development with [JS-00–09: the JavaScript learning-notes assistant](./applied-ai/javascript-assistant.md). For coding-assistant skills use [DEV-01–05: bug fixing, features and PR preparation](./engineering/ai-engineering/development-project.md). The paths are complementary; Python is optional. These new milestones do not renumber P-334–337 or complete their stronger acceptance requirements.
+
 ## RAG, workflows and n8n checkpoints
 
 Use the [integrated sequence](./applied-ai/index.md) to stage existing P-334/P-335 work and one N8N-P01 integration with the same synthetic notes. Shared foundations and current-source/approval boundaries remain explicit; all learner work is still required.
@@ -64,3 +68,8 @@ The [F01–F06 sequence](./frontend/) breaks P-328–P-330 into native document,
 ## Cross-topic increments
 
 [Engineering E01–E07](./engineering/) refines the same existing projects for Redux, performance, security, quality/patterns, Git/CI, decisions and bounded optional comparisons. All learner practice remains outstanding. [The complete file inventory](../review/) keeps textbook completion separate from exercise execution.
+
+
+## AWS course homework
+
+The [AWS homework path](./aws/index.md) contains both supplied course tracks. All source tasks, including original optional and bonus tasks, are required locally. Repeating work is labelled; new gap exercises are optional. All learner work remains not started until evidenced.

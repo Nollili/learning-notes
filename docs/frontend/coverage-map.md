@@ -159,3 +159,7 @@ The essential reading lane covers HTML/CSS/browser/accessibility → JS/TS → R
 Optional extensions: native IndexedDB upgrade/concurrency runs, service-worker lifecycle, custom elements/Shadow DOM interop, advanced generic transformations, Cache Components migration, real multi-instance caching, virtualization/composite grids, design-system publishing and microfrontends. Choose them for an actual product need. Their retained procedures do not imply an executed integration.
 
 [Reading order](./index.md) · [Workbench](../workbench/frontend/) · [Practice](../practice/frontend/) · [Executed checks and limits](./verification.md)
+
+## Performance course merge — 2026-10-28
+
+The [performance path](./performance/) now orders measurement, browser delivery, responsive images, critical CSS/fonts, runtime responsiveness and caching, with [three core hometasks](../practice/frontend/performance/). Existing senior-growth mechanisms/workbench fixtures remain canonical; these additions supply missing integrated teaching and exercises. [Source mapping](./performance/sources.md) records the EPAM module mapping, modern corrections and visual provenance; [merge verification](./performance/verification.md) separates author checks from outstanding learner/browser/production integrations. Service-worker implementation and differential builds remain optional specialist depth, while cache policies and dedicated-worker trade-offs are explained in the core reading.

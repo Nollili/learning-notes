@@ -1,4 +1,4 @@
-### What is memoization and how to achieve it in React?
+# What is memoization and how to achieve it in React? {#what-is-memoization-and-how-to-achieve-it-in-react}
 
 Canonical owner: memo/useMemo/useCallback mechanisms and cache lifetime. [Comparator correctness](./react_memo.md) keeps its callback/value counterexample; [performance experiments](./performance_potimization.md) retain debounce and workload examples. General algorithmic memoization remains in [CS practice/foundations](../../cs-foundations/).
 
@@ -12,7 +12,7 @@ In the context of React, memoization helps optimize rendering by avoiding unnece
 
 React provides built-in tools and patterns for memoization:
 
-### 1. **React.memo**
+### **React.memo** {#_1-react-memo}
 
 - Used to memoize functional components.
 - Can skip parent-driven rendering when props compare equal; local state/context and React scheduling still apply.
@@ -51,7 +51,7 @@ export default ParentComponent;
 
 ---
 
-### 2. **useMemo**
+### **useMemo** {#_2-usememo}
 
 - Memoizes the result of a calculation.
 - Useful for expensive computations or derived state that depends on specific inputs.
@@ -91,7 +91,7 @@ export default function MemoLab() {
 
 ---
 
-### 3. **useCallback**
+### **useCallback** {#_3-usecallback}
 
 - Memoizes a callback function.
 - Returns a cached function identity when dependencies are equal. The argument function expression is still created/evaluated on each render; the hook does not prevent that allocation.

@@ -1,4 +1,4 @@
-### What is a JavaScript class under the hood?
+# What is a JavaScript class under the hood? {#what-is-a-javascript-class-under-the-hood}
 
 Under the hood, a **JavaScript class** is essentially **syntactic sugar** for JavaScript's existing **prototypal inheritance** mechanism. It provides a cleaner and more structured syntax for defining objects and their behavior compared to using constructor functions and directly modifying prototypes. Let's break this down step by step:
 

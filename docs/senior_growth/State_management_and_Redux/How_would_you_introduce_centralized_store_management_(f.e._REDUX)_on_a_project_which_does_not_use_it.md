@@ -1,12 +1,12 @@
 # How would you introduce centralized store management (f.e. REDUX) on a project which does not use it?
 
-## 🚀 Introducing Redux (Centralized State Management) to an Existing Project
+## Introducing Redux (Centralized State Management) to an Existing Project {#%F0%9F%9A%80-introducing-redux-centralized-state-management-to-an-existing-project}
 
 Introducing a centralized store like **Redux** to a project that doesn’t already use it requires a **gradual, strategic approach** to avoid breaking the existing functionality.
 
 ---
 
-## 1️⃣ Assess the Current State
+## Assess the Current State {#_1%EF%B8%8F%E2%83%A3-assess-the-current-state}
 
 - Identify **global/shared state** in the app:
   - Authentication
@@ -21,7 +21,7 @@ Introducing a centralized store like **Redux** to a project that doesn’t alrea
 
 ---
 
-## 2️⃣ Plan the Migration
+## Plan the Migration {#_2%EF%B8%8F%E2%83%A3-plan-the-migration}
 
 - Start with one low-risk shared slice such as theme/preferences; model display identity separately from server-owned authentication.
 - Define **actions, reducers, and selectors** for that slice.
@@ -30,7 +30,7 @@ Introducing a centralized store like **Redux** to a project that doesn’t alrea
 
 ---
 
-## 3️⃣ Install Dependencies
+## Install Dependencies {#_3%EF%B8%8F%E2%83%A3-install-dependencies}
 
 ```bash
 npm install @reduxjs/toolkit react-redux
@@ -44,7 +44,7 @@ npm install @reduxjs/toolkit react-redux
 
 ---
 
-## 4️⃣ Create the Store and Slices
+## Create the Store and Slices {#_4%EF%B8%8F%E2%83%A3-create-the-store-and-slices}
 
 **Example: authSlice.ts**
 
@@ -95,7 +95,7 @@ import { store } from './store';
 
 ---
 
-## 5️⃣ Gradual Migration
+## Gradual Migration {#_5%EF%B8%8F%E2%83%A3-gradual-migration}
 
 1. Start **replacing prop-drilled state** with Redux slices.
 2. Use **selectors** (`useSelector`) to read state and `dispatch` to update it.
@@ -104,7 +104,7 @@ import { store } from './store';
 
 ---
 
-## 6️⃣ Tips for a Smooth Transition
+## Tips for a Smooth Transition {#_6%EF%B8%8F%E2%83%A3-tips-for-a-smooth-transition}
 
 * **Do not migrate everything at once** — pick slices with clear benefits.
 * **Combine Redux with Context API** if some parts remain small or isolated.
@@ -114,14 +114,14 @@ import { store } from './store';
 
 ---
 
-## ✅ Senior-Level Approach
+## Senior-Level Approach {#%E2%9C%85-senior-level-approach}
 
 * **Step 1:** Identify pain points and shared state.
 * **Step 2:** Introduce Redux in one slice, keep the rest local.
 * **Step 3:** Gradually migrate other slices while testing thoroughly.
 * **Step 4:** Enforce immutability, pure reducers, and proper middleware usage.
 
-> 💡 Tip: The **goal is incremental adoption**, not a full rewrite. This reduces risk and helps the team adapt to centralized state management naturally.
+> Tip: The **goal is incremental adoption**, not a full rewrite. This reduces risk and helps the team adapt to centralized state management naturally.
 
 
 ## Normalize shared relationships before migrating consumers

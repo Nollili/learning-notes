@@ -1,0 +1,412 @@
+# P04 — DynamoDB integration
+
+**Learner status: not started. All supplied tasks on this page are mandatory in this learning path**, including items originally labelled optional or bonus. Repeating tasks still require the stated action or comparison; reuse earlier resources and code where suitable, and record the new evidence. Source optional labels describe the original course only.
+
+**Read first:** [databases](../../aws/databases.md). **Overlap:** Repeating in A08: DynamoDB CRUD. The promoted transaction is mandatory here.
+
+[Original supplied text](/aws-homework/sources/practitioner-04.txt) preserves the source wording. Apply the [corrections](./source-notes.md) and this path’s mandatory status when interpreting it.
+
+You can already list your products and look one up by id, but neither endpoint can add one. Both still read from a hardcoded array baked into the code, with no real storage behind it. In this module you swap that array for two DynamoDB tables, products and stock, joined at read time into a single product-with-stock item. You also add a new createProduct endpoint so you can write to both tables instead of just reading from them.
+
+## Prerequisites
+
+Configure your AWS credentials so CDK can access them. Make sure your default region is set correctly.
+
+Make sure to use Node.js version 22 — this matches the Lambda runtime required for this module.
+
+Use TypeScript for all practical tasks. It's mandatory to ensure code quality and maintainability. If you're using the template provided below, TypeScript is already configured properly, so just install dependencies with npm i.
+
+Check out the Working with Autocode guide before you start. It explains how submissions are validated and how to avoid common issues.
+
+## Workflow
+
+Make sure you're working in your fork of the template repository.
+
+Create a branch named task-4 off the latest main and work there for this module.
+
+Run npm run sync-tests -- module-4 to pull this module's Autocode tests into your local src/test/.
+
+Implement all the tasks described in Tasks below.
+
+Deploy and configure your stack for testing:
+
+Deploy: npm run deploy.
+
+Run your seed script, the one you write in Task 4.1, to populate both tables.
+
+Copy the printed API Gateway endpoint URL into the root-level e2e.config.ts's PRODUCT_API_URL.
+
+Keep the stack deployed while you work. The tests in the next step run as real HTTP requests against it, not against your code directly.
+
+Validate your work:
+
+```bash
+npm run test:unit # infrastructure tests.
+npm run test:e2e # endpoint tests against your deployed API.
+npm test # runs both.
+```
+
+You can also test the live endpoints manually with a tool like Postman.
+
+**User-owned submission:** after local validation, the user pushes and submits the branch in Autocode and waits for grading. The assistant must never push.
+
+After grading, the learner follows the course pull-request and merge workflow.
+
+## Architecture
+
+See the [course-wide system diagram](../../aws/index.md#one-application-several-responsibilities). The pasted source contains an image label rather than an embedded diagram.
+
+## Project structure
+
+Files marked (unchanged) already exist and need no changes. Files marked (update) already exist and need the changes their Task describes. Everything else you'll create as you work through the Tasks below.
+
+```text
+src/
+  infra/
+    bin/
+      app.ts                           # CDK app entry point (unchanged)
+    lib/
+      index.ts                         # stack barrel (unchanged)
+      product-service-stack/
+        index.ts                       # ProductServiceStack (update)
+        products-table.ts              # ProductsTableConstruct
+        stock-table.ts                 # StockTableConstruct
+        get-products-list-lambda.ts    # GetProductsListLambdaConstruct (update)
+        get-products-by-id-lambda.ts   # GetProductsByIdLambdaConstruct (update)
+        create-product-lambda.ts       # CreateProductLambdaConstruct
+        rest-api.ts                    # RestApiConstruct (update)
+  app/
+    handlers/
+      get-products-list/
+        handler.ts                     # getProductsList handler (update)
+      get-products-by-id/
+        handler.ts                     # getProductsById handler (update)
+      create-product/
+        handler.ts                     # createProduct handler
+    data/
+      products.ts                      # `products` array, seeds the products table (unchanged)
+      stock.ts                         # `stock` array, seeds the stock table (unchanged)
+    types/
+      product.ts                       # `Product` interface (unchanged)
+      stock.ts                         # `Stock` interface (unchanged)
+      product-with-stock.ts            # `ProductWithStock` interface (unchanged)
+  seeds/
+    seed-products.ts                   # seeds both tables from data/
+```
+
+## Data Models
+
+Product model:
+
+```text
+products:
+  id - uuid (primary key), server-generated
+  title - text, non-empty, required
+  description - text, optional, defaults to ''
+  price - number, required, must be greater than 0
+```
+
+Stock model:
+
+```text
+stock:
+  product_id - uuid (matches a products.id)
+  count - integer, required, must be 0 or greater
+```
+
+## API Contract
+
+Each response body below contains exactly the fields shown and no extra ones.
+
+GET /products
+
+Returns every product joined with its stock count, sorted by id ascending. No request body or query parameters.
+
+200 response — the joined product-with-stock array:
+
+```text
+[
+  {
+    id: '7567ec4b-b10c-48c5-9345-fc73c48a80aa',
+    title: 'Wireless Noise-Cancelling Headphones',
+    description: 'Over-ear headphones with active noise cancellation and 30-hour battery life.',
+    price: 24,
+    count: 12,
+  },
+  // ...
+];
+```
+
+See Data Models for field constraints.
+
+GET /products/{productId}
+
+Looks up a single product by id, joined with its stock count.
+
+200 response — the matching product:
+
+```text
+{
+  "id": "7567ec4b-b10c-48c5-9345-fc73c48a80aa",
+  "title": "Wireless Noise-Cancelling Headphones",
+  "description": "Over-ear headphones with active noise cancellation and 30-hour battery life.",
+  "price": 24,
+  "count": 12
+}
+```
+
+404 — no product with that productId. Body: { "message": "`<reason>`" }.
+
+POST /products
+
+Creates a product and its corresponding stock item.
+
+Request body:
+
+```text
+{
+  "title": "Wireless Noise-Cancelling Headphones",
+  "description": "Over-ear headphones with active noise cancellation and 30-hour battery life.",
+  "price": 24,
+  "count": 12
+}
+```
+
+See Data Models for field constraints.
+
+201 response — the created product, joined with its stock count:
+
+```text
+{
+  "id": "7567ec4b-b10c-48c5-9345-fc73c48a80aa",
+  "title": "Wireless Noise-Cancelling Headphones",
+  "description": "Over-ear headphones with active noise cancellation and 30-hour battery life.",
+  "price": 24,
+  "count": 12
+}
+```
+
+400 — invalid title, price or count. Body: { "message": "`<reason>`" }.
+
+## Tasks
+
+Where a task specifies a file path, class name or props interface, use it exactly as shown. The tests Autocode runs import your code from these exact paths and names. If either is wrong, the test can't find your code, regardless of whether the logic inside is correct.
+
+### Task 4.1 — DynamoDB Tables
+
+Before your endpoints can read or write real data, that data has to exist somewhere. This task creates the products and stock tables in DynamoDB and seeds them with mock data, so both tables already hold real data before any endpoint reads from them. You define both tables, wire them into the stack, then write and run a script that loads data/products.ts and data/stock.ts into them.
+
+What to do:
+
+Create the products DynamoDB table:
+
+Table name products.
+
+On-demand (pay-per-request) billing.
+
+id (string) partition key, no sort key. See Data Models for the full schema.
+
+Removal policy DESTROY, so the table is deleted along with the stack instead of the CDK default (RETAIN), which would leave it behind after cdk destroy.
+
+`src/infra/lib/product-service-stack/products-table.ts`
+
+```ts
+export class ProductsTableConstruct extends dynamodb.Table {
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+Create the stock DynamoDB table:
+
+Table name stock.
+
+On-demand (pay-per-request) billing.
+
+product_id (string) partition key, no sort key. See Data Models for the full schema.
+
+Removal policy DESTROY, so the table is deleted along with the stack instead of the CDK default (RETAIN), which would leave it behind after cdk destroy.
+
+`src/infra/lib/product-service-stack/stock-table.ts`
+
+```ts
+export class StockTableConstruct extends dynamodb.Table {
+  constructor(scope: Construct, id: string) { ... }
+}
+```
+
+Instantiate both tables in the ProductServiceStack CDK stack, so they exist once you deploy.
+
+Write a script that loads the mock data from data/products.ts and data/stock.ts into your DynamoDB tables. Add an npm script that runs it.
+
+Run the npm script to seed both tables.
+
+**Checkpoint: are both tables seeded?**
+
+### Task 4.2 — Get Products Endpoints
+
+With both tables in place, you no longer need the in-memory array. You point getProductsList and getProductsById at DynamoDB instead, so each returns the joined product-with-stock shape from Data Models. If a product has no matching stock item, it's still included in the response, with count = 0. You update both handlers first, then give each Lambda access to both tables.
+
+What to do:
+
+Update the getProductsList handler to return every product from the database joined with its stock count, instead of the products from data/products.ts. The response array is sorted by id, ascending. See API Contract for the response format.
+
+Give the getProductsList Lambda construct access to both tables. The construct:
+
+Receives productsTable and stockTable as constructor props.
+
+Passes both table names to the handler via the PRODUCTS_TABLE_NAME and STOCK_TABLE_NAME environment variables.
+
+Runtime, entry point, memory and timeout stay the same as in Module 3.
+
+`src/infra/lib/product-service-stack/get-products-list-lambda.ts`
+
+```ts
+export interface GetProductsListLambdaConstructProps {
+  readonly productsTable: dynamodb.ITable; // the ProductsTableConstruct from Task 4.1
+  readonly stockTable: dynamodb.ITable; // the StockTableConstruct from Task 4.1
+}
+```
+
+```ts
+export class GetProductsListLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: GetProductsListLambdaConstructProps) { ... }
+}
+```
+
+Do the same for getProductsById. It looks up the product by its productId in the database and returns the matching product joined with its stock count. If nothing matches, it returns 404 (the same as it did in Module 3). See API Contract for the response format.
+
+Give the getProductsById Lambda construct access to both tables the same way as in getProductsList. The construct:
+
+Receives productsTable and stockTable as constructor props.
+
+Passes both table names to the handler via the PRODUCTS_TABLE_NAME and STOCK_TABLE_NAME environment variables.
+
+Runtime, entry point, memory and timeout stay the same as getProductsList.
+
+`src/infra/lib/product-service-stack/get-products-by-id-lambda.ts`
+
+```ts
+export interface GetProductsByIdLambdaConstructProps {
+  readonly productsTable: dynamodb.ITable; // the ProductsTableConstruct from Task 4.1
+  readonly stockTable: dynamodb.ITable; // the StockTableConstruct from Task 4.1
+}
+```
+
+```ts
+export class GetProductsByIdLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: GetProductsByIdLambdaConstructProps) { ... }
+}
+```
+
+Pass both tables into each Lambda construct in ProductServiceStack and grant each one read access to them.
+
+**Checkpoint: do both endpoints read from DynamoDB?**
+
+### Task 4.3 — Create Product Endpoint
+
+Reading is only half the story. This task adds the other half: a new POST /products endpoint that validates the request body, then creates matching items in both the products and stock tables. You create the handler and its Lambda first, then wire it into the REST API alongside your two read endpoints.
+
+What to do:
+
+Create a handler that writes a new item to the products table and a matching item to the stock table. If a field fails the constraints in Data Models, it returns 400. Otherwise it returns 201 with a server-generated id. Calling GET /products/{productId} afterwards with that id returns the newly created product joined with its stock count. See API Contract for the request/response format:
+
+`src/app/handlers/create-product/handler.ts`
+
+```ts
+export const main = async (event: { body: string }) => { ... };
+```
+
+Create a Lambda function for that handler:
+
+Function name createProduct.
+
+Node.js 22.x runtime, handler.main entry point.
+
+512 MB of memory, 30-second timeout.
+
+Same table props and environment variables as the other two Lambdas.
+
+`src/infra/lib/product-service-stack/create-product-lambda.ts`
+
+```ts
+export interface CreateProductLambdaConstructProps {
+  readonly productsTable: dynamodb.ITable; // the ProductsTableConstruct from Task 4.1
+  readonly stockTable: dynamodb.ITable; // the StockTableConstruct from Task 4.1
+}
+```
+
+```ts
+export class CreateProductLambdaConstruct extends lambda.Function {
+  constructor(scope: Construct, id: string, props: CreateProductLambdaConstructProps) { ... }
+}
+```
+
+Add POST /products to the existing REST API construct, routed to the createProduct Lambda through Lambda-Proxy integration:
+
+`src/infra/lib/product-service-stack/rest-api.ts`
+
+```ts
+export interface RestApiConstructProps {
+  readonly getProductsListLambda: IFunction;
+  readonly getProductsByIdLambda: IFunction;
+  readonly createProductLambda: IFunction; // the CreateProductLambdaConstruct from step 2
+}
+```
+
+```ts
+export class RestApiConstruct extends apigateway.RestApi {
+  constructor(scope: Construct, id: string, props: RestApiConstructProps) { ... }
+}
+```
+
+Add the new createProduct Lambda alongside the other two in the ProductServiceStack CDK stack, then pass it to the REST API construct and grant it write access to both tables.
+
+**Checkpoint: is a created product actually saved?**
+
+## Evaluation criteria
+
+Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
+
+## Infrastructure
+
+ProductServiceStack contains exactly three Lambda functions (getProductsList, getProductsById, createProduct), the products and stock DynamoDB tables and one API Gateway REST API.
+
+The products table uses on-demand billing with id (string) as its partition key. The stock table uses on-demand billing with product_id (string) as its partition key.
+
+Both tables have removal policy DESTROY, so they're deleted along with the stack.
+
+All three Lambda functions run on the Node.js 22.x runtime with the handler.main entry point, 512 MB of memory and a 30-second timeout. Each receives both table names via the PRODUCTS_TABLE_NAME and STOCK_TABLE_NAME environment variables.
+
+GET /products is wired to getProductsList, GET /products/{productId} to getProductsById and POST /products to createProduct, all through a Lambda-Proxy integration.
+
+getProductsList and getProductsById have read-only access to both tables. createProduct has write access to both.
+
+An npm script seeds both tables with the mock data from data/products.ts and data/stock.ts.
+
+## Behavior
+
+GET /products returns a 200 response with every seeded product joined with its stock count, sorted by id ascending.
+
+GET /products/{productId} returns a 200 response with the matching product joined with its stock count.
+
+A product with no matching stock item is returned with count: 0, by both GET /products and GET /products/{productId}.
+
+GET /products/{productId} returns a 404 response with a { "message": "`<reason>`" } body when no product matches the given productId.
+
+POST /products returns a 201 response with the created product and its stock count. A subsequent GET /products/{productId} for that same id returns the same data.
+
+POST /products accepts a request with count: 0 and defaults description to an empty string when it is omitted.
+
+POST /products returns a 400 response with a { "message": "`<reason>`" } body when title is missing or empty, price is missing or not greater than 0, or count is missing, negative, or not an integer.
+
+All three endpoints return exactly the fields listed in the API Contract — no extra ones.
+
+## Promoted extensions — required (originally optional)
+
+The original course does not grade this extension; it is **mandatory in this learning path**.
+
+Create the product and stock items in createProduct as a single DynamoDB transaction, so that if one write fails, the other is rolled back too — the product should never end up without its stock item, or vice versa
+
+## Completion evidence
+
+Record each required task, the observed acceptance results, applicable test output, all promoted extensions, and cleanup. Original Autocode checks do not automatically verify the promoted extensions. See the [shared evidence rules](./index.md#evidence-for-every-required-module).

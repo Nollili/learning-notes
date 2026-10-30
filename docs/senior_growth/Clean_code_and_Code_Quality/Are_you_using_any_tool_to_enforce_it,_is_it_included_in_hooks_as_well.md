@@ -1,6 +1,6 @@
 # Are you using any tool to enforce it, is it included in hooks as well?
 
-## 🛠 Tools to Enforce Code Quality & Hooks Integration
+## Tools to Enforce Code Quality & Hooks Integration {#%F0%9F%9B%A0-tools-to-enforce-code-quality-hooks-integration}
 
 ### Hooks
 
@@ -22,7 +22,7 @@ In React, **hooks** are special functions that let you use state and other React
 
 - **useContext:** Shares data globally without passing props manually. React's Context API provides a way to pass data through the component tree without having to manually pass props down at every level. The useContext hook is the idiomatic way to consume context values in functional components.
 
-✅ What useContext Does  
+What useContext Does\
 The useContext hook allows a component to read the current value of a context. It takes a context object (the one returned from React.createContext) as an argument and returns the current context value.
   ```js
   const value = useContext(MyContext);
@@ -80,7 +80,7 @@ In modern JavaScript/TypeScript projects, enforcing code quality is **automated 
 
 ---
 
-## 1️⃣ Common Tools
+## Common Tools {#_1%EF%B8%8F%E2%83%A3-common-tools}
 
 | Tool                  | Purpose                                   | Notes                                                        |
 |-----------------------|-------------------------------------------|--------------------------------------------------------------|
@@ -94,7 +94,7 @@ In modern JavaScript/TypeScript projects, enforcing code quality is **automated 
 
 ---
 
-## 2️⃣ Integration with Hooks
+## Integration with Hooks {#_2%EF%B8%8F%E2%83%A3-integration-with-hooks}
 
 **Pre-commit hooks** run local feedback checks before a normal commit; they can be bypassed:
 
@@ -119,7 +119,7 @@ A lint-staged alternative installs/configures that tool explicitly and invokes i
 
 ---
 
-## 3️⃣ CI/CD Enforcement
+## CI/CD Enforcement {#_3%EF%B8%8F%E2%83%A3-ci-cd-enforcement}
 
 Even with hooks, **CI/CD pipelines** rerun checks independently of local hooks:
 
@@ -129,7 +129,7 @@ Even with hooks, **CI/CD pipelines** rerun checks independently of local hooks:
 
 ---
 
-## 4️⃣ Benefits of Hook + Tool Integration
+## Benefits of Hook + Tool Integration {#_4%EF%B8%8F%E2%83%A3-benefits-of-hook-tool-integration}
 
 1. **Immediate feedback:** Developers fix issues before committing.
 2. **Consistency across the team:** All developers follow the same rules automatically.
@@ -138,13 +138,13 @@ Even with hooks, **CI/CD pipelines** rerun checks independently of local hooks:
 
 ---
 
-### ✅ Key Takeaways
+### Key Takeaways {#%E2%9C%85-key-takeaways}
 
 - Tools like **ESLint, Prettier, Stylelint, Jest, SonarQube** are essential for code quality.
 - **Hooks (pre-commit, pre-push)** enforce standards **locally before code leaves the developer’s machine**.
 - Combined with required CI checks, this improves feedback and enforces the selected rules; review and behavior testing remain necessary.
 
-> 💡 Senior Tip:  
+> Senior Tip:
 > Always use **hooks for developer productivity** and **CI/CD for enforcement at the team level**. Local hooks catch issues early, protected CI checks enforce configured gates; untested behavior and misconfiguration can still slip through.
 
 
