@@ -1,6 +1,6 @@
 # Node.js tech-check
 
-A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **78/214 written (36.4%)**, 136 open; learner progress is not assessed.
+A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **91/214 written (42.5%)**, 123 open; learner progress is not assessed.
 
 The following Software Engineer Level2 mapping is preserved as earlier context on a different scale. Career Level2 means the supplied Software Engineer column: Intermediate for the specified development/engineering/cloud/Docker/AI skills, and Novice for performance, security and infrastructure. It does not require Advanced/Expert proficiency throughout. Explain mechanisms, reason about code, implement a small feature and diagnose failures at each stated target. Foundational/intermediate/advanced are study-depth labels, not official exam grades or claims that a question will appear.
 
@@ -8,7 +8,7 @@ All original25 groups and their IDs remain. Genuinely new scope was appended as 
 
 **Node.js Foundations material is complete:** 52 questions across seven sidebar chapters, covering all 49 mapped Level 1 subtopics. [Framework foundations](./16-frameworks.md) closes the four remaining basic-framework tasks. Learner exercises, the external Core JS prerequisite and higher-level framework scope remain separate.
 
-**Active section:** the seven entries under Building Node.js Applications. [Menu-based status](./progress.md#applications-sidebar) tracks Events, Networking, Development-tool workflows, Errors, Testing, Frameworks and Patterns separately from the 44-item primary-level allocation. Current work: [Error handling](./10-error-handling.md); Errors and all eight [Testing topics](./15-testing.md) now have written material and author checks; application-level Frameworks are next.
+**Active section:** the seven entries under Building Node.js Applications. [Menu-based status](./progress.md#applications-sidebar) tracks Events, Networking, Development-tool workflows, Errors, Testing, Frameworks and Patterns separately from the 44-item primary-level allocation. Errors, all eight [Testing topics](./15-testing.md), and all thirteen [Framework topics](./16-frameworks.md#application-frameworks) have written material and author checks. [Patterns](./18-patterns.md) now covers the three families in four questions. The remaining Networking and development-tool batches are complete. **All seven Applications menu entries now have their mapped material**; learner practice remains unassessed. Designing Node.js Services is now in progress: worker ownership and bounded-pool material are written; cluster service ownership is next.
 
 ## Batch sequence
 
@@ -64,17 +64,17 @@ Continue in small batches of one focused question, splitting a topic across batc
 - [5. Asynchronous programming](./05-asynchronous-programming.md) — B08–B09 complete.
 - [6. Events and event loop](./06-events-and-event-loop.md) — B10–B11 complete.
 - [7. Core APIs and data handling](./07-core-apis.md) — B12–B14 complete.
-- [8. Networking and real-time applications](./08-networking.md) — original transport batches complete; HTTP inspection added; browser interaction and pooling remain pending.
-- [9. Concurrency](./09-concurrency.md) — two questions written; ownership/cluster/pool troubleshooting remains pending.
+- [8. Networking](./08-networking.md) — eleven questions; all ten mapped subtopics written, including browser interaction and owned pooling.
+- [9. Concurrency](./09-concurrency.md) — four questions written; multithreading material complete at the stated scope; cluster/fork/IPC/production selection remain pending.
 - [10. Error handling](./10-error-handling.md) — all seven source items written; HTTP/database examples checked, learner practice remains required.
 - **11. Debugging** — planned; subtopics retained in the checklist.
 - **12. Performance and V8** — planned; subtopics retained in the checklist.
 - **13. Authentication and authorization** — planned; subtopics retained in the checklist.
 - **14. Security** — planned; subtopics retained in the checklist.
 - [15. Testing](./15-testing.md) — all eight source topics written; separate learner exercises remain required.
-- [16. Frameworks and web application development](./16-frameworks.md) — four Foundations questions complete; intermediate/advanced application scope remains planned.
+- [16. Frameworks and web application development](./16-frameworks.md) — thirteen questions complete: Foundations, Express applications and a NestJS companion; learner practice remains required.
 - **17. Databases and data access** — planned; subtopics retained in the checklist.
-- **18. Architecture and design patterns** — planned; subtopics retained in the checklist.
+- [18. Design patterns](./18-patterns.md) — four questions cover creational, structural and behavioral patterns; broader architecture/distribution scope remains planned.
 - **19. Queues and messaging** — planned; subtopics retained in the checklist.
 - **20. Serverless** — planned; subtopics retained in the checklist.
 - **21. Logging** — planned; subtopics retained in the checklist.

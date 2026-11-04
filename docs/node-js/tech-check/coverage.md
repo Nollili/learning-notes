@@ -1,6 +1,6 @@
 # Node.js tech-check coverage checklist
 
-**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 62 written, 152 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
+**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 91 written, 123 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
 
 The original25 groups and187 source IDs below preserve the original scope. Added Level2 requirements extend existing groups and retain T30 cloud/VM coverage. At the user’s request, T26–T29 and T31–T34 are omitted from this checklist; their source mapping/history and existing notes remain in the combined tracker. No original T01–T25 item is deleted or renumbered. Each original bullet is one retained source subtopic with a stable ID. Added bullets are canonical preparation tasks classified in the combined tracker; they are not all quoted official source requirements. Checked means historically written at its original scope, not newly audited as adequate for Level2 and not learner mastery. The single [combined tracker](./progress.md#level2-reconciliation) records target depth, priority, audit, writing and verification separately. Broad labels may need several questions; question counts can grow rather than compressing answers. Shared ownership notes identify deliberate overlaps, not exemptions from the local group's required depth.
 
@@ -99,14 +99,14 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 ### Added Level2 preparation scope
 
 - [x] **T08-S08** HTTP methods, status codes, headers, payloads and request/response inspection — covered by [HTTP exchange inspection](./08-networking.md#t08-q09); learner browser-inspection practice remains required
-- [ ] **T08-S09** Browser request/response versus asynchronous communication — pending
-- [ ] **T08-S10** HTTP connection reuse and owned client pooling — pending
+- [x] **T08-S09** Browser request/response versus asynchronous communication — written in [Networking](./08-networking.md#t08-q10); owned author checks pass; learner practice required
+- [x] **T08-S10** HTTP connection reuse and owned client pooling — written in [Networking](./08-networking.md#t08-q11); owned author checks pass; learner practice required
 
 ## 9. Concurrency
 
 - [ ] **T09-S01** Cluster API and clustering — pending; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
 - [ ] **T09-S02** Forking processes — pending; shared explanation owner: [T02-Q07/Q08](./02-cli-and-processes.md#t02-q08) (fork/IPC); process-versus-thread comparison stays in T09; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
-- [ ] **T09-S03** Multithreading — grouped with fork/clustering in the source — pending; introductory [T09-Q01](./09-concurrency.md#t09-q01) and [worker lifecycle T09-Q02](./09-concurrency.md#t09-q02) written; ownership/pool scope remains pending
+- [x] **T09-S03** Multithreading — grouped with fork/clustering in the source — written across [worker isolation/lifecycle/ownership/pool questions](./09-concurrency.md); one-worker pool policy verified, broader cluster/IPC/production selection and learner practice remain separate
 - [ ] **T09-S04** Child-process interactions and IPC — pending; shared explanation owner: [T02-Q08](./02-cli-and-processes.md#t02-q08) (IPC); worker/cluster ownership stays in T09; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
 - [ ] **T09-S05** Choosing concurrency approaches for production — pending; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
 
@@ -195,19 +195,19 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 16. Frameworks and web application development
 
-- [x] **T16-S01** Framework categories: MVC, full-stack MVC, and REST API — covered by [framework foundations](./16-frameworks.md#t16-q01); remaining application-level framework scope stays pending
-- [x] **T16-S02** Choosing frameworks for different use cases — covered by [framework foundations](./16-frameworks.md#t16-q02); remaining application-level framework scope stays pending
-- [x] **T16-S03** Framework installation, configuration, and execution — covered by [framework foundations](./16-frameworks.md#t16-q03); remaining application-level framework scope stays pending
-- [ ] **T16-S04** Routing — pending
-- [ ] **T16-S05** Middleware — pending
-- [ ] **T16-S06** Controllers — pending
-- [ ] **T16-S07** Request handling and request/response lifecycle — pending
-- [ ] **T16-S08** CRUD endpoints and pages — pending
-- [ ] **T16-S09** Authentication, validation, and error-handling middleware — pending; shared explanation owner: T13/T14/T10 (authentication/validation/errors); lifecycle composition stays in T16
-- [x] **T16-S10** Application configuration and dependencies — covered by [framework foundations](./16-frameworks.md#t16-q04); remaining application-level framework scope stays pending
-- [ ] **T16-S11** Modules, services, and reusable components — pending
-- [ ] **T16-S12** Extension points and lifecycle hooks — pending
-- [ ] **T16-S13** Framework deployment considerations — pending
+- [x] **T16-S01** Framework categories: MVC, full-stack MVC, and REST API — covered by [framework foundations](./16-frameworks.md#t16-q01); learner practice remains required
+- [x] **T16-S02** Choosing frameworks for different use cases — covered by [framework foundations](./16-frameworks.md#t16-q02); learner practice remains required
+- [x] **T16-S03** Framework installation, configuration, and execution — covered by [framework foundations](./16-frameworks.md#t16-q03); learner practice remains required
+- [x] **T16-S04** Routing — written in [framework applications](./16-frameworks.md#t16-q05); executable author checks pass; learner practice remains required
+- [x] **T16-S05** Middleware — written in [framework applications](./16-frameworks.md#t16-q06); executable author checks pass; learner practice remains required
+- [x] **T16-S06** Controllers — written in [framework applications](./16-frameworks.md#t16-q07); executable author checks pass; learner practice remains required
+- [x] **T16-S07** Request handling and request/response lifecycle — written in [framework applications](./16-frameworks.md#t16-q08); executable author checks pass; learner practice remains required
+- [x] **T16-S08** CRUD endpoints and pages — written in [framework applications](./16-frameworks.md#t16-q09); executable author checks pass; learner practice remains required
+- [x] **T16-S09** Authentication, validation, and error-handling middleware — written in [framework applications](./16-frameworks.md#t16-q10); executable author checks pass; learner practice remains required
+- [x] **T16-S10** Application configuration and dependencies — covered by [framework foundations](./16-frameworks.md#t16-q04); learner practice remains required
+- [x] **T16-S11** Modules, services, and reusable components — written in [framework applications](./16-frameworks.md#t16-q11); executable author checks pass; learner practice remains required
+- [x] **T16-S12** Extension points and lifecycle hooks — written in [framework applications](./16-frameworks.md#t16-q12); executable author checks pass; learner practice remains required
+- [x] **T16-S13** Framework deployment considerations — written in [framework applications](./16-frameworks.md#t16-q13); executable author checks pass; learner practice remains required
 
 ## 17. Databases and data access
 
@@ -240,13 +240,13 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 18. Architecture and design patterns
 
-- [ ] **T18-S01** Application structure and architecture principles — pending
-- [ ] **T18-S02** Maintainable modules, services, and reusable components — pending
-- [ ] **T18-S03** GoF creational, structural, and behavioral patterns — pending
-- [ ] **T18-S04** Basic and advanced microservices practices — pending
-- [ ] **T18-S05** Consistency patterns — pending
-- [ ] **T18-S06** Availability versus consistency — pending
-- [ ] **T18-S07** Performance and scalability practices — pending
+- [ ] <span class="notes-section-label">**T18-S01**</span> Application structure and architecture principles — pending
+- [ ] <span class="notes-section-label">**T18-S02**</span> Maintainable modules, services, and reusable components — pending
+- [x] <span class="notes-section-label">**T18-S03**</span> GoF creational, structural, and behavioral patterns — written across [four pattern questions](./18-patterns.md);23 intents introduced, worked core examples checked; learner practice required
+- [ ] <span class="notes-section-label">**T18-S04**</span> Basic and advanced microservices practices — pending
+- [ ] <span class="notes-section-label">**T18-S05**</span> Consistency patterns — pending
+- [ ] <span class="notes-section-label">**T18-S06**</span> Availability versus consistency — pending
+- [ ] <span class="notes-section-label">**T18-S07**</span> Performance and scalability practices — pending
 
 ## 19. Queues and messaging
 

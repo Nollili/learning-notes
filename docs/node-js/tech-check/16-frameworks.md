@@ -2,11 +2,11 @@
 outline: [2, 3]
 ---
 
-# Framework foundations
+# Express and NestJS frameworks
 
-These questions complete the framework basics part of Node.js Foundations. The primary implementation is Express 5 on Node.js 24, using `.mjs` files. Other frameworks are comparison points, not additional required implementations.
+The first four questions cover **Node.js Foundations**. The application questions then build an **Express 5** catalog and introduce a smaller **NestJS 11** companion. Express is the primary stack; you do not need to implement the whole application twice.
 
-Use a separate learning folder for the runnable example. Preserve an existing project's build, test and database configuration, particularly an Autocode template. This local HTTP lab has no authentication or persistence; later application chapters cover those responsibilities.
+Use a separate learning folder for the runnable example. Preserve an existing project's build, test and database configuration, particularly an Autocode template. The initial Foundations lab has no authentication or persistence. The later catalog adds fixture authentication and an in-memory repository, with their production limitations made explicit.
 
 ### What does a web framework provide, and how do MVC, full-stack frameworks and API frameworks differ? {#t16-q01}
 
@@ -887,15 +887,17 @@ Share use cases between representations, and keep validation, ownership, concurr
 
 **Official references:** [Express routing](https://expressjs.com/en/guide/routing/), [Express template engines](https://expressjs.com/en/guide/using-template-engines/), [EJS escaping tags](https://ejs.co/), [Nest controllers](https://docs.nestjs.com/controllers).
 
+---
+
 ### How do authentication, validation and error middleware work together? {#t16-q10}
 
 *Study depth: Intermediate*
 
-**Predict before reading**
+<span class="notes-section-label">**Predict before reading**</span>
 
 A request claims `ownerId: 'alice'` in JSON but presents Bob's credential. Which identity should the service use? If the verifier itself fails, is the credential necessarily invalid? Should a body-parser error return its original body to the caller?
 
-**`http-policies.mjs`**
+<span class="notes-section-label">**`http-policies.mjs`**</span>
 
 ```js
 // file: http-policies.mjs
@@ -958,33 +960,37 @@ export function createCatalogApp({ verifyAccessToken, observe, repository = crea
 
 **Fixture verifier:** supply an async lookup over a server-owned Map from fixed test tokens to actors, returning `null` for unknown tokens. For example, map `fixture-alice` to `{ id: 'alice', canWrite: true }` and `fixture-reader` to `{ id: 'alice', canWrite: false }`. These are **disposable lab credentials**, not JWTs or a production login/token design. Never treat a Bearer prefix alone as verification.
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-Authenticate credentials into trusted server context, validate transport/business input and authorize the use case/resource independently. Compose these policies in a deliberate order and translate only known errors at the HTTP boundary. Unknown verifier/dependency failures remain server failures; they must not become proof that the user supplied an invalid credential.
+<p class="notes-core-answer__title">Core answer</p>
 
-**Reasoning and security boundaries**
+**Authenticate credentials into trusted server context**, validate transport/business input and **authorize the use case/resource independently**. Compose these policies in a deliberate order and translate only known errors at the HTTP boundary. **Unknown verifier/dependency failures remain server failures**; **they must not become proof that the user supplied an invalid credential**.
+
+</div>
+
+<span class="notes-section-label">**Reasoning and security boundaries**</span>
 
 The verifier returns an actor or null under an explicit contract; a malformed verifier result is an internal failure. An outage rejects its promise, which Express5 forwards to the error handler. The handler returns fixed fields and a generated request ID, not error messages, body, stack, SQL or tokens.
 
-The service enforces read-only/owner rules even for non-HTTP callers. Client-supplied identity/role fields are rejected by the create/update allowlist. Pagination and stats filter the owner **before** limiting/counting, rather than fetching another owner's data and hiding a few fields afterward.
+The service enforces read-only/owner rules even for non-HTTP callers. **Client-supplied identity/role fields are rejected** by the create/update allowlist. Pagination and stats filter the owner **before** limiting/counting, rather than fetching another owner's data and hiding a few fields afterward.
 
 401 has a Bearer challenge;403 means an authenticated actor lacks the capability; this lab uses404 for another owner's resource to avoid disclosing existence. These are documented choices, not evidence that status codes alone enforce security.
 
 For production tokens use a reviewed verifier/session system with signature/trust, expiry/revocation, issuer/audience and permission rules as appropriate; see the Authentication/Security topics. Cookie-based browser authentication also needs its appropriate CSRF/origin policy. This opaque test-token Map does not implement those systems.
 
-**NestJS alongside**
+<span class="notes-section-label">**NestJS alongside**</span>
 
 A guard can verify a credential and return/throw a deliberate decision, using handler metadata for authorization. A `ValidationPipe` with explicit class DTO rules can validate/transform input; `whitelist` and `forbidNonWhitelisted` help control unknown fields but do not authorize ownership. An exception filter translates known exceptions. Interfaces/type aliases disappear at runtime, so they cannot alone provide a validation schema.
 
 The runnable companion uses a real guard and explicit parsing pipes with a tiny fixture credential; the main Express service remains the full ownership/CRUD implementation. Do not read raw adapter response/status behavior into every Nest platform configuration.
 
-**Common mistakes:** trusting body/header user IDs; accepting any Bearer string; mapping verifier outage to401; accepting arbitrary error.status; spreading parser/driver errors into JSON; assuming DTO decorators enforce resource permissions.
+<span class="notes-section-label">**Common mistakes:**</span> trusting body/header user IDs; accepting any Bearer string; mapping verifier outage to401; accepting arbitrary error.status; spreading parser/driver errors into JSON; assuming DTO decorators enforce resource permissions.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Can authenticated users read every product?** No. Identity and resource authorization are separate checks.
-2. **Why validate again inside the service?** Other adapters/jobs can call it without the HTTP controller.
-3. **What does the opaque fixture prove?** Policy composition and credential lookup behavior, not production token issuance, password storage or a JWT trust model.
+1. <span class="notes-section-label">**Can authenticated users read every product?**</span> No. Identity and resource authorization are separate checks.
+2. <span class="notes-section-label">**Why validate again inside the service?**</span> Other adapters/jobs can call it without the HTTP controller.
+3. <span class="notes-section-label">**What does the opaque fixture prove?**</span> Policy composition and credential lookup behavior, not production token issuance, password storage or a JWT trust model.
 
 ::: tip Key takeaway
 Only a trusted verifier establishes actor context; the use case still checks permissions, and a separate boundary controls public failures.
@@ -993,3 +999,414 @@ Only a trusted verifier establishes actor context; the use case still checks per
 **Practice — learner work still required:** run valid, missing, unknown and read-only credentials; attempt cross-owner access and mass assignment. Acceptance: denied/invalid requests do not mutate storage, verifier outage returns safe500, and no response/observer record contains a credential or private diagnostic. Replace the fixture with your actual reviewed authentication adapter before production use.
 
 **Official references:** [Express error handling](https://expressjs.com/en/guide/error-handling/), [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [Nest guards](https://docs.nestjs.com/guards), [Nest validation](https://docs.nestjs.com/techniques/validation), [Nest filters](https://docs.nestjs.com/exception-filters).
+
+### How do modules, services and injection keep an application reusable? {#t16-q11}
+
+*Study depth: Intermediate*
+
+<span class="notes-section-label">**Predict before reading**</span>
+
+If a service is a singleton, can it store `currentUser` for every request? Does an Express Router or Nest module automatically create a transaction? Can the service run without an HTTP controller?
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Compose reusable capabilities at one application boundary.** Services receive explicit repositories/configuration; controllers receive services. Modules group and expose capabilities, while injection connects their owners. **Keep request-specific identity out of a shared singleton.** Neither routers nor dependency containers supply transactions or resource authorization automatically.
+
+</div>
+
+<span class="notes-section-label">**Express composition**</span>
+
+`createCatalogApp()` composes repository → service → controllers → router → middleware. Its default repository is created per factory call, not during module import. Two app instances therefore have separate Maps. Inject repositories and ID generators through explicit arguments instead of modifying global state or private helpers.
+
+The repository contract includes owner filtering and atomic expected-version updates. A database adapter must preserve those semantics with actual shared-store operations. A fake that omits them can make service tests misleading. Allocate infrastructure such as a pool at the intended application boundary, not per request. Pass trusted actor context as an argument rather than assigning `service.currentUser`.
+
+<span class="notes-section-label">**NestJS alongside — runnable introduction**</span>
+
+Nest supplies a dependency container. `@Injectable()` providers implement capabilities, `@Controller()` adapts HTTP, and `@Module()` declares providers/controllers and exported capabilities. Default providers are shared within an application context. Request scope is a deliberate lifetime choice with costs, not a substitute for separating request state.
+
+This companion is **read-focused**: it demonstrates a controller, guard, parsing pipes, a safe filter, an interceptor and lifecycle hooks. Express remains the full CRUD/ownership implementation. The fixed credential below is a disposable lab gate, not production authentication.
+
+In a separate companion folder install:
+
+```bash
+npm init -y
+npm install --save-exact @nestjs/common@11.1.6 @nestjs/core@11.1.6 @nestjs/platform-express@11.1.6 reflect-metadata@0.2.2 rxjs@7.8.2
+npm install --save-dev --save-exact typescript@5.9.3 @types/node@24.10.0 @types/express@5.0.3
+```
+
+Save **`nest-side.ts`**:
+
+```ts
+// file: nest-side.ts
+import 'reflect-metadata';
+import { randomUUID } from 'node:crypto';
+import {
+  ArgumentsHost, BadRequestException, CallHandler, CanActivate, Catch,
+  Controller, DefaultValuePipe, ExceptionFilter, ExecutionContext, Get,
+  HttpException, Injectable, Module, NestInterceptor, NotFoundException,
+  OnModuleDestroy, OnModuleInit, Param, ParseIntPipe, Query, UnauthorizedException,
+  UseGuards
+} from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import type { Request, Response, NextFunction } from 'express';
+import { Observable, finalize } from 'rxjs';
+
+@Injectable()
+export class SideCatalog implements OnModuleInit, OnModuleDestroy {
+  readonly lifecycle: string[] = [];
+  private readonly rows = [{ id: 'p1', name: 'Book', unitPriceCents: 500, version: 1 }];
+  onModuleInit() { this.lifecycle.push('initialized'); }
+  onModuleDestroy() { this.lifecycle.push('destroyed'); }
+  list(limit: number) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new BadRequestException();
+    return this.rows.slice(0, limit).map(row => ({ ...row }));
+  }
+  get(id: string) {
+    if (!/^[a-z0-9-]{1,64}$/.test(id)) throw new BadRequestException();
+    const row = this.rows.find(item => item.id === id);
+    if (!row) throw new NotFoundException();
+    return { ...row };
+  }
+}
+@Injectable()
+export class SideAccessGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const req = context.switchToHttp().getRequest<Request>();
+    const match = /^Bearer ([A-Za-z0-9_-]{1,128})$/i.exec(req.headers.authorization ?? '');
+    if (match?.[1] !== 'fixture-reader') {
+      context.switchToHttp().getResponse<Response>()
+        .setHeader('WWW-Authenticate', 'Bearer realm="side-catalog"');
+      throw new UnauthorizedException();
+    }
+    return true;
+  }
+}
+@Injectable()
+export class SideTrace implements NestInterceptor {
+  readonly events: string[] = [];
+  private record(value: string) {
+    this.events.push(value);
+    if (this.events.length > 100) this.events.shift();
+  }
+  intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    this.record('before');
+    return next.handle().pipe(finalize(() => this.record('settled')));
+  }
+}
+@Catch()
+export class SideSafeFilter implements ExceptionFilter {
+  catch(error: unknown, host: ArgumentsHost) {
+    const requested = error instanceof HttpException ? error.getStatus() : 500;
+    const status = [400, 401, 403, 404, 409].includes(requested) ? requested : 500;
+    host.switchToHttp().getResponse<Response>().status(status).json({
+      error: { code: status === 500 ? 'INTERNAL_ERROR' : `HTTP_${status}` }
+    });
+  }
+}
+@Controller('products')
+@UseGuards(SideAccessGuard)
+export class SideProductsController {
+  constructor(private readonly catalog: SideCatalog) {}
+  @Get()
+  list(@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
+    return { items: this.catalog.list(limit) };
+  }
+  @Get('stats')
+  stats() { return { count: this.catalog.list(50).length }; }
+  @Get('fixture-failure')
+  failure() { throw new Error('PRIVATE_SIDE_SENTINEL'); }
+  @Get(':id')
+  get(@Param('id') id: string) { return this.catalog.get(id); }
+}
+@Module({ controllers: [SideProductsController],
+  providers: [SideCatalog, SideAccessGuard, SideTrace], exports: [SideCatalog] })
+export class SideCatalogModule {}
+@Module({ imports: [SideCatalogModule] })
+class SideAppModule {}
+export async function createSideApp() {
+  const app = await NestFactory.create(SideAppModule, { logger: false });
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('X-Request-Id', randomUUID());
+    next();
+  });
+  app.useGlobalFilters(new SideSafeFilter());
+  app.useGlobalInterceptors(app.get(SideTrace));
+  return app;
+}
+if (require.main === module) {
+  void createSideApp().then(async app => {
+    try {
+      app.enableShutdownHooks(['SIGTERM', 'SIGINT']);
+      await app.listen(3001, '127.0.0.1');
+      console.log('SIDE_CATALOG_LISTENING');
+    } catch (error) {
+      await app.close();
+      throw error;
+    }
+  }).catch(() => { console.error('SIDE_START_FAILED'); process.exitCode = 1; });
+}
+```
+
+Create **`tsconfig.json`**:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "CommonJS", "moduleResolution": "Node",
+    "strict": true, "experimentalDecorators": true, "emitDecoratorMetadata": true,
+    "esModuleInterop": true, "skipLibCheck": true, "outDir": "dist"
+  },
+  "include": ["nest-side.ts"]
+}
+```
+
+Compile with `npx tsc -p tsconfig.json`, then run `node dist/nest-side.js`. Node's ordinary type stripping is **not a replacement for compiling decorator/metadata syntax**. Request `/products?limit=1` using `Authorization: Bearer fixture-reader`. Stop the local server afterward. `fixture-failure` is deliberately broken to exercise the filter; remove it from any real application.
+
+The companion uses Nest11.1.6's Express adapter, not a Fastify portability claim. Interfaces/type aliases are erased; an injection token must exist at runtime, such as a class or explicit string/symbol. Export only capabilities that other modules should consume. `app.get()` is useful for diagnostics/testing but should not replace normal constructor injection throughout business code.
+
+<span class="notes-section-label">**Common mistakes:**</span> mutable shared actor state, indiscriminately global/request-scoped providers, interface-only runtime tokens, or treating a provider override as evidence that the production adapter works.
+
+<span class="notes-section-label">**Examiner follow-ups**</span>
+
+1. <span class="notes-section-label">**Can Express use injection?**</span> Yes. The explicit factory arguments already provide it; a container is an optional tool.
+2. <span class="notes-section-label">**Does singleton mean one object across all replicas?**</span> No. Each process/application context has its own instances.
+3. <span class="notes-section-label">**Does a module create a transaction?**</span> No. The use-case/persistence owner defines that boundary explicitly.
+
+::: tip Key takeaway
+Make dependency direction and lifetime explicit; framework conventions do not replace business contracts.
+:::
+
+<span class="notes-section-label">**Practice — learner work still required:**</span> create two service/app contexts and prove their state/provider instances are separate. Acceptance: no shared actor state, deliberate module visibility, and real-adapter tests distinguished from overrides.
+
+<span class="notes-section-label">**Official references:**</span> [Nest modules](https://docs.nestjs.com/modules), [providers](https://docs.nestjs.com/providers), [scopes](https://docs.nestjs.com/fundamentals/injection-scopes), [TypeScript metadata](https://www.typescriptlang.org/tsconfig/emitDecoratorMetadata.html).
+
+---
+
+### Which extension points and lifecycle hooks should own cross-cutting work? {#t16-q12}
+
+*Study depth: Intermediate, with deeper framework internals optional*
+
+<span class="notes-section-label">**Predict before reading**</span>
+
+Should authorization run in a success-only response interceptor? Does an initialization hook mean the service is ready to accept traffic? If a destroy hook exists, will it always run after a crash or a forced kill?
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Choose the extension point whose **scope and timing match the responsibility**. Middleware/guards/pipes/interceptors/filters shape request behavior; application/provider lifecycle hooks own initialization and disposal. **Hooks do not guarantee deadlines or crash cleanup.** They also do not supply distributed coordination. Resource ownership and partial-startup cleanup remain explicit design work.
+
+</div>
+
+| Responsibility | Express-oriented owner | Nest-oriented owner |
+|---|---|---|
+| Request context | Early middleware | Middleware or scoped context mechanism |
+| Handler permission | Explicit middleware plus service authorization | Guard plus service authorization |
+| Input interpretation | Controller/validator middleware | Parsing/validation pipe or DTO boundary |
+| Handler result observation | An explicitly owned promise/response observer | Interceptor around the handler Observable |
+| Public exception translation | Final four-argument error middleware | Scoped/global exception filter |
+| Provider initialization | Composition/startup owner | `onModuleInit` / application bootstrap hooks as appropriate |
+| Disposal | Explicit close/drain owner | Module/application shutdown hooks plus resource-specific close logic |
+
+<span class="notes-section-label">**Read the runnable companion as a lifecycle example**</span>
+
+`SideCatalog` records initialization and destruction on its own provider instance. `app.init()` initializes the application; `app.close()` runs the relevant disposal path. The isolated checks can obtain that provider, inspect its lifecycle record and close the context **without listening on a port**. These records demonstrate hook invocation, not closure of a real database pool—the companion has none.
+
+`SideTrace` records `before` and uses RxJS `finalize` for settlement, including an error. A success-only `tap` callback would not express the same cleanup rule. The tiny trace retains at most100 fixed labels; it is a lab observer, not a production metrics collector or business audit trail. Its global registration uses the container-created provider rather than constructing a second instance manually.
+
+A guard can reject before the interceptor/handler executes. A pipe can reject input before business logic. A filter maps a scoped exception; it does not gain ownership of detached work merely because that work was started by a handler. Do not put permission checks only in an interceptor's successful response path.
+
+<span class="notes-section-label">**Shutdown is a separate state transition**</span>
+
+For the companion CLI, `enableShutdownHooks(['SIGTERM', 'SIGINT'])` opts into signal-triggered lifecycle handling. Calling `app.close()` explicitly also exercises the application disposal path. Signals/platform support and test-process ownership still matter; do not install duplicate process-wide handlers for every imported module.
+
+A real service should stop admission/readiness, supervise active work, close sockets/consumers/pools in an intentional order and enforce a shutdown deadline. Nest hook names do not guarantee those resources finish before a platform's kill deadline. Do not put the same close responsibility in several hooks without idempotence/order rules.
+
+If startup acquires a pool and a later step fails, the composition owner must clean up the already acquired resource. If the process is forcibly killed or crashes, hooks may not execute at all; durable recovery must live outside assumptions about finalizers.
+
+<span class="notes-section-label">**Common mistakes:**</span> opening a connection per request in a lifecycle callback; relying on hooks after SIGKILL; double-closing resources; treating an interceptor's completion as database commit; placing essential state only in memory because a shutdown hook exists.
+
+<span class="notes-section-label">**Examiner follow-ups**</span>
+
+1. <span class="notes-section-label">**Does `onModuleInit` alone prove readiness?**</span> No. It is one initialization phase; define the application's complete readiness contract and await required dependencies.
+2. <span class="notes-section-label">**Should a hook hide its close failure?**</span> Not silently. The lifecycle policy needs bounded reporting/failure and an external replacement/recovery strategy.
+3. <span class="notes-section-label">**Must all Nest providers be request-scoped?**</span> No. Shared stateless capabilities are often appropriate; isolate request-specific state deliberately.
+
+::: tip Key takeaway
+Use framework hooks as well-placed entry points into explicit owners, not as a replacement for lifecycle design.
+:::
+
+<span class="notes-section-label">**Practice — learner work still required:**</span> observe initialization and explicit-close hooks once per app, test interceptor settlement on success/rejection, and inject a failing resource initialization into an owned composition fixture. Acceptance: partial startup is cleaned up, close is idempotent/bounded, and crash recovery assumptions are stated. Advanced framework internals remain optional enrichment.
+
+<span class="notes-section-label">**Official references:**</span> [Nest lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events), [request lifecycle](https://docs.nestjs.com/faq/request-lifecycle), [interceptors](https://docs.nestjs.com/interceptors), [RxJS finalize](https://rxjs.dev/api/operators/finalize).
+
+---
+
+### What must change when a framework app moves from a lab to deployment? {#t16-q13}
+
+*Study depth: Intermediate; advanced operations remain separate*
+
+<span class="notes-section-label">**Predict before reading**</span>
+
+The server binds successfully, but its template was not copied into the artifact. Is startup healthy? Two replicas each use the in-memory repository: do they share products? Does a framework shutdown hook guarantee all work finishes before the platform kills the process?
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Deploy a **reproducible artifact** with the intended runtime/dependencies/assets and validated configuration. **Listening, liveness and readiness are distinct**; keep credentials and proxy trust deliberate. Give the executable one bounded shutdown owner. Match persistence/session state and background work to the multi-instance topology: **this process-local Map is neither shared nor durable**.
+
+</div>
+
+<span class="notes-section-label">**`catalog-server.mjs`**</span> — executable ownership for this loopback-only lab:
+
+```js
+// file: catalog-server.mjs
+import { createServer } from 'node:http';
+import { once } from 'node:events';
+import { access } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { createCatalogApp } from './catalog-app.mjs';
+export function readLabPort(env) {
+  const raw = env.PORT ?? '3000';
+  if (typeof raw !== 'string' || !/^[0-9]{1,5}$/.test(raw) || Number(raw) > 65535) {
+    throw new TypeError('Invalid lab PORT');
+  }
+  return Number(raw);
+}
+export async function startCatalog(port) {
+  if (!Number.isInteger(port) || port < 0 || port > 65535) throw new TypeError('Invalid port');
+  await access(new URL('./products.ejs', import.meta.url), constants.R_OK);
+  const actors = new Map([
+    ['fixture-alice', Object.freeze({ id: 'alice', canWrite: true })],
+    ['fixture-reader', Object.freeze({ id: 'alice', canWrite: false })]
+  ]);
+  const app = createCatalogApp({ verifyAccessToken: async token => actors.get(token) ?? null });
+  let ready = true;
+  let closing;
+  const server = createServer((req, res) => {
+    if (req.url === '/live' || req.url === '/ready') {
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        res.writeHead(405, { Allow: 'GET, HEAD' }); res.end(); return;
+      }
+      const healthy = req.url === '/live' || ready;
+      res.writeHead(healthy ? 200 : 503, { 'Content-Type': 'application/json' });
+      res.end(req.method === 'HEAD' ? undefined : JSON.stringify({ status: healthy ? 'ok' : 'not-ready' }));
+      return;
+    }
+    app(req, res);
+  });
+  function close() {
+    if (closing) return closing;
+    ready = false;
+    closing = new Promise((resolveClose, rejectClose) => {
+      const deadline = setTimeout(() => {
+        process.exitCode = 1;
+        server.closeAllConnections();
+      }, 2000);
+      server.close(error => {
+        clearTimeout(deadline);
+        server.removeListener('error', runtimeError);
+        error ? rejectClose(error) : resolveClose();
+      });
+    });
+    return closing;
+  }
+  function runtimeError() {
+    console.error('CATALOG_SERVER_ERROR');
+    process.exitCode = 1;
+    void close().catch(() => { process.exitCode = 1; });
+  }
+  const listening = once(server, 'listening');
+  server.listen(port, '127.0.0.1');
+  await listening;
+  server.on('error', runtimeError);
+  return { port: server.address().port, close };
+}
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  void startCatalog(readLabPort(process.env)).then(owner => {
+    const stop = () => {
+      void owner.close().catch(() => { process.exitCode = 1; }).finally(() => {
+        process.removeListener('SIGTERM', stop);
+        process.removeListener('SIGINT', stop);
+      });
+    };
+    process.on('SIGTERM', stop);
+    process.on('SIGINT', stop);
+    console.log(JSON.stringify({ port: owner.port }));
+  }).catch(() => { console.error('CATALOG_START_FAILED'); process.exitCode = 1; });
+}
+```
+
+Run `node catalog-server.mjs`; use `PORT=0` in this **owned lab** to obtain an ephemeral address from the readiness line. Unlike the earlier fixed-port configuration exercise, this executable deliberately permits `0`. The credential Map remains a fixture, so this server is not a production authentication template.
+
+`/live` reports that the local HTTP owner can answer. `/ready` reflects the explicitly checked lab prerequisites and switches false during controlled shutdown. Here those prerequisites are application construction and a readable trusted template; no database is present. Availability of a readable file does not prove every template rendering case, and a listener is not proof of real dependency readiness.
+
+The owner first stops readiness/admission, asks ordinary HTTP connections to close and escalates after two seconds. Repeated close calls share one promise. `closeAllConnections()` does not close upgraded WebSocket sessions; pools, workers and consumers would need their own disposal and deadline budget. A forced termination deadline is not a successful clean shutdown.
+
+<span class="notes-section-label">**Deployment decisions beyond the lab**</span>
+
+| Concern | Required decision/evidence |
+|---|---|
+| Artifact | Correct entry point, lockfile install, compiled code and copied templates/static assets |
+| Configuration | Validate required values before serving; use intended secret configuration without logging it |
+| Runtime | Supported Node/framework versions, native dependency/platform compatibility and appropriate memory/CPU limits |
+| Proxy/TLS | Intended TLS hops, timeout/body limits, allowed host/origin rules and narrowly configured proxy trust |
+| State | Shared durable database/session/outcome state where replicas require it; Map contents vanish on restart |
+| Health | Liveness versus actual required-dependency readiness, with a bounded observation policy |
+| Shutdown | Stop new work, drain/close under the platform budget, retain durable recovery/outcome ownership |
+| Delivery | Tests/build/artifact verification, migrations and rollback compatibility; logs/metrics with reviewed fields |
+
+Do not set `trust proxy` to an unrestricted value merely to make client IPs look correct. Express's interpretation of forwarded headers must match the actual trusted proxy path. Do not let a browser CORS configuration stand in for server-side authorization. A migration or background consumer can create irreversible effects even when an HTTP deployment is rolled back; plan those transitions separately.
+
+<span class="notes-section-label">**NestJS alongside**</span>
+
+Build TypeScript and ship the emitted application plus required assets/dependencies. Configure providers and readiness for the real infrastructure. `enableShutdownHooks` opts into supported signal handling, but a slow hook can still exceed the platform's deadline. Close an already-created application if listening/startup fails. The companion's CLI includes that cleanup, while its programmatic factory lets a test/application owner call `init`, `listen` and `close` explicitly.
+
+<span class="notes-section-label">**Common mistakes:**</span> shipping only JavaScript while views are missing; `latest`/unlocked dependency drift; starting one connection pool per request; treating a Map as shared persistence; returning healthy before required initialization; assuming framework hooks always run after a kill.
+
+<span class="notes-section-label">**Examiner follow-ups**</span>
+
+1. <span class="notes-section-label">**Does `/live` need to query every dependency?**</span> Not necessarily. Distinguish process liveness from readiness and avoid an expensive health probe causing its own outage.
+2. <span class="notes-section-label">**Can two replicas use this Map repository unchanged?**</span> They can run, but clients see separate transient data. That does not satisfy a shared durable catalog contract.
+3. <span class="notes-section-label">**Does a passing local smoke test prove deployment behavior?**</span> No. Verify the intended proxy, configuration, persistence and operational path separately.
+
+::: tip Key takeaway
+Deployment is the complete runtime/lifecycle contract around the framework, not just a successful listen call.
+:::
+
+<span class="notes-section-label">**Practice — learner work still required:**</span> start the owned executable, verify health versus protected API behavior, provoke an occupied-port startup failure and stop it cleanly. Acceptance: startup fails without claiming readiness, assets are present, shutdown releases resources, and replica/persistence limits are explained. Full cloud/CI/migration operations remain in their dedicated topics.
+
+<span class="notes-section-label">**Official references:**</span> [Express production practices](https://expressjs.com/en/advanced/best-practice-performance.html), [proxy trust](https://expressjs.com/en/guide/behind-proxies.html), [Node HTTP shutdown](https://nodejs.org/download/release/v24.18.0/docs/api/http.html), [Nest lifecycle](https://docs.nestjs.com/fundamentals/lifecycle-events).
+
+
+## Application revision
+
+| Responsibility | Express example | NestJS companion |
+|---|---|---|
+| Routing | Router, ordered literals and parameters | Controller and method decorators |
+| HTTP boundary | Controllers translate input/results | Controllers and parsing pipes |
+| Business behavior | Injected service and repository contract | Injectable catalog provider |
+| Access policy | Verified actor middleware plus service ownership checks | Fixture guard; read-only companion |
+| Safe failures | Final four-argument error middleware | Exception filter |
+| Cross-cutting observation | Bounded finish/close observer | Interceptor with finalization |
+| Resource ownership | Explicit server owner and idempotent close | Application initialization/close hooks |
+
+**Explain the decisions, not just the method names.** Why do literal routes precede parameter routes? Why does an authenticated actor still need authorization? What does a disconnected client tell you about a database write? Which state survives a restart?
+
+### Mixed application practice
+
+Learner practice is separate from the author’s example checks. Keep these unchecked until you perform them and retain the evidence.
+
+- [ ] Build the Express catalog from the listed files; explain the router → controller → service → repository flow.
+- [ ] Add a field through validation, storage, public DTO and HTML rendering without accepting owner fields from the client.
+- [ ] Demonstrate unauthorized, forbidden, missing, malformed, oversized, stale-version and unexpected-failure responses; show that private error text is absent.
+- [ ] Write service and real HTTP tests, including two users and conflicting updates. Record what each boundary proves.
+- [ ] Run the NestJS companion, trace guard/pipe/controller/interceptor/filter behavior and explain the provider lifetime.
+- [ ] Provoke a startup failure and stop the executable cleanly. Explain what remains unproven about proxies, multiple replicas and durable storage.
+
+<span class="notes-section-label">**Acceptance:**</span> explain and reproduce each result, close owned resources, preserve the task template’s build/test configuration, and distinguish fixture credentials/in-memory state from production infrastructure. A passing example does not establish production readiness or complete your practice.

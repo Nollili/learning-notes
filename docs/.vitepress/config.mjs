@@ -208,6 +208,7 @@ export default defineConfig(applyContentPolicy({
   title: 'My Notes for Bench Learning',
   description: 'Professional growth and technical notes.',
   outDir: '../dist',
+  srcExclude: ['**/AGENTS.md'],
   markdown: {
     config(md) {
       md.core.ruler.disable('emoji')
@@ -1415,8 +1416,8 @@ export default defineConfig(applyContentPolicy({
                 { text: 'Development-tool workflows', link: '/node-js/tech-check/29-development-tools' },
                 { text: 'Errors', link: '/node-js/tech-check/10-error-handling' },
                 { text: 'Testing', link: '/node-js/tech-check/15-testing' },
-                { text: 'Frameworks — planned', link: '/node-js/tech-check/coverage#_16-frameworks-and-web-application-development' },
-                { text: 'Patterns — planned', link: '/node-js/tech-check/coverage#_18-architecture-and-design-patterns' }
+                { text: 'Frameworks', link: '/node-js/tech-check/16-frameworks#application-frameworks' },
+                { text: 'Patterns', link: '/node-js/tech-check/18-patterns' }
               ]
             },
             {

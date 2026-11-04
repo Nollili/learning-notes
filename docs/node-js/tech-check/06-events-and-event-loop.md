@@ -10,7 +10,7 @@ This chapter covers event-driven contracts, EventEmitter, waiting for events and
 
 *Study depth: Intermediate*
 
-**Example — predict the delivery order and final listener count**
+<span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
 
 Save as `emitter.mjs`.
 
@@ -36,13 +36,17 @@ console.log(seen.join(','));
 console.log(jobs.listenerCount('completed'));
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-Event-driven code reacts to occurrences through subscriptions rather than one caller awaiting one return value. EventEmitter is an in-process notification mechanism: emit calls listeners synchronously in registration order, with prepend changing that order. It returns whether listeners existed, not their results or completion.
+<p class="notes-core-answer__title">Core answer</p>
 
-Use once for a one-time notification and off with the original function reference to release subscriptions. The special error event throws when no error listener handles it. Events are not a durable queue, replay log or transaction.
+Event-driven code reacts to occurrences through subscriptions rather than one caller awaiting one return value. EventEmitter is an in-process notification mechanism: **emit calls listeners synchronously in registration order**, with prepend changing that order. It returns whether listeners existed, **not their results or completion**.
 
-**Detailed explanation**
+Use once for a one-time notification and off with the original function reference to release subscriptions. **The special error event throws when no error listener handles it**. **Events are not a durable queue, replay log or transaction**.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `first 1,regular 1,delivered true,delivered false,error fixture`, then `0`. The once registration is removed before its invocation, so a recursive emission cannot invoke that same once listener again. Removing regular affects subsequent emissions. When an emission has already begun, removing another registered listener generally does not remove it from that delivery's listener set.
 
@@ -60,28 +64,31 @@ Subscriptions retain their listener closures. Request-scoped listeners left on a
 
 Dispose only subscriptions you own; removeAllListeners can break other components. A direct promise-returning function is often simpler when one caller requires one result, while a durable broker fits recoverable cross-process work.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Treating emit as asynchronous or interpreting true as business success.
 - Removing a fresh anonymous function instead of the registered reference.
 - Raising the warning threshold without investigating listener ownership.
 - Assuming a custom emitter delivers to another process or replays past events.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **What is this inside a normal listener function?** The emitter for an ordinary EventEmitter listener. Arrow functions retain lexical this instead.
-2. **Can the same listener be registered twice?** Yes; both registrations can run. One off call removes one matching registration, so ownership should prevent accidental duplication.
-3. **Does an error listener catch an ordinary completed listener's throw?** No. That synchronous throw propagates to the emitter's caller unless explicitly converted into an error event by application code.
+1. <span class="notes-section-label">**What is this inside a normal listener function?**</span> The emitter for an ordinary EventEmitter listener. Arrow functions retain lexical this instead.
+2. <span class="notes-section-label">**Can the same listener be registered twice?**</span> Yes; both registrations can run. One off call removes one matching registration, so ownership should prevent accidental duplication.
+3. <span class="notes-section-label">**Does an error listener catch an ordinary completed listener's throw?**</span> No. That synchronous throw propagates to the emitter's caller unless explicitly converted into an error event by application code.
 
 ::: tip Key takeaway
 An event contract includes delivery, payload, failure and subscription lifetime, not merely a string name.
 :::
 
+
+---
+
 ### How do you wait for events without missing them or leaking listeners? {#t06-q02}
 
 *Study depth: Intermediate*
 
-**Example — register before publication**
+<span class="notes-section-label">**Example — register before publication**</span>
 
 Save as `wait-events.mjs`. Why are both waits created before the first await?
 
@@ -105,13 +112,17 @@ console.log(source.listenerCount('ready'), source.listenerCount('done'),
   source.listenerCount('error'));
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-EventEmitter does not buffer past notifications. Register every required wait before an operation can emit them, including synchronous emissions in the same callback. Node's events.once returns a promise of the event argument array and normally rejects if error is emitted while waiting for another event.
+<p class="notes-core-answer__title">Core answer</p>
 
-Give waits an AbortSignal so their owner can stop waiting and remove listeners. Observe every promise promptly; sequential awaits can miss a second notification emitted before its listener is registered.
+**EventEmitter does not buffer past notifications**. **Register every required wait before an operation can emit them**, including synchronous emissions in the same callback. Node's events.once returns a promise of the event argument array and normally rejects if error is emitted while waiting for another event.
 
-**Detailed explanation**
+**Give waits an AbortSignal** so their owner can stop waiting and remove listeners. Observe every promise promptly; **sequential awaits can miss a second notification** emitted before its listener is registered.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `[["R"],["D",2]]`, then `0 0 0`. once resolves with all emitted arguments rather than only the first. Both event promises and their combined rejection observer exist before the publisher runs.
 
@@ -127,28 +138,31 @@ When explicitly waiting for the error event itself, that event resolves as the r
 
 For repeated notifications, events.on provides an async iterator, but queued events require an admission/backpressure policy; not every producer supports pause/resume. Neither waiting helper turns a transient notification into a durable job protocol. Correlate IDs when several requests share an emitter so an unrelated event cannot satisfy the wrong request.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Registering the next wait only after awaiting the previous notification.
 - Cancelling only the combined promise in thought while leaving sibling listeners active.
 - Forgetting that results are argument arrays or that error can reject the wait.
 - Assuming abort stops the producer or removes every other subscriber.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Can an event arrive before once returns?** The helper installs its listener synchronously; publication after that registration can resolve it before your await, which is fine.
-2. **Why not use once without a lifetime?** A never-emitted event can retain listeners indefinitely. Use a caller cancellation/deadline policy and handle rejection.
-3. **How should you test a missed-event bug?** Emit both events in one controlled callback and assert the unregistered event is absent; abort the stranded wait so the test finishes.
+1. <span class="notes-section-label">**Can an event arrive before once returns?**</span> The helper installs its listener synchronously; publication after that registration can resolve it before your await, which is fine.
+2. <span class="notes-section-label">**Why not use once without a lifetime?**</span> A never-emitted event can retain listeners indefinitely. Use a caller cancellation/deadline policy and handle rejection.
+3. <span class="notes-section-label">**How should you test a missed-event bug?**</span> Emit both events in one controlled callback and assert the unregistered event is absent; abort the stranded wait so the test finishes.
 
 ::: tip Key takeaway
 Subscribe before publishing, attach observers promptly and cancel waits that no longer have an owner.
 :::
 
+
+---
+
 ### How do event-loop phases relate to timers, I/O and immediates? {#t06-q03}
 
 *Study depth: Intermediate*
 
-**Example — predict only the guaranteed order**
+<span class="notes-section-label">**Example — predict only the guaranteed order**</span>
 
 Save as `io-order.mjs`. This reads its own small fixture source file.
 
@@ -163,13 +177,17 @@ readFile(new URL(import.meta.url), (error) => {
 console.log('sync');
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-The event loop coordinates ready callbacks on a JavaScript thread while OS facilities or native workers perform eligible external work. Its conceptual phases include timers, pending callbacks, internal idle/prepare work, poll, check and close callbacks. setImmediate runs in check; timers become eligible after a delay rather than executing at an exact deadline.
+<p class="notes-core-answer__title">Core answer</p>
 
-In this I/O callback example, the scheduled immediate runs before its zero-delay timer. At top-level startup, do not assume the same relative timer/immediate order.
+The event loop coordinates ready callbacks on a JavaScript thread while OS facilities or native workers perform eligible external work. Its conceptual phases include timers, pending callbacks, internal idle/prepare work, poll, check and close callbacks. setImmediate runs in check; **timers become eligible after a delay rather than executing at an exact deadline**.
 
-**Detailed explanation**
+**In this I/O callback example, the scheduled immediate runs before its zero-delay timer**. **At top-level startup, do not assume the same relative timer/immediate order**.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 The output is `sync`, `io callback`, `immediate from io`, `timer from io`. The read callback cannot interrupt the current synchronous module body. Scheduling both from that I/O cycle supplies the context needed to reason about check before the next eligible timer opportunity. A zero timeout is normalized to a minimum delay; it is not an instruction to run immediately.
 
@@ -183,30 +201,33 @@ The [Node learning reference](https://nodejs.org/en/learn/asynchronous-work/even
 
 A timer's measured lateness can reflect synchronous JavaScript, GC, a saturated host or high-priority callback churn. Slow file completion could instead reflect storage or native worker contention without a blocked event loop. The event-loop diagnosis examples measure these boundaries; reproducing this ordering is not a performance diagnosis.
 
-Moving CPU-heavy code into setImmediate defers it but still blocks while it executes; chunking can yield between chunks, whereas worker threads provide a separate JavaScript execution thread.
+Moving CPU-heavy code into setImmediate **defers it but still blocks while it executes**; chunking can yield between chunks, whereas worker threads provide a separate JavaScript execution thread.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Describing every asynchronous operation as a timer or a worker-pool job.
 - Promising a callback fires exactly at the specified millisecond.
 - Memorizing a top-level timeout/immediate order as universal.
 - Equating an idle loop with an idle database, disk or remote dependency.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Does setImmediate mean no delay?** No. It schedules for an appropriate check phase; current work and other callbacks still take time.
-2. **Does awaiting a timer offload the next computation?** No. The continuation still runs JavaScript on its thread.
-3. **What keeps this example alive?** Its pending file operation and then scheduled referenced handles, not merely the existence of a promise object.
+1. <span class="notes-section-label">**Does setImmediate mean no delay?**</span> No. It schedules for an appropriate check phase; current work and other callbacks still take time.
+2. <span class="notes-section-label">**Does awaiting a timer offload the next computation?**</span> No. The continuation still runs JavaScript on its thread.
+3. <span class="notes-section-label">**What keeps this example alive?**</span> Its pending file operation and then scheduled referenced handles, not merely the existence of a promise object.
 
 ::: tip Key takeaway
 Explain scheduling in its actual callback and runtime context, not from a universal queue-order slogan.
 :::
 
+
+---
+
 ### How do nextTick and promise microtasks differ across CommonJS and ESM? {#t06-q04}
 
 *Study depth: Intermediate*
 
-**Example — run the same source as two module types**
+<span class="notes-section-label">**Example — run the same source as two module types**</span>
 
 Save identical content as `queues.cjs` and `queues.mjs`. Predict the complete log order for each on the stated Node24 baseline.
 
@@ -223,13 +244,17 @@ setImmediate(() => {
 console.log('end');
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-process.nextTick is a Node-specific queue, not an event-loop phase. Promise reactions and queueMicrotask share the standard microtask queue. At ordinary Node callback boundaries, next ticks drain before standard microtasks.
+<p class="notes-core-answer__title">Core answer</p>
 
-Top-level ESM evaluation already runs as microtask work, so the top-level promise/microtask callbacks in this example precede its nextTick callback. Recursive scheduling in either high-priority queue can starve timers and I/O. State module mode and callback context before predicting output.
+**process.nextTick is a Node-specific queue, not an event-loop phase**. Promise reactions and queueMicrotask share the standard microtask queue. **At ordinary Node callback boundaries, next ticks drain before standard microtasks**.
 
-**Detailed explanation**
+**Top-level ESM evaluation already runs as microtask work**, so the top-level promise/microtask callbacks in this example precede its nextTick callback. **Recursive scheduling in either high-priority queue can starve timers and I/O**. State module mode and callback context before predicting output.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 CommonJS output is `start`, `end`, `tick`, `promise`, `microtask`, `immediate`, `callback tick`, `callback microtask`. ESM output is `start`, `end`, `promise`, `microtask`, `tick`, `immediate`, `callback tick`, `callback microtask`. Standard microtasks here preserve their registration order.
 
@@ -247,18 +272,18 @@ Diagnose a real ordering bug by recording runtime/module mode, reducing to a min
 
 Infinite starvation demonstrations should run only as bounded owned child processes; The later examples add safe diagnostics rather than hang this documentation process.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Saying nextTick always beats every promise regardless of context.
 - Treating nextTick as the timers phase or an I/O fairness yield.
 - Assuming await Promise.resolve allows pending socket callbacks to run.
 - Ignoring the difference between a microtask throw and a promise rejection.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Are nextTick and queueMicrotask interchangeable?** No. Their queues, portability and interactions with ESM/microtask processing differ.
-2. **Can async/await starve I/O?** Repeated immediately resolved awaits can continually schedule microtask continuations; async syntax alone does not ensure fairness.
-3. **Why state the filename extension?** It fixes the module context without relying on a surrounding package.json or syntax detection.
+1. <span class="notes-section-label">**Are nextTick and queueMicrotask interchangeable?**</span> No. Their queues, portability and interactions with ESM/microtask processing differ.
+2. <span class="notes-section-label">**Can async/await starve I/O?**</span> Repeated immediately resolved awaits can continually schedule microtask continuations; async syntax alone does not ensure fairness.
+3. <span class="notes-section-label">**Why state the filename extension?**</span> It fixes the module context without relying on a surrounding package.json or syntax detection.
 
 ::: tip Key takeaway
 Ordering depends on execution context; responsiveness depends on giving the loop opportunities to progress.
@@ -274,11 +299,14 @@ Acceptance: assertions check payloads, counts, ordering, error identity and clea
 
 Official references checked2026-11-04: Node24.18 [EventEmitter and event helpers](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [process.nextTick](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#processnexttickcallback-args); Node [event-loop guide](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick), [setImmediate/CJS–ESM ordering](https://nodejs.org/en/learn/asynchronous-work/understanding-setimmediate); libuv [design overview](https://docs.libuv.org/en/v1.x/design.html). libuv's native internals and OS backends are continued in event-loop diagnosis, rather than inferred from JavaScript print order.
 
+
+---
+
 ### How do OS notifications and libuv's worker pool deliver different kinds of asynchronous work? {#t06-q05}
 
 *Study depth: Intermediate*
 
-**Example — what can this prove about threads?**
+<span class="notes-section-label">**Example — what can this prove about threads?**</span>
 
 Save as `native-work.mjs`.
 
@@ -296,13 +324,17 @@ console.log(source.includes('native-work'), key.length, isMainThread);
 console.log('uv', process.versions.uv);
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-libuv supplies Node with cross-platform event-loop, I/O, timer and native worker-pool facilities. Socket I/O commonly uses OS readiness/completion notification; many filesystem operations, system DNS lookup and selected crypto/compression operations use the native pool. Their completion returns to the owning loop, where JavaScript runs.
+<p class="notes-core-answer__title">Core answer</p>
 
-The pool is distinct from worker_threads, which execute JavaScript on separate threads. Async syntax does not identify which native mechanism an API uses or prove that an application callback runs on a pool thread.
+libuv supplies Node with cross-platform event-loop, I/O, timer and native worker-pool facilities. **Socket I/O commonly uses OS readiness/completion notification**; many filesystem operations, **system DNS lookup and selected crypto/compression operations use the native pool**. Their completion returns to the owning loop, where JavaScript runs.
 
-**Detailed explanation**
+**The pool is distinct from worker_threads**, which execute JavaScript on separate threads. Async syntax does not identify which native mechanism an API uses or prove that an application callback runs on a pool thread.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 The first line is `true 16 true`; the second records the actual linked libuv version. The marker native-work is present in this source. File content and derived bytes complete before the continuation runs on the main JavaScript thread.
 
@@ -314,32 +346,35 @@ A socket notification still needs JavaScript processing after the current stack 
 
 libuv distinguishes long-lived handles, such as a TCP listener or timer, from requests for individual operations. Resource ownership matters even though application code normally uses Node wrappers rather than uv_close directly. Native callbacks must return through the correct runtime integration; ordinary JavaScript callbacks are not run arbitrarily by OS threads.
 
-The documented native pool defaults to4 threads and is shared across event loops in a process. Its work can contend: many expensive crypto tasks can delay filesystem or system resolver work even when the JavaScript loop remains responsive. dns.lookup uses system resolution, while dns.resolve-style network DNS has a different path.
+The documented native pool defaults to4 threads and is shared across event loops in a process. Its work can contend: **many expensive crypto tasks can delay filesystem or system resolver work even when the JavaScript loop remains responsive**. dns.lookup uses system resolution, while dns.resolve-style network DNS has a different path.
 
 Configure UV_THREADPOOL_SIZE before startup only after workload evidence; more threads consume memory and can increase CPU contention. Exact filesystem backend details can vary by runtime/platform, so avoid treating an implementation summary as a universal guarantee.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Calling worker_threads and the libuv pool the same mechanism.
 - Assuming every network socket consumes one waiting pool thread.
 - Increasing pool size to repair synchronous JavaScript blocking.
 - Inferring native-thread execution order from a few console logs.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Why can low loop delay coexist with slow file reads?** The bottleneck can be storage or waiting for native workers rather than JavaScript callback execution.
-2. **Can workers contend for that pool too?** Yes. Separate JavaScript threads do not necessarily provide separate pools for pool-backed APIs in the same process.
-3. **How should you verify a suspected mechanism?** Read the exact API/runtime documentation, capture relevant timings and use an appropriate trace/profile; a callback's thread identity alone does not trace its preceding native work.
+1. <span class="notes-section-label">**Why can low loop delay coexist with slow file reads?**</span> The bottleneck can be storage or waiting for native workers rather than JavaScript callback execution.
+2. <span class="notes-section-label">**Can workers contend for that pool too?**</span> Yes. Separate JavaScript threads do not necessarily provide separate pools for pool-backed APIs in the same process.
+3. <span class="notes-section-label">**How should you verify a suspected mechanism?**</span> Read the exact API/runtime documentation, capture relevant timings and use an appropriate trace/profile; a callback's thread identity alone does not trace its preceding native work.
 
 ::: tip Key takeaway
 Separate OS notifications, native worker capacity and JavaScript execution when diagnosing asynchronous latency.
 :::
 
+
+---
+
 ### How should OS signal handlers coordinate bounded shutdown? {#t06-q06}
 
 *Study depth: Intermediate*
 
-**Example — test only as an owned child process**
+<span class="notes-section-label">**Example — test only as an owned child process**</span>
 
 Save as `signals.mjs`. A parent waits for ready, then sends SIGTERM to this child's PID. FIXTURE_HANG=1 deliberately demonstrates the deadline path.
 
@@ -379,13 +414,17 @@ process.on('SIGINT', onInt);
 console.log('ready');
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-SIGTERM and SIGINT are cooperative termination signals that Node can expose through process listeners. A handler should start one supervised shutdown: stop admission, drain owned work, close resources, set an exit status and normally let the loop finish.
+<p class="notes-core-answer__title">Core answer</p>
 
-Installing a listener changes default termination behaviour on supported platforms, so the application must finish shutdown itself. Use a final bounded fallback and an external supervisor deadline. SIGKILL cannot be caught, and a blocked JavaScript thread cannot run its signal callback or deadline timer on time.
+SIGTERM and SIGINT are cooperative termination signals that Node can expose through process listeners. A handler should start one supervised shutdown: **stop admission, drain owned work, close resources**, set an exit status and normally let the loop finish.
 
-**Detailed explanation**
+**Installing a listener changes default termination behaviour** on supported platforms, so the application must finish shutdown itself. Use a final bounded fallback and an external supervisor deadline. **SIGKILL cannot be caught**, and **a blocked JavaScript thread cannot run its signal callback or deadline timer on time**.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 The normal child logs ready, stopping SIGTERM and closed, then exits0. The hanging child logs the deadline diagnostic and exits1. The interval supplies explicit active work until shutdown; the pending promise alone would not keep the child alive, but the referenced deadline does. The stopping guard prevents repeated signals from starting overlapping cleanup.
 
@@ -403,28 +442,31 @@ Signal availability and semantics differ on Windows and Unix-like systems. proce
 
 SIGHUP and filesystem watcher events have separate platform-specific semantics; fs.watch is an advisory change notification, not a durable audit log. If watching configuration, handle errors, coalesced/missing filenames and atomic replacement, validate reloaded data, and close the watcher on disposal.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Registering a handler but leaving normal server handles alive indefinitely.
 - Expecting exit listeners to perform asynchronous draining.
 - Closing shared dependencies before in-flight work is finished.
 - Treating a synthetic process event as a cross-platform signal integration test.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Should the deadline timer be unref'd here?** No: this fixture deliberately needs it to keep the fallback alive when the only remaining work is an unsettled promise. Timer ownership is a contract choice.
-2. **What if a second signal arrives?** This example ignores it while draining; an application can deliberately escalate, but must document/test that policy.
-3. **Can cleanup survive SIGKILL?** No. Durable correctness requires recovery/idempotency at restart, not reliance on a final callback.
+1. <span class="notes-section-label">**Should the deadline timer be unref'd here?**</span> No: this fixture deliberately needs it to keep the fallback alive when the only remaining work is an unsettled promise. Timer ownership is a contract choice.
+2. <span class="notes-section-label">**What if a second signal arrives?**</span> This example ignores it while draining; an application can deliberately escalate, but must document/test that policy.
+3. <span class="notes-section-label">**Can cleanup survive SIGKILL?**</span> No. Durable correctness requires recovery/idempotency at restart, not reliance on a final callback.
 
 ::: tip Key takeaway
 A signal initiates a lifecycle protocol; resource owners and an external deadline make termination reliable.
 :::
 
+
+---
+
 ### What do event-loop delay and utilization measure? {#t06-q07}
 
 *Study depth: Intermediate*
 
-**Example — interpret the shape, not an exact benchmark**
+<span class="notes-section-label">**Example — interpret the shape, not an exact benchmark**</span>
 
 Save as `measure-loop.mjs`. The finite80ms busy wait is a deliberately bad workload for this local experiment only.
 
@@ -453,13 +495,17 @@ try {
 }
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-monitorEventLoopDelay samples scheduling delay using a timer-based histogram; its duration values are nanoseconds, so convert for millisecond dashboards. eventLoopUtilization reports the fraction of measured loop time active rather than idle, not process CPU percentage. Measure interval deltas and percentiles with sample count and workload context.
+<p class="notes-core-answer__title">Core answer</p>
 
-Correlate them with CPU, request latency, native-worker waits, GC and dependency timings. Neither metric alone identifies the responsible function or proves a service is healthy.
+monitorEventLoopDelay samples scheduling delay using a timer-based histogram; **its duration values are nanoseconds**, so convert for millisecond dashboards. eventLoopUtilization reports the fraction of measured loop time active rather than idle, **not process CPU percentage**. **Measure interval deltas and percentiles with sample count and workload context**.
 
-**Detailed explanation**
+Correlate them with CPU, request latency, native-worker waits, GC and dependency timings. **Neither metric alone identifies the responsible function or proves a service is healthy**.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 The JSON has samples and nonnegative duration/utilization fields; the induced block should be visible in max and commonly p99 after the sampler resumes. Do not assert exact millisecond output or a universal utilization threshold: scheduling, sampling alignment and host contention affect observations.
 
@@ -477,28 +523,31 @@ For a process that will not exit, process.getActiveResourcesInfo can suggest res
 
 The [performance course](../module-11-performance-diagnostics.md) covers profiling and wider operational signals; this question establishes independent interpretation of the basic loop measurements.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Plotting nanoseconds as milliseconds or treating ELU as CPU utilization.
 - Reporting p99 from an empty window without sample count.
 - Diagnosing a hot JavaScript function solely from slow request latency.
 - Reusing cumulative values when comparing brief experiments.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Is low delay proof the database is fast?** No. Waiting for remote work can leave the loop free while requests remain slow.
-2. **What follows a suspected CPU hot path?** Capture a representative CPU profile with bounded overhead and inspect the stack, input and GC contribution before changing architecture.
-3. **Why disable the monitor?** Release this experiment's monitoring activity and avoid unintended continuing overhead; production monitoring instead needs an explicit owner and reporting lifecycle.
+1. <span class="notes-section-label">**Is low delay proof the database is fast?**</span> No. Waiting for remote work can leave the loop free while requests remain slow.
+2. <span class="notes-section-label">**What follows a suspected CPU hot path?**</span> Capture a representative CPU profile with bounded overhead and inspect the stack, input and GC contribution before changing architecture.
+3. <span class="notes-section-label">**Why disable the monitor?**</span> Release this experiment's monitoring activity and avoid unintended continuing overhead; production monitoring instead needs an explicit owner and reporting lifecycle.
 
 ::: tip Key takeaway
 Measure scheduling symptoms with units and context, then collect evidence at the suspected bottleneck.
 :::
 
+
+---
+
 ### How can you demonstrate starvation and fix fairness safely? {#t06-q08}
 
 *Study depth: Intermediate*
 
-**Example — predict whether the immediate gets an opportunity**
+<span class="notes-section-label">**Example — predict whether the immediate gets an opportunity**</span>
 
 Save as `fairness.mjs`. Both modes do finite cheap work; this is an ordering experiment, not a realistic performance benchmark.
 
@@ -528,17 +577,21 @@ console.log('yielding', await countChunks(100, 10, true), turns);
 await secondProbe;
 ```
 
-**Short exam answer**
+<div class="notes-core-answer">
 
-A callback can starve other work by never returning or continually refilling nextTick/microtask queues. Repeated await Promise.resolve is not an I/O fairness yield. Bounded chunks separated by an awaited immediate allow loop phases to progress between chunks; each chunk still blocks while running.
+<p class="notes-core-answer__title">Core answer</p>
 
-Reduce work first, choose a chunk budget from responsiveness measurements, and use worker threads or a service when sustained CPU work needs isolation. Test infinite starvation only in an externally bounded child process.
+A callback can starve other work by never returning or continually refilling nextTick/microtask queues. **Repeated await Promise.resolve is not an I/O fairness yield**. Bounded chunks separated by an awaited immediate allow loop phases to progress between chunks; **each chunk still blocks while running**.
 
-**Detailed explanation**
+Reduce work first, choose a chunk budget from responsiveness measurements, and use worker threads or a service when sustained CPU work needs isolation. **Test infinite starvation only in an externally bounded child process**.
+
+</div>
+
+<span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `microtasks 100 0`, then `yielding 100 1`. The first loop resumes through standard microtasks and finishes before the pending immediate. The second yields through check-phase work; the already scheduled immediate can run before counting completes. This demonstrates an opportunity to progress, not a guarantee that every I/O callback finishes within a chosen latency budget.
 
-A count limit alone does not bound chunk duration if each item has unbounded cost. Validate input sizes, cap per-item complexity and consider a time-based budget between safe interruption points.
+**A count limit alone does not bound chunk duration** if each item has unbounded cost. Validate input sizes, cap per-item complexity and consider a time-based budget between safe interruption points.
 
 Yielding introduces interleaving: another request can change shared state before the next chunk, so retain invariant checks and avoid holding scarce resources across arbitrary yields. Throughput can decrease as scheduling overhead increases; compare both throughput and tail latency.
 
@@ -548,18 +601,18 @@ Do not execute such code directly in the shared docs/test process. A missing hea
 
 When fairness changes do not fix the service, separate admission overload, native-pool contention, GC, blocking native calls and external dependency delay. A worker pool also needs queue limits, message/result validation, time budgets and shutdown. T09 covers implementation of process/thread isolation; adding a yield here does not claim that scope is complete.
 
-**Common mistakes**
+<span class="notes-section-label">**Common mistakes**</span>
 
 - Replacing nextTick recursion with microtask recursion and assuming starvation is solved.
 - Using an in-process timeout to supervise a loop that prevents timers running.
 - Yielding once before a single enormous CPU operation.
 - Claiming a fairness ordering experiment proves production throughput or an SLA.
 
-**Examiner follow-ups**
+<span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. **Can a timer interrupt the inner while?** No. JavaScript runs that synchronous work to completion before another callback executes.
-2. **Does offloading remove resource limits?** No. Workers and their input queues can saturate memory/CPU; they require bounded admission and explicit ownership too.
-3. **What should a regression test assert?** Result correctness plus a controlled competing callback getting an opportunity between chunks, not a fragile exact duration on every machine.
+1. <span class="notes-section-label">**Can a timer interrupt the inner while?**</span> No. JavaScript runs that synchronous work to completion before another callback executes.
+2. <span class="notes-section-label">**Does offloading remove resource limits?**</span> No. Workers and their input queues can saturate memory/CPU; they require bounded admission and explicit ownership too.
+3. <span class="notes-section-label">**What should a regression test assert?**</span> Result correctness plus a controlled competing callback getting an opportunity between chunks, not a fragile exact duration on every machine.
 
 ::: tip Key takeaway
 Fairness requires a real scheduling opportunity and bounded work; a watchdog must live outside the failure it supervises.
@@ -571,7 +624,7 @@ EventEmitter delivers synchronous in-process notifications with explicit subscri
 
 Diagnose responsiveness with contextual scheduling experiments, loop metrics and evidence from the actual constrained resource.
 
-**Learner checklist and practical exercise**
+<span class="notes-section-label">**Learner checklist and practical exercise**</span>
 
 - [ ] Reproduce event delivery, missing-event and CJS/ESM scheduling cases from event delivery and scheduling.
 - [ ] Explain socket notifications versus filesystem/system-DNS/native-crypto pool work without inventing a thread per connection.
@@ -581,7 +634,7 @@ Diagnose responsiveness with contextual scheduling experiments, loop metrics and
 
 Acceptance: retain command/runtime/platform, assertions and measurements. Close every owned timer, monitor, child and subscription. Exercise failure paths intentionally and distinguish observed behaviour from native implementation inferred from documentation. Writing or author-checking these examples does not complete learner practice.
 
-**Mixed practice — attempt all first**
+<span class="notes-section-label">**Mixed practice — attempt all first**</span>
 
 1. Async file reads slow down during many native crypto tasks, but the loop remains responsive. Which shared resource merits investigation?
 2. A SIGTERM listener is installed but the server still accepts work. Why can the process remain alive?
@@ -590,7 +643,7 @@ Acceptance: retain command/runtime/platform, assertions and measurements. Close 
 5. A child endlessly refills nextTick and its own shutdown timer never runs. Where must the final watchdog live?
 6. Does chunking with setImmediate make each chunk interruptible?
 
-**Practice answers**
+<span class="notes-section-label">**Practice answers**</span>
 
 1. The native worker pool and storage/operation queue; measure before changing its size.
 2. The listener changes default signal behaviour, while referenced server resources remain. Stop admission and drain/close owned work under a deadline.

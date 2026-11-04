@@ -4,7 +4,11 @@
 
 Implement a calm dark reading theme for frequent study on a 13-inch Mac and a smaller tablet. Use warm charcoal, soft ivory text, and purposeful background highlights for revision. These are design preferences to evaluate on the actual devices, not a guarantee of reduced eye strain.
 
-This file is an implementation brief for Codex. Creating this guide does not authorize applying highlights throughout the notes. When asked to implement it, establish the theme and a small representative sample first; apply the same editorial rules to further notes only within the requested scope.
+This is the approved default authoring and styling policy for all new learning content in this repository, across every subject. Codex must read and apply it when creating a page, adding a section, or substantially revising an existing section. Apply it as part of the content work without asking for separate styling approval. Keep unrelated existing content outside the requested scope.
+
+Use the Node.js Foundations pages in `docs/node-js/tech-check/` as the approved visual reference, starting with `01-runtime-fundamentals.md`. Follow the principles rather than copying the number or placement of highlighted phrases.
+
+For question-based notes, include a Core answer panel and separate complete questions with horizontal rules. For narrative lessons, use a Core answer panel for each major teaching section's central explanation where appropriate; retain a natural heading hierarchy rather than turning every paragraph into a question or panel. Index pages, navigation lists, references and exercise-only pages do not need artificial Core answer blocks. The emphasis and heading rules still apply everywhere.
 
 ## Repository integration
 
@@ -67,7 +71,7 @@ Apply the same wrapper to a bold examiner question that serves as a label before
 
 ### Core answer blocks and question separation
 
-Use the original short-answer content in a shared `notes-core-answer` container. Rename “Short exam answer” to “Core answer.” Do not rewrite the technical answer merely to fit the styling.
+Write the central explanation in a shared `notes-core-answer` container titled “Core answer.” When updating existing notes, use the original short-answer content and rename “Short exam answer” to “Core answer.” Do not rewrite the technical answer merely to fit the styling.
 
 ```md
 <div class="notes-core-answer">
@@ -150,7 +154,7 @@ Contrast is an accessibility check, not a measure of personal reading comfort. T
 ## Implementation and acceptance checklist for Codex
 
 1. Inspect the working tree and existing theme. Make focused source changes and preserve unrelated edits.
-2. Add shared theme tokens, dark-default configuration, responsive reading typography, and reusable emphasis classes. Verify light-mode fallbacks.
+2. Reuse the existing shared theme tokens, dark-default configuration, responsive reading typography, and reusable emphasis classes. Change theme implementation only when the task requires it; do not duplicate styles in individual pages. Verify light-mode fallbacks when changing styles.
 3. Read each complete section, select meaningful bold claims, then check the headings-and-bold-only reading. Frame every Core answer and separate questions with horizontal rules. Exclude headings and structural labels from highlighting. For visual verification, include a long paragraph, a wrapped highlight, a link, a code block, a table, a callout, and a Mermaid diagram. Do not bulk-highlight notes by keyword matching.
 4. Check representative viewport widths of 1280 and 1440 CSS pixels for the Mac, and 600, 768, and 820 for smaller tablet layouts. Also check 390px as a narrow-width stress case. These are test sizes, not claims about either device's actual resolution.
 5. Check portrait and landscape, Safari on the Mac and the tablet's actual browser when available, keyboard navigation, touch menus, and 200% browser zoom. Report any device/browser checks that could not be performed.
