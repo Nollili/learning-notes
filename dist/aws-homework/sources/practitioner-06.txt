@@ -115,7 +115,7 @@ export class ProductServiceStack extends Stack {
 }
 
 
-🟢 Checkpoint: is the queue configured with the right visibility timeout and redrive policy?
+ Checkpoint: is the queue configured with the right visibility timeout and redrive policy?
 Task 6.2 — Publish to the Catalog Items Queue
 The queue is ready, but nothing writes to it yet. This task builds that path from Import Service. ProductServiceStack passes catalogItemsQueue into ImportServiceStack. importFileParser then publishes each parsed row to the queue as its own message instead of just writing it to CloudWatch.
 
@@ -150,7 +150,7 @@ Update the importFileParser handler. For each parsed row, send one SQS message t
 
 Grant importFileParser permission to send messages to catalogItemsQueue in ImportServiceStack.
 
-🟢 Checkpoint: does an uploaded file reach the queue instead of just the logs?
+ Checkpoint: does an uploaded file reach the queue instead of just the logs?
 Task 6.3 — Process the Catalog Items Queue
 The queue now holds messages, but nothing reads them yet. This task adds catalogBatchProcess, the Lambda that reads the queue in batches and writes each valid row to products and stock. Each message in a batch can succeed or fail on its own, so a bad row shouldn't force SQS to redeliver the whole batch. You define the Lambda and its trigger first, then the handler logic that validates and persists each record.
 
@@ -190,7 +190,7 @@ export const main = async (event: {
 
 Report a failed message as a batch item failure, so SQS redelivers only that message. A message can fail because of invalid JSON, a row that doesn't match the shape in Data Models or a DynamoDB write error. The rest of the batch is processed independently, each message succeeding or failing on its own. For example, a row missing price creates no product, but the other valid rows from the same uploaded CSV file still do.
 
-🟢 Checkpoint: is catalogBatchProcess deployed, wired to the queue and actually creating products?
+ Checkpoint: is catalogBatchProcess deployed, wired to the queue and actually creating products?
 Task 6.4 — Product Notifications
 Products are now persisted in the database, but nobody outside your service knows when a new one appears. Without a notification, another system would have to keep polling GET /products just to catch new inventory. This task adds createProductTopic, an SNS topic that publishes one message for every created product to any number of subscribers. A subscription's filter policy lets each one listen only for the products matching its own criteria, rather than every product created. You define the topic, publish to it from catalogBatchProcess, then add three email subscriptions: one unfiltered, two filtered by price and count.
 
@@ -211,7 +211,7 @@ Add two more email subscriptions to createProductTopic, defined inside CreatePro
 
 A bulk-shipment alert, subscribed with a filter policy of count >= 1000.
 A high-value alert, subscribed with a filter policy of price >= 100.
-🟢 Checkpoint: do the right inboxes get notified?
+ Checkpoint: do the right inboxes get notified?
 Evaluation criteria
 Infrastructure
 

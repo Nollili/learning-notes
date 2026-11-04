@@ -82,7 +82,7 @@ export class AuthorizationServiceStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) { ... }
 }
 
-🟢 Checkpoint: did the stack deploy?
+ Checkpoint: did the stack deploy?
 Task 7.2 — UsersTable and Seeding
 The stack exists, but nothing lives in it yet. This task creates UsersTable and fills it with real logins and passwords, so there are real users for the authorizer to check against. Each password is stored as a salted hash, never as plain text, so a leak doesn't expose anyone's real credentials. You create the table first, then a script that seeds it from the provided data/users.ts file.
 
@@ -101,7 +101,7 @@ export class UsersTableConstruct extends dynamodb.Table {
 
 Add a script that reads data/users.ts. For each entry, hash password with a freshly generated random salt (e.g. with Node's built-in crypto.scrypt), then write the login, hashed password and salt into UsersTable.
 
-🟢 Checkpoint: does UsersTable hold real data?
+ Checkpoint: does UsersTable hold real data?
 Task 7.3 — basicAuthorizer Lambda
 Logins and passwords are stored now, but nothing checks them yet. This task adds basicAuthorizer, a Lambda authorizer that API Gateway invokes to decide whether a request is allowed through. Unlike the other Lambdas in your app, it doesn't return 200 or 403 directly: it returns an IAM policy, which API Gateway turns into an Allow or Deny decision for the caller. You define the Lambda and grant it read access to UsersTable, then implement the logic that checks a request's credentials against it.
 
@@ -136,7 +136,7 @@ src/app/handlers/basic-authorizer/handler.ts
 export const main = async (event: { authorizationToken: string; methodArn: string }) => { ... };
 
 
-🟢 Checkpoint: does basicAuthorizer allow and deny correctly?
+ Checkpoint: does basicAuthorizer allow and deny correctly?
 Task 7.4 — Import Service Authorization
 The authorizer exists now, but no route uses it yet. This task wires basicAuthorizer onto GET /import, the route it's meant to guard. Two things are needed to attach basicAuthorizer as a Lambda authorizer: a reference to it in ImportServiceStack and an API Gateway service role allowed to invoke it. You add that reference and the role, then confirm the protected route still returns a signed URL.
 
@@ -175,7 +175,7 @@ export class RestApiConstruct extends apigateway.RestApi {
 
 Confirm GET /import still returns the signed upload URL for a valid fileName and a valid Authorization header, exactly as it did in Module 5 and Module 6.
 
-🟢 Checkpoint: does the authorizer actually protect the route?
+ Checkpoint: does the authorizer actually protect the route?
 Evaluation criteria
 Infrastructure
 

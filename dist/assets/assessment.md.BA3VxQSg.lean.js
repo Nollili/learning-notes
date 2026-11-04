@@ -1,0 +1,1 @@
+import{_ as a,c as s,o as t,ag as n}from"./chunks/framework.Vyheyqg9.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"assessment.md","filePath":"assessment.md"}'),r={name:"assessment.md"};function o(i,e,l,c,p,m){return t(),s("div",null,[...e[0]||(e[0]=[n("",4)])])}const _=a(r,[["render",o]]);export{d as __pageData,_ as default};

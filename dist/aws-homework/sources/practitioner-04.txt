@@ -183,7 +183,7 @@ Write a script that loads the mock data from data/products.ts and data/stock.ts 
 
 Run the npm script to seed both tables.
 
-🟢 Checkpoint: are both tables seeded?
+ Checkpoint: are both tables seeded?
 Task 4.2 — Get Products Endpoints
 With both tables in place, you no longer need the in-memory array. You point getProductsList and getProductsById at DynamoDB instead, so each returns the joined product-with-stock shape from Data Models. If a product has no matching stock item, it's still included in the response, with count = 0. You update both handlers first, then give each Lambda access to both tables.
 
@@ -227,7 +227,7 @@ export class GetProductsByIdLambdaConstruct extends lambda.Function {
 
 Pass both tables into each Lambda construct in ProductServiceStack and grant each one read access to them.
 
-🟢 Checkpoint: do both endpoints read from DynamoDB?
+ Checkpoint: do both endpoints read from DynamoDB?
 Task 4.3 — Create Product Endpoint
 Reading is only half the story. This task adds the other half: a new POST /products endpoint that validates the request body, then creates matching items in both the products and stock tables. You create the handler and its Lambda first, then wire it into the REST API alongside your two read endpoints.
 
@@ -271,7 +271,7 @@ export class RestApiConstruct extends apigateway.RestApi {
 
 Add the new createProduct Lambda alongside the other two in the ProductServiceStack CDK stack, then pass it to the REST API construct and grant it write access to both tables.
 
-🟢 Checkpoint: is a created product actually saved?
+ Checkpoint: is a created product actually saved?
 Evaluation criteria
 Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
 

@@ -176,7 +176,7 @@ export class OrderDbInstanceConstruct extends Construct {
   constructor(scope: Construct, id: string) { ... }
 }
 
-🟢 Checkpoint: is the instance up and configured as intended?
+ Checkpoint: is the instance up and configured as intended?
 Task 8.2 — Schema Setup
 Your deploy created a database server, not the tables inside it. Creating those tables is a separate step because a schema changes far more often than a server does. You add a migration script, an npm command to run it and the temporary firewall change the script needs to connect.
 
@@ -188,7 +188,7 @@ Endpoint address and port — from the RDS console.
 Database name — orders.
 Username and password — from the Secrets Manager console.
 Temporarily open inbound access to your own IP on the database's security group, run the script, then remove that rule again. Leaving it in place would contradict the Evaluation criteria below, which require no ingress from the public internet.
-🟢 Checkpoint: is the schema in place and the script safe to re-run?
+ Checkpoint: is the schema in place and the script safe to re-run?
 Task 8.3 — Create Order Endpoint
 With the tables in place, this task adds the endpoint that writes to them. Placing an order inserts one row into orders plus one row per line item into order_items, which all have to succeed or fail together. A transaction gives you that: the database applies all of the statements or none of them. You define the Lambda, wire it to POST /orders, then implement the handler that validates the body and runs the transaction.
 
@@ -235,7 +235,7 @@ export const main = async (event: { body: string }) => { ... };
 
 Return 400 for a request that breaks any rule in API Contract, without writing the order or any of its items. Even one invalid item in a multi-item request rejects the whole request.
 
-🟢 Checkpoint: does the endpoint create orders and reject unauthenticated callers?
+ Checkpoint: does the endpoint create orders and reject unauthenticated callers?
 Task 8.4 — Get Order By Id Endpoint
 Now that orders can be created, the last endpoint reads one back: the same shape POST returned, plus a total. You could fetch every line item and add them up in the handler, but an order with five hundred items would then move five hundred rows across the network to produce a single number. SUM computes that number inside the database and returns only the result. You build the same three pieces again: the Lambda, the route, then the handler.
 
@@ -270,7 +270,7 @@ export const main = async (event: { pathParameters: { orderId: string } }) => { 
 
 Return 404 when the id doesn't match any order.
 
-🟢 Checkpoint: does the order come back with the right total?
+ Checkpoint: does the order come back with the right total?
 Evaluation criteria
 Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
 

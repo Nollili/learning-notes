@@ -104,7 +104,7 @@ export class ImportBucketConstruct extends s3.Bucket {
   constructor(scope: Construct, id: string) { ... }
 }
 
-🟢 Checkpoint: is the bucket versioned and ready?
+ Checkpoint: is the bucket versioned and ready?
 Task 5.2 — importProductsFile Endpoint
 The bucket you just created can't yet receive anything: there's no way to upload a file to it yet. This task adds that endpoint, which takes a file name and returns a presigned S3 PUT URL. The client uses that URL to upload the CSV directly to the bucket, without routing its bytes through API Gateway and Lambda. You define the importProductsFile Lambda, wire it to GET /import through the REST API, then implement the handler that builds the presigned URL.
 
@@ -147,7 +147,7 @@ export const main = async (event: {
 
 Wire together the bucket, the Lambda and the REST API in ImportServiceStack and grant importProductsFile write access to the bucket (put-only).
 
-🟢 Checkpoint: is the presigned URL usable?
+ Checkpoint: is the presigned URL usable?
 Task 5.3 — importFileParser Event Handler
 Clients can upload files now, but nothing processes them once they arrive. This task adds the Lambda that reacts to that upload. Instead of an HTTP request, it's triggered by the resulting ObjectCreated event. It streams the object, parses it as CSV and logs each row. Once it's done, it moves the file from uploaded/ to parsed/. You define the importFileParser Lambda, wire it to the bucket's upload event, then implement the handler that parses and moves the file.
 
@@ -180,7 +180,7 @@ Copy the file to the same key under parsed/ and delete the original from uploade
 
 Update ImportServiceStack's IAM policies so the function can both read and write to the bucket.
 
-🟢 Checkpoint: does the uploaded file get parsed and moved?
+ Checkpoint: does the uploaded file get parsed and moved?
 Evaluation criteria
 Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
 

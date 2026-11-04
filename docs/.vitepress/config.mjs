@@ -204,6 +204,7 @@ const aiDevelopmentSidebar = [
 ]
 
 export default defineConfig(applyContentPolicy({
+  appearance: 'dark',
   title: 'My Notes for Bench Learning',
   description: 'Professional growth and technical notes.',
   outDir: '../dist',
@@ -1387,6 +1388,76 @@ export default defineConfig(applyContentPolicy({
         { text: 'ASMT materials', link: '/senior_growth/' },
       ],
       '/node-js/': [
+        {
+          text: 'Node.js tech-check',
+          items: [
+            { text: 'Tech-check overview', link: '/node-js/tech-check/' },
+            { text: 'Coverage checklist', link: '/node-js/tech-check/coverage' },
+            {
+              text: '1. Node.js Foundations',
+              collapsed: false,
+              items: [
+                { text: 'Runtime fundamentals', link: '/node-js/tech-check/01-runtime-fundamentals' },
+                { text: 'CLI and processes', link: '/node-js/tech-check/02-cli-and-processes' },
+                { text: 'Modules', link: '/node-js/tech-check/03-modules' },
+                { text: 'Package management', link: '/node-js/tech-check/04-package-management' },
+                { text: 'Async programming', link: '/node-js/tech-check/05-asynchronous-programming' },
+                { text: 'Core APIs', link: '/node-js/tech-check/07-core-apis' },
+                { text: 'Framework foundations', link: '/node-js/tech-check/16-frameworks' }
+              ]
+            },
+            {
+              text: '2. Building Node.js Applications',
+              collapsed: true,
+              items: [
+                { text: 'Events and event loop', link: '/node-js/tech-check/06-events-and-event-loop' },
+                { text: 'Networking', link: '/node-js/tech-check/08-networking' },
+                { text: 'Development-tool workflows', link: '/node-js/tech-check/29-development-tools' },
+                { text: 'Errors', link: '/node-js/tech-check/10-error-handling' },
+                { text: 'Testing', link: '/node-js/tech-check/15-testing' },
+                { text: 'Frameworks — planned', link: '/node-js/tech-check/coverage#_16-frameworks-and-web-application-development' },
+                { text: 'Patterns — planned', link: '/node-js/tech-check/coverage#_18-architecture-and-design-patterns' }
+              ]
+            },
+            {
+              text: '3. Designing Node.js Services',
+              collapsed: true,
+              items: [
+                { text: 'Concurrency', link: '/node-js/tech-check/09-concurrency' },
+                { text: 'Architecture — planned', link: '/node-js/tech-check/coverage#_18-architecture-and-design-patterns' },
+                { text: 'Authentication — planned', link: '/node-js/tech-check/coverage#_13-authentication-and-authorization' },
+                { text: 'Database fundamentals — planned', link: '/node-js/tech-check/coverage#_17-databases-and-data-access' },
+                { text: 'Docker — planned', link: '/node-js/tech-check/coverage#_23-containerization' },
+                { text: 'Cloud — planned', link: '/node-js/tech-check/coverage#t30' },
+                { text: 'Serverless — planned', link: '/node-js/tech-check/coverage#_20-serverless' },
+                { text: 'Deployment — planned', link: '/node-js/tech-check/coverage#_24-deployment-and-delivery' }
+              ]
+            },
+            {
+              text: '4. Hardening and Optimizing Node.js Services',
+              collapsed: true,
+              items: [
+                { text: 'Security — planned', link: '/node-js/tech-check/coverage#_14-security' },
+                { text: 'Advanced authentication — planned', link: '/node-js/tech-check/coverage#_13-authentication-and-authorization' },
+                { text: 'Performance and V8 — planned', link: '/node-js/tech-check/coverage#_12-performance-and-v8' },
+                { text: 'Deeper data access — planned', link: '/node-js/tech-check/coverage#_17-databases-and-data-access' },
+                { text: 'Advanced API and framework scope — planned', link: '/node-js/tech-check/progress#five-level-ladder' }
+              ]
+            },
+            {
+              text: '5. Specialized Node.js Systems',
+              collapsed: true,
+              items: [
+                { text: 'Messaging — planned', link: '/node-js/tech-check/coverage#_19-queues-and-messaging' },
+                { text: 'Real-time foundations', link: '/node-js/tech-check/08-networking#t08-q06' },
+                { text: 'Logging — planned', link: '/node-js/tech-check/coverage#_21-logging' },
+                { text: 'Monitoring — planned', link: '/node-js/tech-check/coverage#_22-monitoring-and-visualization' },
+                { text: 'Advanced real-time, native modules and WebAssembly — planned', link: '/node-js/tech-check/progress#five-level-ladder' }
+              ]
+            },
+            { text: 'Tech-check progress', link: '/node-js/tech-check/progress' }
+          ]
+        },
         {
                 "text": "Node.js runtime course",
                 "items": [

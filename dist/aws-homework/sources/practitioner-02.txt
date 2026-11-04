@@ -98,7 +98,7 @@ export class FrontendHostingStack extends Stack {
 
 Initialize FrontendHostingStack in src/infra/bin/app.ts.
 
-🟢 Checkpoint: does the bucket stay private?
+ Checkpoint: does the bucket stay private?
 Evaluation criteria
 Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed CloudFront URL.
 

@@ -802,7 +802,7 @@ Node.js code uses three major asynchronous styles: callbacks, promises, and `asy
 
 ### Callbacks
 
-A callback is a function passed for later execution:
+A callback is a function supplied to another function. Whether it runs synchronously or asynchronously depends on the API; the `fs.readFile()` completion callback below runs asynchronously:
 
 ```ts
 import { readFile } from 'node:fs';

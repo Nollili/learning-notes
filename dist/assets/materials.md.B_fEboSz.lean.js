@@ -1,0 +1,1 @@
+import{_ as a,c as r,o as t,ag as n}from"./chunks/framework.Vyheyqg9.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"materials.md","filePath":"materials.md"}'),o={name:"materials.md"};function l(i,e,s,p,c,h){return t(),r("div",null,[...e[0]||(e[0]=[n("",38)])])}const b=a(o,[["render",l]]);export{d as __pageData,b as default};

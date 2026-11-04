@@ -14,6 +14,8 @@ export function sectionNumberingPlugin(md) {
   })
   // Run after anchor generation: presentation must never change a saved URL.
   md.core.ruler.after('anchor', 'hub-section-numbering', state => {
+    const pagePath = [state.env.path, state.env.relativePath].filter(Boolean).join('/').replaceAll('\\', '/')
+    const numberSections = presentation.numberSections && !/(?:^|\/)node-js\/tech-check\//.test(pagePath)
     const stack = []
     let topic = 0
     for (let index = 0; index < state.tokens.length; index++) {
@@ -35,7 +37,7 @@ export function sectionNumberingPlugin(md) {
       const parent = stack.at(-1)
       const sequence = parent ? [...parent.sequence, ++parent.children] : [++topic]
       stack.push({ level, sequence, children: 0 })
-      if (presentation.numberSections) {
+      if (numberSections) {
         const open = new state.Token('span_open', 'span', 1)
         open.attrSet('class', 'hub-section-number')
         const number = new state.Token('text', '', 0)

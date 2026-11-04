@@ -171,7 +171,7 @@ export class ProductServiceStack extends Stack {
 
 Add ProductServiceStack next to FrontendHostingStack in src/infra/bin/app.ts, so cdk deploy picks it up too.
 
-🟢 Checkpoint: do both endpoints work properly?
+ Checkpoint: do both endpoints work properly?
 Evaluation criteria
 Everything below is checked automatically. Infrastructure criteria are asserted against your synthesized CDK template. Behavior criteria are asserted as real HTTP requests against your deployed API.
 
