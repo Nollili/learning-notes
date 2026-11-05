@@ -1,6 +1,6 @@
 # Node.js tech-check
 
-A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **91/214 written (42.5%)**, 123 open; learner progress is not assessed.
+A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **161/214 written (75.2%)**, 53 open; learner progress is not assessed.
 
 The following Software Engineer Level2 mapping is preserved as earlier context on a different scale. Career Level2 means the supplied Software Engineer column: Intermediate for the specified development/engineering/cloud/Docker/AI skills, and Novice for performance, security and infrastructure. It does not require Advanced/Expert proficiency throughout. Explain mechanisms, reason about code, implement a small feature and diagnose failures at each stated target. Foundational/intermediate/advanced are study-depth labels, not official exam grades or claims that a question will appear.
 
@@ -8,7 +8,7 @@ All original25 groups and their IDs remain. Genuinely new scope was appended as 
 
 **Node.js Foundations material is complete:** 52 questions across seven sidebar chapters, covering all 49 mapped Level 1 subtopics. [Framework foundations](./16-frameworks.md) closes the four remaining basic-framework tasks. Learner exercises, the external Core JS prerequisite and higher-level framework scope remain separate.
 
-**Active section:** the seven entries under Building Node.js Applications. [Menu-based status](./progress.md#applications-sidebar) tracks Events, Networking, Development-tool workflows, Errors, Testing, Frameworks and Patterns separately from the 44-item primary-level allocation. Errors, all eight [Testing topics](./15-testing.md), and all thirteen [Framework topics](./16-frameworks.md#application-frameworks) have written material and author checks. [Patterns](./18-patterns.md) now covers the three families in four questions. The remaining Networking and development-tool batches are complete. **All seven Applications menu entries now have their mapped material**; learner practice remains unassessed. Designing Node.js Services is now in progress: worker ownership and bounded-pool material are written; cluster service ownership is next.
+**Building Node.js Applications:** all seven entries have material. [Menu-based status](./progress.md#applications-sidebar) tracks Events, Networking, Development-tool workflows, Errors, Testing, Frameworks and Patterns separately from the 44-item primary-level allocation. Errors, all eight [Testing topics](./15-testing.md), and all thirteen [Framework topics](./16-frameworks.md#application-frameworks) have written material and author checks. [Patterns](./18-patterns.md#full-worked-catalogue) now covers all23 GoF patterns with worked material across the overview and four focused pages. The remaining Networking and development-tool batches are complete. **All seven Applications menu entries now have their mapped material**; learner practice remains unassessed. **Designing Node.js Services now has all eight requested entries:** [Concurrency](./09-concurrency.md), [Architecture](./18-architecture.md), [Authentication](./13-authentication-and-authorization.md), [Database fundamentals](./17-databases.md), [Docker](./23-containerization.md), [Cloud](./30-cloud-fundamentals.md), [Serverless](./20-serverless.md) and [Deployment](./24-deployment.md). See the [checks, limitations and next checkpoint](./progress.md#services-completion). Material completion does not establish the remaining primary-level topics or learner checkpoints.
 
 ## Batch sequence
 
@@ -39,9 +39,9 @@ Continue in small batches of one focused question, splitting a topic across batc
 | R02c | Audit B01/B03/B04 tool configuration, debugging and logging | Next |
 | B17a | T09-Q01: process/thread isolation and owned worker experiment | Written and checked |
 | B17b | T09-Q02: worker failure, deadlines and caller cancellation | Written and checked |
-| B17c | T09-Q03: copying, transfer and shared-memory ownership | Next; one focused question |
+| B17c | T09-Q03: copying, transfer and shared-memory ownership | Written and checked |
 | APP01 | T08-Q09: HTTP methods, status, headers, payloads and inspection | Written and example-checked |
-| APP02 | T08-Q10: browser requests and asynchronous communication | Retained networking backlog; Errors now active |
+| APP02 | T08-Q10: browser requests and asynchronous communication | Written and checked |
 | APP-E01–E02 | T10-Q01–Q02: Error classes, custom errors and causes | Written and example-checked |
 | APP-E03 | T10-Q03: asynchronous errors and promise ownership | Written and example-checked |
 | APP-E04 | T10-Q04: runtime-error diagnosis | Written and example-checked |
@@ -49,11 +49,12 @@ Continue in small batches of one focused question, splitting a topic across batc
 | APP-E06 | T10-Q06: Express error middleware | Written and real HTTP-checked |
 | APP-E07 | T10-Q07: database errors and transaction retries; chapter revision | Written; real PostgreSQL and labeled simulations checked |
 | APP-T01–T08 | T15-Q01–Q08: all eight Testing topics, sequential examples and revision | Written and checked;43 tests/6 suites, coverage and separate load/benchmark checks |
-| APP-F01 | T16-Q05: application routing and controller lifecycle | Next; one focused question |
+| APP-F01 | T16-Q05: application routing and controller lifecycle | Written and checked |
 | F01–F04 | T16-Q01–Q04: framework concepts, choice, setup, configuration | Written and example-checked |
-| Following batches | T09–T12: concurrency continuation, errors, debugging and measured performance | Planned |
-| Following batches | T13–T17: identity/security, tests, framework lifecycle and database implementation | Planned |
-| Following batches | T18–T25: architecture, messaging, serverless, logging/monitoring, containers, delivery, documentation | Planned |
+| Services sequence | Eight requested entries, one file per batch | Written; see Services reconciliation |
+| Following batches | T11/T12/T14: debugging, measured performance and security | Planned; no completion inferred from overlap |
+| Following batches | T14 security scope beyond the completed identity/database lessons | Planned; shared references do not complete its local scope |
+| Following batches | T19/T21/T22/T25: messaging, logging, monitoring and documentation | Planned; retained original scope |
 
 ## The original25 topic groups
 
@@ -65,29 +66,29 @@ Continue in small batches of one focused question, splitting a topic across batc
 - [6. Events and event loop](./06-events-and-event-loop.md) — B10–B11 complete.
 - [7. Core APIs and data handling](./07-core-apis.md) — B12–B14 complete.
 - [8. Networking](./08-networking.md) — eleven questions; all ten mapped subtopics written, including browser interaction and owned pooling.
-- [9. Concurrency](./09-concurrency.md) — four questions written; multithreading material complete at the stated scope; cluster/fork/IPC/production selection remain pending.
+- [9. Concurrency](./09-concurrency.md) — eight questions written; all five source scopes have material and bounded author checks; learner practice remains required.
 - [10. Error handling](./10-error-handling.md) — all seven source items written; HTTP/database examples checked, learner practice remains required.
 - **11. Debugging** — planned; subtopics retained in the checklist.
 - **12. Performance and V8** — planned; subtopics retained in the checklist.
-- **13. Authentication and authorization** — planned; subtopics retained in the checklist.
+- [13. Authentication and authorization](./13-authentication-and-authorization.md) — mapped study material written; integration/practice evidence remains separate.
 - **14. Security** — planned; subtopics retained in the checklist.
 - [15. Testing](./15-testing.md) — all eight source topics written; separate learner exercises remain required.
 - [16. Frameworks and web application development](./16-frameworks.md) — thirteen questions complete: Foundations, Express applications and a NestJS companion; learner practice remains required.
-- **17. Databases and data access** — planned; subtopics retained in the checklist.
-- [18. Design patterns](./18-patterns.md) — four questions cover creational, structural and behavioral patterns; broader architecture/distribution scope remains planned.
+- [17. Databases and data access](./17-databases.md) — mapped study material written; integration/practice evidence remains separate.
+- [18. Design patterns](./18-patterns.md) — full23-pattern worked catalogue,23 questions across five pages; [six architecture questions](./18-architecture.md) complete the broader retained source scope.
 - **19. Queues and messaging** — planned; subtopics retained in the checklist.
-- **20. Serverless** — planned; subtopics retained in the checklist.
+- [20. Serverless](./20-serverless.md) — mapped study material written; integration/practice evidence remains separate.
 - **21. Logging** — planned; subtopics retained in the checklist.
 - **22. Monitoring and visualization** — planned; subtopics retained in the checklist.
-- **23. Containerization** — planned; subtopics retained in the checklist.
-- **24. Deployment and delivery** — planned; subtopics retained in the checklist.
+- [23. Containerization](./23-containerization.md) — mapped study material written; integration/practice evidence remains separate.
+- [24. Deployment and delivery](./24-deployment.md) — mapped study material written; integration/practice evidence remains separate.
 - **25. Documentation** — planned; subtopics retained in the checklist.
 
 ## Appended groups and ownership
 
 The checklist now retains only the cloud/VM addition below. Removed checklist sections remain documented in the combined tracker, and the existing [development-tools lesson](./29-development-tools.md) is preserved. Historical owner descriptions follow; they are not a request to restore removed checklist sections. These are inventory owners, not newly completed chapters. No original group is renumbered. General cloud/VM material is distinct from T20 serverless implementation; development-tool configuration links existing T04 scripts, T11 debugging and T15 tests rather than duplicating them. Design patterns/software design stay T18.
 
-- [30. Cloud fundamentals and virtual machines](./coverage.md#t30) — source audit and Q&A pending.
+- [30. Cloud fundamentals and virtual machines](./30-cloud-fundamentals.md) — seven mapped topics have material; actual provider/VM practice remains required.
 
 ## Initial Level2 gap report — partial audit (R01 history)
 

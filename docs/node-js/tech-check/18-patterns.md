@@ -6,6 +6,44 @@ outline: [2, 3]
 
 These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-frameworks.md#application-frameworks). Examples run as `.mjs` on Node.js24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
 
+
+## Full worked catalogue
+
+All **23 GoF patterns** have explanations, worked code, failure cases, alternatives and practical acceptance at intermediate depth. This overview retains the original four questions; the focused pages expand the remaining patterns without duplicating Adapter/Decorator or Strategy/Observer.
+
+- [Creational patterns](./patterns/creational.md): construction hooks, product families, builders, cloning and scoped single instances.
+- [Structural patterns](./patterns/structural.md): independent variation, trees, subsystem entry points, shared intrinsic state and access proxies.
+- [Behavioral workflows](./patterns/behavioral-workflows.md): handler chains, commands, coordination, state transitions and workflow skeletons.
+- [Behavioral data and traversal](./patterns/behavioral-data.md): bounded expressions, iterators, opaque history and visitors.
+
+| Pattern | Worked lesson |
+|---|---|
+| Factory Method | [Explanation, example and practice](./patterns/creational.md#t18-q05) |
+| Abstract Factory | [Explanation, example and practice](./patterns/creational.md#t18-q06) |
+| Builder | [Explanation, example and practice](./patterns/creational.md#t18-q07) |
+| Prototype | [Explanation, example and practice](./patterns/creational.md#t18-q08) |
+| Singleton | [Explanation, example and practice](./patterns/creational.md#t18-q09) |
+| Adapter | [Explanation, example and practice](./18-patterns.md#t18-q03) |
+| Bridge | [Explanation, example and practice](./patterns/structural.md#t18-q10) |
+| Composite | [Explanation, example and practice](./patterns/structural.md#t18-q11) |
+| Decorator | [Explanation, example and practice](./18-patterns.md#t18-q03) |
+| Facade | [Explanation, example and practice](./patterns/structural.md#t18-q12) |
+| Flyweight | [Explanation, example and practice](./patterns/structural.md#t18-q13) |
+| Proxy | [Explanation, example and practice](./patterns/structural.md#t18-q14) |
+| Chain of Responsibility | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q15) |
+| Command | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q16) |
+| Interpreter | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q17) |
+| Iterator | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q18) |
+| Mediator | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q19) |
+| Memento | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q20) |
+| Observer | [Explanation, example and practice](./18-patterns.md#t18-q04) |
+| State | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q21) |
+| Strategy | [Explanation, example and practice](./18-patterns.md#t18-q04) |
+| Template Method | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q22) |
+| Visitor | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q23) |
+
+Material completion is separate from practice. Do not implement every pattern in one application; choose a justified variation point and preserve its contract.
+
 ### How do you choose a design pattern, and what do the three families mean? {#t18-q01}
 
 *Study depth: Intermediate*
@@ -36,7 +74,7 @@ Before refactoring, write a failing behavior or change scenario, identify what c
 
 Factory Method is a particular creation hook in a creator's workflow; a function named `createService` is usually a simple factory, not automatically that GoF pattern. An Adapter changes the interface/representation; a Decorator adds behavior through the interface it promises to preserve. A Strategy supplies an interchangeable algorithm; State changes behavior according to an object's current state and allowed transitions.
 
-The classic [GoF catalogue](https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-9780321700698) contains23 object-oriented patterns. JavaScript can express many roles with functions, closures and objects; **classes are an implementation choice, not the requirement**. ESM encapsulation, dependency injection, middleware and Repository are useful related techniques, but they are not additional members of those23. One design may have more than one role; explain its intent instead of counting labels.
+The classic [GoF catalogue](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480/9780321700698) contains23 object-oriented patterns. JavaScript can express many roles with functions, closures and objects; **classes are an implementation choice, not the requirement**. ESM encapsulation, dependency injection, middleware and Repository are useful related techniques, but they are not additional members of those23. One design may have more than one role; explain its intent instead of counting labels.
 
 For Express, factories connect collaborators explicitly. Nest's provider container can wire a factory or strategy; its `@Controller`/`@Injectable` syntax does not by itself demonstrate the object Decorator pattern. Framework interception can resemble decoration but has its own lifecycle contract.
 
@@ -266,7 +304,7 @@ Wrap the factory reader and the legacy adapter with the same metrics decorator. 
 
 ### How do Strategy, Observer and Command organize behavior without hiding failures? {#t18-q04}
 
-*Study depth: Intermediate; specialized pattern implementations optional*
+*Study depth: Intermediate; full worked catalogue linked below*
 
 <div class="notes-core-answer">
 
@@ -292,7 +330,7 @@ Strategy makes an algorithm interchangeable; Observer notifies registered collab
 | Template Method | Define a workflow skeleton with overridable steps | An import superclass with deliberate hooks; injected functions often suffice |
 | Visitor | Add operations across a stable object structure | Multiple operations over a typed syntax tree; new node kinds affect visitors |
 
-The tables across these questions introduce all23 GoF patterns. Implement the worked cases and justify selection; advanced implementations of the remaining catalogue are optional enrichment. The classification is a vocabulary, not an instruction to use every pattern in one service.
+The family tables introduce all23 GoF patterns. The linked full lessons now give every pattern worked intermediate material; advanced production specialization remains optional. The classification is a vocabulary, not an instruction to use every pattern in one service.
 
 <span class="notes-section-label">**Worked Strategy — replace rules, preserve the quote boundary**</span>
 
@@ -315,7 +353,7 @@ export function quoteShipping(subtotal, rule) {
 }
 ```
 
-`quoteShipping` is the context; injected functions are the strategies. The contract is synchronous and side-effect free by design. All rules accept the same validated subtotal and must return bounded integer cents. Passing an async function returns a promise, which fails the output check; it does not turn the context asynchronous. A throwing rule propagates its original error. The caller still selects a rule through an explicit allowed option, switch or map.
+`quoteShipping` is the context; injected functions are the strategies. The contract is synchronous and side-effect free by design. All rules accept the same validated subtotal and must return bounded integer cents. Passing an async function returns a promise, which fails the output check; it does not turn the context asynchronous. A throwing rule propagates its original error. The caller still selects a rule through an explicit allowed option, switch or map. This synchronous boundary does not own promises returned by invalid async rules; a rejecting async rule can additionally create an unobserved rejection. Use a separately awaited context for I/O algorithms instead of treating numeric validation as async lifecycle management.
 
 A pickup rule `() => 0` needs no context change. However, if tax/currency/customer information becomes necessary, evolve the shared contract deliberately. A payment provider is not interchangeable merely because it has `pay()`: timeout, cancellation, idempotency, refund and error semantics also matter. Do not silently switch payment providers after an uncertain write.
 

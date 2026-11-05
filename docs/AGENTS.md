@@ -10,5 +10,6 @@ Before creating or substantially revising learning content, read and follow [the
 - Separate complete question sections with Markdown horizontal rules and blank lines. Keep the preceding question's examples, practice and references before its divider.
 - Preserve technical meaning, runnable code, stable heading IDs, navigation and the existing presentation policy. Keep unrelated existing content outside the task scope.
 - Use `node-js/tech-check/01-runtime-fundamentals.md` as the approved visual reference. Verify the headings-and-bold-only reading before considering new content complete.
+- Follow the guide's literal-example and publishing rules: use fenced code or `<code v-pre>` for double-brace examples, preserve valid JSX/n8n syntax and `public/.nojekyll`, and publish VitePress output through the Pages workflow rather than Jekyll. Do not add Liquid wrappers as a workaround.
 
 Run `node --test scripts/content-policy.test.mjs` and `npm run docs:build` from the repository root for content changes. Follow the guide's temporary output-directory option when preserving existing generated files. These documentation checks do not replace any applicable Autocode build, test or coverage requirements. Never modify `src/tests` or push to a remote.

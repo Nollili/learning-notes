@@ -1,6 +1,6 @@
 # Node.js tech-check coverage checklist
 
-**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 91 written, 123 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
+**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 161 written, 53 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
 
 The original25 groups and187 source IDs below preserve the original scope. Added Level2 requirements extend existing groups and retain T30 cloud/VM coverage. At the user’s request, T26–T29 and T31–T34 are omitted from this checklist; their source mapping/history and existing notes remain in the combined tracker. No original T01–T25 item is deleted or renumbered. Each original bullet is one retained source subtopic with a stable ID. Added bullets are canonical preparation tasks classified in the combined tracker; they are not all quoted official source requirements. Checked means historically written at its original scope, not newly audited as adequate for Level2 and not learner mastery. The single [combined tracker](./progress.md#level2-reconciliation) records target depth, priority, audit, writing and verification separately. Broad labels may need several questions; question counts can grow rather than compressing answers. Shared ownership notes identify deliberate overlaps, not exemptions from the local group's required depth.
 
@@ -104,11 +104,11 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 9. Concurrency
 
-- [ ] **T09-S01** Cluster API and clustering — pending; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
-- [ ] **T09-S02** Forking processes — pending; shared explanation owner: [T02-Q07/Q08](./02-cli-and-processes.md#t02-q08) (fork/IPC); process-versus-thread comparison stays in T09; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
+- [x] **T09-S01** Cluster API and clustering — learning material written in [worked questions](./09-concurrency.md#t09-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T09-S02** Forking processes — learning material written in [worked questions](./09-concurrency.md#t09-q06); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 - [x] **T09-S03** Multithreading — grouped with fork/clustering in the source — written across [worker isolation/lifecycle/ownership/pool questions](./09-concurrency.md); one-worker pool policy verified, broader cluster/IPC/production selection and learner practice remain separate
-- [ ] **T09-S04** Child-process interactions and IPC — pending; shared explanation owner: [T02-Q08](./02-cli-and-processes.md#t02-q08) (IPC); worker/cluster ownership stays in T09; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
-- [ ] **T09-S05** Choosing concurrency approaches for production — pending; introductory [T09-Q01](./09-concurrency.md#t09-q01) written, remaining local scope pending
+- [x] **T09-S04** Child-process interactions and IPC — learning material written in [worked questions](./09-concurrency.md#t09-q07); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T09-S05** Choosing concurrency approaches for production — learning material written in [worked questions](./09-concurrency.md#t09-q08); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 10. Error handling
 
@@ -149,18 +149,18 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 13. Authentication and authorization
 
-- [ ] **T13-S01** JWT — pending
-- [ ] **T13-S02** Passport.js — pending
-- [ ] **T13-S03** Passport.js strategies — pending
-- [ ] **T13-S04** Third-party authentication services — pending
-- [ ] **T13-S05** Authentication and authorization in microservices — pending
-- [ ] **T13-S06** Authentication middleware — pending
+- [x] **T13-S01** JWT — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S02** Passport.js — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S03** Passport.js strategies — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S04** Third-party authentication services — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S05** Authentication and authorization in microservices — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S06** Authentication middleware — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T13-S07** Authentication versus authorization — pending
-- [ ] **T13-S08** Cookies, sessions and token lifecycle fundamentals — pending
+- [x] **T13-S07** Authentication versus authorization — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T13-S08** Cookies, sessions and token lifecycle fundamentals — learning material written in [worked questions](./13-authentication-and-authorization.md#t13-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 14. Security
 
@@ -211,42 +211,42 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 17. Databases and data access
 
-- [ ] **T17-S01** Database connectivity and connection configuration — pending
-- [ ] **T17-S02** Relational versus NoSQL databases — pending
-- [ ] **T17-S03** PostgreSQL, MySQL, and SQL Server — pending
-- [ ] **T17-S04** MongoDB and Redis — pending
-- [ ] **T17-S05** Document, key-value, and cache use cases — pending
-- [ ] **T17-S06** Native drivers and database libraries — pending
-- [ ] **T17-S07** ORMs, ODMs, and query builders — pending
-- [ ] **T17-S08** CRUD operations — pending
-- [ ] **T17-S09** Parameterized queries — pending; shared explanation owner: T14-S07 (parameterization/security); database query examples stay in T17
-- [ ] **T17-S10** Retrieving and persisting application data — pending
-- [ ] **T17-S11** Connection pooling and session management — pending
-- [ ] **T17-S12** Transactions and multi-step data operations — pending
-- [ ] **T17-S13** Consistency requirements — pending
-- [ ] **T17-S14** Schema design and awareness — pending
-- [ ] **T17-S15** Indexing — pending
-- [ ] **T17-S16** Data validation and quality — pending
-- [ ] **T17-S17** Query design and performance tuning — pending
-- [ ] **T17-S18** Database errors, retries, and logging — pending; shared explanation owner: T10-S07 (database errors/retries); adapter-specific examples stay in T17
-- [ ] **T17-S19** Secure credentials and encrypted connections — pending; shared explanation owner: T14-S08–S09 (credentials/TLS); driver setup stays in T17
-- [ ] **T17-S20** Scalable data access for APIs, microservices, and background jobs — pending
+- [x] **T17-S01** Database connectivity and connection configuration — learning material written in [worked questions](./17-databases.md#t17-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S02** Relational versus NoSQL databases — learning material written in [worked questions](./17-databases.md#t17-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S03** PostgreSQL, MySQL, and SQL Server — learning material written in [worked questions](./17-databases.md#t17-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S04** MongoDB and Redis — learning material written in [worked questions](./17-databases.md#t17-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S05** Document, key-value, and cache use cases — learning material written in [worked questions](./17-databases.md#t17-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S06** Native drivers and database libraries — learning material written in [worked questions](./17-databases.md#t17-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S07** ORMs, ODMs, and query builders — learning material written in [worked questions](./17-databases.md#t17-q06); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S08** CRUD operations — learning material written in [worked questions](./17-databases.md#t17-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S09** Parameterized queries — learning material written in [worked questions](./17-databases.md#t17-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S10** Retrieving and persisting application data — learning material written in [worked questions](./17-databases.md#t17-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S11** Connection pooling and session management — learning material written in [worked questions](./17-databases.md#t17-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S12** Transactions and multi-step data operations — learning material written in [worked questions](./17-databases.md#t17-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S13** Consistency requirements — learning material written in [worked questions](./17-databases.md#t17-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S14** Schema design and awareness — learning material written in [worked questions](./17-databases.md#t17-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S15** Indexing — learning material written in [worked questions](./17-databases.md#t17-q07); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S16** Data validation and quality — learning material written in [worked questions](./17-databases.md#t17-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S17** Query design and performance tuning — learning material written in [worked questions](./17-databases.md#t17-q07); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S18** Database errors, retries, and logging — learning material written in [worked questions](./17-databases.md#t17-q08); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S19** Secure credentials and encrypted connections — learning material written in [worked questions](./17-databases.md#t17-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S20** Scalable data access for APIs, microservices, and background jobs — learning material written in [worked questions](./17-databases.md#t17-q08); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T17-S21** Multi-table SQL joins, scripts and CREATE/DELETE/DROP operations — pending
-- [ ] **T17-S22** Interpret merge tables: JOIN versus UNION versus data upsert/MERGE — pending
+- [x] **T17-S21** Multi-table SQL joins, scripts and CREATE/DELETE/DROP operations — learning material written in [worked questions](./17-databases.md#t17-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T17-S22** Interpret merge tables: JOIN versus UNION versus data upsert/MERGE — learning material written in [worked questions](./17-databases.md#t17-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 18. Architecture and design patterns
 
-- [ ] <span class="notes-section-label">**T18-S01**</span> Application structure and architecture principles — pending
-- [ ] <span class="notes-section-label">**T18-S02**</span> Maintainable modules, services, and reusable components — pending
-- [x] <span class="notes-section-label">**T18-S03**</span> GoF creational, structural, and behavioral patterns — written across [four pattern questions](./18-patterns.md);23 intents introduced, worked core examples checked; learner practice required
-- [ ] <span class="notes-section-label">**T18-S04**</span> Basic and advanced microservices practices — pending
-- [ ] <span class="notes-section-label">**T18-S05**</span> Consistency patterns — pending
-- [ ] <span class="notes-section-label">**T18-S06**</span> Availability versus consistency — pending
-- [ ] <span class="notes-section-label">**T18-S07**</span> Performance and scalability practices — pending
+- [x] <span class="notes-section-label">**T18-S01**</span> Application structure and architecture principles — learning material written in [worked questions](./18-architecture.md#t18-q24); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] <span class="notes-section-label">**T18-S02**</span> Maintainable modules, services, and reusable components — learning material written in [worked questions](./18-architecture.md#t18-q25); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] <span class="notes-section-label">**T18-S03**</span> GoF creational, structural, and behavioral patterns — full [23-pattern worked catalogue](./18-patterns.md#full-worked-catalogue);19 expanded examples plus four reused pattern implementations verified; learner practice remains required
+- [x] <span class="notes-section-label">**T18-S04**</span> Basic and advanced microservices practices — learning material written in [worked questions](./18-architecture.md#t18-q26); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] <span class="notes-section-label">**T18-S05**</span> Consistency patterns — learning material written in [worked questions](./18-architecture.md#t18-q27); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] <span class="notes-section-label">**T18-S06**</span> Availability versus consistency — learning material written in [worked questions](./18-architecture.md#t18-q28); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] <span class="notes-section-label">**T18-S07**</span> Performance and scalability practices — learning material written in [worked questions](./18-architecture.md#t18-q29); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 19. Queues and messaging
 
@@ -260,11 +260,11 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 20. Serverless
 
-- [ ] **T20-S01** Serverless code implementation — pending
-- [ ] **T20-S02** AWS Lambda — pending
-- [ ] **T20-S03** Azure Functions — pending
-- [ ] **T20-S04** Google Cloud Functions — pending
-- [ ] **T20-S05** Extended configuration and advanced usage — pending
+- [x] **T20-S01** Serverless code implementation — learning material written in [worked questions](./20-serverless.md#t20-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T20-S02** AWS Lambda — learning material written in [worked questions](./20-serverless.md#t20-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T20-S03** Azure Functions — learning material written in [worked questions](./20-serverless.md#t20-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T20-S04** Google Cloud Functions — learning material written in [worked questions](./20-serverless.md#t20-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T20-S05** Extended configuration and advanced usage — learning material written in [worked questions](./20-serverless.md#t20-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 21. Logging
 
@@ -287,35 +287,35 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 23. Containerization
 
-- [ ] **T23-S01** Containerization practices and approaches — pending
-- [ ] **T23-S02** Docker — pending
-- [ ] **T23-S03** Docker Compose — pending
-- [ ] **T23-S04** Docker images — pending
-- [ ] **T23-S05** Container management and orchestration — pending
+- [x] **T23-S01** Containerization practices and approaches — learning material written in [worked questions](./23-containerization.md#t23-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S02** Docker — learning material written in [worked questions](./23-containerization.md#t23-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S03** Docker Compose — learning material written in [worked questions](./23-containerization.md#t23-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S04** Docker images — learning material written in [worked questions](./23-containerization.md#t23-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S05** Container management and orchestration — learning material written in [worked questions](./23-containerization.md#t23-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T23-S06** Tags, digests and registry authentication — pending
-- [ ] **T23-S07** Published ports, container DNS and user-defined networks — pending
-- [ ] **T23-S08** Build context/cache and non-root execution — pending
-- [ ] **T23-S09** Startup, networking and file-permission troubleshooting — pending
-- [ ] **T23-S10** Logs, inspect output and container-shell diagnosis — pending
+- [x] **T23-S06** Tags, digests and registry authentication — learning material written in [worked questions](./23-containerization.md#t23-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S07** Published ports, container DNS and user-defined networks — learning material written in [worked questions](./23-containerization.md#t23-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S08** Build context/cache and non-root execution — learning material written in [worked questions](./23-containerization.md#t23-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S09** Startup, networking and file-permission troubleshooting — learning material written in [worked questions](./23-containerization.md#t23-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T23-S10** Logs, inspect output and container-shell diagnosis — learning material written in [worked questions](./23-containerization.md#t23-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 24. Deployment and delivery
 
-- [ ] **T24-S01** npm scripts — pending; shared explanation owner: T04-S05 (npm scripts); deployment artifact orchestration stays in T24
-- [ ] **T24-S02** CI/CD — pending
-- [ ] **T24-S03** SSH and command-line tools — pending
-- [ ] **T24-S04** Cloud deployment — pending
-- [ ] **T24-S05** Framework deployment considerations — pending
+- [x] **T24-S01** npm scripts — learning material written in [worked questions](./24-deployment.md#t24-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S02** CI/CD — learning material written in [worked questions](./24-deployment.md#t24-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S03** SSH and command-line tools — learning material written in [worked questions](./24-deployment.md#t24-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S04** Cloud deployment — learning material written in [worked questions](./24-deployment.md#t24-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S05** Framework deployment considerations — learning material written in [worked questions](./24-deployment.md#t24-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T24-S06** One-environment runtime settings, secrets and dependencies — pending
-- [ ] **T24-S07** Health checks and basic process-management operation — pending
-- [ ] **T24-S08** Existing Docker build in CI: tests, immutable artifact and registry publication preparation — pending
+- [x] **T24-S06** One-environment runtime settings, secrets and dependencies — learning material written in [worked questions](./24-deployment.md#t24-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S07** Health checks and basic process-management operation — learning material written in [worked questions](./24-deployment.md#t24-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T24-S08** Existing Docker build in CI: tests, immutable artifact and registry publication preparation — learning material written in [worked questions](./24-deployment.md#t24-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
 
 ## 25. Documentation
 
@@ -326,10 +326,10 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 30. Cloud fundamentals and virtual machines {#t30}
 
-- [ ] **T30-S01** VMs, containers, managed compute and scalability concepts — pending
-- [ ] **T30-S02** Create/configure a VM, snapshots/backups/restore and virtual devices — pending
-- [ ] **T30-S03** IaaS, PaaS, SaaS and FaaS responsibility models — pending
-- [ ] **T30-S04** Practical object/block/file storage choice and owned example — pending
-- [ ] **T30-S05** Practical managed cloud database connection/configuration — pending
-- [ ] **T30-S06** Basic cloud IAM, secrets, network exposure and shared responsibility — pending
-- [ ] **T30-S07** One AWS deployment/storage/database/queue exercise with budgets and cleanup — pending
+- [x] **T30-S01** VMs, containers, managed compute and scalability concepts — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S02** Create/configure a VM, snapshots/backups/restore and virtual devices — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q02); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S03** IaaS, PaaS, SaaS and FaaS responsibility models — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q01); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S04** Practical object/block/file storage choice and owned example — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q03); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S05** Practical managed cloud database connection/configuration — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q04); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S06** Basic cloud IAM, secrets, network exposure and shared responsibility — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q05); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required
+- [x] **T30-S07** One AWS deployment/storage/database/queue exercise with budgets and cleanup — learning material written in [worked questions](./30-cloud-fundamentals.md#t30-q06); validation/limits in [Services reconciliation](./progress.md#services-completion); learner practice required

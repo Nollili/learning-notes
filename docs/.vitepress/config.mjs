@@ -1417,7 +1417,12 @@ export default defineConfig(applyContentPolicy({
                 { text: 'Errors', link: '/node-js/tech-check/10-error-handling' },
                 { text: 'Testing', link: '/node-js/tech-check/15-testing' },
                 { text: 'Frameworks', link: '/node-js/tech-check/16-frameworks#application-frameworks' },
-                { text: 'Patterns', link: '/node-js/tech-check/18-patterns' }
+                { text: 'Patterns', link: '/node-js/tech-check/18-patterns', collapsed: true, items: [
+                  { text: 'Creational patterns', link: '/node-js/tech-check/patterns/creational' },
+                  { text: 'Structural patterns', link: '/node-js/tech-check/patterns/structural' },
+                  { text: 'Behavioral workflows', link: '/node-js/tech-check/patterns/behavioral-workflows' },
+                  { text: 'Behavioral data and traversal', link: '/node-js/tech-check/patterns/behavioral-data' }
+                ] }
               ]
             },
             {
@@ -1425,13 +1430,13 @@ export default defineConfig(applyContentPolicy({
               collapsed: true,
               items: [
                 { text: 'Concurrency', link: '/node-js/tech-check/09-concurrency' },
-                { text: 'Architecture — planned', link: '/node-js/tech-check/coverage#_18-architecture-and-design-patterns' },
-                { text: 'Authentication — planned', link: '/node-js/tech-check/coverage#_13-authentication-and-authorization' },
-                { text: 'Database fundamentals — planned', link: '/node-js/tech-check/coverage#_17-databases-and-data-access' },
-                { text: 'Docker — planned', link: '/node-js/tech-check/coverage#_23-containerization' },
-                { text: 'Cloud — planned', link: '/node-js/tech-check/coverage#t30' },
-                { text: 'Serverless — planned', link: '/node-js/tech-check/coverage#_20-serverless' },
-                { text: 'Deployment — planned', link: '/node-js/tech-check/coverage#_24-deployment-and-delivery' }
+                { text: 'Architecture', link: '/node-js/tech-check/18-architecture' },
+                { text: 'Authentication', link: '/node-js/tech-check/13-authentication-and-authorization' },
+                { text: 'Database fundamentals', link: '/node-js/tech-check/17-databases' },
+                { text: 'Docker', link: '/node-js/tech-check/23-containerization' },
+                { text: 'Cloud', link: '/node-js/tech-check/30-cloud-fundamentals' },
+                { text: 'Serverless', link: '/node-js/tech-check/20-serverless' },
+                { text: 'Deployment', link: '/node-js/tech-check/24-deployment' }
               ]
             },
             {
@@ -1439,9 +1444,9 @@ export default defineConfig(applyContentPolicy({
               collapsed: true,
               items: [
                 { text: 'Security — planned', link: '/node-js/tech-check/coverage#_14-security' },
-                { text: 'Advanced authentication — planned', link: '/node-js/tech-check/coverage#_13-authentication-and-authorization' },
+                { text: 'Advanced authentication', link: '/node-js/tech-check/13-authentication-and-authorization#t13-q05' },
                 { text: 'Performance and V8 — planned', link: '/node-js/tech-check/coverage#_12-performance-and-v8' },
-                { text: 'Deeper data access — planned', link: '/node-js/tech-check/coverage#_17-databases-and-data-access' },
+                { text: 'Deeper data access', link: '/node-js/tech-check/17-databases#t17-q05' },
                 { text: 'Advanced API and framework scope — planned', link: '/node-js/tech-check/progress#five-level-ladder' }
               ]
             },

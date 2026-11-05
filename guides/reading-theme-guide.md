@@ -166,6 +166,22 @@ Contrast is an accessibility check, not a measure of personal reading comfort. T
 
 Acceptance means readable prose on both screen sizes, meaningful bold phrases that reveal each section's argument, accessible color pairs, preserved functionality, and passing applicable checks. The reader's review on the actual devices determines whether the starting font size and brightness need adjustment.
 
+## Literal examples and publishing
+
+This is a VitePress site. Publish only its generated output using `.github/workflows/pages.yml`, with GitHub Pages Source set to **GitHub Actions**. Do not use Jekyll/Liquid to process the repository's Markdown. Preserve `docs/public/.nojekyll`, which VitePress copies into the published artifact. The marker alone does not compile the site or correct a workflow that explicitly invokes Jekyll.
+
+Keep JSX, Vue template and n8n expressions technically accurate. Double braces are legitimate example content. Put multiline examples in language-tagged fenced code blocks. For literal double-brace expressions in prose, use `<code v-pre>` so Vue does not evaluate the expression:
+
+````md
+The field expression is <code v-pre>{{ $json.source_id }}</code>.
+
+```jsx
+<button style={{ backgroundColor: 'blue', color: 'white' }}>Save</button>
+```
+````
+
+Do not add Liquid raw/endraw tags to VitePress notes as a deployment workaround. Jekyll can process Liquid inside Markdown fences; correcting the publishing pipeline avoids changing valid examples. Verify the VitePress build, literal output and deployment base path when changing publishing configuration.
+
 ## References
 
 - [VitePress: extending the default theme](https://vitepress.dev/guide/extending-default-theme)
