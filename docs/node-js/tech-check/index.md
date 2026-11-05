@@ -1,6 +1,8 @@
 # Node.js tech-check
 
-A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **161/214 written (75.2%)**, 53 open; learner progress is not assessed.
+A question-and-answer study guide for a frontend developer preparing for a Node.js/full-stack technical examination. **Current target: Level 3, then Level 4 of the supplied five-level Node.js Tech Check ladder.** Open the [level-by-level progress and personal scorecard](./progress.md#five-level-ladder) for the reconciled 214-item inventory and all 32 ladder checkpoints. Material: **185/214 written (86.4%)**, 29 open; learner progress is not assessed.
+
+Prefer learning by building? The [three progressive Node.js projects](./progressive-projects.md) turn the first three menu sections into one evolving CLI → HTTP application → deployable service. Each milestone has four cumulative increments, failure drills and release criteria; it does not create one unrelated task for every topic.
 
 The following Software Engineer Level2 mapping is preserved as earlier context on a different scale. Career Level2 means the supplied Software Engineer column: Intermediate for the specified development/engineering/cloud/Docker/AI skills, and Novice for performance, security and infrastructure. It does not require Advanced/Expert proficiency throughout. Explain mechanisms, reason about code, implement a small feature and diagnose failures at each stated target. Foundational/intermediate/advanced are study-depth labels, not official exam grades or claims that a question will appear.
 
@@ -9,6 +11,8 @@ All original25 groups and their IDs remain. Genuinely new scope was appended as 
 **Node.js Foundations material is complete:** 52 questions across seven sidebar chapters, covering all 49 mapped Level 1 subtopics. [Framework foundations](./16-frameworks.md) closes the four remaining basic-framework tasks. Learner exercises, the external Core JS prerequisite and higher-level framework scope remain separate.
 
 **Building Node.js Applications:** all seven entries have material. [Menu-based status](./progress.md#applications-sidebar) tracks Events, Networking, Development-tool workflows, Errors, Testing, Frameworks and Patterns separately from the 44-item primary-level allocation. Errors, all eight [Testing topics](./15-testing.md), and all thirteen [Framework topics](./16-frameworks.md#application-frameworks) have written material and author checks. [Patterns](./18-patterns.md#full-worked-catalogue) now covers all23 GoF patterns with worked material across the overview and four focused pages. The remaining Networking and development-tool batches are complete. **All seven Applications menu entries now have their mapped material**; learner practice remains unassessed. **Designing Node.js Services now has all eight requested entries:** [Concurrency](./09-concurrency.md), [Architecture](./18-architecture.md), [Authentication](./13-authentication-and-authorization.md), [Database fundamentals](./17-databases.md), [Docker](./23-containerization.md), [Cloud](./30-cloud-fundamentals.md), [Serverless](./20-serverless.md) and [Deployment](./24-deployment.md). See the [checks, limitations and next checkpoint](./progress.md#services-completion). Material completion does not establish the remaining primary-level topics or learner checkpoints.
+
+**Hardening and Optimizing Node.js Services:** all five entries now have material: [Security](./14-security.md), [advanced authentication](./13-authentication-and-authorization.md#t13-q06), [Performance and V8](./12-performance-and-v8.md), [deeper data access](./17-databases.md#t17-q09) and [advanced APIs/frameworks](./16-advanced-api-frameworks.md). The [reconciliation](./progress.md#hardening-completion) distinguishes completed material from local checks, real integration and learner evidence. The primary Level3/4 topic allocations are now fully written; this is not an awarded level or completion of prerequisite/advanced practice.
 
 ## Batch sequence
 
@@ -52,8 +56,9 @@ Continue in small batches of one focused question, splitting a topic across batc
 | APP-F01 | T16-Q05: application routing and controller lifecycle | Written and checked |
 | F01–F04 | T16-Q01–Q04: framework concepts, choice, setup, configuration | Written and example-checked |
 | Services sequence | Eight requested entries, one file per batch | Written; see Services reconciliation |
-| Following batches | T11/T12/T14: debugging, measured performance and security | Planned; no completion inferred from overlap |
-| Following batches | T14 security scope beyond the completed identity/database lessons | Planned; shared references do not complete its local scope |
+| Hardening sequence | Security, advanced identity, performance/V8, deeper data and advanced API/frameworks | Written; see Hardening reconciliation |
+| Following batches | T11 debugging | Planned; existing source audit retained |
+| Source audit | Separate96-reference adequacy audit | Preserved; authored material does not silently reclassify it |
 | Following batches | T19/T21/T22/T25: messaging, logging, monitoring and documentation | Planned; retained original scope |
 
 ## The original25 topic groups
@@ -69,11 +74,11 @@ Continue in small batches of one focused question, splitting a topic across batc
 - [9. Concurrency](./09-concurrency.md) — eight questions written; all five source scopes have material and bounded author checks; learner practice remains required.
 - [10. Error handling](./10-error-handling.md) — all seven source items written; HTTP/database examples checked, learner practice remains required.
 - **11. Debugging** — planned; subtopics retained in the checklist.
-- **12. Performance and V8** — planned; subtopics retained in the checklist.
+- [12. Performance and V8](./12-performance-and-v8.md) — all eleven source atoms written, with profile/metric/cache fixtures and practical measurement criteria.
 - [13. Authentication and authorization](./13-authentication-and-authorization.md) — mapped study material written; integration/practice evidence remains separate.
-- **14. Security** — planned; subtopics retained in the checklist.
+- [14. Security](./14-security.md) — all thirteen source atoms written, with bounded examples and explicit integration/security limits.
 - [15. Testing](./15-testing.md) — all eight source topics written; separate learner exercises remain required.
-- [16. Frameworks and web application development](./16-frameworks.md) — thirteen questions complete: Foundations, Express applications and a NestJS companion; learner practice remains required.
+- [16. Frameworks and web application development](./16-frameworks.md) — thirteen base questions plus [five advanced API/framework extensions](./16-advanced-api-frameworks.md): Express primary, Nest companion; learner practice remains required.
 - [17. Databases and data access](./17-databases.md) — mapped study material written; integration/practice evidence remains separate.
 - [18. Design patterns](./18-patterns.md) — full23-pattern worked catalogue,23 questions across five pages; [six architecture questions](./18-architecture.md) complete the broader retained source scope.
 - **19. Queues and messaging** — planned; subtopics retained in the checklist.

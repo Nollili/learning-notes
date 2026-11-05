@@ -1404,7 +1404,8 @@ export default defineConfig(applyContentPolicy({
                 { text: 'Package management', link: '/node-js/tech-check/04-package-management' },
                 { text: 'Async programming', link: '/node-js/tech-check/05-asynchronous-programming' },
                 { text: 'Core APIs', link: '/node-js/tech-check/07-core-apis' },
-                { text: 'Framework foundations', link: '/node-js/tech-check/16-frameworks' }
+                { text: 'Framework foundations', link: '/node-js/tech-check/16-frameworks' },
+                { text: 'Build project: Foundations CLI', link: '/node-js/tech-check/progressive-projects#project-1-foundations-cli' }
               ]
             },
             {
@@ -1422,7 +1423,8 @@ export default defineConfig(applyContentPolicy({
                   { text: 'Structural patterns', link: '/node-js/tech-check/patterns/structural' },
                   { text: 'Behavioral workflows', link: '/node-js/tech-check/patterns/behavioral-workflows' },
                   { text: 'Behavioral data and traversal', link: '/node-js/tech-check/patterns/behavioral-data' }
-                ] }
+                ] },
+                { text: 'Build project: HTTP application', link: '/node-js/tech-check/progressive-projects#project-2-http-application' }
               ]
             },
             {
@@ -1436,18 +1438,19 @@ export default defineConfig(applyContentPolicy({
                 { text: 'Docker', link: '/node-js/tech-check/23-containerization' },
                 { text: 'Cloud', link: '/node-js/tech-check/30-cloud-fundamentals' },
                 { text: 'Serverless', link: '/node-js/tech-check/20-serverless' },
-                { text: 'Deployment', link: '/node-js/tech-check/24-deployment' }
+                { text: 'Deployment', link: '/node-js/tech-check/24-deployment' },
+                { text: 'Build project: Deployable service', link: '/node-js/tech-check/progressive-projects#project-3-deployable-service' }
               ]
             },
             {
               text: '4. Hardening and Optimizing Node.js Services',
               collapsed: true,
               items: [
-                { text: 'Security — planned', link: '/node-js/tech-check/coverage#_14-security' },
-                { text: 'Advanced authentication', link: '/node-js/tech-check/13-authentication-and-authorization#t13-q05' },
-                { text: 'Performance and V8 — planned', link: '/node-js/tech-check/coverage#_12-performance-and-v8' },
-                { text: 'Deeper data access', link: '/node-js/tech-check/17-databases#t17-q05' },
-                { text: 'Advanced API and framework scope — planned', link: '/node-js/tech-check/progress#five-level-ladder' }
+                { text: 'Security', link: '/node-js/tech-check/14-security' },
+                { text: 'Advanced authentication', link: '/node-js/tech-check/13-authentication-and-authorization#t13-q06' },
+                { text: 'Performance and V8', link: '/node-js/tech-check/12-performance-and-v8' },
+                { text: 'Deeper data access', link: '/node-js/tech-check/17-databases#t17-q09' },
+                { text: 'Advanced APIs and frameworks', link: '/node-js/tech-check/16-advanced-api-frameworks' }
               ]
             },
             {

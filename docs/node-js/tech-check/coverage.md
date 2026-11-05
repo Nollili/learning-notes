@@ -1,6 +1,6 @@
 # Node.js tech-check coverage checklist
 
-**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 161 written, 53 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
+**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 185 written, 29 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
 
 The original25 groups and187 source IDs below preserve the original scope. Added Level2 requirements extend existing groups and retain T30 cloud/VM coverage. At the user’s request, T26–T29 and T31–T34 are omitted from this checklist; their source mapping/history and existing notes remain in the combined tracker. No original T01–T25 item is deleted or renumbered. Each original bullet is one retained source subtopic with a stable ID. Added bullets are canonical preparation tasks classified in the combined tracker; they are not all quoted official source requirements. Checked means historically written at its original scope, not newly audited as adequate for Level2 and not learner mastery. The single [combined tracker](./progress.md#level2-reconciliation) records target depth, priority, audit, writing and verification separately. Broad labels may need several questions; question counts can grow rather than compressing answers. Shared ownership notes identify deliberate overlaps, not exemptions from the local group's required depth.
 
@@ -131,21 +131,21 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 12. Performance and V8
 
-- [ ] **T12-S01** V8 API and optimizations — pending
-- [ ] **T12-S02** Profilers — pending
-- [ ] **T12-S03** Performance API — pending
-- [ ] **T12-S04** Performance testing tools — pending
-- [ ] **T12-S05** Memory usage — pending
-- [ ] **T12-S06** Buffer performance — pending
-- [ ] **T12-S07** Synchronous versus asynchronous API tradeoffs — pending; shared explanation owner: T01-S04 (foundation); workload/profiling depth stays in T12
-- [ ] **T12-S08** Framework performance practices — pending
-- [ ] **T12-S09** Performance versus scalability — pending
+- [x] **T12-S01** V8 API and optimizations — material in [worked question](./12-performance-and-v8.md#t12-q01); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S02** Profilers — material in [worked question](./12-performance-and-v8.md#t12-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S03** Performance API — material in [worked question](./12-performance-and-v8.md#t12-q03); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S04** Performance testing tools — material in [worked question](./12-performance-and-v8.md#t12-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S05** Memory usage — material in [worked question](./12-performance-and-v8.md#t12-q04); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S06** Buffer performance — material in [worked question](./12-performance-and-v8.md#t12-q04); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S07** Synchronous versus asynchronous API tradeoffs — material in [worked question](./12-performance-and-v8.md#t12-q05); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S08** Framework performance practices — material in [worked question](./12-performance-and-v8.md#t12-q07); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S09** Performance versus scalability — material in [worked question](./12-performance-and-v8.md#t12-q05); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T12-S10** Simple caching: freshness, invalidation and bounded storage — pending
-- [ ] **T12-S11** CPU, memory, loop activity, I/O latency and throughput/latency vocabulary — pending
+- [x] **T12-S10** Simple caching: freshness, invalidation and bounded storage — material in [worked question](./12-performance-and-v8.md#t12-q06); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T12-S11** CPU, memory, loop activity, I/O latency and throughput/latency vocabulary — material in [worked question](./12-performance-and-v8.md#t12-q03); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
 
 ## 13. Authentication and authorization
 
@@ -164,23 +164,23 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 14. Security
 
-- [ ] **T14-S01** Basic security practices and approaches — pending
-- [ ] **T14-S02** npm audit — pending
-- [ ] **T14-S03** Helmet — pending
-- [ ] **T14-S04** Sandboxing unsafe code — pending
-- [ ] **T14-S05** Third-party security-checking services — pending
-- [ ] **T14-S06** Input/data validation — pending
-- [ ] **T14-S07** Parameterized queries and injection prevention — pending
-- [ ] **T14-S08** Secure database credentials — pending
-- [ ] **T14-S09** Encrypted database connections — pending
-- [ ] **T14-S10** Framework security practices — pending
+- [x] **T14-S01** Basic security practices and approaches — material in [worked question](./14-security.md#t14-q01); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S02** npm audit — material in [worked question](./14-security.md#t14-q06); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S03** Helmet — material in [worked question](./14-security.md#t14-q07); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S04** Sandboxing unsafe code — material in [worked question](./14-security.md#t14-q08); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S05** Third-party security-checking services — material in [worked question](./14-security.md#t14-q06); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S06** Input/data validation — material in [worked question](./14-security.md#t14-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S07** Parameterized queries and injection prevention — material in [worked question](./14-security.md#t14-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S08** Secure database credentials — material in [worked question](./14-security.md#t14-q04); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S09** Encrypted database connections — material in [worked question](./14-security.md#t14-q04); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S10** Framework security practices — material in [worked question](./14-security.md#t14-q07); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
 
 
 ### Added Level2 preparation scope
 
-- [ ] **T14-S11** Password-storage fundamentals and weak password handling — pending
-- [ ] **T14-S12** Context-appropriate output encoding and unsanitized input — pending
-- [ ] **T14-S13** XSS, SSRF, CSRF and injection awareness with basic countermeasures — pending
+- [x] **T14-S11** Password-storage fundamentals and weak password handling — material in [worked question](./14-security.md#t14-q05); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S12** Context-appropriate output encoding and unsanitized input — material in [worked question](./14-security.md#t14-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
+- [x] **T14-S13** XSS, SSRF, CSRF and injection awareness with basic countermeasures — material in [worked question](./14-security.md#t14-q02); [Hardening checks/limits](./progress.md#hardening-completion); learner practice required
 
 ## 15. Testing
 

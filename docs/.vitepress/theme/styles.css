@@ -344,6 +344,12 @@
   border-top: 1px solid var(--vp-c-divider);
 }
 .vp-doc hr + h3 { margin-top: 0; }
+/* Tech-check questions already have an explicit divider before the heading. */
+.vp-doc[class*='_node-js_tech-check_'] hr + h2 {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
 @media (max-width: 639px) {
   .vp-doc .notes-core-answer { padding: 1rem; }
 }

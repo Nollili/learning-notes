@@ -340,6 +340,211 @@ Back up authoritative data and test restoration into a separate environment. A s
 
 Stop only your owned database fixture during a bounded API/job run, restore it and show controlled failures followed by recovery without duplicate effects or leaked clients. Record retry/admission limits and sanitized logs. Restore a backup separately and compare counts/invariants. References: [PostgreSQL error codes](https://www.postgresql.org/docs/18/errcodes-appendix.html), [backup and restore](https://www.postgresql.org/docs/18/backup.html).
 
+---
+
+## How do you prove an isolation level protects the actual invariant? {#t17-q09}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Write the business invariant, construct an interleaving that can violate it and test with independent transactions. **Snapshot stability alone does not prevent write skew across different rows.** Serializable can reject an unsafe interleaving; the application must own whole-transaction retry.
+
+</div>
+
+Suppose two doctors are on call and at least one must remain available. Each transaction reads that two are on call, then disables a different doctor. Both can commit under PostgreSQL Repeatable Read despite each seeing a stable snapshot. Row-level CHECK constraints cannot directly express this multi-row invariant. Lock a shared coordination row in a consistent protocol, redesign the invariant, or use Serializable with safe full-unit retry.
+
+Run the following only against an explicitly disposable database with the task's supplied connection settings. `pg`8.16.3 reads standard PG environment variables. The opt-in is a guard, not proof of ownership; verify the target first. A random server-generated schema avoids collisions, and only that owned schema is removed.
+
+```js [isolation-lab.mjs]
+import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
+import { Pool } from 'pg';
+if (process.env.NOTES_DB_FIXTURE !== 'owned')
+  throw new Error('select owned fixture');
+const schema = 'notes_isolation_' + randomBytes(6).toString('hex');
+const pool = new Pool({
+  max: 2,
+  connectionTimeoutMillis: 2000,
+  statement_timeout: 3000,
+  options: `-c search_path=${schema}`,
+});
+let owned = false;
+try {
+  await pool.query(`CREATE SCHEMA ${schema}`);
+  owned = true;
+  await pool.query(
+    'CREATE TABLE doctors(id integer PRIMARY KEY,on_call boolean NOT NULL)',
+  );
+  for (const level of ['REPEATABLE READ', 'SERIALIZABLE']) {
+    await pool.query('TRUNCATE doctors');
+    await pool.query('INSERT INTO doctors VALUES(1,true),(2,true)');
+    const clients = [];
+    try {
+      clients.push(await pool.connect());
+      clients.push(await pool.connect());
+      // Isolation text comes only from the fixed allowlist above.
+      await Promise.all(
+        clients.map((c) => c.query(`BEGIN ISOLATION LEVEL ${level}`)),
+      );
+      const reads = await Promise.all(
+        clients.map((c) =>
+          c.query('SELECT count(*)::int AS n FROM doctors WHERE on_call'),
+        ),
+      );
+      assert(reads.every((r) => r.rows[0].n === 2)); // barrier: both snapshots established
+      const outcomes = await Promise.all(
+        clients.map(async (c, index) => {
+          try {
+            await c.query('UPDATE doctors SET on_call=false WHERE id=$1', [
+              index + 1,
+            ]);
+            await c.query('COMMIT');
+            return 'committed';
+          } catch (error) {
+            await c.query('ROLLBACK');
+            return error.code;
+          }
+        }),
+      );
+      const remaining = (
+        await clients[0].query(
+          'SELECT count(*)::int AS n FROM doctors WHERE on_call',
+        )
+      ).rows[0].n;
+      if (level === 'REPEATABLE READ') {
+        assert.deepEqual(outcomes, ['committed', 'committed']);
+        assert.equal(remaining, 0);
+      } else {
+        assert.equal(outcomes.filter((x) => x === 'committed').length, 1);
+        assert.equal(outcomes.filter((x) => x === '40001').length, 1);
+        assert.equal(remaining, 1);
+      }
+      console.log({ level, outcomes, remaining });
+    } finally {
+      for (const client of clients) {
+        try {
+          await client.query('ROLLBACK');
+        } finally {
+          client.release();
+        }
+      }
+    }
+  }
+} finally {
+  try {
+    if (owned) await pool.query(`DROP SCHEMA ${schema} CASCADE`);
+  } finally {
+    await pool.end();
+  }
+}
+```
+
+The fixture deliberately allows the Repeatable Read violation and asserts Serializable rejects one transaction. It does not implement a retry loop. A correct retry reruns the read and decision, now observes one remaining doctor and declines the second removal. Retrying only the UPDATE would repeat a stale decision. Set a retry/admission/deadline budget, back off transient failures and keep irreversible external effects outside that retryable transaction.
+
+MikroORM's `transactional` callback must use its supplied EntityManager/repositories for every participating operation. After rollback, do not keep using stale mutated entities as authoritative state; retry with a fresh context/state according to the ORM's documented behavior. `flush()` does not automatically enforce an invariant that your transaction never checked.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Extend the fixture with a bounded retry that re-evaluates the business decision, then compare a shared-row locking alternative. Accept with at least one doctor remaining, deterministic interleaving evidence, released clients and no unsafe external effect. Reference: [PostgreSQL isolation](https://www.postgresql.org/docs/18/transaction-iso.html), [MikroORM transaction behavior](https://mikro-orm.io/docs/transactions).
+
+---
+
+## How do you combine keyset pagination with an evidence-based index? {#t17-q10}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Choose a stable total ordering, scope it to the authorized tenant and align an index with the filter/range/order. Inspect actual plans and result semantics. **An index that looks plausible still needs representative execution evidence.**
+
+</div>
+
+This PostgreSQL16-compatible fixture creates only a temporary table inside a rollback transaction. The generated data is large enough to inspect a scan/sort versus an ordered index access, but is not a production capacity benchmark. Run with `psql -X -v ON_ERROR_STOP=1` against the owned database.
+
+```sql [keyset-plan.sql]
+BEGIN;
+CREATE TEMP TABLE catalogue (
+  tenant text NOT NULL,id integer NOT NULL,created_at timestamptz NOT NULL,
+  name text NOT NULL,PRIMARY KEY(tenant,id)
+) ON COMMIT DROP;
+INSERT INTO catalogue
+SELECT 't'||(i%5),i,timestamptz '2026-01-01T00:00:00Z'+i*interval '1 second','Product '||i
+FROM generate_series(1,15000) AS i;
+ANALYZE catalogue;
+EXPLAIN (ANALYZE,BUFFERS)
+SELECT id,name FROM catalogue
+WHERE tenant='t1' AND (created_at,id) > (timestamptz '2026-01-01T00:00:11Z',11)
+ORDER BY created_at,id LIMIT 3;
+CREATE INDEX catalogue_page ON catalogue(tenant,created_at,id);
+ANALYZE catalogue;
+EXPLAIN (ANALYZE,BUFFERS)
+SELECT id,name FROM catalogue
+WHERE tenant='t1' AND (created_at,id) > (timestamptz '2026-01-01T00:00:11Z',11)
+ORDER BY created_at,id LIMIT 3;
+DO $$
+DECLARE ids integer[];
+BEGIN
+  SELECT array_agg(id ORDER BY created_at,id) INTO ids FROM (
+    SELECT id,created_at FROM catalogue
+    WHERE tenant='t1' AND (created_at,id) > (timestamptz '2026-01-01T00:00:11Z',11)
+    ORDER BY created_at,id LIMIT 3
+  ) AS page;
+  IF ids<>ARRAY[16,21,26] THEN RAISE EXCEPTION 'incorrect page'; END IF;
+END $$;
+ROLLBACK;
+```
+
+Compare estimated/actual rows, scan/filter work, sort, buffers and execution time before/after. The existing primary-key index may already help the tenant predicate; the second index targets ordering/range. Plans and timings vary with statistics/hardware. Do not disable sequential scans to manufacture a favorable result. `EXPLAIN ANALYZE` executes statements; use a disposable target for write-plan experiments.
+
+A cursor encodes ordering values, not permission. Validate its shape/types/size and bind query values; derive tenant from the principal. If the client may alter cursor/filter combinations, sign or server-store the cursor and bind it to the query context. Authorization still applies. Use an immutable/defined ordering key; updates to sort keys can skip/repeat rows. NULL ordering, descending direction and ties need an explicit predicate. A keyset cursor does not freeze a database snapshot across requests.
+
+Partial/expression/covering indexes can help selected workloads, but add write/space/maintenance costs and must match actual predicates. `CREATE INDEX CONCURRENTLY` avoids some blocking yet has special transaction restrictions and can leave an invalid index after failure. Inspect/recover it through a planned migration; it is not a free startup operation.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Add equal timestamps, inserts between pages, another tenant and a changed filter. Accept with defined consistency semantics, no unauthorized rows, a stable tie-breaker, captured plans and measured write/index-size trade-offs. References: [PostgreSQL EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html), [index build constraints](https://www.postgresql.org/docs/18/sql-createindex.html).
+
+---
+
+## How do you diagnose locks, pool exhaustion and risky migrations? {#t17-q11}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Separate client acquisition wait, server lock wait, query execution and transaction lifetime before changing pool size. Coordinate compatible migrations with bounded locks and an explicit recovery window. **Adding connections can increase contention rather than solve it.**
+
+</div>
+
+Use `pg` pool counters/acquisition timings and safe server diagnostics under an authorized monitoring role. Do not expose them through a public endpoint. Avoid dumping query text/parameters that can contain private information.
+
+```sql [safe-session-diagnostics.sql]
+SELECT pid,application_name,state,wait_event_type,wait_event,
+       clock_timestamp()-xact_start AS transaction_age,
+       pg_blocking_pids(pid) AS blocked_by
+FROM pg_stat_activity
+WHERE datname=current_database() AND pid<>pg_backend_pid();
+```
+
+A client held while awaiting a remote API creates pool pressure even when no SQL is running. A session “idle in transaction” can retain locks/snapshots. Set transaction-local lock/statement budgets for controlled work, and keep the HTTP/job's overall deadline/cleanup owner separate:
+
+```sql [bounded-migration-settings.sql]
+BEGIN;
+SET LOCAL lock_timeout='500ms';
+SET LOCAL statement_timeout='2s';
+-- Apply one reviewed migration statement, or roll back if the lock budget expires.
+ROLLBACK;
+```
+
+A lock timeout is an opportunity to abort/replan; retrying instantly in every replica can create a migration storm. Use one migration owner and test expand/bridge/backfill/contract compatibility through [the existing release lab](../release-artifact-compatibility.md). Batch backfills with progress, lock and replication-lag observation. A reversible DDL file does not guarantee reversible data transformation.
+
+For N+1, capture query count per use case and compare the required projection/population. For stale ORM entities, inspect context boundaries before adding a global cache. For uncertain commits, use operation receipts and reconciliation, not a generic retry-everything wrapper. For recovery, restore into an isolated target and verify invariants before changing live routing.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Hold an owned row lock on client A, attempt a bounded update on B, inspect the blocker and verify B rolls back/releases. Separately exhaust a two-client pool and prove a third acquisition times out until ownership is released. Accept with bounded failures, restored pool capacity, no held transaction and a migration rollback/forward-fix decision. References: [PostgreSQL activity statistics](https://www.postgresql.org/docs/18/monitoring-stats.html), [pg pooling](https://node-postgres.com/features/pooling), [release compatibility drill](../release-artifact-compatibility.md).
+
 ## Revision and practical checkpoint
 
 Explain the schema invariant, bound query, transaction client, tenant predicate, plan and failure policy for one real use case. The worked SQL and driver checks support the teaching material. The ORM integration, load tuning and recovery exercises still need your own execution and evidence.

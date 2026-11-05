@@ -203,6 +203,170 @@ mTLS authenticates a transport peer and protects its channel; application author
 
 Draw browser→backend→provider and service→service trust boundaries. In an isolated test tenant, prove state/redirect mismatch rejection, wrong-audience downstream denial and disabled local membership despite a valid provider login. Record provider outage and cleanup behavior. These real-provider checks remain learner work. References: [OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html), [OIDC Core validation](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation), [OWASP OAuth guidance](https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html).
 
+---
+
+## How do you bind an OIDC callback to the browser that started login? {#t13-q06}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Keep a short-lived, single-use login transaction bound to the initiating browser and configured issuer/redirect. Let a maintained OIDC client validate the protocol. **A callback with a code is not yet an authenticated application session.**
+
+</div>
+
+For authorization-code login, generate independent random state, nonce and PKCE verifier. Store them server-side under the browser's anonymous session with creation/expiry and a safe local return destination. Send the S256 challenge, state and nonce to the configured issuer. On callback, atomically consume the matching transaction, verify the exact callback/issuer and pass the stored verifier/nonce into the OIDC client's code exchange/validation. Do not accept a return URL, issuer or redirect selected by callback input.
+
+The following pure fixture models the binding/one-use decision only. Its in-memory mutation is **not** a multi-replica session store or an OIDC implementation. Production needs an atomic shared-store operation and a reviewed strategy/client with code/ID-token validation.
+
+```js [login-transaction.mjs]
+import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
+function transaction(browserSession, now) {
+  return {
+    browserSession,
+    state: randomBytes(32).toString('base64url'),
+    expiresAt: now + 120_000,
+    used: false,
+    returnPath: '/products',
+  };
+}
+function consume(tx, browserSession, state, now) {
+  if (
+    !tx ||
+    tx.used ||
+    tx.expiresAt <= now ||
+    tx.browserSession !== browserSession ||
+    typeof state !== 'string' ||
+    state !== tx.state
+  )
+    throw new Error('invalid login transaction');
+  tx.used = true;
+  return tx.returnPath;
+}
+const now = 1000,
+  tx = transaction('anonymous-a', now);
+assert.throws(() => consume(tx, 'anonymous-b', tx.state, now));
+assert.throws(() => consume(tx, 'anonymous-a', 'wrong', now));
+assert.equal(consume(tx, 'anonymous-a', tx.state, now), '/products');
+assert.throws(() => consume(tx, 'anonymous-a', tx.state, now));
+const expired = transaction('anonymous-a', now);
+assert.throws(() => consume(expired, 'anonymous-a', expired.state, now + 120_000));
+```
+
+State binds the authorization response to its transaction; PKCE binds code redemption to the verifier; OIDC nonce binds the ID token to the request. They are related defenses, not interchangeable names. Keep each value out of shared logs. Multiple browser tabs need distinct transactions and a deliberate bounded store policy; overwriting one global state field causes intermittent failures.
+
+After protocol verification, map `(issuer,subject)` to the local account, apply current tenant/account policy, regenerate the application session and save it before redirecting to the validated local path. A provider email is not enough proof to link accounts. A failed exchange consumes this attempt; let the user start a new login rather than replaying a stale code indefinitely.
+
+<span class="notes-section-label">**Debugging and acceptance**</span>
+
+Check callback URI/proxy origin, transaction cookie scope/SameSite, expired state, nonce and PKCE mismatch separately. Never “fix” a callback loop by disabling validation. Exercise wrong browser, replay, expiry, parallel tabs, provider error and local disabled account. Accept only with the real configured client/strategy denying invalid cases and the application creating exactly one rotated session. References: [OIDC code flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth), [OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html), [Passport strategy boundary](https://www.passportjs.org/concepts/authentication/strategies/).
+
+---
+
+## How do key rotation and token profiles avoid confused trust? {#t13-q07}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Bind accepted keys to a configured issuer and token profile, validate recipient/time/application claims and plan a bounded rotation window. **A token's kid is a selector within trusted keys, not permission to fetch arbitrary keys.** Unknown authenticity fails closed.
+
+</div>
+
+This jose6.1.3 fixture models trusted key-set replacement locally; it makes no HTTP/JWKS request. New tokens use the new key while the verifier temporarily accepts the old key for already issued, still-valid tokens. Removing an old key rejects its tokens; emergency compromise response may require earlier removal plus explicit revocation/reconciliation.
+
+```js [rotating-token-keys.mjs]
+import assert from 'node:assert/strict';
+import {
+  generateKeyPair,
+  exportJWK,
+  SignJWT,
+  createLocalJWKSet,
+  jwtVerify,
+} from 'jose';
+const old = await generateKeyPair('RS256'),
+  fresh = await generateKeyPair('RS256');
+async function publicJwk(pair, kid) {
+  return { ...(await exportJWK(pair.publicKey)), kid, alg: 'RS256', use: 'sig' };
+}
+const oldJwk = await publicJwk(old, 'old'),
+  newJwk = await publicJwk(fresh, 'new');
+async function issue(pair, kid, aud = 'products-api') {
+  return new SignJWT({ tenant: 'a', scope: 'products:read' })
+    .setProtectedHeader({ alg: 'RS256', typ: 'at+jwt', kid })
+    .setIssuer('https://issuer.example')
+    .setAudience(aud)
+    .setSubject('u1')
+    .setIssuedAt()
+    .setExpirationTime('2m')
+    .sign(pair.privateKey);
+}
+const verify = (token, keys) =>
+  jwtVerify(token, createLocalJWKSet({ keys }), {
+    issuer: 'https://issuer.example',
+    audience: 'products-api',
+    algorithms: ['RS256'],
+    typ: 'at+jwt',
+    requiredClaims: ['sub', 'iat', 'exp'],
+    maxTokenAge: '3m',
+    clockTolerance: 5,
+  });
+const previous = await issue(old, 'old'),
+  current = await issue(fresh, 'new');
+await verify(previous, [oldJwk, newJwk]);
+await verify(current, [oldJwk, newJwk]);
+await assert.rejects(verify(current, [oldJwk]));
+await assert.rejects(verify(previous, [newJwk]));
+await assert.rejects(verify(await issue(fresh, 'new', 'other-api'), [newJwk]));
+await assert.rejects(verify(await issue(fresh, 'unknown'), [newJwk]));
+```
+
+Real remote JWKS resolution needs a fixed issuer/discovery trust policy, TLS verification, bounded fetch time/size, cache lifetime and refresh cooldown to avoid attacker-driven fetch storms. Preserve only valid cached keys under the explicit outage policy; do not accept an unknown key because the identity provider is down. Monitor key errors without recording tokens. Key rotation and per-account logout/revocation are different mechanisms.
+
+A resource server accepts its **access-token** profile, not whatever signed token is convenient. An ID token's audience is the OIDC client, and its purpose is login verification. Never substitute it for an API credential. The earlier [application-claim validation](#t13-q03) still applies after this signature/registered-claim fixture. For internal calls, authenticate the service and preserve a constrained delegation contract; do not turn any gateway header into unrestricted user authority.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Test overlapping/retired keys, wrong issuer/audience/type/algorithm, missing time claims, future nbf, stale issuance and malformed tenant/scope. Simulate bounded JWKS outage/unknown-kid traffic only against owned endpoints. Accept with no invalid-token success, no uncontrolled refresh and a documented compromise/revocation policy. References: [jose key-set resolver](https://github.com/panva/jose/blob/main/docs/jwks/local/functions/createLocalJWKSet.md), [JWT security BCP](https://www.rfc-editor.org/rfc/rfc8725.html).
+
+---
+
+## How do refresh rotation, revocation and sensitive writes survive races? {#t13-q08}
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Persist refresh-family state and serialize its transitions; make reuse handling and account-version checks explicit. **A successful signature check cannot detect every later account or credential change.** Revocation affects subsequent checks, not already committed effects.
+
+</div>
+
+Use the existing [account/refresh/reset implementation](../module-09-authentication-authorization.md) as the owner. A server stores only a digest of a high-entropy refresh credential plus account/family, expiry, consumed/revoked state and replacement relationship. Hashing an unpredictable token for lookup differs from password hashing a human secret. Raw credentials travel only through the reviewed client/cookie channel.
+
+A rotation transaction locks the family/account state in a consistent order, checks current credential version and family status, consumes the presented unused token and inserts its replacement before committing. A unique digest and conditional update prevent two winners. If a consumed credential reappears, apply the defined family-revocation policy and commit that revocation before reporting denial; throwing inside a transaction and rolling back the revocation defeats the policy.
+
+```sql [refresh-transition.sql]
+-- Integration predicate within the locked family/account transaction.
+-- $1 is a server-computed token digest; $2 is the current family ID.
+UPDATE refresh_credentials
+SET consumed_at = clock_timestamp()
+WHERE digest=$1 AND family_id=$2
+  AND consumed_at IS NULL AND revoked_at IS NULL
+  AND expires_at > clock_timestamp()
+RETURNING account_id, family_id;
+```
+
+The predicate is not the complete workflow: a zero-row result still needs safe lookup/reuse classification, replacement insertion and final commit under the same owner. Do not implement the family as two independent pool queries. A lost response after a successful rotation leaves the client uncertain. A strict replay policy may revoke a family after a benign duplicate; document this trade-off and serialize client refresh attempts. A grace window must retain proof/binding and avoid allowing an attacker to mint unlimited replacements.
+
+For sensitive writes, stale session permissions can be insufficient. Recheck current membership/credential version within the business transaction where the invariant requires it; otherwise document the maximum stale authorization window. Add recent-auth/MFA requirements for account linking, credential changes or destructive administration. Step-up authentication is a scoped time-limited property, not a permanent admin role.
+
+Service-to-service access has another axis: identify the workload, limit audience/scopes and authorize current resource ownership. Token exchange can narrow delegation. mTLS proves the connecting peer under its trust configuration; it does not independently prove end-user permission. Keep audit records of safe actor/operation/resource/result IDs, never the refresh credential.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Run two concurrent refreshes, replay the consumed token, reset the password during an active session and inject a response loss after commit. Accept with one rotation winner, observed committed revocation, no stale-version sensitive mutation and a deliberate client recovery policy. Local token fixtures do not prove these database/provider races; they remain separate integration/learner tasks. References: [OAuth refresh-token protection](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.14), [OWASP session lifecycle](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [transaction isolation](https://www.postgresql.org/docs/18/transaction-iso.html).
+
 ## Revision and practical checkpoint
 
 For one mutation explain credential verification, account state, permission/tenant predicate, CSRF policy, expiry and audit logging. Then demonstrate denial as carefully as success. Keep raw passwords, cookies and tokens out of logs. Local policy and JWT fixture checks support the material; they do not prove the entire deployed authentication system is secure or complete your practice.
