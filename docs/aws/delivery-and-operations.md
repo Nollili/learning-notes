@@ -67,4 +67,4 @@ Remove learning resources through their owning stack where possible. Understand 
 
 Do not delete shared account infrastructure merely because it appears in a course cleanup list. A retained resource is still owned by someone even after its stack is gone. Recheck relevant Regions and billing after cleanup; cost reporting may lag. [AWS resource cleanup guidance](https://repost.aws/knowledge-center/terminate-resources-account-closure).
 
-Continue with [AI service awareness](./ai-services.md) or [coverage and certification](./coverage-and-sources.md).
+Continue with [AI service awareness](./ai-services.md) or [course sources and certification](./coverage-and-sources.md).

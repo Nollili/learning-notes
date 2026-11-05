@@ -1,4 +1,4 @@
-# Coverage, source notes and certification
+# Course sources and certification
 
 These notes combine the supplied CloudX course extracts and slide decks into an ordered explanation. They are a synthesis with additional context, not a verbatim mirror or a record of completed practical work.
 
@@ -24,7 +24,7 @@ The Practitioner material supplies application-building continuity. The Associat
 
 The supplied S3 introduction, S3/CloudFront and database PDFs inform the storage and database explanations. Their diagrams and examples have been summarized rather than copied wholesale. Course assignments, grading criteria and practical lab deliverables are organized separately in the [AWS homework path](../practice/aws/index.md). Every supplied optional/bonus task is required locally; original grading boundaries remain explicit.
 
-## Corrections and modernization
+## Important distinctions
 
 | Older or misleading source detail | Treatment in these notes |
 |---|---|

@@ -39,7 +39,7 @@ No previous cloud experience is required. Familiarity with JavaScript, promises,
 | Chapter | What it explains |
 |---|---|
 | [AWS AI services](./ai-services.md) | Bedrock, SageMaker and Q Developer; application integration and boundaries |
-| [Coverage, sources and certification](./coverage-and-sources.md) | Course mapping, expected proficiency, source corrections and exam preparation |
+| [Course sources and certification](./coverage-and-sources.md) | Course mapping, expected proficiency, source corrections and exam preparation |
 
 Read networking and compute before RDS if private networking is new to you. Infrastructure as code comes early because both courses reuse it across services. AWS AI services are a continuation for applications that need model integration.
 

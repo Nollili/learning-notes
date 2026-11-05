@@ -4,6 +4,7 @@ import path from 'path'
 import { mermaidPlugin } from './plugins/mermaid.mjs'
 import { applyContentPolicy, cleanTitle, getPageTitle } from './content-policy.mjs'
 import { sectionNumberingPlugin } from './plugins/section-numbering.mjs'
+import { applyPublicationPolicy, publicationPlugin, repositoryOnlyDevGuard } from './publication-policy.mjs'
 
 // helper to generate sidebar dynamically
 function generateSidebar(dir, baseRoute) {
@@ -203,20 +204,31 @@ const aiDevelopmentSidebar = [
   }
 ]
 
-export default defineConfig(applyContentPolicy({
+export default defineConfig(applyPublicationPolicy(applyContentPolicy({
   appearance: 'dark',
   title: 'My Notes for Bench Learning',
   description: 'Professional growth and technical notes.',
   outDir: '../dist',
+  vite: { plugins: [repositoryOnlyDevGuard()] },
   srcExclude: ['**/AGENTS.md'],
   markdown: {
     config(md) {
       md.core.ruler.disable('emoji')
       md.use(mermaidPlugin)
       md.use(sectionNumberingPlugin)
+      md.use(publicationPlugin)
     }
   },
   themeConfig: {
+    search: {
+      provider: 'local',
+      options: {
+        detailedView: true,
+        translations: {
+          button: { buttonText: 'Search explanations', buttonAriaLabel: 'Search all learning pages' }
+        }
+      }
+    },
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Hub map', link: '/review/' },
@@ -461,7 +473,7 @@ export default defineConfig(applyContentPolicy({
         "link": "/aws/ai-services"
       },
       {
-        "text": "Coverage, source notes and certification",
+        "text": "Course sources and certification",
         "link": "/aws/coverage-and-sources"
       }
     ]
@@ -1450,18 +1462,20 @@ export default defineConfig(applyContentPolicy({
                 { text: 'Advanced authentication', link: '/node-js/tech-check/13-authentication-and-authorization#t13-q06' },
                 { text: 'Performance and V8', link: '/node-js/tech-check/12-performance-and-v8' },
                 { text: 'Deeper data access', link: '/node-js/tech-check/17-databases#t17-q09' },
-                { text: 'Advanced APIs and frameworks', link: '/node-js/tech-check/16-advanced-api-frameworks' }
+                { text: 'Advanced APIs and frameworks', link: '/node-js/tech-check/16-advanced-api-frameworks' },
+                { text: 'Build project: Harden the service', link: '/node-js/tech-check/progressive-projects#project-4-hardened-service' }
               ]
             },
             {
               text: '5. Specialized Node.js Systems',
               collapsed: true,
               items: [
-                { text: 'Messaging — planned', link: '/node-js/tech-check/coverage#_19-queues-and-messaging' },
+                { text: 'Messaging', link: '/node-js/tech-check/19-messaging' },
                 { text: 'Real-time foundations', link: '/node-js/tech-check/08-networking#t08-q06' },
-                { text: 'Logging — planned', link: '/node-js/tech-check/coverage#_21-logging' },
-                { text: 'Monitoring — planned', link: '/node-js/tech-check/coverage#_22-monitoring-and-visualization' },
-                { text: 'Advanced real-time, native modules and WebAssembly — planned', link: '/node-js/tech-check/progress#five-level-ladder' }
+                { text: 'Logging', link: '/node-js/tech-check/21-logging' },
+                { text: 'Monitoring', link: '/node-js/tech-check/22-monitoring' },
+                { text: 'Advanced real-time, native modules and WebAssembly', link: '/node-js/tech-check/specialized-systems' },
+                { text: 'Build project: Operate the service', link: '/node-js/tech-check/progressive-projects#project-5-operated-specialized-service' }
               ]
             },
             { text: 'Tech-check progress', link: '/node-js/tech-check/progress' }
@@ -1982,4 +1996,4 @@ export default defineConfig(applyContentPolicy({
       '/senior_growth/': generateSidebar('senior_growth', '/senior_growth/')
     }
   }
-}))
+})))

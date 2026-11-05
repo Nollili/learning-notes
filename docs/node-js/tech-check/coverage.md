@@ -1,6 +1,6 @@
 # Node.js tech-check coverage checklist
 
-**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 185 written, 29 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
+**Current target: Node Tech Check Levels 3–4.** [Five-level grouping and personal progress](./progress.md#five-level-ladder) reconciles all **214 entries: 205 written, 9 open**. Checkmarks describe material, not your demonstrated level. Earlier “Level2” labels below refer to the separate preserved Software Engineer mapping.
 
 The original25 groups and187 source IDs below preserve the original scope. Added Level2 requirements extend existing groups and retain T30 cloud/VM coverage. At the user’s request, T26–T29 and T31–T34 are omitted from this checklist; their source mapping/history and existing notes remain in the combined tracker. No original T01–T25 item is deleted or renumbered. Each original bullet is one retained source subtopic with a stable ID. Added bullets are canonical preparation tasks classified in the combined tracker; they are not all quoted official source requirements. Checked means historically written at its original scope, not newly audited as adequate for Level2 and not learner mastery. The single [combined tracker](./progress.md#level2-reconciliation) records target depth, priority, audit, writing and verification separately. Broad labels may need several questions; question counts can grow rather than compressing answers. Shared ownership notes identify deliberate overlaps, not exemptions from the local group's required depth.
 
@@ -250,13 +250,13 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 19. Queues and messaging
 
-- [ ] **T19-S01** Messaging tools and solutions — pending
-- [ ] **T19-S02** RabbitMQ — pending
-- [ ] **T19-S03** ActiveMQ — pending
-- [ ] **T19-S04** Kafka — pending
-- [ ] **T19-S05** Amazon SQS — pending
-- [ ] **T19-S06** Amazon SNS — pending
-- [ ] **T19-S07** Failover techniques — pending
+- [x] **T19-S01** Messaging tools and solutions — learning material written in [worked questions](./19-messaging.md#t19-q01); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S02** RabbitMQ — learning material written in [worked questions](./19-messaging.md#t19-q02); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S03** ActiveMQ — learning material written in [worked questions](./19-messaging.md#t19-q06); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S04** Kafka — learning material written in [worked questions](./19-messaging.md#t19-q04); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S05** Amazon SQS — learning material written in [worked questions](./19-messaging.md#t19-q05); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S06** Amazon SNS — learning material written in [worked questions](./19-messaging.md#t19-q05); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T19-S07** Failover techniques — learning material written in [worked questions](./19-messaging.md#t19-q03); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
 
 ## 20. Serverless
 
@@ -268,22 +268,22 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 
 ## 21. Logging
 
-- [ ] **T21-S01** Logger types and logging levels — pending
-- [ ] **T21-S02** Logging tools and libraries — pending
-- [ ] **T21-S03** Winston and Logstash — pending
-- [ ] **T21-S04** Remote logging services — pending
-- [ ] **T21-S05** Logging configuration and setup — pending
-- [ ] **T21-S06** Logging within frameworks and database operations — pending
+- [x] **T21-S01** Logger types and logging levels — learning material written in [worked questions](./21-logging.md#t21-q01); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T21-S02** Logging tools and libraries — learning material written in [worked questions](./21-logging.md#t21-q02); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T21-S03** Winston and Logstash — learning material written in [worked questions](./21-logging.md#t21-q04); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T21-S04** Remote logging services — learning material written in [worked questions](./21-logging.md#t21-q04); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T21-S05** Logging configuration and setup — learning material written in [worked questions](./21-logging.md#t21-q02); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T21-S06** Logging within frameworks and database operations — learning material written in [worked questions](./21-logging.md#t21-q03); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
 
 ## 22. Monitoring and visualization
 
-- [ ] **T22-S01** Purpose of monitoring and visualization tools — pending
-- [ ] **T22-S02** Setup and use of third-party services — pending
-- [ ] **T22-S03** Kibana — pending
-- [ ] **T22-S04** Grafana — pending
-- [ ] **T22-S05** Graphite — pending
-- [ ] **T22-S06** Prometheus — pending
-- [ ] **T22-S07** Zabbix — pending
+- [x] **T22-S01** Purpose of monitoring and visualization tools — learning material written in [worked questions](./22-monitoring.md#t22-q01); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S02** Setup and use of third-party services — learning material written in [worked questions](./22-monitoring.md#t22-q05); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S03** Kibana — learning material written in [worked questions](./22-monitoring.md#t22-q04); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S04** Grafana — learning material written in [worked questions](./22-monitoring.md#t22-q04); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S05** Graphite — learning material written in [worked questions](./22-monitoring.md#t22-q05); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S06** Prometheus — learning material written in [worked questions](./22-monitoring.md#t22-q02); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
+- [x] **T22-S07** Zabbix — learning material written in [worked questions](./22-monitoring.md#t22-q05); validation/limits in [Specialized reconciliation](./progress.md#specialized-completion); learner practice required
 
 ## 23. Containerization
 
