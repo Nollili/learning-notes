@@ -1,4 +1,4 @@
-# Your learning hub: start here
+# Start here {#your-learning-hub-start-here}
 
 This guide is an orientation and study plan for the current hub, prepared 2026-10-28. **For your current AI goal, start with [Build AI Apps — JavaScript First](../applied-ai/) and use [AI for Software Development](../ai-assisted-engineering/) alongside it.** The [Node N-01 route](./node-start.md#n-01-first-cli) remains available; the rest of the hub is available when a concrete need arises. Every learner assignment remains outstanding until you supply actual evidence.
 

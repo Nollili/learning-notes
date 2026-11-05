@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Implement a calm dark reading theme for frequent study on a 13-inch Mac and a smaller tablet. Use warm charcoal, soft ivory text, and purposeful background highlights for revision. These are design preferences to evaluate on the actual devices, not a guarantee of reduced eye strain.
+Implement a calm dark reading theme for frequent study on a 13-inch Mac and a smaller tablet. Use warm charcoal, rose milk text, and purposeful background highlights for revision. These are design preferences to evaluate on the actual devices, not a guarantee of reduced eye strain.
 
 This is the approved default authoring and styling policy for all new learning content in this repository, across every subject. Codex must read and apply it when creating a page, adding a section, or substantially revising an existing section. Apply it as part of the content work without asking for separate styling approval. Keep unrelated existing content outside the requested scope.
 
@@ -26,19 +26,25 @@ Use these exact starting values. Adjust a pair only if contrast or device review
 
 | Role | Dark color | Suggested token / mapping |
 | --- | --- | --- |
-| Page background | `#202020` | `--vp-c-bg` |
-| Sidebar and code surface | `#191919` | `--vp-c-bg-alt`; inspect code-specific tokens |
+| Page background — Warm charcoal | `#303030` | `--vp-c-bg` |
+| Sidebar — Soft graphite | `#353237` | Sidebar surface token; keep separate from code |
+| Code background — Smoky charcoal | `#38353B` | Code-block background token |
+| Search background — Mauve graphite | `#454047` | Search control background token |
+| Search hover — Dusty plum grey | `#504951` | Search control hover token |
+| Core answer background — Lavender slate | `#3D3847` | Shared Core answer surface token |
+| Core answer border — Misty lilac | `#C6B9DD` | Shared Core answer border token |
+| Inline code text — Lavender milk | `#DDD1EE` | Inline-code foreground token |
 | Elevated surface / callout | `#292929` | `--vp-c-bg-soft`, `--vp-c-bg-elv` |
-| Main reading text | `#D8D5CE` | `--vp-c-text-1` |
-| Headings | `#ECE8DF` | `--notes-heading` |
-| Bold emphasis text / background | `#F0CB91` / `#443B28` | `--notes-bold` / `--notes-bold-bg` |
-| Secondary readable text | `#AAA69D` | `--vp-c-text-2` |
-| Muted labels | `#AAA69D` | `--vp-c-text-3`; keep meaningful labels readable |
+| Main reading text — Rose milk | `#E8DCE2` | `--vp-c-text-1` |
+| Headings — Petal ivory | `#F7EDF1` | `--notes-heading` |
+| Bold emphasis — Blush pink / Rose velvet | `#F3C5DA` / `#59404E` | `--notes-bold` / `--notes-bold-bg` |
+| Secondary readable text — Dusty mauve | `#C4B2BD` | `--vp-c-text-2` |
+| Muted labels — Dusty mauve | `#C4B2BD` | `--vp-c-text-3`; keep meaningful labels readable |
 | Decorative divider | `#3D3B38` | `--vp-c-divider` |
-| Link / active navigation | `#9DBBDD` | `--vp-c-brand-1` |
+| Link / active navigation — Powder blue | `#BDD3EE` | `--vp-c-brand-1` |
 | Hovered link | `#B8D1EB` | `--vp-c-brand-2` |
 | Key term text / background | `#BED4AE` / `#303D32` | `--notes-highlight-term-text` / `--notes-highlight-term-bg` |
-| Positive outcome | `#ABC49A` | `--notes-success` |
+| Positive outcome — Soft sage | `#BDCCB7` | `--notes-success` |
 | Caution text | `#DEC38C` | `--notes-caution` |
 | Error / destructive consequence | `#E5A0A0` | `--notes-danger` |
 
@@ -59,7 +65,7 @@ Emphasis is a revision aid. After a full reading, the reader should be able to r
 
 ### Structural labels and headings
 
-Headings never receive a text-highlight background, even when their Markdown contains bold. This includes page headings, question headings, subsection labels such as “Detailed explanation,” example labels and examiner follow-up questions. Use spacing, weight and hierarchy to distinguish them. Links remain blue and underlined, including bold links. No lilac or purple editorial emphasis.
+Headings never receive a text-highlight background, even when their Markdown contains bold. This includes page headings, question headings, subsection labels such as “Detailed explanation,” example labels and examiner follow-up questions. Use spacing, weight and hierarchy to distinguish them. Links remain blue and underlined, including bold links. Keep main-argument emphasis blush pink on rose velvet. Lilac is reserved for the Core answer surface and border and inline-code text, rather than a second prose-emphasis colour.
 
 Where an existing standalone bold label acts as a subsection heading, wrap it in an inline `notes-section-label` span to preserve its wording and Markdown rendering without a background:
 
@@ -83,7 +89,7 @@ A promise expresses completion; **it does not create a worker thread**.
 </div>
 ```
 
-Use a muted green panel, a clear sage border with a thicker leading edge, comfortable padding and an ivory title in dark mode. The title is a label, not a highlighted phrase. Keep the body at the normal reading size. Use readable light and print fallbacks. This panel should be more prominent than the existing Key takeaway callout or subsection labels.
+Use a Lavender slate panel (`#3D3847`), a clear Misty lilac border (`#C6B9DD`) with a thicker leading edge, comfortable padding and a petal ivory title in dark mode. The title is a label, not a highlighted phrase. Keep the body at the normal reading size. Use readable light and print fallbacks. This panel should be more prominent than the existing Key takeaway callout or subsection labels.
 
 Insert a Markdown horizontal rule (`---`, surrounded by blank lines) between question sections, after the preceding section's entire content, including practice and references. Keep generous spacing around the divider. Preserve existing heading IDs, outline behavior and code examples. Do not insert a divider into frontmatter, code or a question's own answer.
 
@@ -91,23 +97,23 @@ Insert a Markdown horizontal rule (`---`, surrounded by blank lines) between que
 
 | Role | Treatment |
 | --- | --- |
-| Main-argument emphasis | Markdown bold; amber `#F0CB91` on `#443B28` in dark mode |
-| Structural heading or label | Ivory, no text-highlight background |
-| Core answer | Green panel `#283027`, sage border `#ABC49A`; title remains plain ivory |
+| Main-argument emphasis | Markdown bold; blush pink `#F3C5DA` on `#59404E` in dark mode |
+| Structural heading or label | Petal ivory, no text-highlight background |
+| Core answer | Lavender slate panel `#3D3847`, Misty lilac border `#C6B9DD`; title remains plain petal ivory |
 | Optional marked definition | Sage text on a muted green background; only when the phrase explains a useful distinction |
 | Link | Blue, underlined; preserve link styling inside bold |
-| Inline code | Code background with sage text in dark mode |
+| Inline code | Smoky charcoal background `#38353B` with Lavender milk text `#DDD1EE` in dark mode |
 | Code block | Preserve syntax highlighting; do not add editorial wrappers inside examples |
 
 All editorial text emphasis pairs colored text with a tinted background. Use semantic bold as the primary authoring method so the skimmed argument is also visible in source. The optional mark classes below remain available, but do not use them to mechanically color terminology. Avoid nested wrappers and inline style attributes. Explicit warning wording still conveys risk when colors are unavailable.
 
 ## Highlight palette and rendering
 
-Use amber bold for the main argument; reserve optional sage marks for a useful defining claim. Bold uses warm amber text on the yellow highlight background. Do not use colored text alone for emphasis. Additional variants are available for a specific editorial purpose, not to make a page more colorful. Do not invent a second meaning for the same color on another page.
+Use blush pink bold for the main argument; reserve optional sage marks for a useful defining claim. Bold uses blush pink text on the rose velvet highlight background. Do not use colored text alone for emphasis. Additional variants are available for a specific editorial purpose, not to make a page more colorful. Do not invent a second meaning for the same color on another page.
 
 | Class | Background | Text | Intended use |
 | --- | --- | --- | --- |
-| `notes-highlight` | `#443B28` | `#E7CF99` | Core rule or takeaway |
+| `notes-highlight` | `#59404E` | `#F3C5DA` | Core rule or takeaway |
 | `notes-highlight-term` | `#303D32` | `#BED4AE` | Definition or key mechanism |
 | `notes-highlight-success` | `#303D32` | `#BED4AE` | Important successful outcome |
 | `notes-highlight-info` | `#2C3948` | `#B8D1EB` | Short contextual clarification |
@@ -129,7 +135,7 @@ Physical screen size does not determine CSS viewport size. Do not halve font siz
 - Keep code at approximately `0.9em` of body size, preferably no smaller than 15px at default scaling. Preserve code indentation and provide local horizontal scrolling for long lines.
 - Keep wide tables and diagrams in their own scroll containers; the page itself must not scroll sideways. Preserve Mermaid sizing controls and their keyboard focus states.
 - Keep paragraph spacing around `1em`. Use left-aligned text and avoid justified paragraphs.
-- Keep headings ivory and distinguish hierarchy through size, weight, and spacing. Preserve automatic section numbers.
+- Keep headings petal ivory and distinguish hierarchy through size, weight, and spacing. Preserve automatic section numbers.
 
 ## Code, callouts, and controls
 
@@ -145,7 +151,7 @@ Measure actual rendered pairs, including backgrounds inherited from tables, call
 
 - Normal text, meaningful secondary labels, inline colors, highlighted text, and code: at least 4.5:1.
 - Main prose: target at least 7:1 on its reading background.
-- Large text: at least 3:1; ordinary headings should still use the high-contrast ivory.
+- Large text: at least 3:1; ordinary headings should still use the high-contrast petal ivory.
 - Essential control boundaries and state indicators: at least 3:1 against adjacent colors where required.
 - Check hover, active, focus, selection, light-mode fallback, and disabled presentation separately. Do not dim meaningful explanatory content as if it were disabled.
 

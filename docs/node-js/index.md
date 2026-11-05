@@ -68,8 +68,3 @@ The sidebar groups these supplements into **Backend and persistence continuation
 | Cloud architecture awareness | [AWS slice](./aws-service-slice.md); Kubernetes awareness remains in the deployment continuation |
 
 All substantial collections have a [workbench home](../workbench/node-js/index.md). It distinguishes runnable fixtures, composable source examples and adaptation templates with additional environment requirements. Project requirements, acceptance criteria and learner checklists live in [practice](../practice/node-js/index.md). Preserve any Autocode task's supplied build/Jest/database/coverage configuration and restricted tests. Only the user may push repository changes.
-
-
-## Node.js tech-check
-
-The [Node.js tech-check guide](./tech-check/index.md) groups questions into Foundations, Building Applications, Designing Services, Hardening/Optimization and Specialized Systems. Use its explanations, code predictions, debugging scenarios and practical exercises to prepare for a technical discussion. The [three progressive projects](./tech-check/progressive-projects.md) connect the first three sections through one evolving CLI, HTTP application and deployable service.

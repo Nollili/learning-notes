@@ -1,4 +1,6 @@
+import { withLearningPaths } from './data/learning-paths.mjs'
 import { defineConfig } from 'vitepress'
+import { nodeTechCheckPaths } from './data/node-tech-check.mjs'
 import fs from 'fs'
 import path from 'path'
 import { mermaidPlugin } from './plugins/mermaid.mjs'
@@ -204,9 +206,10 @@ const aiDevelopmentSidebar = [
   }
 ]
 
-export default defineConfig(applyPublicationPolicy(applyContentPolicy({
+export default defineConfig(withLearningPaths(applyPublicationPolicy(applyContentPolicy({
   appearance: 'dark',
-  title: 'My Notes for Bench Learning',
+  title: 'Learning hub',
+  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/book.svg' }]],
   description: 'Professional growth and technical notes.',
   outDir: '../dist',
   vite: { plugins: [repositoryOnlyDevGuard()] },
@@ -220,12 +223,13 @@ export default defineConfig(applyPublicationPolicy(applyContentPolicy({
     }
   },
   themeConfig: {
+    siteTitle: 'Learning hub',
     search: {
       provider: 'local',
       options: {
         detailedView: true,
         translations: {
-          button: { buttonText: 'Search explanations', buttonAriaLabel: 'Search all learning pages' }
+          button: { buttonText: 'Search learning content', buttonAriaLabel: 'Search learning content' }
         }
       }
     },
@@ -236,17 +240,17 @@ export default defineConfig(applyPublicationPolicy(applyContentPolicy({
         { text: 'Frontend performance', link: '/frontend/performance/' },
         { text: 'CS foundations', link: '/cs-foundations/' },
         { text: 'Node.js', link: '/node-js/' },
+        { text: 'Node.js Tech Check', link: '/node-js/tech-check/' },
         { text: 'AWS Cloud', link: '/aws/' },
         { text: 'Build AI Apps — JavaScript First', link: '/applied-ai/' },
         { text: 'AI for Software Development', link: '/ai-assisted-engineering/' },
-        { text: 'Engineering foundations', link: '/engineering/' }
+        { text: 'Engineering foundations', link: '/engineering/' },
+        { text: 'Senior Growth', link: '/senior_growth/' }
       ] },
       { text: 'Practice projects', link: '/practice/learning-projects' },
-      { text: 'Senior Growth', link: '/senior_growth/' },
       { text: 'Materials', link: '/materials' }
     ],
     hero: {
-      name: 'My notes for bench learning',
       actions: [
         { theme: 'alt', text: 'Materials', link: '/materials' },
         { theme: 'alt', text: 'Technical checks', link: '/knowledge_testing' },
@@ -256,6 +260,24 @@ export default defineConfig(applyPublicationPolicy(applyContentPolicy({
       ]
     },
     sidebar: {
+      '/node-js/tech-check/': [
+        { text: 'Node.js tech-check', items: [{ text: 'Whats on this page?', link: '/node-js/tech-check/' }] },
+        ...nodeTechCheckPaths.map(path => ({
+          text: path.title,
+          items: path.items.map(item => ({ text: `${item.type}: ${item.title}`, link: item.href }))
+        })),
+        { text: 'More explanations and practice', items: [
+          { text: 'Creational patterns', link: '/node-js/tech-check/patterns/creational' },
+          { text: 'Structural patterns', link: '/node-js/tech-check/patterns/structural' },
+          { text: 'Behavioral workflows', link: '/node-js/tech-check/patterns/behavioral-workflows' },
+          { text: 'Behavioral data and traversal', link: '/node-js/tech-check/patterns/behavioral-data' },
+          { text: 'Five progressive projects', link: '/node-js/tech-check/progressive-projects' },
+          { text: 'JavaScript questions', link: '/node-js/tech-check/js-tech-check' },
+          { text: 'React questions', link: '/node-js/tech-check/react-tech-check' },
+          { text: 'Node.js exercises', link: '/practice/node-js/' },
+          { text: 'Node.js runtime course', link: '/node-js/' }
+        ] }
+      ],
       "/workbench/applied-ai/javascript/": aiAppSidebar,
       "/workbench/applied-ai/javascript-integrations/": aiAppSidebar,
       "/workbench/engineering/ai-engineering/catalogue/": aiDevelopmentSidebar,
@@ -1402,86 +1424,6 @@ export default defineConfig(applyPublicationPolicy(applyContentPolicy({
       ],
       '/node-js/': [
         {
-          text: 'Node.js tech-check',
-          items: [
-            { text: 'Tech-check overview', link: '/node-js/tech-check/' },
-            { text: 'Coverage checklist', link: '/node-js/tech-check/coverage' },
-            {
-              text: '1. Node.js Foundations',
-              collapsed: false,
-              items: [
-                { text: 'Runtime fundamentals', link: '/node-js/tech-check/01-runtime-fundamentals' },
-                { text: 'CLI and processes', link: '/node-js/tech-check/02-cli-and-processes' },
-                { text: 'Modules', link: '/node-js/tech-check/03-modules' },
-                { text: 'Package management', link: '/node-js/tech-check/04-package-management' },
-                { text: 'Async programming', link: '/node-js/tech-check/05-asynchronous-programming' },
-                { text: 'Core APIs', link: '/node-js/tech-check/07-core-apis' },
-                { text: 'Framework foundations', link: '/node-js/tech-check/16-frameworks' },
-                { text: 'Build project: Foundations CLI', link: '/node-js/tech-check/progressive-projects#project-1-foundations-cli' }
-              ]
-            },
-            {
-              text: '2. Building Node.js Applications',
-              collapsed: true,
-              items: [
-                { text: 'Events and event loop', link: '/node-js/tech-check/06-events-and-event-loop' },
-                { text: 'Networking', link: '/node-js/tech-check/08-networking' },
-                { text: 'Development-tool workflows', link: '/node-js/tech-check/29-development-tools' },
-                { text: 'Errors', link: '/node-js/tech-check/10-error-handling' },
-                { text: 'Testing', link: '/node-js/tech-check/15-testing' },
-                { text: 'Frameworks', link: '/node-js/tech-check/16-frameworks#application-frameworks' },
-                { text: 'Patterns', link: '/node-js/tech-check/18-patterns', collapsed: true, items: [
-                  { text: 'Creational patterns', link: '/node-js/tech-check/patterns/creational' },
-                  { text: 'Structural patterns', link: '/node-js/tech-check/patterns/structural' },
-                  { text: 'Behavioral workflows', link: '/node-js/tech-check/patterns/behavioral-workflows' },
-                  { text: 'Behavioral data and traversal', link: '/node-js/tech-check/patterns/behavioral-data' }
-                ] },
-                { text: 'Build project: HTTP application', link: '/node-js/tech-check/progressive-projects#project-2-http-application' }
-              ]
-            },
-            {
-              text: '3. Designing Node.js Services',
-              collapsed: true,
-              items: [
-                { text: 'Concurrency', link: '/node-js/tech-check/09-concurrency' },
-                { text: 'Architecture', link: '/node-js/tech-check/18-architecture' },
-                { text: 'Authentication', link: '/node-js/tech-check/13-authentication-and-authorization' },
-                { text: 'Database fundamentals', link: '/node-js/tech-check/17-databases' },
-                { text: 'Docker', link: '/node-js/tech-check/23-containerization' },
-                { text: 'Cloud', link: '/node-js/tech-check/30-cloud-fundamentals' },
-                { text: 'Serverless', link: '/node-js/tech-check/20-serverless' },
-                { text: 'Deployment', link: '/node-js/tech-check/24-deployment' },
-                { text: 'Build project: Deployable service', link: '/node-js/tech-check/progressive-projects#project-3-deployable-service' }
-              ]
-            },
-            {
-              text: '4. Hardening and Optimizing Node.js Services',
-              collapsed: true,
-              items: [
-                { text: 'Security', link: '/node-js/tech-check/14-security' },
-                { text: 'Advanced authentication', link: '/node-js/tech-check/13-authentication-and-authorization#t13-q06' },
-                { text: 'Performance and V8', link: '/node-js/tech-check/12-performance-and-v8' },
-                { text: 'Deeper data access', link: '/node-js/tech-check/17-databases#t17-q09' },
-                { text: 'Advanced APIs and frameworks', link: '/node-js/tech-check/16-advanced-api-frameworks' },
-                { text: 'Build project: Harden the service', link: '/node-js/tech-check/progressive-projects#project-4-hardened-service' }
-              ]
-            },
-            {
-              text: '5. Specialized Node.js Systems',
-              collapsed: true,
-              items: [
-                { text: 'Messaging', link: '/node-js/tech-check/19-messaging' },
-                { text: 'Real-time foundations', link: '/node-js/tech-check/08-networking#t08-q06' },
-                { text: 'Logging', link: '/node-js/tech-check/21-logging' },
-                { text: 'Monitoring', link: '/node-js/tech-check/22-monitoring' },
-                { text: 'Advanced real-time, native modules and WebAssembly', link: '/node-js/tech-check/specialized-systems' },
-                { text: 'Build project: Operate the service', link: '/node-js/tech-check/progressive-projects#project-5-operated-specialized-service' }
-              ]
-            },
-            { text: 'Tech-check progress', link: '/node-js/tech-check/progress' }
-          ]
-        },
-        {
                 "text": "Node.js runtime course",
                 "items": [
                         {
@@ -1996,4 +1938,4 @@ export default defineConfig(applyPublicationPolicy(applyContentPolicy({
       '/senior_growth/': generateSidebar('senior_growth', '/senior_growth/')
     }
   }
-})))
+}))))
