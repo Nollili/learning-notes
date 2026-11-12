@@ -10,6 +10,9 @@ JavaScript examples use Node24, ES Modules (`.mjs`) and built-in APIs. Shell com
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Code question — attempt first**</span>
 
 Save as `args.mjs`, then run `node --trace-warnings args.mjs --mode test`. Which array contains --trace-warnings, and which contains --mode?
@@ -75,6 +78,9 @@ Keep runtime flags, shell processing and validated application arguments as thre
 ### How should a service turn environment variables into reliable configuration? {#t02-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -149,6 +155,9 @@ Parse environment strings into a validated startup contract; defaults, precedenc
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -212,6 +221,9 @@ Use the REPL to explore, then turn important observations into reproducible file
 ### How should a CLI use stdin, stdout and stderr without corrupting its output? {#t02-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -280,6 +292,9 @@ Separate results from diagnostics, and treat standard streams as real resources 
 ### What keeps a process alive, and how do exitCode, exit and process events differ? {#t02-q05}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -359,6 +374,9 @@ Await owned work before termination; exit events and forced process termination 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -429,6 +447,9 @@ Process metadata and measurements are diagnostic evidence only when their scope,
 ### How do spawn, execFile and exec differ, and how do you handle child failures? {#t02-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -508,6 +529,9 @@ Choose execution and output ownership explicitly; direct arguments, bounded reso
 ### What does Node's fork create, and how do you build a bounded IPC exchange? {#t02-q08}
 
 *Study depth: Advanced*
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 

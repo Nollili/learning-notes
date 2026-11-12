@@ -10,6 +10,9 @@ The full [Relational Databases, PostgreSQL and MikroORM module](../module-08-pos
 
 ## How do you choose a database from the data and workload? {#t17-q01}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -37,6 +40,9 @@ Compare catalogue descriptions, stock reservations and a login session store. St
 ---
 
 ## How should a Node application own connections and credentials? {#t17-q02}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -84,6 +90,9 @@ Run two owned application processes with a small pool, observe the combined serv
 ---
 
 ## How do constraints and parameterized CRUD work together? {#t17-q03}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -149,6 +158,9 @@ Implement all four operations through the real driver. Test injection-shaped val
 
 ## How do joins, unions, upserts and migrations differ? {#t17-q04}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -194,6 +206,9 @@ Use the [SQL report workbench](../sql-query-workbench.md) to explain report grai
 ---
 
 ## How do transactions prevent overselling, and when can they fail? {#t17-q05}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -265,6 +280,9 @@ Run two independent clients reserving the last unit: exactly one commits and sto
 
 ## What does MikroORM add, and what does it not hide? {#t17-q06}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -300,6 +318,9 @@ Implement create/read/update/delete and one relation in the existing workbench. 
 
 ## How do you diagnose a slow database query? {#t17-q07}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -322,6 +343,9 @@ Load a disposable representative dataset, capture baseline plan/latency and add 
 
 ## How do APIs and jobs remain safe when the database is unhealthy? {#t17-q08}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -343,6 +367,9 @@ Stop only your owned database fixture during a bounded API/job run, restore it a
 ---
 
 ## How do you prove an isolation level protects the actual invariant? {#t17-q09}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -452,6 +479,9 @@ Extend the fixture with a bounded retry that re-evaluates the business decision,
 
 ## How do you combine keyset pagination with an evidence-based index? {#t17-q10}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -508,6 +538,9 @@ Add equal timestamps, inserts between pages, another tenant and a changed filter
 ---
 
 ## How do you diagnose locks, pool exhaustion and risky migrations? {#t17-q11}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

@@ -8,6 +8,9 @@ Use PostgreSQL and the existing RabbitMQ job adapter as the primary implementati
 
 ## What contract must a message describe? {#t19-q01}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -65,6 +68,9 @@ Specify an export command and its completion event. Test invalid/oversize/old-ve
 
 ## How do RabbitMQ confirms, acknowledgements and the outbox fit together? {#t19-q02}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -93,6 +99,9 @@ Run the canonical lab against owned RabbitMQ/PostgreSQL. Verify duplicate effect
 
 ## How do retries, dead letters and failover avoid an outage loop? {#t19-q03}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -116,6 +125,9 @@ Inject dependency failure, poison input, broker disconnect and post-commit respo
 ---
 
 ## How is Kafka consumption different from deleting queue messages? {#t19-q04}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -158,6 +170,9 @@ In an owned topic/group, stop after a SQL commit but before offset commit, resta
 
 ## When do SQS and SNS fit a Node service? {#t19-q05}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -181,6 +196,9 @@ Prepare a scoped topology/configuration locally; in an authorized sandbox test t
 ---
 
 ## What should you know about ActiveMQ and Artemis before choosing them? {#t19-q06}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

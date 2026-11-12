@@ -10,6 +10,9 @@ Examples use **Node.js 24.18.0**, ES Modules and built-in APIs. These eight ques
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <span class="notes-section-label">**Example — predict the parent value and identity comparisons**</span>
 
 Save these two files together in an owned temporary directory. Run `node clone-main.mjs`. Does changing workerData change the original object? Does this worker have a different process ID?
@@ -139,6 +142,9 @@ Official references checked2026-11-04: Node24.18 [worker threads](https://nodejs
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <span class="notes-section-label">**Example — predict completion before running**</span>
 
 Use the existing source helper below unchanged. In an owned temporary directory, save it as `worker.ts`, then create sum-worker.mjs and run-worker.mjs. Node24.18 can strip this helper's erasable TypeScript syntax when imported; **runtime stripping does not type-check it** or implement arbitrary tsconfig transforms.
@@ -266,6 +272,9 @@ Official references checked2026-11-04: Node24.18 [worker termination and events]
 ## How do copying, transferring and shared memory change ownership between worker threads? {#t09-q03}
 
 *Study depth: Intermediate; advanced shared-memory algorithms optional*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -431,6 +440,9 @@ Acceptance: retain results/error branches, cleanup evidence and a reasoned copy/
 ## How does a bounded reusable worker pool own admission, cancellation and shutdown? {#t09-q04}
 
 *Study depth: Intermediate; multi-worker tuning and automatic recovery optional extensions*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -682,6 +694,9 @@ Acceptance: exact results, failure identities where promised, bounded retained w
 
 *Study depth: Intermediate; deployment-specific scheduling/replacement tuning optional*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -804,6 +819,9 @@ Acceptance: readiness after both listeners, per-process state, bounded shutdown,
 ## How should a service own a forked process from startup through actual closure? {#t09-q06}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -938,6 +956,9 @@ Acceptance: no child/channel remains after owned close, results and lifecycle fa
 ## How do repeated IPC requests enforce correlation, flow control and terminal ownership? {#t09-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -1131,6 +1152,9 @@ Acceptance: each promise settles according to its phase, repeated close is stabl
 ## How do you choose and troubleshoot a production concurrency model? {#t09-q08}
 
 *Study depth: Intermediate; representative infrastructure measurements remain practical work*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 

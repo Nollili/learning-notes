@@ -23,6 +23,9 @@ Keep the lockfile. Test files below live at the scratch project's root, never in
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — choose the important partitions first**</span>
 
 The quote rule uses integer cents, quantities from 1 to 100, a 500-cent shipping fee below a 5,000-cent subtotal, and free shipping at or above that threshold. Which examples detect an off-by-one error at the threshold?
@@ -130,6 +133,9 @@ Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — decide whether a change is compatible**</span>
 
 A quote consumer expects integer cent fields. The provider changes `totalCents: 1500` to `totalCents: "15.00"`, or nests the fields under `data`. Its own unit tests still pass. What evidence catches the consumer/provider disagreement?
@@ -229,6 +235,9 @@ Official references: [Pact consumer-driven contracts](https://docs.pact.io/), [J
 ### How do you write an integration test with real components and isolated state? {#t15-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — name the real boundary**</span>
 
@@ -376,6 +385,9 @@ Official references: [Jest lifecycle hooks](https://jestjs.io/docs/30.0/setup-te
 ### What should a backend end-to-end test exercise and clean up? {#t15-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — follow the complete local request**</span>
 
@@ -591,6 +603,9 @@ Official references: [Jest async completion](https://jestjs.io/docs/30.0/asynchr
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — specify the next feature before coding it**</span>
 
 A customer credit reduces the amount due but cannot make it negative. Given a 1,500-cent total and 2,000 cents of credit, the amount due must be zero. Write that observable expectation before choosing an implementation.
@@ -678,6 +693,9 @@ Official references: [Jest behavior grouping](https://jestjs.io/docs/30.0/api#de
 ### How do load and stress tests reveal behavior that functional tests miss? {#t15-q06}
 
 *Study depth: introductory operations with an executable local lab*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — define success before increasing traffic**</span>
 
@@ -822,6 +840,9 @@ Official references: [k6 test types](https://grafana.com/docs/k6/latest/testing-
 
 *Study depth: introductory performance reasoning and measurement*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — define what a measurement can prove**</span>
 
 You want to compare a pricing refactor. A single run is faster by a fraction of a millisecond. Is the refactor faster, did JIT warm-up differ, or did another process/GC affect the sample? First verify equal results and repeat a controlled workload.
@@ -914,6 +935,9 @@ Official references: [Node performance hooks](https://nodejs.org/download/releas
 ### How do you test an Express application without mocking away its framework behavior? {#t15-q08}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — keep the right parts real**</span>
 

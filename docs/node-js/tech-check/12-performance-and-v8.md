@@ -8,6 +8,9 @@ Use Node.js 24.18 as the executable baseline and record its V8/OS/architecture w
 
 ## What does V8 optimize, and what does node:v8 expose? {#t12-q01}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -43,6 +46,9 @@ Save the runtime baseline, identify one real hot function and propose a clarity-
 ---
 
 ## How do CPU profiles and load tests answer different questions? {#t12-q02}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -85,6 +91,9 @@ Acquire a real profile under an owned API workload, identify a candidate bottlen
 ---
 
 ## What do event-loop delay, utilization and request latency tell you? {#t12-q03}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -135,6 +144,9 @@ Compare a CPU-heavy route, a slow database and a slow response consumer under th
 ---
 
 ## How do memory retention, GC and Buffer ownership affect performance? {#t12-q04}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -193,6 +205,9 @@ Create a controlled retained-listener/cache leak in an owned fixture, acquire be
 
 ## Why does async syntax not solve CPU saturation or overload? {#t12-q05}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -216,6 +231,9 @@ Implement equivalent bounded CPU work on the main loop, in yielding chunks and i
 ---
 
 ## How do you add a cache without losing correctness? {#t12-q06}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -316,6 +334,9 @@ Test expiry, eviction, tenant separation, mutation isolation, invalidation race 
 ---
 
 ## How do you optimize an Express or Nest application responsibly? {#t12-q07}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

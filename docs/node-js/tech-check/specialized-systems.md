@@ -8,6 +8,9 @@ These specialist extensions build on [real-time foundations](./08-networking.md#
 
 ## How do authenticated real-time sessions work across multiple servers? {#t08-q12}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -34,6 +37,9 @@ Run two owned instances behind a local proxy. Test polling and WebSocket-only tr
 ---
 
 ## How do slow consumers and replay cursors change a real-time design? {#t08-q13}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -128,6 +134,9 @@ Extend the feed with bounded history and a deliberately slow client. Accept when
 
 ## How do you diagnose reconnect storms and shut down real-time services? {#t08-q14}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -156,6 +165,9 @@ Extend the [existing networking fixtures](./08-networking.md#t08-q07) with owned
 ---
 
 ## What does a native Node-API module add, and what can go wrong? {#t12-q08}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -245,6 +257,9 @@ Compile/run this study addon, then design the lifetime/cancellation contract for
 
 ## How does WebAssembly exchange values and memory with Node.js? {#t12-q09}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -308,6 +323,9 @@ Compile an owned numeric function from WAT or a source language, compare boundar
 ---
 
 ## How do you choose and operate a specialist execution boundary? {#t12-q10}
+
+Seniority level: Architect\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

@@ -14,6 +14,9 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -125,6 +128,9 @@ Interpreter represents a grammar and defines how its expressions are evaluated.
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -234,6 +240,9 @@ Iterator provides sequential traversal without exposing a collection’s represe
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -324,6 +333,9 @@ Memento lets an originator capture/restores its state through snapshots held by 
 ### How does Visitor add operations to a stable object structure? {#t18-q23}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

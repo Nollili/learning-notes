@@ -12,6 +12,9 @@ These local teaching clients/servers are not production deployment templates. Va
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — identify the completion, byte and lifetime boundaries**</span>
 
 Save as `tcp.mjs`. The protocol is one ASCII greeting of at most64 bytes, terminated by EOF. It is deliberately not a general chat or request protocol.
@@ -107,6 +110,9 @@ A socket is a transport resource; message meaning and lifetime belong to the app
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — receive one owned loopback datagram**</span>
 
 Save as `udp.mjs`. The deadline supervises this one-datagram experiment; it is not an Internet reliability implementation.
@@ -199,6 +205,9 @@ Addressing, transport guarantees and authenticated application identity are sepa
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — inspect the full response lifetime**</span>
 
 Save as `https-client.mjs`. This exports a small client rather than contacting a public site. Invoke it against an owned TLS fixture with a certificate containing its requested DNS/IP identity; pass only that fixture's trusted CA/certificate as ca. For a normal public trust store, leave ca undefined.
@@ -289,6 +298,9 @@ Validate the peer and own the entire HTTP exchange, including its body and failu
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — inspect address results without external DNS**</span>
 
 Save as `dns.mjs`. The default invocation uses an IP literal; injected lookup allows deterministic diagnostics/tests without replacing global DNS configuration.
@@ -373,6 +385,9 @@ Official references checked2026-11-04: Node24.18 [Net](https://nodejs.org/downlo
 
 *Study depth: Intermediate*
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <span class="notes-section-label">**Example — choose and defend a transport before reading the answer**</span>
 
 A product has a job-progress dashboard that changes every few seconds, an administrative audit feed and a collaborative editor with frequent client commands. Which transport fits each interaction, and what happens after a disconnect?
@@ -431,6 +446,9 @@ Choose the interaction and recovery contract first; then choose the simplest tra
 ### What must a WebSocket service own beyond a successful handshake? {#t08-q06}
 
 *Study depth: Intermediate*
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — bounded local echo protocol**</span>
 
@@ -527,6 +545,9 @@ A long-lived message channel requires an explicitly owned application session an
 
 *Study depth: Intermediate*
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <span class="notes-section-label">**Example — an acknowledged event under a fixture-only identity**</span>
 
 Save as `socketio.mjs` with pinned Socket.IO4. The caller supplies an owned unlistening node:http server, binds it to loopback/port0, then uses a matching socket.io-client. This fixed fixture token is a teaching gate, never a production credential design.
@@ -615,6 +636,9 @@ Library conveniences reduce transport plumbing; delivery semantics and business 
 
 *Study depth: Intermediate*
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
 <span class="notes-section-label">**Example — test sequence gaps rather than assuming the connection is complete**</span>
 
 Save as `feed-state.mjs`. This pure state transition models one already-authorized stream epoch, where every next integer is expected. It is not a complete replay protocol or persistence layer.
@@ -693,6 +717,9 @@ Production selection includes overload, recovery and deployment evidence, not on
 ### How do you inspect an HTTP exchange without confusing transport, status and payload failures? {#t08-q09}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the status and body before running**</span>
 
@@ -831,6 +858,9 @@ Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/spe
 ### How can HTTP request/response coexist with asynchronous browser interaction? {#t08-q10}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -1018,6 +1048,9 @@ Run the two-origin lab. Test every selector value, cancel while Loading, and tri
 ### How do connection reuse and client pooling help without creating an unbounded queue? {#t08-q11}
 
 *Study depth: Intermediate implementation of a foundational optimization*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

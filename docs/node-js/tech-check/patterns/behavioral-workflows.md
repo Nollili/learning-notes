@@ -14,6 +14,9 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -104,6 +107,9 @@ Chain of Responsibility passes a request through candidate handlers.
 ### How does Command separate an operation from its invoker, and what can undo promise? {#t18-q16}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -197,6 +203,9 @@ Command represents an operation so an invoker can trigger it without knowing its
 ### How does Mediator coordinate peers without becoming a global dependency hub? {#t18-q19}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -304,6 +313,9 @@ Mediator centralizes a set of collaborating peers so they need not call one anot
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -396,6 +408,9 @@ State delegates behavior according to the current lifecycle state and permitted 
 ### How does Template Method define a workflow while allowing selected steps to vary? {#t18-q22}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

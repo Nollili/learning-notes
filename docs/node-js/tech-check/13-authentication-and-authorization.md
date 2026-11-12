@@ -8,6 +8,9 @@ Use the existing Express 5/PostgreSQL application as the primary browser-session
 
 ## How do authentication and authorization differ? {#t13-q01}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -50,6 +53,9 @@ Create two tenants and test read/update/delete using the other's IDs, including 
 
 ## When should a browser use a session rather than a JWT? {#t13-q02}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -75,6 +81,9 @@ Use the [existing session workbench](../module-09-authentication-authorization.m
 ---
 
 ## What must a JWT verifier actually verify? {#t13-q03}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -149,6 +158,9 @@ Add wrong issuer/key, missing expiry, future `nbf`, malformed claims and revoked
 
 ## Where do authentication middleware and Passport strategies fit? {#t13-q04}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -183,6 +195,9 @@ An endlessly redirecting callback can mean the cookie was not stored, proxy trus
 
 ## How do third-party login and service-to-service identity work? {#t13-q05}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -206,6 +221,9 @@ Draw browser→backend→provider and service→service trust boundaries. In an 
 ---
 
 ## How do you bind an OIDC callback to the browser that started login? {#t13-q06}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -265,6 +283,9 @@ Check callback URI/proxy origin, transaction cookie scope/SameSite, expired stat
 ---
 
 ## How do key rotation and token profiles avoid confused trust? {#t13-q07}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -333,6 +354,9 @@ Test overlapping/retired keys, wrong issuer/audience/type/algorithm, missing tim
 ---
 
 ## How do refresh rotation, revocation and sensitive writes survive races? {#t13-q08}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

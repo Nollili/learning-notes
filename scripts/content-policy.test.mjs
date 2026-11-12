@@ -47,7 +47,7 @@ test('catalogues recover titles without damaging technical identifiers or versio
   assert.equal(getPageTitle('---\ntitle: Metadata\n---\n```py\n# Not a title\n```\n### Complete title'), 'Complete title')
 })
 
-test('hub sources and Senior Growth titles stay free of export debris and emojis', () => {
+test('hub sources and Senior Growth titles follow export and emoji rules', () => {
   let pages = 0
   function visit(directory) {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -56,7 +56,11 @@ test('hub sources and Senior Growth titles stay free of export debris and emojis
       if (entry.isDirectory()) visit(file)
       else if (/\.(md|mjs|vue|css|js|ts|json|html|svg|txt)$/.test(entry.name)) {
         const source = fs.readFileSync(file, 'utf8')
-        assert.equal(hasEmoji(source), false, `Emoji in ${file}`)
+        const isTechCheckMarkdown = file.startsWith(path.join(docs, 'node-js', 'tech-check') + path.sep) && file.endsWith('.md')
+        const sourceWithoutLevelStars = isTechCheckMarkdown
+          ? source.replace(/^Tech Check level: ⭐{1,5}$/gmu, '')
+          : source
+        assert.equal(hasEmoji(sourceWithoutLevelStars), false, `Emoji in ${file}`)
         if (file.endsWith('.md')) {
           const tokens = markdown.parse(source, { path: file })
           for (let index = 0; index < tokens.length; index++) {

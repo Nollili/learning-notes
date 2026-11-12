@@ -10,6 +10,9 @@ Examples use Node.js 24.18.0 and npm 11. These five questions cover build/test/s
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — identify which command keeps running**</span>
 
 Start with the complete isolated build-study fixture from [related explanation](./04-package-management.md#t04-q07): src/add.mjs, build.mjs, checks/add.test.mjs and verify.mjs. Its build copies the module to dist, and its test imports that emitted module. In that disposable fixture only, use this package.json and add serve.mjs below. No dependency installation is required.
@@ -151,6 +154,9 @@ Official references checked2026-11-04: npm11 [script lifecycle and ignore-script
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -218,6 +224,9 @@ Reproduce the loose-equality failure and repair; add an unused declaration and v
 ### How do formatting, linting, typechecking and tests complement one another? {#t29-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -300,6 +309,9 @@ Introduce formatting drift, observe check failure, format only the intended file
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -372,6 +384,9 @@ Make one scoped lint/format/typecheck setting change. Acceptance: state the orig
 ### How do IDE navigation, refactoring and breakpoints help diagnose a Node application? {#t29-q05}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

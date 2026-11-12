@@ -8,6 +8,9 @@ This page extends the [framework chapter](./16-frameworks.md) with failure and m
 
 ## How do process and cluster owners handle failure beyond a happy-path reply? {#t16-q14}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -31,6 +34,9 @@ Run the existing cluster/fork fixtures and add an API-level scenario: lose a wor
 ---
 
 ## How do you publish a file without exposing partial content or overwriting an existing result? {#t16-q15}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -138,6 +144,9 @@ Test competing publication, pre-existing target, invalid name, write/sync/link/c
 
 ## How do you stream bounded results while owning errors and cancellation? {#t16-q16}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -227,6 +236,9 @@ Test slow sink, source/transform/destination errors, oversize chunk, active abor
 
 ## How do cryptographic and streaming boundaries affect a service design? {#t16-q17}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -250,6 +262,9 @@ Corrupt ciphertext/tag/AAD and truncate an owned encrypted object. Accept when a
 ---
 
 ## How do you measure a framework optimization without removing correctness? {#t16-q18}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

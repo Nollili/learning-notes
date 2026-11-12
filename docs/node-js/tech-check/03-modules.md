@@ -10,6 +10,9 @@ Examples target Node24.18.0. Keep the shown .mjs/.cjs extensions and package.jso
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -67,6 +70,9 @@ Classify the specifier first: built-in capability, local module and external pac
 ### How do CommonJS and ES Modules differ, and how do you choose the file's mode? {#t03-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -146,6 +152,9 @@ Module mode is a runtime/package contract, and CJS/ESM interop must be checked a
 ### Are top-level variables global, and what does the module cache share? {#t03-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -232,6 +241,9 @@ Module-private variables can still be shared through a cached instance; define t
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Code question — attempt first**</span>
 
 `broken.cjs` contains `exports = {answer: 42}`. A separate file logs `require('./broken.cjs').answer`. What happens, and what is the smallest correction?
@@ -304,6 +316,9 @@ exports is an initial alias, module.exports is the public value, and node:module
 ### How do main, exports, imports and package conditions select an entry point? {#t03-q05}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -399,6 +414,9 @@ Package metadata selects public runtime entry contracts, and the same package na
 
 *Study depth: Advanced*
 
+Seniority level: Senior\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Code question — attempt first**</span>
 
 Create `async-settings.mjs` with the following export. Can an ordinary Node24.18 CommonJS require synchronously obtain it? What should an async consumer do?
@@ -481,6 +499,9 @@ Async module evaluation changes graph readiness; handle it with explicit startup
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -557,6 +578,9 @@ Diagnose the stage and selected target before changing dependencies or runtime c
 ### What happens in circular dependencies, and why is clearing a cache not a resource reset? {#t03-q08}
 
 *Study depth: Advanced*
+
+Seniority level: Senior\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 

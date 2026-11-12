@@ -8,6 +8,9 @@ AWS is the primary provider, following the existing [AWS service slice](../aws-s
 
 ## How do VMs, containers and managed services change your responsibilities? {#t30-q01}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -35,6 +38,9 @@ Compare one VM, Fargate and a function for an API plus a report job. Accept with
 
 ## How do you configure and recover a VM? {#t30-q02}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -58,6 +64,9 @@ In a sandbox account, configure one small VM from a saved specification, attach 
 ---
 
 ## When should storage be object, block or file based? {#t30-q03}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -104,6 +113,9 @@ In an owned private bucket, upload one authorized report, retrieve it, reject an
 
 ## How does an application reach a managed database securely? {#t30-q04}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -126,6 +138,9 @@ In the owned AWS slice, verify task→DB connectivity, denial from an unapproved
 
 ## Which identities and network boundaries does the cloud service need? {#t30-q05}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -147,6 +162,9 @@ Write an access matrix for operator, execution role, task role, SQL app role and
 ---
 
 ## What constitutes a complete first cloud exercise? {#t30-q06}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
 

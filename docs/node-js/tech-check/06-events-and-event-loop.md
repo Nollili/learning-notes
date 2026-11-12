@@ -10,6 +10,9 @@ This chapter covers event-driven contracts, EventEmitter, waiting for events and
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
 
 Save as `emitter.mjs`.
@@ -88,6 +91,9 @@ An event contract includes delivery, payload, failure and subscription lifetime,
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — register before publication**</span>
 
 Save as `wait-events.mjs`. Why are both waits created before the first await?
@@ -162,6 +168,9 @@ Subscribe before publishing, attach observers promptly and cancel waits that no 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — predict only the guaranteed order**</span>
 
 Save as `io-order.mjs`. This reads its own small fixture source file.
@@ -226,6 +235,9 @@ Explain scheduling in its actual callback and runtime context, not from a univer
 ### How do nextTick and promise microtasks differ across CommonJS and ESM? {#t06-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — run the same source as two module types**</span>
 
@@ -306,6 +318,9 @@ Official references checked2026-11-04: Node24.18 [EventEmitter and event helpers
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — what can this prove about threads?**</span>
 
 Save as `native-work.mjs`.
@@ -373,6 +388,9 @@ Separate OS notifications, native worker capacity and JavaScript execution when 
 ### How should OS signal handlers coordinate bounded shutdown? {#t06-q06}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — test only as an owned child process**</span>
 
@@ -466,6 +484,9 @@ A signal initiates a lifecycle protocol; resource owners and an external deadlin
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — interpret the shape, not an exact benchmark**</span>
 
 Save as `measure-loop.mjs`. The finite80ms busy wait is a deliberately bad workload for this local experiment only.
@@ -546,6 +567,9 @@ Measure scheduling symptoms with units and context, then collect evidence at the
 ### How can you demonstrate starvation and fix fairness safely? {#t06-q08}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict whether the immediate gets an opportunity**</span>
 

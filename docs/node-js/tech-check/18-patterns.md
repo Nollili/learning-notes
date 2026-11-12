@@ -48,6 +48,9 @@ Material completion is separate from practice. Do not implement every pattern in
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -109,6 +112,9 @@ Choose one real catalog change. Write a short decision comparing a direct soluti
 ### When should you use a factory, builder or singleton, and who owns the created state? {#t18-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -200,6 +206,9 @@ Run two readers from the same input. Mutate the input and a returned DTO, close 
 ### How do Adapter and Decorator differ, and what must a wrapper preserve? {#t18-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -305,6 +314,9 @@ Wrap the factory reader and the legacy adapter with the same metrics decorator. 
 ### How do Strategy, Observer and Command organize behavior without hiding failures? {#t18-q04}
 
 *Study depth: Intermediate; full worked catalogue linked below*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

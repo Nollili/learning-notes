@@ -10,6 +10,9 @@ Examples use Node24 and ES Modules (`.mjs`) unless stated otherwise. Only built-
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -76,6 +79,9 @@ Node runs JavaScript with server/OS host facilities; V8 executes the language, a
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Code question — attempt first**</span>
 
 Predict the log order in a Node24 `.mjs` file. Does the arithmetic run on a separate JavaScript thread?
@@ -111,7 +117,15 @@ Different Node APIs use different mechanisms. Network I/O commonly uses OS readi
 
 “Every async operation runs on another thread” is therefore wrong, as is “the event loop performs all expensive work itself.” Exact mechanisms are API/platform-specific.
 
-Concurrency means multiple operations have overlapping lifetimes. Parallelism means work executes simultaneously on execution resources. One JavaScript execution thread can coordinate many pending sockets concurrently without executing all their callbacks in parallel. Node also supports other threads/processes; group9 explains their isolation/communication trade-offs.
+Concurrency means multiple operations have overlapping lifetimes. Parallelism means work executes simultaneously on execution resources. One JavaScript execution thread can coordinate many pending sockets concurrently without executing all their callbacks in parallel.
+
+<span class="notes-section-label">**Isolation and communication**</span>
+
+- **Worker threads have separate JavaScript heaps inside one process.** A worker can run CPU-heavy JavaScript while the main thread handles requests. Messages normally copy ordinary objects. For large binary data, transferring an `ArrayBuffer` gives the receiver ownership and detaches it on the sender's side. A `SharedArrayBuffer` lets both sides access the same bytes, so concurrent access needs coordination. All threads share the fate of the process if it crashes.
+- **Child processes give work a separate OS process and address space.** A child can run an external program and exchange data over standard streams, or run another Node program with a message channel via `child_process.fork()`. The process boundary helps contain crashes, at the cost of another process to start and manage and data to encode or serialize across the boundary.
+- **Cluster workers are separate Node processes serving the same listening port.** They let copies of a server handle connections across cores. Each has its own in-memory state, so a session stored in one worker's memory is unavailable to another. Workers can exchange messages with the primary over IPC or use an external store for shared application state.
+
+[Group 9, Concurrency](./09-concurrency.md#t09-q01) expands on these trade-offs and shows how to verify that a worker thread has its own copy of an object while sharing the parent's process ID.
 
 For a frontend comparison, a long synchronous browser handler can prevent input/render work. A long synchronous Node handler can prevent other callbacks on that execution thread. The browser additionally has rendering/frame scheduling; do not map Node loop phases to browser paints.
 
@@ -145,6 +159,9 @@ Nonblocking I/O permits progress while waiting; async syntax alone cannot preven
 ### When should you use synchronous or asynchronous filesystem APIs? {#t01-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -217,6 +234,9 @@ Choose sync versus async from the program's waiting/concurrency needs, and budge
 ### How do core modules support both a CLI tool and a service? {#t01-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 

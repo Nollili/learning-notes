@@ -142,6 +142,9 @@ Use this compact decision template:
 
 ## Project 1 — Foundations CLI {#project-1-foundations-cli}
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 ### Outcome
 
 Build a dependency-free command-line application named `study-log`. It stores study items and sessions in an append-only JSON Lines file, prints summaries and exports a compressed report with a checksum.
@@ -216,6 +219,9 @@ Project 1 is releasable when all of these are true:
 Save this state as the `foundations-cli` release or tag before continuing.
 
 ## Project 2 — HTTP application {#project-2-http-application}
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 ### Outcome
 
@@ -330,6 +336,9 @@ Save this state as the `http-application` release or tag.
 
 ## Project 3 — Deployable service {#project-3-deployable-service}
 
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
+
 ### Outcome
 
 Start from the passing `project-2-http-application` state—**do not create a replacement API or UI**. Keep its domain, use cases, CLI, Express routes, public contracts, browser UI and applicable tests. Replace the production persistence adapter with PostgreSQL/MikroORM, add authenticated ownership, move a CPU-heavy report calculation behind the existing report use case into a bounded worker pool and package the complete service for a controlled deployment. The UI now shows the current user, only that user's items and report-job progress; **it remains intentionally plain**.
@@ -408,6 +417,9 @@ Save this state as the `deployable-service` release or tag.
 
 ## Project 4 — Hardened and optimized service {#project-4-hardened-service}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 ### Outcome
 
 Begin from the passing `project-3-deployable-service` state. Keep its UI, API contracts, identity, data, worker and deployment behavior. **Project 4 changes the service from “designed to work” to “supported by bounded security and performance evidence.”** It maps directly to Section 4 without creating another product.
@@ -467,6 +479,9 @@ Failure drill: serialization retry, mutable pagination boundary, blocked lock, e
 Save this state as `project-4-hardened-service`.
 
 ## Project 5 — Operated specialized service {#project-5-operated-specialized-service}
+
+Seniority level: Architect\
+Tech Check level: ⭐⭐⭐⭐⭐
 
 ### Outcome
 

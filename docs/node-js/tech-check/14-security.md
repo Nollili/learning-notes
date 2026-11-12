@@ -8,6 +8,9 @@ These eight questions target independent implementation and Level 4 design reaso
 
 ## How do you turn a threat model into enforceable controls? {#t14-q01}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -34,6 +37,9 @@ Produce a one-page data-flow model with five abuse cases, owners, controls and t
 ---
 
 ## How do validation, output encoding, SQL binding and CSRF defenses differ? {#t14-q02}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -87,6 +93,9 @@ Test extra fields, wrong types, oversize JSON, injection-shaped text, unsafe ric
 
 ## How do you prevent SSRF in an outbound HTTP feature? {#t14-q03}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -128,6 +137,9 @@ Use only owned mock destinations: verify rejected provider/path, redirect to a f
 ---
 
 ## What do TLS, secret management and authenticated encryption each protect? {#t14-q04}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -178,6 +190,9 @@ Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and c
 
 ## How do you store passwords and resist authentication abuse? {#t14-q05}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -219,6 +234,9 @@ Verify distinct salts, correct/wrong/malformed hashes, controlled rehash, bounde
 
 ## How do npm audit and other security scanners fit a release? {#t14-q06}
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -240,6 +258,9 @@ Analyze one advisory's direct/transitive path and write a minimal fix or a justi
 ---
 
 ## What does Helmet protect, and how do you test framework hardening? {#t14-q07}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 
@@ -281,6 +302,9 @@ Use a real loopback request to check CSP, nosniff, referrer policy and removal o
 ---
 
 ## Is node:vm, a worker or a container a safe sandbox for untrusted code? {#t14-q08}
+
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
 

@@ -14,6 +14,9 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -103,6 +106,9 @@ Bridge separates an abstraction from its implementation so both can evolve indep
 ### How does Composite give leaves and groups one usable contract? {#t18-q11}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 
@@ -199,6 +205,9 @@ Composite represents a part-whole tree so callers can apply the same operation t
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -280,6 +289,9 @@ A Facade offers a focused entry point to a subsystem.
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -356,6 +368,9 @@ Flyweight shares reusable intrinsic state while callers supply changing extrinsi
 ### How can Proxy control access while preserving the reader contract? {#t18-q14}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

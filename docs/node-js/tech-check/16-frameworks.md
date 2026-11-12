@@ -12,6 +12,9 @@ Use a separate learning folder for the runnable example. Preserve an existing pr
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Think before reading**</span>
 
 A service receives `GET /products/42` and returns JSON. Another service renders an HTML product page. Must they use different runtimes? Does installing a framework automatically provide a product database?
@@ -74,6 +77,9 @@ Official references: [Express FAQ: structure and database boundaries](https://ex
 
 *Study depth: Foundational → Intermediate*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 
 An existing team maintains an Express service. A new internal endpoint needs two routes and a repository adapter. Someone proposes rewriting the service in a different framework because a benchmark shows higher requests per second. What evidence would justify the change?
@@ -135,6 +141,9 @@ Official references: [Koa middleware composition](https://koajs.com/), [NestJS c
 ### How do you install Express and separate the application from its HTTP server? {#t16-q03}
 
 *Study depth: Foundational → Intermediate*
+
+Seniority level: Junior\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Predict before running**</span>
 
@@ -261,6 +270,9 @@ Official references: [Express installation](https://expressjs.com/en/starter/ins
 ### How should configuration and dependencies enter an application? {#t16-q04}
 
 *Study depth: Foundational → Intermediate*
+
+Seniority level: Junior\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -395,6 +407,9 @@ The application examples below use Express5.2.1 and Node24.18.0. They introduce 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Predict before reading**</span>
 
 For a router mounted at `/products`, does its `/:id` route include the `/products` prefix? If `/stats` comes after `/:id`, which handler might receive it? Does `?limit=5` become a path parameter?
@@ -462,6 +477,9 @@ Official references: [Express routing](https://expressjs.com/en/guide/routing/),
 ### How does middleware compose request behavior without hanging or responding twice? {#t16-q06}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -557,6 +575,9 @@ Official references: [Express middleware](https://expressjs.com/en/guide/using-m
 ### What belongs in a controller rather than a service or repository? {#t16-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — locate the decisions**</span>
 
@@ -662,6 +683,9 @@ Official references: [Express response API](https://expressjs.com/en/5x/api/resp
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Predict before reading**</span>
 
 The client disconnects while a service is awaiting a database reply. Is the service promise canceled? If `res.json()` returns normally, has the client certainly received and used the data? Can an error handler replace a response whose headers are already sent?
@@ -732,6 +756,9 @@ Official references: [Node HTTP response lifecycle](https://nodejs.org/download/
 ### How do CRUD endpoints and an HTML page share business rules safely? {#t16-q09}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -893,6 +920,9 @@ Share use cases between representations, and keep validation, ownership, concurr
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Predict before reading**</span>
 
 A request claims `ownerId: 'alice'` in JSON but presents Bob's credential. Which identity should the service use? If the verifier itself fails, is the credential necessarily invalid? Should a body-parser error return its original body to the caller?
@@ -1003,6 +1033,9 @@ Only a trusted verifier establishes actor context; the use case still checks per
 ### How do modules, services and injection keep an application reusable? {#t16-q11}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -1188,6 +1221,9 @@ Make dependency direction and lifetime explicit; framework conventions do not re
 
 *Study depth: Intermediate, with deeper framework internals optional*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Predict before reading**</span>
 
 Should authorization run in a success-only response interceptor? Does an initialization hook mean the service is ready to accept traffic? If a destroy hook exists, will it always run after a crash or a forced kill?
@@ -1247,6 +1283,9 @@ Use framework hooks as well-placed entry points into explicit owners, not as a r
 ### What must change when a framework app moves from a lab to deployment? {#t16-q13}
 
 *Study depth: Intermediate; advanced operations remain separate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 

@@ -12,6 +12,9 @@ Read the examples before their explanations. Error text, paths, payloads and nes
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — predict the categories**</span>
 
 Save as `error-types.mjs`. Which failures indicate invalid JSON syntax, a wrong value type and a value outside the endpoint's range?
@@ -103,6 +106,9 @@ Official references: [Node 24 error classes and system codes](https://nodejs.org
 ### When should you create a custom error, and how do you preserve its cause safely? {#t10-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the error boundary**</span>
 
@@ -231,6 +237,9 @@ Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodej
 ### Who owns a failure from a promise, callback or event, and why can try/catch miss it? {#t10-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict which boundary catches each failure**</span>
 
@@ -400,6 +409,9 @@ Official references, checked 2026-11-04: [Node error delivery](https://nodejs.or
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Example — locate the failing phase before changing code**</span>
 
 Save as `diagnose-settings.mjs`. All files belong to a disposable local fixture. Each failure has the same broad symptom—settings could not load—but a different cause. Predict which file fails during reading, parsing or validation.
@@ -558,6 +570,9 @@ Official references, checked 2026-11-04: [Node Error stacks, codes and causes](h
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 
 Classify these failures before reading the policy: an invalid quantity, an unavailable optional recommendations service, a failed required database read, a payment timeout after submission, and a broken invariant that makes shared process state unsafe. Should all five be retried? Should all five restart the service?
@@ -697,6 +712,9 @@ Official references, checked 2026-11-04: [Node uncaught-exception guidance](http
 ### How should Express translate failures into safe HTTP responses? {#t10-q06}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the response before running**</span>
 
@@ -843,6 +861,9 @@ Official references, checked 2026-11-04: [Express error handling](https://expres
 ### How do you classify database failures and retry a complete transaction safely? {#t10-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 

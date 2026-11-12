@@ -14,6 +14,9 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -100,6 +103,9 @@ A creator defines a workflow and delegates creation through an overridable metho
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -185,6 +191,9 @@ An Abstract Factory supplies a related family of products behind agreed interfac
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -269,6 +278,9 @@ Builder collects meaningful construction steps before producing a validated prod
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -348,6 +360,9 @@ Prototype creates a new product from an existing exemplar through a defined clon
 ### What does Singleton guarantee, and when is explicit application ownership safer? {#t18-q09}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
 

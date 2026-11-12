@@ -12,6 +12,9 @@ Keep the supplied build/Jest/database/coverage configuration in an Autocode subm
 
 *Study depth: Foundational*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -81,6 +84,9 @@ The manifest declares contracts, the manager prepares dependencies, and the runt
 ### How do install, ci and dependency categories affect reproducibility? {#t04-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -162,6 +168,9 @@ A locked clean installation is one reproducibility boundary; runtime, configurat
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -227,6 +236,9 @@ Diagnose the effective command/configuration and failure stage; a single visible
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Code question — attempt first**</span>
 
 An application defines `"inspect-args":"node args.mjs"`. What does `npm run inspect-args -- --mode test` pass to args.mjs? Does the name build automatically compile TypeScript?
@@ -286,6 +298,9 @@ Scripts orchestrate explicit commands and hooks; inspect what runs, how argument
 ### What do SemVer ranges allow, especially before 1.0 and for prereleases? {#t04-q05}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Code-reading question — attempt first**</span>
 
@@ -354,6 +369,9 @@ A version range, a resolved lock and a verified application artifact are three d
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -409,6 +427,9 @@ Inspect and test the distributed artifact under its approved registry/identity c
 ### In what sense can a package manager be a build tool, and how do you verify the emitted artifact? {#t04-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
@@ -517,6 +538,9 @@ Use package scripts to orchestrate explicit stages and verify the exact emitted 
 ### How do you debug a dependency failure without hiding it through a forced upgrade or configuration reset? {#t04-q08}
 
 *Study depth: Advanced*
+
+Seniority level: Senior\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Scenario — attempt first**</span>
 

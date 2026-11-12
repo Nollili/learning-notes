@@ -12,6 +12,9 @@ This chapter complements the [foundations explanation](../module-01-nodejs-found
 
 *Study depth: Foundational to intermediate*
 
+Seniority level: Junior\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict before reading the answer**</span>
 
 Save as `callbacks.mjs`. Which lines run, and can invalid input reach the success path?
@@ -89,6 +92,9 @@ Specify error delivery, timing and completion count before composing a callback 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict both results**</span>
 
 Save beside callbacks.mjs as `promises.mjs`.
@@ -164,6 +170,9 @@ Keep the completion chain connected; adaptation must preserve the original API's
 ### What does async/await change, and how should errors and cleanup be structured? {#t05-q03}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — identify each observable outcome**</span>
 
@@ -253,6 +262,9 @@ Use await to express completion and ownership, including the error and cleanup p
 ### Why can asynchronous failures escape a surrounding try/catch? {#t05-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — find the owner of each rejection**</span>
 
@@ -345,6 +357,9 @@ Official references checked 2026-11-04: Node.js 24.18 [error propagation](https:
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict the result and peak active count**</span>
 
 Save as `bounded.mjs`. Inputs are a finite, dense, application-owned array; mapper returns when its owned work finishes.
@@ -428,6 +443,9 @@ Control when work starts and define what happens to active work when one item fa
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict order, outcomes and empty-input behavior**</span>
 
 Save as `combinators.mjs`. Both operations below are already started.
@@ -495,6 +513,9 @@ Aggregation chooses an outcome; scheduling, cancellation and side-effect safety 
 ### How do cancellation and deadlines differ from racing a timeout? {#t05-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain what actually stops**</span>
 
@@ -584,6 +605,9 @@ A deadline is a policy, an abort is a request, and cleanup needs an owner.
 ### How do async iterators and generators control demand and cleanup? {#t05-q08}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐⭐⭐
 
 <span class="notes-section-label">**Example — predict which values are requested and when close runs**</span>
 

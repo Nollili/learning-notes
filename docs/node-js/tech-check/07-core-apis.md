@@ -12,6 +12,9 @@ Keep the supplied build/Jest/database settings in Autocode submissions; the owne
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict stdout, stderr and whether assert stops execution**</span>
 
 Save as `console.mjs`, then run with stdout and stderr captured separately.
@@ -76,6 +79,9 @@ Output is an interface with timing, privacy and delivery costs, not a substitute
 ### How do callback and promise file APIs differ, and who owns write completion? {#t07-q02}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict bytes versus characters and exclusive creation failure**</span>
 
@@ -160,6 +166,9 @@ File API style changes composition; ordering, bytes, ownership and persistence s
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — compare lexical paths without accessing disk**</span>
 
 Save as `paths.mjs`. Explicit posix/win32 objects make these string results independent of the host OS.
@@ -232,6 +241,9 @@ Path utilities express names; authorization and filesystem identity are separate
 ### Which OS facts are useful, and which should not drive automatic tuning? {#t07-q04}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain each unit and deliberate omission**</span>
 
@@ -309,6 +321,9 @@ Official references checked2026-11-04: Node24.18 [Console](https://nodejs.org/do
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict which changes are shared**</span>
 
 Save as `buffers.mjs`.
@@ -378,6 +393,9 @@ Track byte range, backing-store lifetime and mutation ownership separately from 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — split a UTF-8 character in the middle**</span>
 
 Save as `decoding.mjs`.
@@ -445,6 +463,9 @@ Keep decoding state across transport chunks, and define whether malformed text i
 ### How do timers interact with async work, cancellation and process lifetime? {#t07-q07}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain cancellation and repeated-work ordering**</span>
 
@@ -521,6 +542,9 @@ Timers control scheduling intent; the owner controls overlap, failure, cancellat
 ### How should URL and URI components be parsed and encoded? {#t07-q08}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict duplicate parameters and relative resolution**</span>
 
@@ -605,6 +629,9 @@ Additional official references checked2026-11-04: Node24.18 [Buffer](https://nod
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict output and identify who owns completion**</span>
 
 Save as `streams.mjs`. Each source is used once; these finite strings are trusted fixture data.
@@ -685,6 +712,9 @@ Backpressure is an end-to-end cooperation contract, not a guarantee obtained by 
 
 *Study depth: Intermediate*
 
+Seniority level: Med\
+Tech Check level: ⭐
+
 <span class="notes-section-label">**Example — predict CRLF and final-line handling**</span>
 
 Save as `lines.mjs`. countLines takes ownership of its input: do not pass shared stdin to this helper.
@@ -764,6 +794,9 @@ Line extraction, input lifetime and record validation are three distinct respons
 
 *Study depth: Intermediate*
 
+Seniority level: Senior\
+Tech Check level: ⭐⭐⭐⭐
+
 <span class="notes-section-label">**Example — verify exact bytes and reject malformed tags**</span>
 
 Save as `crypto.mjs`. The random key is an ephemeral fixture key; no real credential is read or printed.
@@ -839,6 +872,9 @@ Choose the primitive for its security property and implement the surrounding byt
 ### How do you compress or decompress data without unbounded expansion? {#t07-q12}
 
 *Study depth: Intermediate*
+
+Seniority level: Med\
+Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — compress, enforce output budget and decode**</span>
 
