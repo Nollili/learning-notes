@@ -3,6 +3,7 @@ import LearningHub from '../components/LearningHub.vue'
 import PageCompletion from '../components/PageCompletion.vue'
 import DefaultTheme from 'vitepress/theme'
 import MermaidDiagram from '../components/MermaidDiagram.vue'
+import TechCheckCompletion from '../components/TechCheckCompletion.vue'
 import LearningPath from '../components/LearningPath.vue'
 import './styles.css'
 
@@ -13,6 +14,7 @@ export default {
   }),
   enhanceApp({ app }) {
     app.component('MermaidDiagram', MermaidDiagram)
+    app.component('TechCheckCompletion', TechCheckCompletion)
     app.component('LearningPath', LearningPath)
     app.component('LearningHub', LearningHub)
   }

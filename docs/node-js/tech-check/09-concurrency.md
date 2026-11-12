@@ -126,7 +126,7 @@ Avoid unlimited worker creation and automatic crash respawn loops.
 Identify the execution and ownership boundary before choosing communication, failure handling or scaling behaviour.
 :::
 
-### One-question learner exercise
+### One-question learner exercise {#one-question-learner-exercise}
 
 - [ ] Predict and explain the fixture's output before running it; retain proof that the parent object is unchanged.
 - [ ] Test worker startup failure, thrown error, malformed result, exit0 without a result and a worker that reports then stays alive. Every case must terminate under an external test watchdog.
@@ -254,7 +254,7 @@ For a pool, cancellation often needs to remove queued work or stop only the assi
 Select one outcome, validate its meaning and finish owned cleanup before reporting the task complete.
 :::
 
-### Learner exercise
+### Learner exercise {#learner-exercise}
 
 - [ ] Run the two-file example using the unchanged source helper and explain why its retained intervals do not leak.
 - [ ] Test malformed result, worker throw, clean/nonzero exit without result, deadline, pre-abort and abort while the worker is active. Assert error identity where the contract preserves it and zero retained caller abort listeners.

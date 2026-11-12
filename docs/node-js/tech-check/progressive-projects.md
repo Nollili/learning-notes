@@ -173,7 +173,7 @@ The CLI uses only Node built-ins. **That forces the runtime and host APIs to rem
 | Timers, readline and console | Add a bounded confirmation prompt and a timeout-aware import | Active handles affect process exit; interactive input needs an explicit cancellation policy |
 | Framework foundations | Record why the first milestone does not need Express | Choosing no framework for a bounded CLI is an engineering decision, not missing technology |
 
-### Increment 1 — executable package and pure domain
+### Increment 1 — executable package and pure domain {#increment-1-—-executable-package-and-pure-domain}
 
 Create `package.json` with an explicit Node engine, `start`, `test` and `check` scripts. Add a small `StudyItem` domain function that validates a title, positive minute estimate and allowed state. Generate IDs with `crypto.randomUUID()` and inject the clock into domain operations.
 
@@ -181,7 +181,7 @@ The CLI should support `help`, `add` and `list`. Keep parsing in the CLI adapter
 
 Failure drill: pass an unknown command, a blank title and a non-integer duration. The program must write a useful message to stderr, set a nonzero exit code and avoid creating a partial record.
 
-### Increment 2 — owned asynchronous persistence
+### Increment 2 — owned asynchronous persistence {#increment-2-—-owned-asynchronous-persistence}
 
 Add a `StudyItemRepository` contract and a JSONL implementation using `node:fs/promises`, `node:path` and a configured data directory. Reconstruct current state by replaying validated events such as `item-added` and `item-finished`.
 
@@ -189,7 +189,7 @@ Use one process as the writer in this milestone. Document that `appendFile` does
 
 Failure drill: remove directory permission, truncate the last line and run two writers intentionally. Record which failures the implementation detects and which concurrency guarantee it **does not** provide.
 
-### Increment 3 — bounded import and streaming export
+### Increment 3 — bounded import and streaming export {#increment-3-—-bounded-import-and-streaming-export}
 
 Add `import` and `report` commands. Read imported JSONL through `readline`; cap line bytes, item count and total bytes. Export through a stream pipeline to gzip and compute a SHA-256 digest over the published bytes. Write to a temporary file and rename only after the pipeline succeeds.
 
@@ -197,7 +197,7 @@ Validate optional `https:` resource links with `URL`. A syntactically valid URL 
 
 Failure drill: exceed each bound, cancel during import and make the output path unwritable. A failed export must not replace the last successful report.
 
-### Increment 4 — lifecycle, diagnostics and release contract
+### Increment 4 — lifecycle, diagnostics and release contract {#increment-4-—-lifecycle-diagnostics-and-release-contract}
 
 Add signal handling only at the composition root. Stop accepting new interactive work, let the current owned operation settle within a deadline and then set an appropriate exit code. Ensure no timer, readline interface or file handle keeps the process alive after completion.
 
@@ -205,7 +205,7 @@ Create smoke tests with `node:test` for a successful command, invalid input, cor
 
 Failure drill: leave a timer or readline interface open, observe the hanging test/process, diagnose the active owner and fix the cleanup in `finally`.
 
-### Project 1 release check
+### Project 1 release check {#project-1-release-check}
 
 Project 1 is releasable when all of these are true:
 
@@ -271,7 +271,7 @@ Use a real `<form>`, labeled controls, buttons, a list/table appropriate to the 
 | Frameworks | Express routing/middleware/composition; map concepts to NestJS | Framework mechanics should remain outside the application rules |
 | Patterns | Use only patterns that solve an observed variation or workflow | Pattern names are tools for reasoning, not a checklist to force into code |
 
-### Increment 1 — Express boundary over the existing application
+### Increment 1 — Express boundary over the existing application {#increment-1-—-express-boundary-over-the-existing-application}
 
 Create `createApp(dependencies)` separately from `listen()`. Add JSON body limits, route-specific validation and a consistent response schema. Routes call application use cases; they do not parse the JSONL file themselves.
 
@@ -281,7 +281,7 @@ Use the repository contract from Project 1. Add an in-memory implementation for 
 
 Failure drill: occupy the configured port, send malformed/oversized JSON and request an unknown item. Verify startup failure ownership and distinct 400, 404 and 413 contracts. Return an item title containing HTML-like text and prove the UI displays text rather than executing markup.
 
-### Increment 2 — request lifetime, events and networking
+### Increment 2 — request lifetime, events and networking {#increment-2-—-request-lifetime-events-and-networking}
 
 Add a request ID, structured request-completion event and elapsed duration. Use `EventEmitter` only for notifications whose listener failure policy is explicit; do not use it as an invisible command bus. Stream the progress report with `pipeline()` and stop upstream work when the client disconnects.
 
@@ -291,7 +291,7 @@ In the browser, use `AbortController` to cancel a superseded list request and to
 
 Failure drill: delay the dependency, abort the client, emit a listener error and run a short synchronous CPU loop in one handler. Observe which symptom is dependency wait, cancellation, event ownership or event-loop blocking.
 
-### Increment 3 — errors, tests and developer workflow
+### Increment 3 — errors, tests and developer workflow {#increment-3-—-errors-tests-and-developer-workflow}
 
 Define domain/application error types with public codes and causes. One final Express error middleware maps expected failures and hides unexpected internals. A rejected Express 5 async handler reaches error middleware, but background work still needs its own owner.
 
@@ -306,7 +306,7 @@ Use Jest and Supertest for the same baseline as the existing testing notes. Add:
 
 Failure drill: make an async route start but not return/await a rejecting promise. Observe the test or process symptom, then restore explicit ownership. Introduce one boundary mutation that the relevant test must catch.
 
-### Increment 4 — deliberate patterns and framework comparison
+### Increment 4 — deliberate patterns and framework comparison {#increment-4-—-deliberate-patterns-and-framework-comparison}
 
 Refactor only after the earlier increments expose real pressure. A reasonable final selection is:
 
@@ -319,7 +319,7 @@ Write `docs/decisions/framework.md` comparing the current Express implementation
 
 Failure drill: identify one pattern that would add indirection without a current variation. Record why you rejected it. Being able to avoid a pattern is part of pattern knowledge.
 
-### Project 2 release check
+### Project 2 release check {#project-2-release-check}
 
 - [ ] All Project 1 release checks still pass without duplicated domain rules.
 - [ ] The CLI and HTTP adapters pass the same application-level behavior tests.
@@ -358,7 +358,7 @@ Project 3 is still one service. **A worker, a database and a container do not au
 | Cloud and deployment | One container target, managed database design, release/rollback evidence | A runnable image is not yet a safe release process |
 | Serverless | Extract one scheduled-report handler and compare constraints | Serverless is a deployment/execution model, not a reason to rewrite every route |
 
-### Increment 1 — architecture and relational data
+### Increment 1 — architecture and relational data {#increment-1-—-architecture-and-relational-data}
 
 Move use cases into `application/`, domain invariants into `domain/` and implementations into `adapters/`. Keep Express and CLI as inbound adapters. The dependency direction points inward; the composition root creates concrete objects.
 
@@ -366,7 +366,7 @@ Model `users`, `study_items` and `study_sessions` in PostgreSQL. Use primary/for
 
 Failure drill: violate each database constraint, race two completion requests and force a statement timeout. Observe the real database/ORM error, rollback behavior and public error mapping. Inspect a representative query with `EXPLAIN (ANALYZE, BUFFERS)` only on owned test data.
 
-### Increment 2 — identity and authorization
+### Increment 2 — identity and authorization {#increment-2-—-identity-and-authorization}
 
 Use a local test issuer to create signed access tokens with issuer, audience, subject, expiry and a stable key ID. Verify the algorithm and trusted key set; do not merely decode tokens. Build the principal at the HTTP boundary and pass it explicitly to use cases.
 
@@ -376,7 +376,7 @@ For the local UI, add a development-only test sign-in adapter that exchanges a l
 
 Failure drill: expired token, wrong audience, unknown key, valid token for another owner, missing/invalid CSRF protection and permission removed between two requests. The expected result is denial without revealing whether another owner's resource exists. Assert that the development sign-in route is absent in production configuration.
 
-### Increment 3 — bounded worker report
+### Increment 3 — bounded worker report {#increment-3-—-bounded-worker-report}
 
 First profile a report calculation large enough to block the loop in a controlled test. If it is genuinely CPU-heavy, create a fixed-size `worker_threads` pool. Queue only a bounded number of jobs, validate messages, define copy versus transfer ownership and reject overload quickly.
 
@@ -386,7 +386,7 @@ Let the UI start one report job, show `queued`, `running`, `completed` or `faile
 
 Failure drill: saturate the pool, crash a worker, cancel a queued job and shut down with one job active. Verify one terminal outcome per accepted job, bounded memory and replacement/termination according to policy.
 
-### Increment 4 — container, deployment and serverless comparison
+### Increment 4 — container, deployment and serverless comparison {#increment-4-—-container-deployment-and-serverless-comparison}
 
 Build a multi-stage or otherwise minimal reviewed Node image, install the locked production tree, run as a non-root user and use exec-form startup. Compose starts the API and PostgreSQL for local integration with an explicit database health check, but the application still owns subsequent connection failures.
 
@@ -400,7 +400,7 @@ Extract only the scheduled progress-report trigger into a serverless-compatible 
 
 Failure drill: wrong database DNS name, unreadable runtime path, SIGTERM during a request, incompatible migration and duplicate serverless event. Recover from evidence rather than adding privileges or deleting the database volume.
 
-### Project 3 release check
+### Project 3 release check {#project-3-release-check}
 
 - [ ] All applicable Project 1 and Project 2 release checks still pass; changed behavior has an explicit migration decision rather than an accidental regression.
 - [ ] A clean database can migrate up and run integration tests; a failed transaction leaves no half-completed item/session state.
@@ -434,7 +434,7 @@ Begin from the passing `project-3-deployable-service` state. Keep its UI, API co
 | Deeper data access | Isolation anomaly, query plans, keyset pagination, lock/pool pressure and migration safety |
 | Advanced APIs/frameworks | Bounded streaming, safe publication, crypto ownership and equivalent-framework experiment |
 
-### Increment 1 — threat model and boundary hardening
+### Increment 1 — threat model and boundary hardening {#increment-1-—-threat-model-and-boundary-hardening}
 
 Create a route/job/data-flow threat model naming assets, trust boundaries, abuse cases, controls and evidence. Apply strict request DTOs, bounded bodies and output-context rules. Add Helmet policies, parameterized data access, secret/config validation, TLS expectations and a fixed-destination outbound adapter with redirect/deadline/byte limits.
 
@@ -442,7 +442,7 @@ Run dependency, secret and static checks, but triage findings against reachable 
 
 Failure drill: mass-assignment field, injection-shaped input, HTML-like title, oversized body, hostile outbound URL, missing secret and tampered encrypted payload. Record which layer rejects each case and what remains outside the lab.
 
-### Increment 2 — advanced identity lifecycle
+### Increment 2 — advanced identity lifecycle {#increment-2-—-advanced-identity-lifecycle}
 
 Extend the development issuer into an owned OIDC-style test flow with state, nonce, PKCE and one-use browser transaction storage. Exercise trusted key overlap/retirement, issuer/audience/algorithm enforcement, refresh-family reuse detection, revocation and a step-up rule for a sensitive report action.
 
@@ -450,7 +450,7 @@ Keep the local UI's production-disabled test sign-in boundary. Do not implement 
 
 Failure drill: wrong browser/state, replayed callback, unknown/retired key, wrong audience, refresh reuse and permission change during an active session. Deny safely without logging tokens or exposing another tenant's resource.
 
-### Increment 3 — measured performance and V8 diagnosis
+### Increment 3 — measured performance and V8 diagnosis {#increment-3-—-measured-performance-and-v8-diagnosis}
 
 Choose a representative mixed workload: item reads/writes plus report generation. Record environment, data size, concurrency, latency distribution, throughput, errors, CPU, event-loop delay/utilization and memory. Capture a CPU profile for a CPU case and a heap/allocation comparison for a controlled retention case.
 
@@ -458,7 +458,7 @@ Make **one evidence-led improvement**: query shape/index, serialization, bounded
 
 Failure drill: synchronous CPU in a handler, unbounded cache key, retained object, slow dependency and saturated worker queue. Diagnose each before changing code; distinguish performance from scalability and dependency wait from loop blocking.
 
-### Increment 4 — deeper data and advanced API boundaries
+### Increment 4 — deeper data and advanced API boundaries {#increment-4-—-deeper-data-and-advanced-api-boundaries}
 
 Reproduce a two-client isolation anomaly and protect the chosen invariant with the appropriate transaction/constraint/retry policy. Add keyset pagination with a stable unique order, inspect the real plan and diagnose lock, statement and pool-acquisition timeouts. Rehearse an expand/backfill/contract migration and rollback/restore decision on owned data.
 
@@ -466,7 +466,7 @@ For advanced API scope, harden one streamed report path: byte/row bounds, discon
 
 Failure drill: serialization retry, mutable pagination boundary, blocked lock, exhausted pool, mid-stream disconnect, existing output target and crash between temporary write/publication. State which outcomes are known, unknown or safe to retry.
 
-### Project 4 release check
+### Project 4 release check {#project-4-release-check}
 
 - [ ] All applicable Project 1–3 checks still pass; every behavior change links to a measured risk or bottleneck.
 - [ ] Security tests exercise boundary abuse and denial outcomes; scanner output is triaged rather than counted as assurance.
@@ -499,7 +499,7 @@ Begin from the passing `project-4-hardened-service` state. Keep the same UI and 
 
 RabbitMQ is the primary broker for this exercise because a work queue fits report execution. Kafka remains an alternative for retained event streams/replay; do not implement both. OpenTelemetry plus Prometheus/Grafana is the primary telemetry path; Kibana/New Relic remain alternatives rather than extra mastery requirements.
 
-### Increment 1 — broker-backed report execution
+### Increment 1 — broker-backed report execution {#increment-1-—-broker-backed-report-execution}
 
 Keep the existing `ReportJobDispatcher` contract and add a RabbitMQ adapter. Publish a versioned job envelope with stable job/tenant IDs, validate on consumption, set bounded prefetch and acknowledge only after the durable result/status transition succeeds. Use publisher confirms for publisher-to-broker evidence and manual consumer acknowledgements for consumer processing; neither proves the other side's outcome.
 
@@ -507,7 +507,7 @@ Resolve the database-commit/message-publish gap with a transactional outbox and 
 
 Failure drill: broker unavailable before/after commit, publisher-confirm uncertainty, consumer crash before/after durable effect, duplicate/redelivered message and poison payload. Verify no duplicate report effect and no unbounded retry loop.
 
-### Increment 2 — live progress without a second business path
+### Increment 2 — live progress without a second business path {#increment-2-—-live-progress-without-a-second-business-path}
 
 Replace UI polling with a small authenticated Server-Sent Events endpoint for report status. Replay from the authoritative status store after reconnect; treat the stream as notification, not the only copy of state. Bound clients, heartbeat/idle lifetime and per-user fan-out, and close listeners on disconnect/shutdown.
 
@@ -515,7 +515,7 @@ Document why SSE fits server-to-browser progress. Compare WebSocket/Socket.IO wh
 
 Failure drill: reconnect after a missed event, proxy buffering/timeout, slow client, expired authorization, another owner's job and service shutdown. The UI must recover status from the API rather than assume every event arrived.
 
-### Increment 3 — logs, metrics, traces and incident response
+### Increment 3 — logs, metrics, traces and incident response {#increment-3-—-logs-metrics-traces-and-incident-response}
 
 Emit structured JSON logs with timestamp, level, event name, request/job/trace IDs and bounded safe context. Redact credentials/tokens/content; user IDs do not belong in log messages or high-cardinality metric labels without a reviewed need. Propagate trace context HTTP → outbox publisher → broker consumer → database/report work.
 
@@ -523,7 +523,7 @@ Expose a bounded metrics endpoint and instrument request/job counts, error class
 
 Failure drill: inject database latency, stuck consumer, poison retry storm and dependency outage. Diagnose from signals before reading source, write a short incident timeline/root cause/corrective action and verify telemetry fails without crashing the business path.
 
-### Increment 4 — one specialist computation adapter and operational release
+### Increment 4 — one specialist computation adapter and operational release {#increment-4-—-one-specialist-computation-adapter-and-operational-release}
 
 Extract a deterministic report-score calculation behind `ScoreEngine`. Keep the JavaScript implementation as the correctness oracle and add one WebAssembly implementation only after profiling justifies the experiment. Test identical inputs/outputs, numeric/encoding boundaries, initialization failure, memory limits and fallback policy; compare end-to-end cost including data conversion.
 
@@ -533,7 +533,7 @@ Extend Compose/deployment/runbooks for broker and telemetry dependencies, backup
 
 Failure drill: invalid Wasm module, large input, JS/Wasm result mismatch, missing optional adapter, old message consumed by new code and new message seen by an old consumer. Preserve the JavaScript path and public report contract.
 
-### Project 5 release check
+### Project 5 release check {#project-5-release-check}
 
 - [ ] All applicable Project 1–4 checks still pass with the broker/telemetry stack unavailable or degraded according to policy.
 - [ ] Outbox, confirms, acknowledgements, idempotency and retry/parking drills demonstrate at-least-once reality without duplicate durable effect.

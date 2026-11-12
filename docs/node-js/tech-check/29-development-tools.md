@@ -135,7 +135,7 @@ CI should invoke the required build/test checks explicitly and promote the same 
 Keep build, test, readiness and shutdown as explicit stages with observable outcomes and an owner for the running service.
 :::
 
-## Small-batch learner practice
+## Small-batch learner practice {#small-batch-learner-practice}
 
 - [ ] Recreate the linked build fixture and run npm start; capture build/test success before the ready line and GET /sum returning5.
 - [ ] Introduce the subtracting defect and prove startup is blocked, then restore it. Also test missing output, malformed PORT and an occupied port.

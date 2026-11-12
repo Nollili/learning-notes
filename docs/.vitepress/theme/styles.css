@@ -371,11 +371,8 @@
 .learning-path ol { padding-inline-start: 1.5rem; }
 .learning-path li { margin-block: 1rem; }
 .learning-path__type { display: block; color: var(--vp-c-text-2); font-size: 0.9em; }
-.learning-path__item { display: flex; align-items: baseline; gap: 0.6rem; min-height: 44px; }
-.learning-path input { width: 1.15rem; height: 1.15rem; flex-shrink: 0; cursor: pointer; accent-color: var(--vp-c-brand-1); }
 .learning-path button { border: 1px solid var(--vp-c-text-2); border-radius: 6px; padding: 0.5rem 0.8rem; margin: 0.75rem 0.5rem 0 0; cursor: pointer; color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); }
-.learning-path :is(button, input, summary):focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 4px; }
-.learning-path__sr { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.learning-path button:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 4px; }
 
 /* Search surfaces use their own palette rather than the sidebar surface. */
 .dark .VPNavBarSearch .DocSearch-Button { background: var(--notes-search-bg); }
@@ -405,9 +402,11 @@
 .path-card__confirmation { margin-top: 16px; font-size: 14px; line-height: 1.6; }
 .path-card__confirmation button { padding: 8px; margin: 8px 8px 0 0; border: 1px solid var(--vp-c-text-2); border-radius: 6px; min-height: 44px; }
 .learning-hub__storage { max-width: 760px; color: var(--vp-c-text-2); font-size: 14px; line-height: 1.7; }
-.learning-hub a:focus-visible, .learning-hub button:focus-visible, .page-completion input:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 4px; }
+.learning-hub a:focus-visible, .learning-hub button:focus-visible, .page-completion input:focus-visible, .tech-check-completion input:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 4px; }
 .page-completion { margin: 0 0 24px; padding: 12px 16px; border: 1px solid var(--vp-c-divider); border-radius: 8px; }
-.page-completion label { display: flex; gap: 10px; align-items: center; min-height: 44px; }
-.page-completion input { width: 18px; height: 18px; accent-color: var(--vp-c-brand-1); }
+.page-completion label, .tech-check-completion { display: flex; gap: 10px; align-items: center; min-height: 44px; }
+.page-completion input, .tech-check-completion input { width: 18px; height: 18px; accent-color: var(--vp-c-brand-1); }
 @media (max-width: 960px) { .learning-hub__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .learning-hub { padding: 32px 20px; } .learning-hub__grid { grid-template-columns: minmax(0, 1fr); } .path-card { padding: 20px; } }
+
+.tech-check-completion { width: fit-content; cursor: pointer; }

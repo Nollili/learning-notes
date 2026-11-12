@@ -6,6 +6,7 @@ const { page, theme } = useData()
 const { completed, ready, warning, update } = useProgress()
 const items = computed(() => {
   const current = '/' + page.value.relativePath.replace(/\.md$/, '').replace(/\/index$/, '/')
+  if (current.startsWith('/node-js/tech-check/')) return []
   return [...new Map((theme.value.learningPaths ?? []).flatMap(path => path.items)
     .filter(item => item.href.split('#')[0] === current).map(item => [item.id, item])).values()]
 })

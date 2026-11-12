@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { nodeTechCheckPaths } from './node-tech-check.mjs'
+import { techCheckLevels, techCheckRoute } from './tech-check-completion.mjs'
 
 const descriptions = {
   '/frontend/performance/': 'Measure loading and runtime performance, find bottlenecks and verify improvements.',
@@ -55,8 +55,8 @@ export function withLearningPaths(config) {
     .map(entry => ({
       id: entry.link, title: entry.text, href: entry.link,
       description: descriptions[entry.link], group: 'Learning paths',
-      items: entry.link === '/node-js/tech-check/'
-        ? [...new Map(nodeTechCheckPaths.flatMap(level => level.items).map(item => [item.id, item])).values()]
+      items: entry.link === techCheckRoute
+        ? techCheckLevels.flatMap(level => level.tasks)
         : items(sidebar[entry.link] ?? [], entry.link)
     }))
   for (const group of sidebar['/senior_growth/']) {
@@ -66,5 +66,5 @@ export function withLearningPaths(config) {
     paths.push({ id: href, title: group.text, href, group: 'Senior Growth',
       description: seniorDescriptions[folder], items: items([group], href) })
   }
-  return { ...config, themeConfig: { ...config.themeConfig, learningPaths: paths } }
+  return { ...config, themeConfig: { ...config.themeConfig, learningPaths: paths, techCheckLevels } }
 }

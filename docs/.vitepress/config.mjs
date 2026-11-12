@@ -1,3 +1,4 @@
+import { techCheckCompletionPlugin } from './data/tech-check-completion.mjs'
 import { withLearningPaths } from './data/learning-paths.mjs'
 import { defineConfig } from 'vitepress'
 import { nodeTechCheckPaths } from './data/node-tech-check.mjs'
@@ -219,6 +220,7 @@ export default defineConfig(withLearningPaths(applyPublicationPolicy(applyConten
       md.core.ruler.disable('emoji')
       md.use(mermaidPlugin)
       md.use(sectionNumberingPlugin)
+      md.use(techCheckCompletionPlugin)
       md.use(publicationPlugin)
     }
   },

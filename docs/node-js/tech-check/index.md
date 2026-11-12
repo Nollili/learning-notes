@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Learn how Node.js works, build applications and practise explaining engineering decisions. Start with Foundations if you are new to Node.js, or choose the level that matches your next goal.
 
-Work through each level in order: read the explanations, try the examples, then build its project. Use the Completed checkboxes to record your own study choices; they do not certify understanding or mastery. Opening a page does not complete it.
+Work through each level in order: read the explanations, try the examples, then build its project. Use the Completed checkbox below each question or task title to track your progress.
 
 The [five progressive projects](./progressive-projects.md) grow one repository from a command-line program into an operated service.
 
