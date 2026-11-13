@@ -12,7 +12,7 @@ Read the examples before their explanations. Error text, paths, payloads and nes
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the categories**</span>
@@ -107,7 +107,7 @@ Official references: [Node 24 error classes and system codes](https://nodejs.org
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the error boundary**</span>
@@ -238,7 +238,7 @@ Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodej
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict which boundary catches each failure**</span>
@@ -409,7 +409,7 @@ Official references, checked 2026-11-04: [Node error delivery](https://nodejs.or
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — locate the failing phase before changing code**</span>
@@ -570,7 +570,7 @@ Official references, checked 2026-11-04: [Node Error stacks, codes and causes](h
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
@@ -713,7 +713,7 @@ Official references, checked 2026-11-04: [Node uncaught-exception guidance](http
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the response before running**</span>
@@ -853,7 +853,7 @@ One HTTP boundary translates known failures, hides internals and respects the re
 
 Exercise all response cases with real loopback HTTP requests. Inject a dependency message containing a private sentinel. Acceptance: no public error JSON contains that sentinel, stack or raw cause; malformed/oversized/wrong-media inputs keep their distinct statuses; unknown application SyntaxError remains 500; an unmatched route remains a normal 404. Confirm the partial response is incomplete/aborted and `next` receives the original error when headers are already committed. Close every listener and client.
 
-Official references, checked 2026-11-04: [Express error handling](https://expressjs.com/en/guide/error-handling/), [404 behavior](https://expressjs.com/en/starter/faq/#how-do-i-handle-404-responses), [parser errors and limits](https://expressjs.com/en/resources/middleware/body-parser/). Baseline: Express5.2.1; parser dependency versions come from the lab lockfile.
+Official references, checked 2026-11-04: [Express error handling](https://expressjs.com/en/guide/error-handling/), [404 behavior](https://expressjs.com/en/starter/faq/#how-do-i-handle-404-responses), [parser errors and limits](https://expressjs.com/en/resources/middleware/body-parser/). Baseline: Express 5.2.1; parser dependency versions come from the lab lockfile.
 
 
 ---
@@ -862,7 +862,7 @@ Official references, checked 2026-11-04: [Express error handling](https://expres
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
@@ -1046,7 +1046,7 @@ Retry a confirmed aborted transaction as a whole, with one client per attempt an
 
 In a disposable PostgreSQL database, coordinate two serializable reservations so both initially read the same stock. Acceptance: one transaction aborts with 40001, its full callback is retried, both reservations succeed without losing a decrement, and final stock reflects exactly two committed operations. Separately verify a unique violation is not retried and earlier updates roll back. Simulate rollback failure and an uncertain COMMIT at the adapter boundary, checking both causes/discard behavior and absence of automatic replay. Keep simulations labeled; do not interrupt a real database to mimic an outage.
 
-Official references, checked 2026-11-04: [PostgreSQL 16 transaction retry semantics](https://www.postgresql.org/docs/16/mvcc-serialization-failure-handling.html), [SQLSTATE codes](https://www.postgresql.org/docs/16/errcodes-appendix.html), [node-postgres transaction/client ownership](https://node-postgres.com/features/transactions), [pool ownership](https://node-postgres.com/features/pooling). The executable database baseline for author checks is PostgreSQL16.13 with pg8.16.3, not a claim about the newest versions.
+Official references, checked 2026-11-04: [PostgreSQL 16 transaction retry semantics](https://www.postgresql.org/docs/16/mvcc-serialization-failure-handling.html), [SQLSTATE codes](https://www.postgresql.org/docs/16/errcodes-appendix.html), [node-postgres transaction/client ownership](https://node-postgres.com/features/transactions), [pool ownership](https://node-postgres.com/features/pooling). The executable database baseline for author checks is PostgreSQL 16.13 with pg 8.16.3, not a claim about the newest versions.
 
 ## Revision
 
@@ -1076,7 +1076,7 @@ Keep the contracts separate: the Error value describes a failure; the asynchrono
 
 1. A product lookup rejects and the controller returns 404 for every rejection. Which distinction has been lost?
 2. An async EventEmitter listener rejects, but code awaits `emit()`. Who observes the returned promise?
-3. Express starts sending a successful response and then a dependency fails. Can error middleware replace that response with JSON500?
+3. Express starts sending a successful response and then a dependency fails. Can error middleware replace that response with JSON 500?
 4. A PostgreSQL serialization failure happens after the application reads stock. Why is retrying only UPDATE insufficient?
 5. A database connection disappears after COMMIT was sent. Why does a client-side error not prove rollback?
 6. Your test reproduces the failure by constructing an EACCES-shaped object. What can it establish, and what cannot it establish?

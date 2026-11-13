@@ -8,7 +8,7 @@ AWS Lambda is the primary function platform here, alongside the existing long-ru
 
 ## When is a function a good service boundary? {#t20-q01}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -33,7 +33,7 @@ Choose one bounded report task and compare function versus container on trigger,
 
 ## How do you write and test an HTTP Lambda handler? {#t20-q02}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -130,7 +130,7 @@ Prepare the ZIP/package and infrastructure configuration for one protected route
 
 ## How do queue retries avoid repeating business effects? {#t20-q03}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -185,7 +185,7 @@ Locally test success/failure ID selection, then run the real durable adapter aga
 
 ## Which configuration and operating limits matter first? {#t20-q04}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -212,7 +212,7 @@ Prepare a configuration table with values and reasons, then measure cold/warm du
 
 ## How do Azure Functions and Google Cloud functions compare? {#t20-q05}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">

@@ -8,7 +8,7 @@ These specialist extensions build on [real-time foundations](./08-networking.md#
 
 ## How do authenticated real-time sessions work across multiple servers? {#t08-q12}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -38,7 +38,7 @@ Run two owned instances behind a local proxy. Test polling and WebSocket-only tr
 
 ## How do slow consumers and replay cursors change a real-time design? {#t08-q13}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -134,7 +134,7 @@ Extend the feed with bounded history and a deliberately slow client. Accept when
 
 ## How do you diagnose reconnect storms and shut down real-time services? {#t08-q14}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -166,7 +166,7 @@ Extend the [existing networking fixtures](./08-networking.md#t08-q07) with owned
 
 ## What does a native Node-API module add, and what can go wrong? {#t12-q08}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -257,7 +257,7 @@ Compile/run this study addon, then design the lifetime/cancellation contract for
 
 ## How does WebAssembly exchange values and memory with Node.js? {#t12-q09}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -312,7 +312,7 @@ assert.equal(currentView.byteLength, 131072);
 assert.throws(() => memory.grow(1), RangeError);
 ```
 
-`i32.add` wraps modulo 2³²; JavaScript Number addition is not a drop-in oracle at overflow. i64 boundaries generally use BigInt. Strings/arrays require an agreed encoding, allocation, pointer/length and ownership contract. Validate bounds and avoid stale views after growth: the demonstration uses **unshared memory**, whose old buffer detaches on growth. Shared-memory behavior differs. Linear memory pages are 64KiB; a maximum bounds this memory, not all compilation/host resource costs.
+`i32.add` wraps modulo 2³²; JavaScript Number addition is not a drop-in oracle at overflow. i64 boundaries generally use BigInt. Strings/arrays require an agreed encoding, allocation, pointer/length and ownership contract. Validate bounds and avoid stale views after growth: the demonstration uses **unshared memory**, whose old buffer detaches on growth. Shared-memory behavior differs. Linear memory pages are 64 KiB; a maximum bounds this memory, not all compilation/host resource costs.
 
 Imports grant capabilities. A module without file/network imports does not thereby gain them, but imported JavaScript can expose them. Wasm does not automatically enforce execution deadlines or protect availability from infinite loops, huge compilation work or excessive host calls. WASI is a separate system-interface contract with its own capability/runtime limitations; it is not ordinary browser-style Wasm or a complete hostile-code sandbox.
 
@@ -324,7 +324,7 @@ Compile an owned numeric function from WAT or a source language, compare boundar
 
 ## How do you choose and operate a specialist execution boundary? {#t12-q10}
 
-Seniority level: Architect\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">

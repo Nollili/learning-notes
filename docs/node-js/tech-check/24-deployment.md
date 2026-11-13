@@ -8,7 +8,7 @@ The primary delivery path packages the existing Express 5/Node.js 24 application
 
 ## What should npm scripts and CI gates guarantee? {#t24-q01}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -33,7 +33,7 @@ On the actual application template, run its exact commands in a clean owned chec
 
 ## How do you build once and verify what will be released? {#t24-q02}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -83,7 +83,7 @@ Build an owned application image once, save its digest and prepare (without push
 
 ## How do you configure one environment and manage it safely? {#t24-q03}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -110,7 +110,7 @@ Prepare a redacted environment inventory and a dry-run management checklist. Sta
 
 ## How do health checks and graceful shutdown protect a release? {#t24-q04}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -135,7 +135,7 @@ Start an owned instance with one active request, signal shutdown and verify read
 
 ## How do you roll out and roll back an API with a database? {#t24-q05}
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -162,7 +162,7 @@ Run the compatibility lab locally, interrupt the backfill and recover. Prepare a
 
 ## What evidence belongs in a delivery handoff? {#t24-q06}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">

@@ -12,7 +12,7 @@ Keep the supplied build/Jest/database/coverage configuration in an Autocode subm
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -85,7 +85,7 @@ The manifest declares contracts, the manager prepares dependencies, and the runt
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -134,7 +134,7 @@ Its index.mjs contains:
 export function add(a, b) { return a + b; }
 ```
 
-In that package run `npm pack --ignore-scripts` to create a local tarball. In a separate disposable application directory, install that actual tarball with `npm install --offline --ignore-scripts --no-audit --no-fund ../study-math/study-math-1.2.3.tgz`, adapting the owned path. Keep the resulting application lockfile. An app.mjs can import add from study-math and print add(2,3), giving 5.
+In that package run `npm pack --ignore-scripts` to create a local tarball. In a separate disposable application directory, install that actual tarball with `npm install --offline --ignore-scripts --no-audit --no-fund ../study-math/study-math-1.2.3.tgz`, adapting the owned path. Keep the resulting application lockfile. An app.mjs can import add from study-math and print add(2, 3), giving 5.
 
 Running npm ci with the same no-script/offline test policy should recreate the tree. This does not demonstrate a remote registry, native build or production supply-chain review.
 
@@ -168,7 +168,7 @@ A locked clean installation is one reproducibility boundary; runtime, configurat
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -236,7 +236,7 @@ Diagnose the effective command/configuration and failure stage; a single visible
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -271,7 +271,7 @@ For a named task, applicable pre/task/post hooks are part of its lifecycle. A pr
 
 Install/prepare lifecycle behavior can differ between a registry package, local source and pack/build workflows, so verify the actual operation. --ignore-scripts suppresses applicable lifecycle execution under its documented rules, but does not turn explicitly running npm test/npm run into a no-code operation; specifically test the hooks versus explicitly selected script behavior on your npm version.
 
-A deliberately broken wrapper that starts an asynchronous child and exits0 before awaiting it can conceal failure. Similarly `command || true` can convert failure to success. Preserve an Autocode template's Jest/coverage command and add only authorized production changes; this isolated guide's diagnostic scripts are not permission to rewrite protected tests or required scripts.
+A deliberately broken wrapper that starts an asynchronous child and exits 0 before awaiting it can conceal failure. Similarly `command || true` can convert failure to success. Preserve an Autocode template's Jest/coverage command and add only authorized production changes; this isolated guide's diagnostic scripts are not permission to rewrite protected tests or required scripts.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -282,7 +282,7 @@ A deliberately broken wrapper that starts an asynchronous child and exits0 befor
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. <span class="notes-section-label">**What should a pretest do if setup fails?**</span> Return a nonzero status promptly and close owned resources. Printing an error while exiting0 does not communicate failure.
+1. <span class="notes-section-label">**What should a pretest do if setup fails?**</span> Return a nonzero status promptly and close owned resources. Printing an error while exiting 0 does not communicate failure.
 2. <span class="notes-section-label">**Are arguments automatically forwarded to every pre/post hook?**</span> Do not assume that. npm's selected-script argument forwarding and hook environment are separate documented contracts.
 3. <span class="notes-section-label">**Why keep a portable task in a .mjs file?**</span> It can validate inputs, await work and handle cleanup without depending on shell-specific syntax. It is still executable code requiring scope/review.
 
@@ -299,7 +299,7 @@ Scripts orchestrate explicit commands and hooks; inspect what runs, how argument
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code-reading question — attempt first**</span>
@@ -327,27 +327,27 @@ The classroom examples below use npm's node-semver range conventions:
 | Request | Relevant stable-version interval |
 |---|---|
 | 1.2.3 | The specified semantic version; a range alone does not authenticate artifact bytes |
-| ~1.2.3 | At least1.2.3 and below1.3.0 |
-| ^1.2.3 | At least1.2.3 and below2.0.0 |
-| ^0.2.3 | At least0.2.3 and below0.3.0 |
-| ^0.0.3 | At least0.0.3 and below0.0.4 |
-| 1.2.x | Stable versions in the1.2 line under the range's normal prerelease policy |
+| ~1.2.3 | At least 1.2.3 and below 1.3.0 |
+| ^1.2.3 | At least 1.2.3 and below 2.0.0 |
+| ^0.2.3 | At least 0.2.3 and below 0.3.0 |
+| ^0.0.3 | At least 0.0.3 and below 0.0.4 |
+| 1.2.x | Stable versions in the 1.2 line under the range's normal prerelease policy |
 
-Thus the answers are: ci retains the locked1.2.3 under its compatible contract; ^0.2.3 excludes0.3.0; ^1.2.3 normally excludes1.3.0-beta.1. An intentional update can select a newer allowed version and produce a reviewed lock diff. It is not the same operation as recreating yesterday's installation.
+Thus the answers are: ci retains the locked 1.2.3 under its compatible contract; ^0.2.3 excludes 0.3.0; ^1.2.3 normally excludes 1.3.0-beta.1. An intentional update can select a newer allowed version and produce a reviewed lock diff. It is not the same operation as recreating yesterday's installation.
 
-Prerelease identifiers such as beta/rc affect ordering and default range eligibility. Explicitly opting into a prerelease on one version tuple is not a blanket opt-in to prereleases of every future tuple. In the baseline range library, ^1.2.3-beta.1 admits1.2.3-beta.2 but not1.2.4-beta.1 under default matching.
+Prerelease identifiers such as beta/rc affect ordering and default range eligibility. Explicitly opting into a prerelease on one version tuple is not a blanket opt-in to prereleases of every future tuple. In the baseline range library, ^1.2.3-beta.1 admits 1.2.3-beta.2 but not 1.2.4-beta.1 under default matching.
 
 Do not implement these rules with naive string comparison: rc.10 and rc.2 have numeric-segment semantics. Build metadata such as +build.7 does not increase semantic precedence; source/archive/image identity still needs a separate retained hash/provenance record.
 
 <span class="notes-section-label">**Example — an upgrade decision**</span>
 
-If1.2.9 fixes a relevant defect and remains inside the declared range, intentionally update/review the locked graph, run your emitted/runtime/contract tests, then promote the tested artifact. A passing version-range check does not test your integration.
+If 1.2.9 fixes a relevant defect and remains inside the declared range, intentionally update/review the locked graph, run your emitted/runtime/contract tests, then promote the tested artifact. A passing version-range check does not test your integration.
 
-If the fix only exists in2.x, evaluate migration scope and compatibility rather than widen every dependency with a force option. Do not assume a patch release is incapable of regressions or a major change is necessarily unacceptable.
+If the fix only exists in 2.x, evaluate migration scope and compatibility rather than widen every dependency with a force option. Do not assume a patch release is incapable of regressions or a major change is necessarily unacceptable.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
-- Assuming caret always permits the next minor, including0.x without checking its bound.
+- Assuming caret always permits the next minor, including 0.x without checking its bound.
 - Treating “latest” as a SemVer range or as necessarily the safest compatible deployment.
 - Believing ci automatically patches every dependency or that an exact direct version freezes all transitive/platform behavior.
 - Comparing version strings lexicographically or using a successful range match as an application compatibility test.
@@ -369,7 +369,7 @@ A version range, a resolved lock and a verified application artifact are three d
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -428,7 +428,7 @@ Inspect and test the distributed artifact under its approved registry/identity c
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -539,7 +539,7 @@ Use package scripts to orchestrate explicit stages and verify the exact emitted 
 
 *Study depth: Advanced*
 
-Seniority level: Senior\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Scenario — attempt first**</span>
@@ -613,7 +613,7 @@ SemVer ranges communicate allowed versions but do not prove quality; registries/
 <span class="notes-section-label">**Mixed practice — attempt all first**</span>
 
 1. A private application declares its database driver only under devDependencies. What happens after a runtime-only installation?
-2. A manifest permits ^0.2.3. Is0.3.0 compatible under that range's normal rule?
+2. A manifest permits ^0.2.3. Is 0.3.0 compatible under that range's normal rule?
 3. A lifecycle post hook removes a temporary database, but the main script failed first. Can cleanup be assumed?
 4. A package works from its source checkout but fails when imported from the tarball. What should you inspect?
 5. ci retains a locked patch while outdated reports a newer allowed one. Which command should decide the deliberate update?
@@ -621,12 +621,12 @@ SemVer ranges communicate allowed versions but do not prove quality; registries/
 <span class="notes-section-label">**Practice answers**</span>
 
 1. The running app can lose a required dependency. Correct the category and reviewed lock/build/runtime design; private:true does not supply missing runtime code.
-2. No. Its stable upper bound is below0.3.0; pre-1.0 range details are not the same as caret on1.x.
+2. No. Its stable upper bound is below 0.3.0; pre-1.0 range details are not the same as caret on 1.x.
 3. No. A post hook is not a universal finally. Cleanup needs an explicit owner/error path and bounded termination.
 4. The actual file list, exports/main targets, built outputs, dependencies and selected runtime conditions. Fresh-consumer tests expose author-checkout assumptions.
 5. Use an intentional supported update/install workflow in a development fixture, then review/test the changed graph. ci recreates the locked contract rather than silently upgrading it.
 
-Official sources checked2026-11-04: npm11 [package metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/), [configuration](https://docs.npmjs.com/cli/v11/using-npm/config/), [registry](https://docs.npmjs.com/cli/v11/using-npm/registry/), [pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/), [SemVer specification](https://semver.org/), [npm range implementation](https://github.com/npm/node-semver). These are the stated baseline's contracts, not a recommendation to publish or install unrelated tooling.
+Official sources checked 2026-11-04: npm 11 [package metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/), [configuration](https://docs.npmjs.com/cli/v11/using-npm/config/), [registry](https://docs.npmjs.com/cli/v11/using-npm/registry/), [pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/), [SemVer specification](https://semver.org/), [npm range implementation](https://github.com/npm/node-semver). These are the stated baseline's contracts, not a recommendation to publish or install unrelated tooling.
 
 <span id="batch-b07-progress"></span>
 

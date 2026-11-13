@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Five worked patterns for routing requests, representing operations, coordinating peers, changing state-specific behavior and defining workflow skeletons. Existing [Strategy and Observer](../18-patterns.md#t18-q04) remain their shared worked lessons.
 
-Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
+Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
 
 ---
 
@@ -14,7 +14,7 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -108,7 +108,7 @@ Chain of Responsibility passes a request through candidate handlers.
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -204,7 +204,7 @@ Command represents an operation so an invoker can trigger it without knowing its
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -313,7 +313,7 @@ Mediator centralizes a set of collaborating peers so they need not call one anot
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -409,7 +409,7 @@ State delegates behavior according to the current lifecycle state and permitted 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">

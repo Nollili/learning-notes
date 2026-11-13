@@ -12,7 +12,7 @@ This chapter complements the [foundations explanation](../module-01-nodejs-found
 
 *Study depth: Foundational to intermediate*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict before reading the answer**</span>
@@ -92,7 +92,7 @@ Specify error delivery, timing and completion count before composing a callback 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict both results**</span>
@@ -135,7 +135,7 @@ A promise represents one eventual completion: pending, fulfilled or rejected. **
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Importing callbacks.mjs also executes its demonstration, so its three lines appear first. Then this file prints `double 8`, `caught TypeError`, `recovered 1` and `chain 6 executor,after resolve,sync,handler`. The catch returns0, deliberately recovering the chain. Logging without returning or rethrowing would recover with undefined; the next stage must not interpret that as valid data accidentally.
+Importing callbacks.mjs also executes its demonstration, so its three lines appear first. Then this file prints `double 8`, `caught TypeError`, `recovered 1` and `chain 6 executor,after resolve,sync,handler`. The catch returns 0, deliberately recovering the chain. Logging without returning or rethrowing would recover with undefined; the next stage must not interpret that as valid data accidentally.
 
 Settled means fulfilled or rejected. Resolved means locked to a value or another promise/thenable's eventual outcome, so a promise resolved to a still-pending promise can remain pending. Only the first resolving/rejecting action takes effect; resolve does not return from the executor, and ignored later settlement does not prevent later side effects.
 
@@ -171,7 +171,7 @@ Keep the completion chain connected; adaptation must preserve the original API's
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — identify each observable outcome**</span>
@@ -263,7 +263,7 @@ Use await to express completion and ownership, including the error and cleanup p
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — find the owner of each rejection**</span>
@@ -357,7 +357,7 @@ Official references checked 2026-11-04: Node.js 24.18 [error propagation](https:
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict the result and peak active count**</span>
@@ -443,7 +443,7 @@ Control when work starts and define what happens to active work when one item fa
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict order, outcomes and empty-input behavior**</span>
@@ -514,7 +514,7 @@ Aggregation chooses an outcome; scheduling, cancellation and side-effect safety 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain what actually stops**</span>
@@ -606,7 +606,7 @@ A deadline is a policy, an abort is a request, and cleanup needs an owner.
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <span class="notes-section-label">**Example — predict which values are requested and when close runs**</span>
@@ -713,7 +713,7 @@ State that cancellation cannot undo a committed save and demonstrate an idempote
 
 <span class="notes-section-label">**Mixed practice — attempt all before reading the answers**</span>
 
-1. A pool receives promises from1000 already-started requests and sets limit4. What has it failed to limit?
+1. A pool receives promises from 1000 already-started requests and sets limit 4. What has it failed to limit?
 2. all rejects while a sibling write is still active. Has that write been rolled back?
 3. Which combinator produces the first successful mirror result, and what happens if every mirror fails?
 4. A timeout wins race but the request API ignores its signal. What still needs an owner?

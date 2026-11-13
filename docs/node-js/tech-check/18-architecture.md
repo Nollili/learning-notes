@@ -8,7 +8,7 @@ Architecture is a set of decisions about **ownership, dependencies, state and fa
 
 ## How do layers and feature modules fit together? {#t18-q24}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -88,7 +88,7 @@ Extract a product rename route into these boundaries. Accept only when the servi
 
 ## What makes a module maintainable and reusable? {#t18-q25}
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -121,7 +121,7 @@ Write a one-page module contract and run the same success/not-found/conflict tes
 
 ## When should a modular monolith become microservices? {#t18-q26}
 
-Seniority level: Architect\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -159,7 +159,7 @@ Write an extraction ADR comparing one deployable with two. Include three concret
 
 ## How do outbox, idempotency and sagas preserve consistency? {#t18-q27}
 
-Seniority level: Architect\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -194,7 +194,7 @@ In an owned database/broker fixture, crash after publish but before marking deli
 
 ## What does availability versus consistency actually mean? {#t18-q28}
 
-Seniority level: Architect\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -223,7 +223,7 @@ For catalogue, checkout and audit history, specify allowed staleness, conflict p
 
 ## How do you design for load without guessing? {#t18-q29}
 
-Seniority level: Architect\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">

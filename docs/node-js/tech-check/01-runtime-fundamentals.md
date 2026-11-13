@@ -4,13 +4,13 @@ outline: [2, 3]
 
 # Runtime fundamentals
 
-Examples use Node24 and ES Modules (`.mjs`) unless stated otherwise. Only built-in modules are needed. Depth labels describe the question's intended study depth. Try each code question before reading its answer.
+Examples use Node 24 and ES Modules (`.mjs`) unless stated otherwise. Only built-in modules are needed. Depth labels describe the question's intended study depth. Try each code question before reading its answer.
 
 ### What is Node.js, and what changes when JavaScript runs outside the browser? {#t01-q01}
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -45,7 +45,7 @@ Cross-platform means supported Node distributions run on multiple operating syst
 
 <span class="notes-section-label">**Example**</span>
 
-Attempt this in a `.mjs` file on Node24, without DOM libraries or a bundler:
+Attempt this in a `.mjs` file on Node 24, without DOM libraries or a bundler:
 
 ```js
 console.log(typeof document);
@@ -79,12 +79,12 @@ Node runs JavaScript with server/OS host facilities; V8 executes the language, a
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
-Predict the log order in a Node24 `.mjs` file. Does the arithmetic run on a separate JavaScript thread?
+Predict the log order in a Node 24 `.mjs` file. Does the arithmetic run on a separate JavaScript thread?
 
 ```js
 console.log('start');
@@ -160,7 +160,7 @@ Nonblocking I/O permits progress while waiting; async syntax alone cannot preven
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -235,7 +235,7 @@ Choose sync versus async from the program's waiting/concurrency needs, and budge
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -287,13 +287,13 @@ if (!file) {
 }
 ```
 
-The sample allocation is fixed at1024bytes. A read may return fewer bytes, so bytesRead describes this one sample, not a guaranteed complete file size. No arbitrary binary sample is decoded as independent UTF-8 here. The finally owns the opened handle even when stat/read fails.
+The sample allocation is fixed at 1024 bytes. A read may return fewer bytes, so bytesRead describes this one sample, not a guaranteed complete file size. No arbitrary binary sample is decoded as independent UTF-8 here. The finally owns the opened handle even when stat/read fails.
 
 An attacker-controlled path or mutable filesystem would require a stronger authorization/containment design; **basename is display formatting, not containment**.
 
 <span class="notes-section-label">**Example — small HTTP teaching service**</span>
 
-Save as `health-service.mjs`; run `PORT=3000 node health-service.mjs` using your shell's environment-setting syntax. Alternatively omit PORT for3000. `PORT=0` asks the OS for an available port, which is printed after successful binding.
+Save as `health-service.mjs`; run `PORT=3000 node health-service.mjs` using your shell's environment-setting syntax. Alternatively omit PORT for 3000. `PORT=0` asks the OS for an available port, which is printed after successful binding.
 
 ```js
 import http from 'node:http';
@@ -340,7 +340,7 @@ if (!/^\d{1,5}$(?![\s\S])/.test(raw) || Number(raw) > 65535) {
 }
 ```
 
-This loopback-only service returns200 for GET/health,404 for other GET paths and405 for other methods. It owns startup errors and bounded HTTP shutdown. The callback prints the actual port only after listening, not before successful binding. `/health` is shallow process health, not continuous dependency readiness.
+This loopback-only service returns 200 for GET /health, 404 for other GET paths and 405 for other methods. It owns startup errors and bounded HTTP shutdown. The callback prints the actual port only after listening, not before successful binding. `/health` is shallow process health, not continuous dependency readiness.
 
 The timeout settings do not interrupt synchronous CPU work and do not configure production authentication, TLS, quotas or load-balancer drain. Signal behavior differs across platforms; the POSIX signal test is not a Windows portability guarantee.
 
@@ -381,8 +381,8 @@ These are learner checks, not completed learner evidence.
 <span class="notes-section-label">**Mixed practice — attempt all questions first**</span>
 
 1. A frontend helper uses document.querySelector. Why does importing it into Node fail when it runs, even though its JavaScript syntax is valid?
-2. An endpoint awaits a resolved promise, then parses a200MiB JSON string. Does await prevent a service-wide pause? What would you change?
-3. A file-inspection CLI prints sampledBytes1024 for a5MiB file. Is it reporting the file size correctly?
+2. An endpoint awaits a resolved promise, then parses a 200 MiB JSON string. Does await prevent a service-wide pause? What would you change?
+3. A file-inspection CLI prints `sampledBytes: 1024` for a 5 MiB file. Is it reporting the file size correctly?
 4. A health server prints “started” before calling listen. Another process already owns the port. Which contract is wrong and how would you fix it?
 
 <span class="notes-section-label">**Practice answers**</span>
@@ -394,7 +394,7 @@ These are learner checks, not completed learner evidence.
 
 ## References
 
-Official sources checked2026-11-04: [Node introduction](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs), [browser differences](https://nodejs.org/en/learn/getting-started/differences-between-nodejs-and-the-browser), [do not block the loop/worker pool](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop), [Node24 filesystem](https://nodejs.org/docs/latest-v24.x/api/fs.html), [Node24 HTTP](https://nodejs.org/docs/latest-v24.x/api/http.html). The runnable examples are original teaching fixtures, not copied production applications.
+Official sources checked 2026-11-04: [Node introduction](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs), [browser differences](https://nodejs.org/en/learn/getting-started/differences-between-nodejs-and-the-browser), [do not block the loop/worker pool](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop), [Node 24 filesystem](https://nodejs.org/docs/latest-v24.x/api/fs.html), [Node 24 HTTP](https://nodejs.org/docs/latest-v24.x/api/http.html). The runnable examples are original teaching fixtures, not copied production applications.
 
 <span id="batch-b01-progress"></span>
 

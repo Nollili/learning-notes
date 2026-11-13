@@ -12,7 +12,7 @@ Keep the supplied build/Jest/database settings in Autocode submissions; the owne
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict stdout, stderr and whether assert stops execution**</span>
@@ -80,7 +80,7 @@ Output is an interface with timing, privacy and delivery costs, not a substitute
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict bytes versus characters and exclusive creation failure**</span>
@@ -166,7 +166,7 @@ File API style changes composition; ordering, bytes, ownership and persistence s
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — compare lexical paths without accessing disk**</span>
@@ -242,7 +242,7 @@ Path utilities express names; authorization and filesystem identity are separate
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain each unit and deliberate omission**</span>
@@ -312,7 +312,7 @@ Use OS facts as scoped diagnostic inputs, then choose capacity from the workload
 
 Acceptance: executable assertions cover results, error codes, stream separation, original-content preservation and owned cleanup. Platform-specific filesystem/security behaviours need an actual platform fixture; lexical syntax checks do not prove them. Author validation and written criteria do not mark learner exercises complete.
 
-Official references checked2026-11-04: Node24.18 [Console](https://nodejs.org/download/release/v24.18.0/docs/api/console.html), [filesystem contracts](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [Path](https://nodejs.org/download/release/v24.18.0/docs/api/path.html), [OS](https://nodejs.org/download/release/v24.18.0/docs/api/os.html). The examples deliberately state their runtime baseline and filesystem/security limits.
+Official references checked 2026-11-04: Node 24.18 [Console](https://nodejs.org/download/release/v24.18.0/docs/api/console.html), [filesystem contracts](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [Path](https://nodejs.org/download/release/v24.18.0/docs/api/path.html), [OS](https://nodejs.org/download/release/v24.18.0/docs/api/os.html). The examples deliberately state their runtime baseline and filesystem/security limits.
 
 
 ---
@@ -321,7 +321,7 @@ Official references checked2026-11-04: Node24.18 [Console](https://nodejs.org/do
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict which changes are shared**</span>
@@ -393,7 +393,7 @@ Track byte range, backing-store lifetime and mutation ownership separately from 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — split a UTF-8 character in the middle**</span>
@@ -464,7 +464,7 @@ Keep decoding state across transport chunks, and define whether malformed text i
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — explain cancellation and repeated-work ordering**</span>
@@ -513,7 +513,7 @@ The finite loop serializes operations. Waiting after completion creates fixed-de
 
 A fixed-rate scheduler instead needs an explicit policy for missed ticks, overlap, skipped runs or catch-up. setInterval with an async callback can start the next invocation while an earlier one is awaiting I/O; catch errors within the owned chain and do not accidentally accumulate an unlimited backlog.
 
-Validate externally supplied delays. On the stated Node baseline, timer delays outside the supported range or below1 are normalized, and fractional values are truncated; enormous numbers do not reliably create enormous deadlines. setImmediate targets check-phase opportunities rather than a zero-delay timeout, with context-sensitive ordering covered in [T06](./06-events-and-event-loop.md#t06-q03).
+Validate externally supplied delays. On the stated Node baseline, timer delays outside the supported range or below 1 are normalized, and fractional values are truncated; enormous numbers do not reliably create enormous deadlines. setImmediate targets check-phase opportunities rather than a zero-delay timeout, with context-sensitive ordering covered in [T06](./06-events-and-event-loop.md#t06-q03).
 
 A timeout race selects a response, not resource termination. Release deadline handles in finally, propagate a supported signal and retain supervision of operations that ignore it. refresh reschedules an existing timeout using its existing duration, useful for an idle timer whose ownership is clear.
 
@@ -543,7 +543,7 @@ Timers control scheduling intent; the owner controls overlap, failure, cancellat
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict duplicate parameters and relative resolution**</span>
@@ -620,7 +620,7 @@ Parse structure, encode component data once and authorize the resulting meaning 
 
 Acceptance: assertions check byte identity, mutation isolation, decoded content, expected errors, active-run counts and owned cleanup. No external network requests are required. Author fixture validation does not complete learner practice.
 
-Additional official references checked2026-11-04: Node24.18 [Buffer](https://nodejs.org/download/release/v24.18.0/docs/api/buffer.html), [StringDecoder](https://nodejs.org/download/release/v24.18.0/docs/api/string_decoder.html), [timers](https://nodejs.org/download/release/v24.18.0/docs/api/timers.html), [URL and file conversions](https://nodejs.org/download/release/v24.18.0/docs/api/url.html); ECMAScript [URI encoding/decoding](https://tc39.es/ecma262/multipage/global-object.html#sec-uri-handling-functions). Fetch/redirect security requires its own application policy, not just a successful parse.
+Additional official references checked 2026-11-04: Node 24.18 [Buffer](https://nodejs.org/download/release/v24.18.0/docs/api/buffer.html), [StringDecoder](https://nodejs.org/download/release/v24.18.0/docs/api/string_decoder.html), [timers](https://nodejs.org/download/release/v24.18.0/docs/api/timers.html), [URL and file conversions](https://nodejs.org/download/release/v24.18.0/docs/api/url.html); ECMAScript [URI encoding/decoding](https://tc39.es/ecma262/multipage/global-object.html#sec-uri-handling-functions). Fetch/redirect security requires its own application policy, not just a successful parse.
 
 
 ---
@@ -629,7 +629,7 @@ Additional official references checked2026-11-04: Node24.18 [Buffer](https://nod
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict output and identify who owns completion**</span>
@@ -712,7 +712,7 @@ Backpressure is an end-to-end cooperation contract, not a guarantee obtained by 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — predict CRLF and final-line handling**</span>
@@ -756,7 +756,7 @@ Its async iterator does not promise to forward all input-stream errors, so **obs
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Output is3: one, two and the final unterminated last line. Delimiters are removed from returned strings, so this is not byte-preserving copying. Empty lines count as lines; a final newline does not create an extra trailing empty record in this fixture. A UTF-8 byte stream needs correct decoding state; readline's line extraction does not make every downstream parser or record valid.
+Output is 3: one, two and the final unterminated last line. Delimiters are removed from returned strings, so this is not byte-preserving copying. Empty lines count as lines; a final newline does not create an extra trailing empty record in this fixture. A UTF-8 byte stream needs correct decoding state; readline's line extraction does not make every downstream parser or record valid.
 
 The helper installs a handled completion observer before the first await. If the source fails, it captures the original reason and closes the interface to unblock consumption, then reports failure rather than presenting a partial count as success. finally closes the interface, destroys its owned input and observes input settlement.
 
@@ -794,7 +794,7 @@ Line extraction, input lifetime and record validation are three distinct respons
 
 *Study depth: Intermediate*
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — verify exact bytes and reject malformed tags**</span>
@@ -833,7 +833,7 @@ Generate secrets with a cryptographic random API, not Math.random. Validate enco
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The digest is the SHA-256 known vector for abc, followed by true, false, false and32. Strict64-hex-character validation prevents permissive hex decoding from accepting partial or malformed tags. timingSafeEqual requires equal byte lengths; this helper checks length before comparing.
+The digest is the SHA-256 known vector for abc, followed by true, false, false and 32. Strict validation for exactly 64 hexadecimal characters prevents permissive hex decoding from accepting partial or malformed tags. timingSafeEqual requires equal byte lengths; this helper checks length before comparing.
 
 It does not claim the entire request handler is constant-time, nor that public format/length validation hides every observable branch.
 
@@ -873,7 +873,7 @@ Choose the primitive for its security property and implement the surrounding byt
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Example — compress, enforce output budget and decode**</span>
@@ -927,7 +927,7 @@ Output is true, then expanded output limit. The transform rejects before forward
 
 This helper retains the entire accepted output and concatenates it, temporarily increasing memory beyond the retained chunks alone. It is appropriate only for its small explicit budget; a real large export should stream to an owned destination.
 
-The helper also caps compressed input at64KiB and accepted output budget at1MiB. It accepts only an already materialized Buffer, so upstream network/download buffering is outside its guarantee. Enforce ingress limits while receiving data too.
+The helper also caps compressed input at 64 KiB and accepted output budget at 1 MiB. It accepts only an already materialized Buffer, so upstream network/download buffering is outside its guarantee. Enforce ingress limits while receiving data too.
 
 Corrupt/truncated gzip should reject rather than be treated as valid plaintext; do not enable permissive finishing options merely to hide integrity errors. Checksums detect corruption, not a malicious sender's authenticity.
 
@@ -976,7 +976,7 @@ Acceptance: prove values, failure identities/codes, termination, resource cleanu
 2. A readline loop counts some records, then its source fails. Is the partial count automatically a success?
 3. Does a public SHA-256 checksum establish who sent a payload?
 4. What is missing from a valid HMAC check if replay must be rejected?
-5. A64KiB compressed input expands to100MiB. Which budget was insufficient?
+5. A 64 KiB compressed input expands to 100 MiB. Which budget was insufficient?
 6. A gunzip pipeline writes half a file then rejects. Can the filename be advertised as a finished export?
 
 <span class="notes-section-label">**Practice answers**</span>
@@ -988,7 +988,7 @@ Acceptance: prove values, failure identities/codes, termination, resource cleanu
 5. Compressed ingress limits alone do not bound expanded output. Add output, time/concurrency and upstream/resource controls.
 6. No. Clean up or mark the owned partial artifact; publish only on successful completion under the chosen recovery policy.
 
-Additional official references checked2026-11-04: Node24.18 [streams](https://nodejs.org/download/release/v24.18.0/docs/api/stream.html), [readline](https://nodejs.org/download/release/v24.18.0/docs/api/readline.html), [crypto](https://nodejs.org/download/release/v24.18.0/docs/api/crypto.html), [zlib](https://nodejs.org/download/release/v24.18.0/docs/api/zlib.html); OWASP [password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) and [cryptographic storage](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html). No claim of production security review follows from local fixture execution.
+Additional official references checked 2026-11-04: Node 24.18 [streams](https://nodejs.org/download/release/v24.18.0/docs/api/stream.html), [readline](https://nodejs.org/download/release/v24.18.0/docs/api/readline.html), [crypto](https://nodejs.org/download/release/v24.18.0/docs/api/crypto.html), [zlib](https://nodejs.org/download/release/v24.18.0/docs/api/zlib.html); OWASP [password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) and [cryptographic storage](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html). No claim of production security review follows from local fixture execution.
 
 <span id="next-batch-checkpoint"></span>
 

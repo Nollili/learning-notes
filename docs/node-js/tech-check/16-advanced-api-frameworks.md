@@ -4,11 +4,11 @@ outline: [2, 3]
 
 # Advanced APIs and framework decisions
 
-This page extends the [framework chapter](./16-frameworks.md) with failure and measurement depth for the supplied ladder's Level 4 API/framework categories. It retains the original owners for process, filesystem, crypto, cluster and streams; it is not a new numbered topic group. Express5.1.0/Node24 is primary, with a NestJS companion. Performance and security decisions depend on a stated workload and threat model.
+This page extends the [framework chapter](./16-frameworks.md) with failure and measurement depth for the supplied ladder's Level 4 API/framework categories. It retains the original owners for process, filesystem, crypto, cluster and streams; it is not a new numbered topic group. Express 5.1.0/Node 24 is primary, with a NestJS companion. Performance and security decisions depend on a stated workload and threat model.
 
 ## How do process and cluster owners handle failure beyond a happy-path reply? {#t16-q14}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -29,13 +29,13 @@ A restart policy needs bounded backoff, a crash budget and an operational owner.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Run the existing cluster/fork fixtures and add an API-level scenario: lose a worker after an operation commits but before its reply. Accept with a pending/reconciled operation contract, no blind duplicate mutation, bounded restart/drain and proof of actual owned-process closure. Windows/process-tree behavior needs its own platform evidence. References: [Node24 child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html), [cluster lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html).
+Run the existing cluster/fork fixtures and add an API-level scenario: lose a worker after an operation commits but before its reply. Accept with a pending/reconciled operation contract, no blind duplicate mutation, bounded restart/drain and proof of actual owned-process closure. Windows/process-tree behavior needs its own platform evidence. References: [Node 24 child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html), [cluster lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html).
 
 ---
 
 ## How do you publish a file without exposing partial content or overwriting an existing result? {#t16-q15}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -138,13 +138,13 @@ Cleanup failure after publication is a committed-but-cleanup-failed outcome. Do 
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Test competing publication, pre-existing target, invalid name, write/sync/link/cleanup failures and process crash at phase boundaries in a disposable directory. Accept when partial bytes never appear under the final name, prior output survives, no unowned file is deleted and durability limits are explicit. Reference: [Node24 file APIs](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [security boundary review](./14-security.md).
+Test competing publication, pre-existing target, invalid name, write/sync/link/cleanup failures and process crash at phase boundaries in a disposable directory. Accept when partial bytes never appear under the final name, prior output survives, no unowned file is deleted and durability limits are explicit. Reference: [Node 24 file APIs](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [security boundary review](./14-security.md).
 
 ---
 
 ## How do you stream bounded results while owning errors and cancellation? {#t16-q16}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -226,7 +226,7 @@ await assert.rejects(
 
 A real adapter must stop its database cursor/request when destroyed, not merely expose a generic iterator that ignores cancellation while awaiting remote work. Memory bounds include per-stage high-water marks, one current chunk, source/driver prefetch and pending external work. A high-water mark is a flow-control threshold, not a universal hard heap limit; one oversized chunk can exceed it. Bound encoded/decompressed representations separately.
 
-For HTTP streaming, once headers/body are sent, an error cannot become a fresh JSON500 response. Terminate the connection or use a documented framed terminal error/status channel. Define client disconnect handling and close only resources owned by that response. For resumable exports, persist a job/status/object and publish completion atomically under a durable operation ID.
+For HTTP streaming, once headers/body are sent, an error cannot become a fresh JSON 500 response. Terminate the connection or use a documented framed terminal error/status channel. Define client disconnect handling and close only resources owned by that response. For resumable exports, persist a job/status/object and publish completion atomically under a durable operation ID.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -236,7 +236,7 @@ Test slow sink, source/transform/destination errors, oversize chunk, active abor
 
 ## How do cryptographic and streaming boundaries affect a service design? {#t16-q17}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -263,7 +263,7 @@ Corrupt ciphertext/tag/AAD and truncate an owned encrypted object. Accept when a
 
 ## How do you measure a framework optimization without removing correctness? {#t16-q18}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -274,7 +274,7 @@ Keep routing, validation, authorization and response contracts fixed; isolate on
 
 </div>
 
-The following Express5.1.0/Node24 experiment compares recomputing a fixed public metadata digest with computing it once. It uses an intentionally trivial loopback-only credential to check that both routes still pass the same guard; this is not a production authentication implementation. The client and server share one machine/process, so timings include client competition and are illustrative only.
+The following Express 5.1.0/Node 24 experiment compares recomputing a fixed public metadata digest with computing it once. It uses an intentionally trivial loopback-only credential to check that both routes still pass the same guard; this is not a production authentication implementation. The client and server share one machine/process, so timings include client competition and are illustrative only.
 
 ```js [framework-experiment.mjs]
 import assert from 'node:assert/strict';

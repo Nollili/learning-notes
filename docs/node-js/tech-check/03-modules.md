@@ -4,13 +4,13 @@ outline: [2, 3]
 
 # Modules
 
-Examples target Node24.18.0. Keep the shown .mjs/.cjs extensions and package.json boundaries: a different module type or transpiler can change the result. All fixture packages below are local teaching files, not registry downloads. Code questions precede their answers.
+Examples target Node 24.18.0. Keep the shown .mjs/.cjs extensions and package.json boundaries: a different module type or transpiler can change the result. All fixture packages below are local teaching files, not registry downloads. Code questions precede their answers.
 
 ### What is built in, what is a package, and what does an import specifier select? {#t03-q01}
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -71,7 +71,7 @@ Classify the specifier first: built-in capability, local module and external pac
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -125,9 +125,9 @@ import legacy from './value.cjs';
 console.log(answer, legacy.answer);
 ```
 
-The CJS entry prints42; the ESM entry prints42 42. The default import of a CJS module reliably represents its module.exports interop value; named CJS exports rely on Node's analysis and should not be assumed for every dynamically constructed export. Do not copy a destructured require into a named ESM import without checking the package's declared interface.
+The CommonJS entry prints `42`. The ES module entry prints `42 42` on one line because it logs both the named ESM export and the CommonJS export’s `answer` property. The default import of a CJS module reliably represents its module.exports interop value; named CJS exports rely on Node's analysis and should not be assumed for every dynamically constructed export. Do not copy a destructured require into a named ESM import without checking the package's declared interface.
 
-In Node24.18, `require('./value.mjs')` can obtain this synchronous module's namespace. A graph containing top-level await cannot finish synchronously and is a different case, examined in Q06. Cross-version/package-tooling support must be checked instead of applying a historical blanket rule. Keep the primary application mode coherent and place deliberate bridges at narrow boundaries.
+In Node 24.18, `require('./value.mjs')` can obtain this synchronous module's namespace. A graph containing top-level await cannot finish synchronously and is a different case, examined in Q06. Cross-version/package-tooling support must be checked instead of applying a historical blanket rule. Keep the primary application mode coherent and place deliberate bridges at narrow boundaries.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -153,7 +153,7 @@ Module mode is a runtime/package contract, and CJS/ESM interop must be checked a
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -182,13 +182,13 @@ console.log(first.next(), second.next());
 
 A module's ordinary **top-level variables are module-scoped**, not automatically properties of globalThis. CommonJS wraps each module with local exports/require/module metadata; ESM has its own module scope and bindings.
 
-Requiring the same resolved CommonJS module normally reuses its cached exports, so **callers can share its mutable internal state within that process**. **That does not create state shared across processes**, users safely or every installed copy of a package. Cache identity, import-time effects and request-specific mutable state must be deliberate design decisions.
+Requiring the same resolved CommonJS module normally reuses its cached exports, so **callers in the same process can share the module’s mutable state**. Separate Node.js processes have their own module caches. Copies of a package that resolve to different files normally have separate state. **A module-level variable holding per-user data can leak one user’s data into another request** because both requests can use the same module instance.
 
 </div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The output is true, then1 2. Both requires resolve to the same cached module instance. Its private value variable is not a global property, but both exported closures reach the same value. Private scope therefore does not mean “fresh state for each request.” A module-level currentUser or unbounded Map can leak data/state between otherwise independent requests in a long-lived server.
+The first line is `true`. The second line is `1 2`. Both requires resolve to the same cached module instance. Its private value variable is not a global property, but both exported closures reach the same value. Private scope therefore does not mean “fresh state for each request.” A module-level currentUser or unbounded Map can leak data/state between otherwise independent requests in a long-lived server.
 
 CommonJS wrapper facilities such as require, module, exports, __filename and __dirname belong to that module context; they are not a universal browser-style global API. Ordinary ESM does not supply those CJS locals. On this baseline import.meta.url/filename/dirname describe the ESM file context.
 
@@ -241,7 +241,7 @@ Module-private variables can still be shared through a cached instance; define t
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -317,7 +317,7 @@ exports is an initial alias, module.exports is the public value, and node:module
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -414,12 +414,12 @@ Package metadata selects public runtime entry contracts, and the same package na
 
 *Study depth: Advanced*
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
-Create `async-settings.mjs` with the following export. Can an ordinary Node24.18 CommonJS require synchronously obtain it? What should an async consumer do?
+Create `async-settings.mjs` with the following export. Can an ordinary Node 24.18 CommonJS require synchronously obtain it? What should an async consumer do?
 
 ```js
 export const mode = await Promise.resolve('study');
@@ -433,7 +433,7 @@ export const mode = await Promise.resolve('study');
 
 **There is no Node API called Global Async**. I interpret that wording as asynchronous module initialization, dynamic import and ESM top-level await, while making that ambiguity explicit. **import(...) returns a promise for a module namespace** and can be called conditionally from ESM or CommonJS.
 
-Top-level await lets an ESM evaluation depend on asynchronous work; dependents wait for it. **A synchronous require cannot finish an ESM graph containing top-level await** and Node24 reports ERR_REQUIRE_ASYNC_MODULE. Async initialization still needs bounded work and **an explicit startup failure/cleanup policy**.
+Top-level await lets an ESM evaluation depend on asynchronous work; dependents wait for it. **A synchronous require cannot finish an ESM graph containing top-level await** and Node 24 reports ERR_REQUIRE_ASYNC_MODULE. Async initialization still needs bounded work and **an explicit startup failure/cleanup policy**.
 
 </div>
 
@@ -499,7 +499,7 @@ Async module evaluation changes graph readiness; handle it with explicit startup
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -579,7 +579,7 @@ Diagnose the stage and selected target before changing dependencies or runtime c
 
 *Study depth: Advanced*
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -713,7 +713,7 @@ Dynamic import/top-level await require an async readiness boundary; cycles can e
 4. No. Syntax validation and dependency resolution/evaluation are different checks. Test the executed artifact and actual graph.
 5. Existing callers/resources retain their old instance. Dispose through an explicit resource owner; cache identity replacement does not close a connection.
 
-Official references checked2026-11-04: Node24.18 [CommonJS](https://nodejs.org/download/release/v24.18.0/docs/api/modules.html), [ES Modules](https://nodejs.org/download/release/v24.18.0/docs/api/esm.html), [package metadata](https://nodejs.org/download/release/v24.18.0/docs/api/packages.html), [node:module](https://nodejs.org/download/release/v24.18.0/docs/api/module.html). Loader/tooling features change; these answers deliberately identify their baseline rather than assume every installed version has identical interop.
+Official references checked 2026-11-04: Node 24.18 [CommonJS](https://nodejs.org/download/release/v24.18.0/docs/api/modules.html), [ES Modules](https://nodejs.org/download/release/v24.18.0/docs/api/esm.html), [package metadata](https://nodejs.org/download/release/v24.18.0/docs/api/packages.html), [node:module](https://nodejs.org/download/release/v24.18.0/docs/api/module.html). Loader/tooling features change; these answers deliberately identify their baseline rather than assume every installed version has identical interop.
 
 <span id="batch-b05-progress"></span>
 

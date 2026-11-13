@@ -14,6 +14,8 @@ The [five progressive projects](./progressive-projects.md) grow one repository f
 
 [Open the full-size levels chart](/images/node-js/nodejs-tech-check-levels.png).
 
+Level Up labels indicate the career level each question or project is aimed at. L1 is Junior Software Engineer, L2 is Software Engineer, L3 is Senior Software Engineer and L4 is Lead Software Engineer. The stars show the topic’s level on the Tech Check chart.
+
 ## Node.js Foundations
 
 Understand the runtime and build command-line programs with modules, asynchronous code and core APIs.

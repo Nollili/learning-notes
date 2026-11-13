@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Bridge, Composite, Facade, Flyweight and Proxy complete the structural family. [Adapter and Decorator](../18-patterns.md#t18-q03) already have the shared worked reader-contract lesson; reuse it rather than duplicate its implementation.
 
-Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
+Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
 
 ---
 
@@ -14,7 +14,7 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -107,7 +107,7 @@ Bridge separates an abstraction from its implementation so both can evolve indep
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -205,7 +205,7 @@ Composite represents a part-whole tree so callers can apply the same operation t
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -289,7 +289,7 @@ A Facade offers a focused entry point to a subsystem.
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -369,7 +369,7 @@ Flyweight shares reusable intrinsic state while callers supply changing extrinsi
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">

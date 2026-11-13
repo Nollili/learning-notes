@@ -8,7 +8,7 @@ Use Node.js 24.18 as the executable baseline and record its V8/OS/architecture w
 
 ## What does V8 optimize, and what does node:v8 expose? {#t12-q01}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -41,13 +41,13 @@ console.log({
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Save the runtime baseline, identify one real hot function and propose a clarity-preserving change. Accept with identical results and repeated before/after profiles under the same workload; do not infer improvement from engine terminology alone. References: [Node24 v8 API](https://nodejs.org/download/release/v24.18.0/docs/api/v8.html), [V8 hidden classes](https://v8.dev/docs/hidden-classes).
+Save the runtime baseline, identify one real hot function and propose a clarity-preserving change. Accept with identical results and repeated before/after profiles under the same workload; do not infer improvement from engine terminology alone. References: [Node 24 v8 API](https://nodejs.org/download/release/v24.18.0/docs/api/v8.html), [V8 hidden classes](https://v8.dev/docs/hidden-classes).
 
 ---
 
 ## How do CPU profiles and load tests answer different questions? {#t12-q02}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -92,7 +92,7 @@ Acquire a real profile under an owned API workload, identify a candidate bottlen
 
 ## What do event-loop delay, utilization and request latency tell you? {#t12-q03}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -145,7 +145,7 @@ Compare a CPU-heavy route, a slow database and a slow response consumer under th
 
 ## How do memory retention, GC and Buffer ownership affect performance? {#t12-q04}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -205,7 +205,7 @@ Create a controlled retained-listener/cache leak in an owned fixture, acquire be
 
 ## Why does async syntax not solve CPU saturation or overload? {#t12-q05}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -232,7 +232,7 @@ Implement equivalent bounded CPU work on the main loop, in yielding chunks and i
 
 ## How do you add a cache without losing correctness? {#t12-q06}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -335,7 +335,7 @@ Test expiry, eviction, tenant separation, mutation isolation, invalidation race 
 
 ## How do you optimize an Express or Nest application responsibly? {#t12-q07}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -348,7 +348,7 @@ Profile the complete request path, fix repeated/oversized work and compare the s
 
 A useful route budget separates parsing/validation, identity/authorization, service logic, database acquisition/execution, mapping/serialization and response transfer. Count queries to reveal N+1; project required columns and use bounded pagination before replacing middleware. Bound logging and redact secrets; synchronous or huge logs can become the bottleneck. Compression trades CPU for transfer and may belong at the trusted proxy; avoid compressing secret-bearing responses together with attacker-controlled content without a reviewed threat model.
 
-For Express5, use deliberate middleware order, production error handling, supported proxy/cache settings and [measured lifecycle gates](./16-advanced-api-frameworks.md#t16-q18). For Nest, understand singleton versus request-scoped providers and interceptor/guard/pipe overhead. An adapter change (for example Fastify) changes plugin/middleware behavior; verify compatibility and actual gains instead of treating it as a universal upgrade.
+For Express 5, use deliberate middleware order, production error handling, supported proxy/cache settings and [measured lifecycle gates](./16-advanced-api-frameworks.md#t16-q18). For Nest, understand singleton versus request-scoped providers and interceptor/guard/pipe overhead. An adapter change (for example Fastify) changes plugin/middleware behavior; verify compatibility and actual gains instead of treating it as a universal upgrade.
 
 Disable no security control merely to improve a benchmark. Reuse clients under a clear lifecycle, remove unnecessary deep object conversion and stream large outputs with backpressure when the contract permits it. Reverse-proxy caching must preserve auth, tenant, cookie and `Vary` semantics. A static-asset optimization does not necessarily improve an authenticated database mutation.
 

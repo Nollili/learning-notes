@@ -10,7 +10,7 @@ Examples use Node.js 24.18.0 and npm 11. These five questions cover build/test/s
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — identify which command keeps running**</span>
@@ -102,7 +102,7 @@ Run npm start or npm run serve in the owned fixture. npm runs prestart before st
 
 Do not put a permanent server before tests in a sequential verification command and expect the next command to run. Do not start build and serve concurrently with a shell background operator: that can serve stale or missing output.
 
-The ready line contains the actual loopback port allocated by the OS. Once it appears, request GET /sum at that port: expect status200 and {value:5}. Other paths/methods have separate404/405 outcomes. This narrow smoke check exercises the imported emitted module through HTTP; the existing unit test still verifies its arithmetic independently.
+The ready line contains the actual loopback port allocated by the OS. Once it appears, request GET /sum at that port: expect status 200 and {value:5}. Other paths/methods have separate 404/405 outcomes. This narrow smoke check exercises the imported emitted module through HTTP; the existing unit test still verifies its arithmetic independently.
 
 A port printed before listen completes could falsely report readiness when binding later fails. This example's readiness means only that the local teaching service is listening, not that a real application's database/authentication/migrations are ready.
 
@@ -129,7 +129,7 @@ CI should invoke the required build/test checks explicitly and promote the same 
 
 1. <span class="notes-section-label">**Is prestart a bundler?**</span> No. It coordinates commands; the build implementation produces output and a bundler/compiler has its own configuration.
 2. <span class="notes-section-label">**Should production rebuild on every restart?**</span> Not necessarily. This is a local study workflow. A deployment normally starts an already built/tested immutable artifact and configures its environment separately.
-3. <span class="notes-section-label">**Does changing PORT require a source rewrite?**</span> No. Set a validated environment value for the process; this example permits0 for an ephemeral fixture and rejects malformed/out-of-range text.
+3. <span class="notes-section-label">**Does changing PORT require a source rewrite?**</span> No. Set a validated environment value for the process; this example permits 0 for an ephemeral fixture and rejects malformed/out-of-range text.
 
 ::: tip Key takeaway
 Keep build, test, readiness and shutdown as explicit stages with observable outcomes and an owner for the running service.
@@ -137,13 +137,13 @@ Keep build, test, readiness and shutdown as explicit stages with observable outc
 
 ## Small-batch learner practice {#small-batch-learner-practice}
 
-- [ ] Recreate the linked build fixture and run npm start; capture build/test success before the ready line and GET /sum returning5.
+- [ ] Recreate the linked build fixture and run npm start; capture build/test success before the ready line and GET /sum returning 5.
 - [ ] Introduce the subtracting defect and prove startup is blocked, then restore it. Also test missing output, malformed PORT and an occupied port.
 - [ ] Supervise a real owned service child: await readiness, perform the request, send termination and verify exit/closed sockets. Include an external watchdog so a defect cannot hang the exercise.
 
 Acceptance: assert stage order, emitted-artifact behaviour, failure exit/no-ready cases, HTTP status/body and actual termination. Do not change protected tests or infer learner completion from the author's fixture checks.
 
-Official references checked2026-11-04: npm11 [script lifecycle and ignore-scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/); Node24.18 [HTTP server close](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#serverclosecallback), [test runner](https://nodejs.org/download/release/v24.18.0/docs/api/test.html). This lesson extends [related explanation](./04-package-management.md#t04-q07), preserving its earlier answer and verification history.
+Official references checked 2026-11-04: npm 11 [script lifecycle and ignore-scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/); Node 24.18 [HTTP server close](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#serverclosecallback), [test runner](https://nodejs.org/download/release/v24.18.0/docs/api/test.html). This lesson extends [related explanation](./04-package-management.md#t04-q07), preserving its earlier answer and verification history.
 
 <span id="next-checkpoint"></span>
 
@@ -154,7 +154,7 @@ Official references checked2026-11-04: npm11 [script lifecycle and ignore-script
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -167,7 +167,7 @@ Linting applies configured static rules to selected files. **A useful rule chang
 
 <span class="notes-section-label">**Reuse one owned fixture**</span>
 
-Use the complete [existing quality-standard lab](../../senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). It contains package.json, ESM JavaScript/JSDoc source, a behavior test and separate typecheck/build configurations. Copy it into an owned learning directory, preserving the original source notes. This chapter's validation uses ESLint10.13.0, TypeScript5.9.3, Node24.18.0 and npm11; keep its lockfile. No React/TS parser/plugin is required for this plain-JS scope.
+Use the complete [existing quality-standard lab](../../senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). It contains package.json, ESM JavaScript/JSDoc source, a behavior test and separate typecheck/build configurations. Copy it into an owned learning directory, preserving the original source notes. This chapter's validation uses ESLint 10.13.0, TypeScript 5.9.3, Node 24.18.0 and npm 11; keep its lockfile. No React/TS parser/plugin is required for this plain-JS scope.
 
 Its `eslint.config.mjs` is a flat config:
 
@@ -225,7 +225,7 @@ Reproduce the loose-equality failure and repair; add an unused declaration and v
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -238,7 +238,7 @@ Formatting makes source presentation consistent; linting checks configured stati
 
 <span class="notes-section-label">**Configure one formatter in the owned lab**</span>
 
-Add Prettier3.6.2 as an exact dev dependency in the same disposable quality fixture (`npm install --save-dev --save-exact prettier@3.6.2`). Retain its updated lockfile. This is not a request to install into an existing Autocode submission or the notes repository.
+Add Prettier 3.6.2 as an exact dev dependency in the same disposable quality fixture (`npm install --save-dev --save-exact prettier@3.6.2`). Retain its updated lockfile. This is not a request to install into an existing Autocode submission or the notes repository.
 
 Save `.prettierrc.json`:
 
@@ -309,7 +309,7 @@ Introduce formatting drift, observe check failure, format only the intended file
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -355,7 +355,7 @@ A watch process deliberately stays alive. A build may succeed while a stale serv
 2. Change addition to subtraction. Verify formatting/lint/typecheck pass while the behavior test fails. Restore it.
 3. Run the full chain, then import `dist/add.js` and assert addition again. The fixture's original test imports source; this separate smoke check verifies the emitted export too.
 
-Do not modify a task's build/Jest/database configuration to imitate this lab. For an Autocode implementation, preserve the supplied scripts and run `npm run build`, `npm run test`, plus Module4's required Cobertura coverage. Keep `src/tests` untouched. A local hook or `prestart` is bypassable and is not the only CI/acceptance enforcement.
+Do not modify a task's build/Jest/database configuration to imitate this lab. For an Autocode implementation, preserve the supplied scripts and run `npm run build`, `npm run test`, plus Module 4's required Cobertura coverage. Keep `src/tests` untouched. A local hook or `prestart` is bypassable and is not the only CI/acceptance enforcement.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -385,7 +385,7 @@ Make one scoped lint/format/typecheck setting change. Acceptance: state the orig
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -464,7 +464,7 @@ Navigate to the implementation, preview a coordinated rename, run the gates, the
 
 <span class="notes-section-label">**Official references**</span>
 
-[VS Code Node debugging](https://code.visualstudio.com/docs/nodejs/nodejs-debugging), [official documentation source](https://github.com/microsoft/vscode-docs/blob/main/docs/nodejs/nodejs-debugging.md), [refactoring](https://code.visualstudio.com/docs/editing/refactoring), [Node24 Inspector](https://nodejs.org/download/release/v24.18.0/docs/api/inspector.html). Official site debugging fetch timed out during this review; the maintained Microsoft documentation source was checked instead.
+[VS Code Node debugging](https://code.visualstudio.com/docs/nodejs/nodejs-debugging), [official documentation source](https://github.com/microsoft/vscode-docs/blob/main/docs/nodejs/nodejs-debugging.md), [refactoring](https://code.visualstudio.com/docs/editing/refactoring), [Node 24 Inspector](https://nodejs.org/download/release/v24.18.0/docs/api/inspector.html). Official site debugging fetch timed out during this review; the maintained Microsoft documentation source was checked instead.
 
 ## Tooling revision and practice
 

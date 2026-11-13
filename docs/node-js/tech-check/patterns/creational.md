@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Five patterns for controlling construction and ownership. Prefer the simplest creation boundary that expresses the required variation.
 
-Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
+Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
 
 ---
 
@@ -14,7 +14,7 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -103,7 +103,7 @@ A creator defines a workflow and delegates creation through an overridable metho
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -191,7 +191,7 @@ An Abstract Factory supplies a related family of products behind agreed interfac
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -278,7 +278,7 @@ Builder collects meaningful construction steps before producing a validated prod
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -361,7 +361,7 @@ Prototype creates a new product from an existing exemplar through a defined clon
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">

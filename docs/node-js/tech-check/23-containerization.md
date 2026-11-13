@@ -8,7 +8,7 @@ Use the [canonical Node/PostgreSQL container lab](../container-deployment-lab.md
 
 ## What are images, containers, volumes and registries? {#t23-q01}
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -33,7 +33,7 @@ Draw which data survives process restart, container replacement, volume deletion
 
 ## How do you build a small, reproducible Node image? {#t23-q02}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -62,7 +62,7 @@ Build the owned canonical lab, inspect runtime UID and files, then rebuild after
 
 ## How do Compose networking, readiness and secrets fit together? {#t23-q03}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -91,7 +91,7 @@ Use the lab's owned-copy setup, then `docker compose -p "$lab_project" config --
 
 ## How do tags, digests and orchestration affect delivery? {#t23-q04}
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -116,7 +116,7 @@ Resolve an owned test image to its digest, inspect its platform and prepare a re
 
 ## How do you troubleshoot a container that will not work? {#t23-q05}
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">

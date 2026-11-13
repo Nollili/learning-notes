@@ -12,7 +12,7 @@ Use a separate learning folder for the runnable example. Preserve an existing pr
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Think before reading**</span>
@@ -77,7 +77,7 @@ Official references: [Express FAQ: structure and database boundaries](https://ex
 
 *Study depth: Foundational → Intermediate*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
@@ -142,7 +142,7 @@ Official references: [Koa middleware composition](https://koajs.com/), [NestJS c
 
 *Study depth: Foundational → Intermediate*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Predict before running**</span>
@@ -271,7 +271,7 @@ Official references: [Express installation](https://expressjs.com/en/starter/ins
 
 *Study depth: Foundational → Intermediate*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -398,7 +398,7 @@ Official Express documentation was checked on 2026-11-04. The executable baselin
 
 Express is the main implementation: an app is an ordered HTTP middleware/router handler. NestJS adds an application structure around controllers, injected providers and modules, with guards, pipes, interceptors and filters for particular lifecycle concerns. Nest is a separate framework, not the next Express version. Its default Express adapter does not make all Express assumptions portable to every Nest adapter.
 
-The application examples below use Express5.2.1 and Node24.18.0. They introduce a small in-memory Products API; it complements the tested quote API rather than replacing that lesson. A bounded Nest11.1.6 companion is assembled later, with equivalent read concepts and explicit limits. Keep all experiments in a separate lab and preserve actual assignment templates.
+The application examples below use Express 5.2.1 and Node 24.18.0. They introduce a small in-memory Products API; it complements the tested quote API rather than replacing that lesson. A bounded Nest 11.1.6 companion is assembled later, with equivalent read concepts and explicit limits. Keep all experiments in a separate lab and preserve actual assignment templates.
 
 
 ---
@@ -407,7 +407,7 @@ The application examples below use Express5.2.1 and Node24.18.0. They introduce 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -447,15 +447,15 @@ A route matches an HTTP method and a path pattern within its mount point. Use a 
 
 `GET /products/p1?limit=5` matches `/:id` with `req.params.id === 'p1'`; the query is separate. Inside a mounted router, `req.url` is relative to the mount while `req.originalUrl` retains the incoming URL. Do not log the latter indiscriminately: paths/query values may contain sensitive data.
 
-The literal `/stats` must come before the overlapping `/:id` GET route. Express ordinarily supports HEAD via a matching GET route when a separate HEAD handler is absent; the response has no body. Unknown methods do not automatically become a complete custom405 policy. If the API requires405, define method fallbacks and the `Allow` header deliberately. Automatic OPTIONS behavior and explicit handlers must agree.
+The literal `/stats` must come before the overlapping `/:id` GET route. Express ordinarily supports HEAD via a matching GET route when a separate HEAD handler is absent; the response has no body. Unknown methods do not automatically become a complete custom 405 policy. If the API requires 405, define method fallbacks and the `Allow` header deliberately. Automatic OPTIONS behavior and explicit handlers must agree.
 
-Express5 path syntax differs from old Express4 string-pattern examples: use documented named wildcards/optional groups and validate values in code rather than copy old inline-regexp strings blindly. For nested routers, parent parameters require `Router({ mergeParams: true })` when the child needs them; their existence still does not establish authorization.
+Express 5 path syntax differs from old Express 4 string-pattern examples: use documented named wildcards/optional groups and validate values in code rather than copy old inline-regexp strings blindly. For nested routers, parent parameters require `Router({ mergeParams: true })` when the child needs them; their existence still does not establish authorization.
 
 <span class="notes-section-label">**NestJS alongside**</span>
 
 `@Controller('products')` supplies a prefix; `@Get(':id')` and `@Param('id')` bind a handler and value. `@Query('limit')` is a separate source. A TypeScript annotation such as `limit: number` does not convert an incoming string by itself; use an explicit pipe or validated DTO. The runnable companion later shows `DefaultValuePipe`/`ParseIntPipe` and bound checks.
 
-Common mistakes: repeating the mount prefix inside every route; letting a generic parameter swallow a reserved path; expecting TypeScript or matching to validate values; assuming every missing method is automatically405.
+Common mistakes: repeating the mount prefix inside every route; letting a generic parameter swallow a reserved path; expecting TypeScript or matching to validate values; assuming every missing method is automatically 405.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -469,7 +469,7 @@ Separate matching, input interpretation and permissions. Route ordering is obser
 
 Practice — learner work still required: mount marker controllers and test collection, item, stats, HEAD, unknown path and malformed input. Acceptance: demonstrate the reserved-path order bug, restore it, and explain which validations still belong elsewhere.
 
-Official references: [Express routing](https://expressjs.com/en/guide/routing/), [Express5 migration](https://expressjs.com/en/guide/migrating-5/), [Nest controllers](https://docs.nestjs.com/controllers).
+Official references: [Express routing](https://expressjs.com/en/guide/routing/), [Express 5 migration](https://expressjs.com/en/guide/migrating-5/), [Nest controllers](https://docs.nestjs.com/controllers).
 
 
 ---
@@ -478,7 +478,7 @@ Official references: [Express routing](https://expressjs.com/en/guide/routing/),
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -529,7 +529,7 @@ export function createApplication({ router, authenticate, errorHandler, observe 
 }
 ```
 
-For routing-only tests, pass an explicit fixture authenticator that calls `next()` and a four-argument fixed500 error handler. That is a public test boundary, not private API authentication. The real fixture credential verifier and error mapping are supplied later; this factory has no automatic allow-all default.
+For routing-only tests, pass an explicit fixture authenticator that calls `next()` and a four-argument fixed 500 error handler. That is a public test boundary, not private API authentication. The real fixture credential verifier and error mapping are supplied later; this factory has no automatic allow-all default.
 
 <div class="notes-core-answer">
 
@@ -576,7 +576,7 @@ Official references: [Express middleware](https://expressjs.com/en/guide/using-m
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — locate the decisions**</span>
@@ -650,17 +650,17 @@ export function createProductControllers(service) {
 
 <span class="notes-section-label">**Reasoning and edge cases**</span>
 
-Duplicate query values can arrive as an array, so `Number(req.query.limit)` is not a complete contract. The controller accepts exactly one decimal value from1 to50 and rejects unknown query fields. Missing and invalid input are different cases. Resource/body business validation remains in the reusable service.
+Duplicate query values can arrive as an array, so `Number(req.query.limit)` is not a complete contract. The controller accepts exactly one decimal value from 1 to 50 and rejects unknown query fields. Missing and invalid input are different cases. Resource/body business validation remains in the reusable service.
 
 `req.actor` must come from trusted authentication middleware, never a submitted owner/role field. The later service rechecks permission/ownership so non-HTTP callers cannot bypass business authorization. Returning a DTO from the service is a deliberate boundary; verify its field projection against real storage, not only a response mock.
 
-Express5 observes each returned async handler promise. After a response is sent, the handler does not call `next()` again. A 204 has no JSON body. The Location path assumes this lab's `/products` mount; configure it consistently if an external API prefix changes.
+Express 5 observes each returned async handler promise. After a response is sent, the handler does not call `next()` again. A 204 has no JSON body. The Location path assumes this lab's `/products` mount; configure it consistently if an external API prefix changes.
 
 <span class="notes-section-label">**NestJS alongside**</span>
 
 A Nest controller typically injects an `@Injectable()` service through its constructor and uses `@Get`, `@Post`, `@Param`, `@Body` and `@Query` for transport bindings. Returning a DTO lets the standard adapter serialize it; using `@Res()` directly switches to adapter-specific response ownership and can require explicitly sending the response. Type annotations do not perform runtime validation. The companion below uses standard returns rather than raw-response mode.
 
-Common mistakes: SQL inside controllers; service methods accepting Express Request; raw entity serialization; forwarding the same failure twice; accidental status200 for a create or content on204.
+Common mistakes: SQL inside controllers; service methods accepting Express Request; raw entity serialization; forwarding the same failure twice; accidental status 200 for a create or content on 204.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -672,7 +672,7 @@ Common mistakes: SQL inside controllers; service methods accepting Express Reque
 Controllers translate protocols; services enforce use cases; repositories isolate persistence. Boundaries should keep changes local.
 :::
 
-Practice — learner work still required: test controller responses and exact service inputs, including duplicated/invalid limits. Acceptance: Location/status/body are intentional,204 is empty, and service calls contain plain values plus trusted actor context, not req/res.
+Practice — learner work still required: test controller responses and exact service inputs, including duplicated/invalid limits. Acceptance: Location/status/body are intentional, 204 is empty, and service calls contain plain values plus trusted actor context, not req/res.
 
 Official references: [Express response API](https://expressjs.com/en/5x/api/response/), [Nest controllers](https://docs.nestjs.com/controllers), [Nest providers](https://docs.nestjs.com/providers).
 
@@ -683,7 +683,7 @@ Official references: [Express response API](https://expressjs.com/en/5x/api/resp
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -706,7 +706,7 @@ A request has several related lifetimes: transport input, response output, appli
 4. The service checks rules/permissions and asks its repository for data.
 5. The controller emits a public response; the application records its finish or aborted-close outcome once.
 
-An early error skips the ordinary response path into error middleware. A late error cannot replace committed headers; use the [error-boundary explanation](./10-error-handling.md#t10-q06). A completed HTTP200 can still be truncated or fail during body consumption at the client.
+An early error skips the ordinary response path into error middleware. A late error cannot replace committed headers; use the [error-boundary explanation](./10-error-handling.md#t10-q06). A completed HTTP 200 can still be truncated or fail during body consumption at the client.
 
 <span class="notes-section-label">**Worked ownership pattern**</span>
 
@@ -735,7 +735,7 @@ Nest's typical lifecycle is middleware → guards → interceptors before the ha
 
 If requests hang, locate whether the chain failed to continue/respond, a dependency never settled, or a resource remained active after response completion. Record phases/outcomes without raw body/token values. Use a controlled deferred dependency or completion event to reproduce the race, not an arbitrary sleep. An expected HTTP disconnect is not automatically a fatal process error.
 
-Common mistakes: returning200 before required work completes; releasing admission only on successful work; treating finish as remote acknowledgement; canceling durable work without an outcome policy; trying to JSON-respond after headersSent.
+Common mistakes: returning 200 before required work completes; releasing admission only on successful work; treating finish as remote acknowledgement; canceling durable work without an outcome policy; trying to JSON-respond after headersSent.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -757,12 +757,12 @@ Official references: [Node HTTP response lifecycle](https://nodejs.org/download/
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
 
-A PATCH carries `ownerId`, a negative price and a stale version. Should the controller spread it into storage? If two requests update version1 concurrently, should both silently overwrite the same record?
+A PATCH carries `ownerId`, a negative price and a stale version. Should the controller spread it into storage? If two requests update version 1 concurrently, should both silently overwrite the same record?
 
 <span class="notes-section-label">**`catalog-domain.mjs`**</span> — an intentionally process-local repository and reusable service:
 
@@ -873,7 +873,7 @@ Define the resource contract, validate allowed inputs, generate identities serve
 
 <span class="notes-section-label">**API behavior and trade-offs**</span>
 
-The controllers return201+Location for create,200 for get/list/update, and204 without content for delete. Missing records and another owner's records share MISSING so the read does not disclose cross-owner existence. Read-only actors can read their own data but cannot mutate it. Owner/role/version fields are never mass-assigned from a create body.
+The controllers return 201 with a Location header for create, 200 for get/list/update, and 204 without content for delete. Missing records and another owner's records share MISSING so the read does not disclose cross-owner existence. Read-only actors can read their own data but cannot mutate it. Owner/role/version fields are never mass-assigned from a create body.
 
 PATCH requires the expected version and at least one changed field. The repository's check-and-update occurs without an await inside one synchronous Map operation, so concurrent calls in this one process cannot both update the same old version. **A real database needs an atomic conditional UPDATE/constraint/transaction**; this Map is **not persistent or multi-instance storage**. Lists are deliberately bounded, not a complete stable pagination protocol.
 
@@ -910,7 +910,7 @@ Nest uses `@Post`, `@Get`, `@Patch` and `@Delete` for the same HTTP responsibili
 Share use cases between representations, and keep validation, ownership, concurrency and output encoding explicit at their proper boundaries.
 :::
 
-**Practice — learner work still required:** create/list/read/update/delete a product, race two version1 updates, and render a name containing HTML. Acceptance: one concurrent edit conflicts, other owners cannot read/edit, invalid owner/price fields fail,204 stays empty and the page escapes the name. Reproduce persistence/concurrency against a real database before claiming shared-store guarantees.
+**Practice — learner work still required:** create/list/read/update/delete a product, race two version 1 updates, and render a name containing HTML. Acceptance: one concurrent edit conflicts, other owners cannot read/edit, invalid owner/price fields fail, 204 stays empty and the page escapes the name. Reproduce persistence/concurrency against a real database before claiming shared-store guarantees.
 
 **Official references:** [Express routing](https://expressjs.com/en/guide/routing/), [Express template engines](https://expressjs.com/en/guide/using-template-engines/), [EJS escaping tags](https://ejs.co/), [Nest controllers](https://docs.nestjs.com/controllers).
 
@@ -920,7 +920,7 @@ Share use cases between representations, and keep validation, ownership, concurr
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -1000,11 +1000,11 @@ export function createCatalogApp({ verifyAccessToken, observe, repository = crea
 
 <span class="notes-section-label">**Reasoning and security boundaries**</span>
 
-The verifier returns an actor or null under an explicit contract; a malformed verifier result is an internal failure. An outage rejects its promise, which Express5 forwards to the error handler. The handler returns fixed fields and a generated request ID, not error messages, body, stack, SQL or tokens.
+The verifier returns an actor or null under an explicit contract; a malformed verifier result is an internal failure. An outage rejects its promise, which Express 5 forwards to the error handler. The handler returns fixed fields and a generated request ID, not error messages, body, stack, SQL or tokens.
 
 The service enforces read-only/owner rules even for non-HTTP callers. **Client-supplied identity/role fields are rejected** by the create/update allowlist. Pagination and stats filter the owner **before** limiting/counting, rather than fetching another owner's data and hiding a few fields afterward.
 
-401 has a Bearer challenge;403 means an authenticated actor lacks the capability; this lab uses404 for another owner's resource to avoid disclosing existence. These are documented choices, not evidence that status codes alone enforce security.
+401 has a Bearer challenge; 403 means an authenticated actor lacks the capability; this lab uses 404 for another owner's resource to avoid disclosing existence. These are documented choices, not evidence that status codes alone enforce security.
 
 For production tokens use a reviewed verifier/session system with signature/trust, expiry/revocation, issuer/audience and permission rules as appropriate; see the Authentication/Security topics. Cookie-based browser authentication also needs its appropriate CSRF/origin policy. This opaque test-token Map does not implement those systems.
 
@@ -1014,7 +1014,7 @@ A guard can verify a credential and return/throw a deliberate decision, using ha
 
 The runnable companion uses a real guard and explicit parsing pipes with a tiny fixture credential; the main Express service remains the full ownership/CRUD implementation. Do not read raw adapter response/status behavior into every Nest platform configuration.
 
-<span class="notes-section-label">**Common mistakes:**</span> trusting body/header user IDs; accepting any Bearer string; mapping verifier outage to401; accepting arbitrary error.status; spreading parser/driver errors into JSON; assuming DTO decorators enforce resource permissions.
+<span class="notes-section-label">**Common mistakes:**</span> trusting body/header user IDs; accepting any Bearer string; mapping verifier outage to 401; accepting arbitrary error.status; spreading parser/driver errors into JSON; assuming DTO decorators enforce resource permissions.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -1026,7 +1026,7 @@ The runnable companion uses a real guard and explicit parsing pipes with a tiny 
 Only a trusted verifier establishes actor context; the use case still checks permissions, and a separate boundary controls public failures.
 :::
 
-**Practice — learner work still required:** run valid, missing, unknown and read-only credentials; attempt cross-owner access and mass assignment. Acceptance: denied/invalid requests do not mutate storage, verifier outage returns safe500, and no response/observer record contains a credential or private diagnostic. Replace the fixture with your actual reviewed authentication adapter before production use.
+**Practice — learner work still required:** run valid, missing, unknown and read-only credentials; attempt cross-owner access and mass assignment. Acceptance: denied/invalid requests do not mutate storage, verifier outage returns safe 500, and no response/observer record contains a credential or private diagnostic. Replace the fixture with your actual reviewed authentication adapter before production use.
 
 **Official references:** [Express error handling](https://expressjs.com/en/guide/error-handling/), [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [Nest guards](https://docs.nestjs.com/guards), [Nest validation](https://docs.nestjs.com/techniques/validation), [Nest filters](https://docs.nestjs.com/exception-filters).
 
@@ -1034,7 +1034,7 @@ Only a trusted verifier establishes actor context; the use case still checks per
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -1197,7 +1197,7 @@ Create **`tsconfig.json`**:
 
 Compile with `npx tsc -p tsconfig.json`, then run `node dist/nest-side.js`. Node's ordinary type stripping is **not a replacement for compiling decorator/metadata syntax**. Request `/products?limit=1` using `Authorization: Bearer fixture-reader`. Stop the local server afterward. `fixture-failure` is deliberately broken to exercise the filter; remove it from any real application.
 
-The companion uses Nest11.1.6's Express adapter, not a Fastify portability claim. Interfaces/type aliases are erased; an injection token must exist at runtime, such as a class or explicit string/symbol. Export only capabilities that other modules should consume. `app.get()` is useful for diagnostics/testing but should not replace normal constructor injection throughout business code.
+The companion uses Nest 11.1.6's Express adapter, not a Fastify portability claim. Interfaces/type aliases are erased; an injection token must exist at runtime, such as a class or explicit string/symbol. Export only capabilities that other modules should consume. `app.get()` is useful for diagnostics/testing but should not replace normal constructor injection throughout business code.
 
 <span class="notes-section-label">**Common mistakes:**</span> mutable shared actor state, indiscriminately global/request-scoped providers, interface-only runtime tokens, or treating a provider override as evidence that the production adapter works.
 
@@ -1221,7 +1221,7 @@ Make dependency direction and lifetime explicit; framework conventions do not re
 
 *Study depth: Intermediate, with deeper framework internals optional*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>
@@ -1250,7 +1250,7 @@ Choose the extension point whose **scope and timing match the responsibility**. 
 
 `SideCatalog` records initialization and destruction on its own provider instance. `app.init()` initializes the application; `app.close()` runs the relevant disposal path. The isolated checks can obtain that provider, inspect its lifecycle record and close the context **without listening on a port**. These records demonstrate hook invocation, not closure of a real database pool—the companion has none.
 
-`SideTrace` records `before` and uses RxJS `finalize` for settlement, including an error. A success-only `tap` callback would not express the same cleanup rule. The tiny trace retains at most100 fixed labels; it is a lab observer, not a production metrics collector or business audit trail. Its global registration uses the container-created provider rather than constructing a second instance manually.
+`SideTrace` records `before` and uses RxJS `finalize` for settlement, including an error. A success-only `tap` callback would not express the same cleanup rule. The tiny trace retains at most 100 fixed labels; it is a lab observer, not a production metrics collector or business audit trail. Its global registration uses the container-created provider rather than constructing a second instance manually.
 
 A guard can reject before the interceptor/handler executes. A pipe can reject input before business logic. A filter maps a scoped exception; it does not gain ownership of detached work merely because that work was started by a handler. Do not put permission checks only in an interceptor's successful response path.
 
@@ -1284,7 +1284,7 @@ Use framework hooks as well-placed entry points into explicit owners, not as a r
 
 *Study depth: Intermediate; advanced operations remain separate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Predict before reading**</span>

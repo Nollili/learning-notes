@@ -8,7 +8,7 @@ Use PostgreSQL and the existing RabbitMQ job adapter as the primary implementati
 
 ## What contract must a message describe? {#t19-q01}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -68,7 +68,7 @@ Specify an export command and its completion event. Test invalid/oversize/old-ve
 
 ## How do RabbitMQ confirms, acknowledgements and the outbox fit together? {#t19-q02}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -99,7 +99,7 @@ Run the canonical lab against owned RabbitMQ/PostgreSQL. Verify duplicate effect
 
 ## How do retries, dead letters and failover avoid an outage loop? {#t19-q03}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -126,7 +126,7 @@ Inject dependency failure, poison input, broker disconnect and post-commit respo
 
 ## How is Kafka consumption different from deleting queue messages? {#t19-q04}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -170,7 +170,7 @@ In an owned topic/group, stop after a SQL commit but before offset commit, resta
 
 ## When do SQS and SNS fit a Node service? {#t19-q05}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -197,7 +197,7 @@ Prepare a scoped topology/configuration locally; in an authorized sandbox test t
 
 ## What should you know about ActiveMQ and Artemis before choosing them? {#t19-q06}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -228,7 +228,7 @@ Write a concrete adapter contract and an owned setup plan: product/version, prot
 ## Revision and mixed practice
 
 1. A publisher timed out after the broker accepted an outbox event. Should a retry use a new business ID?
-2. A Kafka consumer finishes record42 after record41 fails, then commits43. What went wrong?
+2. A Kafka consumer finishes record 42 after record 41 fails, then commits 43. What went wrong?
 
 <span class="notes-section-label">**Answer guide — attempt both cases first**</span>
 

@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Four worked patterns for bounded expression semantics, traversal/resource ownership, opaque snapshots and operations over stable node types. These examples use owned in-memory data; production parsers/cursors/history need their actual boundary contracts.
 
-Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
+Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules only. Keep experiments in an owned lab. [Pattern overview](../18-patterns.md) supplies selection criteria; exercises remain your separate practice.
 
 ---
 
@@ -14,7 +14,7 @@ Examples are standalone `.mjs` files for Node.js24.18.0, using built-in modules 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -128,7 +128,7 @@ Interpreter represents a grammar and defines how its expressions are evaluated.
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -240,7 +240,7 @@ Iterator provides sequential traversal without exposing a collection’s represe
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -334,7 +334,7 @@ Memento lets an originator capture/restores its state through snapshots held by 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -407,7 +407,7 @@ for (let i = 0; i < 8; i++) deep = new Add(deep, new Literal(1));
 assert.throws(() => new Add(deep, new Literal(1)), /Depth/);
 ```
 
-accept selects literal versus add; each visitor then implements its operation across those types. Adding TextVisitor did not change the nodes. A new Multiply node would require a matching method in every complete visitor. Immutable typed children and depth8 bound this binary traversal; it is not a parser for arbitrary external graphs.
+accept selects literal versus add; each visitor then implements its operation across those types. Adding TextVisitor did not change the nodes. A new Multiply node would require a matching method in every complete visitor. Immutable typed children and depth 8 bound this binary traversal; it is not a parser for arbitrary external graphs.
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 

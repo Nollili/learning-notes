@@ -10,7 +10,7 @@ Examples use **Node.js 24.18.0**, ES Modules and built-in APIs. These eight ques
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <span class="notes-section-label">**Example — predict the parent value and identity comparisons**</span>
@@ -113,7 +113,7 @@ Avoid unlimited worker creation and automatic crash respawn loops.
 
 - Calling fork or cluster a thread API, or assuming all workers share ordinary objects.
 - Adding threads for already asynchronous I/O without evidence.
-- Resolving on the first message while forgetting an active worker, or treating exit0 without a reply as a business result.
+- Resolving on the first message while forgetting an active worker, or treating exit 0 without a reply as a business result.
 - Treating a process/thread as a security sandbox or spawning one per unbounded request.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
@@ -129,12 +129,12 @@ Identify the execution and ownership boundary before choosing communication, fai
 ### One-question learner exercise {#one-question-learner-exercise}
 
 - [ ] Predict and explain the fixture's output before running it; retain proof that the parent object is unchanged.
-- [ ] Test worker startup failure, thrown error, malformed result, exit0 without a result and a worker that reports then stays alive. Every case must terminate under an external test watchdog.
+- [ ] Test worker startup failure, thrown error, malformed result, exit 0 without a result and a worker that reports then stays alive. Every case must terminate under an external test watchdog.
 - [ ] Explain why fork, cluster and worker_threads solve different problems, then choose an approach for a CPU-heavy report, an external executable and an I/O-bound request.
 
 Acceptance: assert values/error paths and actual worker settlement; do not claim thread speedup from the tiny arithmetic example. Process/cluster integration, transfers/shared-memory correctness, reusable pools and cross-platform behaviour are not established by this fixture. Author checks do not complete learner practice.
 
-Official references checked2026-11-04: Node24.18 [worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child_process.fork](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options). Earlier fork/IPC examples remain in [related explanation](./02-cli-and-processes.md#t02-q08); this question adds the process/thread comparison without duplicating that implementation.
+Official references checked 2026-11-04: Node 24.18 [worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child_process.fork](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options). Earlier fork/IPC examples remain in [related explanation](./02-cli-and-processes.md#t02-q08); this question adds the process/thread comparison without duplicating that implementation.
 
 ---
 
@@ -142,12 +142,12 @@ Official references checked2026-11-04: Node24.18 [worker threads](https://nodejs
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <span class="notes-section-label">**Example — predict completion before running**</span>
 
-Use the existing source helper below unchanged. In an owned temporary directory, save it as `worker.ts`, then create sum-worker.mjs and run-worker.mjs. Node24.18 can strip this helper's erasable TypeScript syntax when imported; **runtime stripping does not type-check it** or implement arbitrary tsconfig transforms.
+Use the existing source helper below unchanged. In an owned temporary directory, save it as `worker.ts`, then create sum-worker.mjs and run-worker.mjs. Node 24.18 can strip this helper's erasable TypeScript syntax when imported; **runtime stripping does not type-check it** or implement arbitrary tsconfig transforms.
 
 No TypeScript dependency is needed for this stated runtime experiment. Preserve an Autocode template's compiler/Jest configuration rather than replacing it with this fixture setup.
 
@@ -207,7 +207,7 @@ A worker task needs a defined terminal protocol and one owner for result, error,
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Output is6, then true. The first valid result selects success, but the helper does not resolve immediately: it waits for termination of the worker, including its deliberately retained interval. The second call is still pending when its caller aborts; the Error object supplied as reason is preserved after termination.
+Output is 6, then true. The first valid result selects success, but the helper does not resolve immediately: it waits for termination of the worker, including its deliberately retained interval. The second call is still pending when its caller aborts; the Error object supplied as reason is preserved after termination.
 
 Attaching catch immediately keeps that expected rejection observed. This is a per-task worker owner, not a cancellation mechanism for a shared pool worker running unrelated tasks.
 
@@ -239,7 +239,7 @@ For a pool, cancellation often needs to remove queued work or stop only the assi
 
 <span class="notes-section-label">**Common mistakes**</span>
 
-- Waiting forever after exit0 without a reply, or treating online as a completed result.
+- Waiting forever after exit 0 without a reply, or treating online as a completed result.
 - Using Promise.race to stop waiting while leaving the worker running.
 - Accepting unknown messages with a type assertion or interpreting a progress message as final success.
 - Removing error listeners before asynchronous termination completes, or claiming abort rolled back external effects.
@@ -248,7 +248,7 @@ For a pool, cancellation often needs to remove queued work or stop only the assi
 
 1. <span class="notes-section-label">**What if success arrives just before cancellation?**</span> Once success is selected, a later abort cannot replace it in this helper; termination still completes before resolution. Business effects need their own consistency rule.
 2. <span class="notes-section-label">**Why keep the timer referenced?**</span> The owner deliberately requires pending tasks to remain supervised; an unreferenced timer alone need not keep the process alive. Clearing it at terminal selection prevents a later unrelated rejection attempt.
-3. <span class="notes-section-label">**Does worker termination prove normal exit0?**</span> No. Forced termination has its own exit behaviour. Here success means validated result plus completed termination, whereas Q01 requires natural exit0 after its result.
+3. <span class="notes-section-label">**Does worker termination prove normal exit 0?**</span> No. Forced termination has its own exit behaviour. Here success means validated result plus completed termination, whereas Q01 requires natural exit 0 after its result.
 
 ::: tip Key takeaway
 Select one outcome, validate its meaning and finish owned cleanup before reporting the task complete.
@@ -262,7 +262,7 @@ Select one outcome, validate its meaning and finish owned cleanup before reporti
 
 Acceptance: every owned worker must settle/terminate and the external test watchdog must remain able to stop a broken case. Record which terminal/cleanup branches were actually exercised; message-deserialization and native termination failures cannot be inferred from an ordinary thrown error. Author checks do not complete learner practice.
 
-Official references checked2026-11-04: Node24.18 [worker termination and events](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [AbortSignal reason](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#abortsignalreason), [TypeScript stripping limits](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html#type-stripping). The included implementation is the existing [source helper context](../module-02-standard-library.md#promise-wrapper); no second production helper was added.
+Official references checked 2026-11-04: Node 24.18 [worker termination and events](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [AbortSignal reason](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#abortsignalreason), [TypeScript stripping limits](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html#type-stripping). The included implementation is the existing [source helper context](../module-02-standard-library.md#promise-wrapper); no second production helper was added.
 
 <span id="next-small-batch"></span>
 
@@ -273,7 +273,7 @@ Official references checked2026-11-04: Node24.18 [worker termination and events]
 
 *Study depth: Intermediate; advanced shared-memory algorithms optional*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -286,7 +286,7 @@ Copying gives each side independent supported data. Transferring an owned ArrayB
 
 <span class="notes-section-label">**Predict the ownership change**</span>
 
-The parent initializes one integer to7 and the worker changes it to8. Which parent still sees7, which loses its usable buffer, and which sees8? Does transferring one typed-array view leave another view of the same backing buffer usable?
+The parent initializes one integer to 7 and the worker changes it to 8. Which parent still sees 7, which loses its usable buffer, and which sees 8? Does transferring one typed-array view leave another view of the same backing buffer usable?
 
 | Choice | Sender after communication | Receiver | Appropriate starting point |
 |---|---|---|---|
@@ -400,7 +400,7 @@ An actual shared queue needs ownership of slots, publication/visibility rules, b
 
 A typed array or Buffer is a view, not necessarily the owner of its entire backing store. A subview can refer to a larger allocation; moving that whole allocation may move more data than intended. For this reason the example allocates a dedicated four-byte ArrayBuffer rather than transferring an arbitrary incoming Buffer's `.buffer`.
 
-Node Buffer pooling introduces version-sensitive clone/transfer restrictions. Do not assume a small Buffer owns a dedicated transferable allocation, and do not widen the payload to an entire pool to avoid a transfer error. Copy the exact intended byte range into dedicated owned storage when needed. Check the Node24 transfer/Buffer guidance before integrating a particular Buffer creation path.
+Node Buffer pooling introduces version-sensitive clone/transfer restrictions. Do not assume a small Buffer owns a dedicated transferable allocation, and do not widen the payload to an entire pool to avoid a transfer error. Copy the exact intended byte range into dedicated owned storage when needed. Check the Node 24 transfer/Buffer guidance before integrating a particular Buffer creation path.
 
 <span class="notes-section-label">**Choose and measure**</span>
 
@@ -433,7 +433,7 @@ Acceptance: retain results/error branches, cleanup evidence and a reasoned copy/
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 worker messages, transfer lists and Buffer considerations](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html#portpostmessagevalue-transferlist), [Atomics.add specification](https://tc39.es/ecma262/multipage/structured-data.html#sec-atomics.add), [Atomics.wait and event-loop implications](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics/wait). The existing [source ownership introduction](../module-02-standard-library.md#message-copying-transfer-and-shared-memory) remains useful context. Runtime/version-specific details checked2026-11-04; the examples above do not rely on later worker lock APIs.
+[Node 24.18 worker messages, transfer lists and Buffer considerations](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html#portpostmessagevalue-transferlist), [Atomics.add specification](https://tc39.es/ecma262/multipage/structured-data.html#sec-atomics.add), [Atomics.wait and event-loop implications](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics/wait). The existing [source ownership introduction](../module-02-standard-library.md#message-copying-transfer-and-shared-memory) remains useful context. Runtime/version-specific details checked 2026-11-04; the examples above do not rely on later worker lock APIs.
 
 ---
 
@@ -441,7 +441,7 @@ Acceptance: retain results/error branches, cleanup evidence and a reasoned copy/
 
 *Study depth: Intermediate; multi-worker tuning and automatic recovery optional extensions*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -461,8 +461,8 @@ This experiment deliberately has **one reusable worker**. It makes queue/ownersh
 | Boundary | Explicit policy in this lab |
 |---|---|
 | Worker capacity | One assigned task at a time, worker reused for later tasks |
-| Queue capacity | Configurable0–16 waiting places, FIFO; default2 |
-| Payload | At most1000 integers, each0–1000; copied snapshot on admission |
+| Queue capacity | Configurable 0–16 waiting places, FIFO; default 2 |
+| Payload | At most 1000 integers, each 0–1000; copied snapshot on admission |
 | Result | Tagged result, matching monotonic task ID, bounded integer |
 | Queued cancel/deadline | Remove from queue; reject caller and release its place |
 | Running cancel/deadline | Reject caller; keep physical slot occupied until result/failure |
@@ -645,11 +645,11 @@ Cooperative messages cannot interrupt a worker stuck in a synchronous loop that 
 
 <span class="notes-section-label">**Drain, failure and resource ownership**</span>
 
-`close()` returns one stable promise. New tasks reject while accepted tasks drain. When the queue and assigned task are empty, the owner terminates its idle message-listening worker and awaits termination. `{ drained: true }` means accepted physical work finished before teardown; it does not mean the worker exited naturally with code0.
+`close()` returns one stable promise. New tasks reject while accepted tasks drain. When the queue and assigned task are empty, the owner terminates its idle message-listening worker and awaits termination. `{ drained: true }` means accepted physical work finished before teardown; it does not mean the worker exited naturally with code 0.
 
 If the close budget expires, queued/running callers are rejected and termination is awaited; the result is `{ drained: false }`. That is completed forced teardown, not a successful drain. A worker/protocol failure rejects pending work and the close promise. Termination rejection is surfaced as a cleanup failure rather than silently reported as success. The internal catch observes an automatically initiated close rejection; callers still need to await `close()` to receive it.
 
-Keep error/exit handling until termination settles, then remove the owned listeners. Unexpected exits are failures even with code0. This lab fails closed and never respawns; a real replacement policy needs limits/backoff, readiness, queued-task ownership and crash-loop protection. Constructor startup/module-load failure and a later worker crash are different observations but both need cleanup.
+Keep error/exit handling until termination settles, then remove the owned listeners. Unexpected exits are failures even with code 0. This lab fails closed and never respawns; a real replacement policy needs limits/backoff, readiness, queued-task ownership and crash-loop protection. Constructor startup/module-load failure and a later worker crash are different observations but both need cleanup.
 
 A timer cannot preempt blocked parent JavaScript or guarantee a native thread stops immediately. The close budget initiates forceful termination; awaiting that termination can take longer. An external process supervisor remains the final deployment deadline. `unref()` is not graceful shutdown and does not establish task completion.
 
@@ -667,7 +667,7 @@ Creating unlimited workers, accepting an unbounded queue, sharing mutable input,
 
 1. <span class="notes-section-label">**Can a cancelled running task still use CPU?**</span> Yes under this policy. The caller has stopped waiting, while physical work retains the worker slot until its valid result, failure or pool teardown.
 2. <span class="notes-section-label">**Why not immediately assign the next task to the same worker?**</span> The previous work has not finished. Reuse before its terminal protocol risks overlapping work, stale replies and incorrect capacity accounting.
-3. <span class="notes-section-label">**Does queue size2 mean only two total tasks?**</span> No. This pool can retain one assigned task plus two waiting tasks; payload and caller/output retention have separate costs.
+3. <span class="notes-section-label">**Does queue size 2 mean only two total tasks?**</span> No. This pool can retain one assigned task plus two waiting tasks; payload and caller/output retention have separate costs.
 4. <span class="notes-section-label">**Does the demo prove a multi-worker speedup?**</span> No. It proves bounded admission, result correlation, reuse and owned lifecycle for one worker; representative CPU/load measurements remain separate.
 
 ::: tip Key takeaway
@@ -686,7 +686,7 @@ Acceptance: exact results, failure identities where promised, bounded retained w
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 worker pools and AsyncResource recommendation](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [worker termination](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html#workerterminate), [AsyncResource pool example](https://nodejs.org/download/release/v24.18.0/docs/api/async_context.html#using-asyncresource-for-a-worker-thread-pool), [existing bounded-work source introduction](../module-02-standard-library.md#_11-worker-pools-and-bounded-cpu-work). Checked2026-11-04; this one-worker teaching implementation is deliberately narrower than a production scheduling library.
+[Node 24.18 worker pools and AsyncResource recommendation](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [worker termination](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html#workerterminate), [AsyncResource pool example](https://nodejs.org/download/release/v24.18.0/docs/api/async_context.html#using-asyncresource-for-a-worker-thread-pool), [existing bounded-work source introduction](../module-02-standard-library.md#_11-worker-pools-and-bounded-cpu-work). Checked 2026-11-04; this one-worker teaching implementation is deliberately narrower than a production scheduling library.
 
 ---
 
@@ -694,7 +694,7 @@ Acceptance: exact results, failure identities where promised, bounded retained w
 
 *Study depth: Intermediate; deployment-specific scheduling/replacement tuning optional*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -713,7 +713,7 @@ Cluster distributes connections according to its supported scheduling policy; do
 
 <span class="notes-section-label">**Owned two-process service fixture**</span>
 
-Save `cluster-lab.mjs` and run it with Node24. It binds only loopback and uses an ephemeral port. Under cluster, these matching listen(0) calls share an allocated endpoint; they are not two independently selected ports. The fixed two-worker count is a lab policy, not a sizing recommendation.
+Save `cluster-lab.mjs` and run it with Node 24. It binds only loopback and uses an ephemeral port. Under cluster, these matching listen(0) calls share an allocated endpoint; they are not two independently selected ports. The fixed two-worker count is a lab policy, not a sizing recommendation.
 
 ```js
 // file: cluster-lab.mjs
@@ -812,7 +812,7 @@ Acceptance: readiness after both listeners, per-process state, bounded shutdown,
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 cluster operation and lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [HTTP service closure](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#serverclosecallback). Version-specific sharing/scheduling details checked2026-11-04. The [source cluster introduction](../module-02-standard-library.md#_7-cluster) remains its broader runtime context.
+[Node 24.18 cluster operation and lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [HTTP service closure](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#serverclosecallback). Version-specific sharing/scheduling details checked 2026-11-04. The [source cluster introduction](../module-02-standard-library.md#_7-cluster) remains its broader runtime context.
 
 ---
 
@@ -820,7 +820,7 @@ Acceptance: readiness after both listeners, per-process state, bounded shutdown,
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -884,7 +884,7 @@ process.on('message', onMessage);
 
 After the final result, the message listener keeps the session available for more jobs. On a valid stop request, the child sends a stopped acknowledgement and disconnects. The disconnect handler removes its message subscription. There are no fixture timers, servers or external resources left to keep it alive. Real children must close their own pools/files/subscriptions too; IPC disconnection cannot do that for them.
 
-Malformed input exits this fixture with code2 after disconnecting. The parent treats a missing result or unclean session closure as failure. A returned PID is a useful diagnostic in this owned channel, not authentication for arbitrary external messages. The arithmetic and bounds are intentionally tiny and do not justify process startup in a real request path.
+Malformed input exits this fixture with code 2 after disconnecting. The parent treats a missing result or unclean session closure as failure. A returned PID is a useful diagnostic in this owned channel, not authentication for arbitrary external messages. The arithmetic and bounds are intentionally tiny and do not justify process startup in a real request path.
 
 <span class="notes-section-label">**Run the reusable session**</span>
 
@@ -949,7 +949,7 @@ Acceptance: no child/channel remains after owned close, results and lifecycle fa
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 fork and ChildProcess events](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options), [close semantics](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#event-close), [process lifecycle context](./02-cli-and-processes.md#t02-q05).
+[Node 24.18 fork and ChildProcess events](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options), [close semantics](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#event-close), [process lifecycle context](./02-cli-and-processes.md#t02-q05).
 
 ---
 
@@ -957,7 +957,7 @@ Acceptance: no child/channel remains after owned close, results and lifecycle fa
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -970,7 +970,7 @@ IPC is a transport for a defined application protocol. **Validate message versio
 
 <span class="notes-section-label">**One assigned request, no hidden waiting queue**</span>
 
-The session admits at most one request and rejects another while busy. IDs increase within a100-job session limit. Replies match the active ID, expected tiny arithmetic result and owned child PID. The fixed message schemas contain no caller-supplied file path, role or tenant authority. For a real service, validate its actual schema and authorize at the trusted operation boundary.
+The session admits at most one request and rejects another while busy. IDs increase within a 100-job session limit. Replies match the active ID, expected tiny arithmetic result and owned child PID. The fixed message schemas contain no caller-supplied file path, role or tenant authority. For a real service, validate its actual schema and authorize at the trusted operation boundary.
 
 This design sends one small bounded request and then waits for its result before accepting another. Node send can return false when the channel is closed/backlogged; that is not an instruction to immediately resend the same command. Keep a callback error owner, stop producing further application work and respect the outcome/deadline contract. A larger window needs both finite message/byte budgets and correlated per-task state; a transport backlog threshold is not your business queue limit.
 
@@ -1128,7 +1128,7 @@ Treating send=true or its callback as a result; resending on send=false; interpr
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
 1. <span class="notes-section-label">**Why reject a duplicate result even if its number looks valid?**</span> It violates the phase/ID contract and can otherwise complete an unrelated operation.
-2. <span class="notes-section-label">**Would a window of10 need more than10 IDs?**</span> It needs explicit active/pending ownership, byte limits, timeouts and cancellation/outcome policy, not just a counter.
+2. <span class="notes-section-label">**Would a window of 10 need more than 10 IDs?**</span> It needs explicit active/pending ownership, byte limits, timeouts and cancellation/outcome policy, not just a counter.
 3. <span class="notes-section-label">**Does disconnect flush a durable business log?**</span> No. Transport closure and durable commit are separate responsibilities.
 
 ::: tip Key takeaway
@@ -1145,7 +1145,7 @@ Acceptance: each promise settles according to its phase, repeated close is stabl
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 send/callback/flow-control semantics](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#subprocesssendmessage-sendhandle-options-callback), [serialization modes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#advanced-serialization). Version-sensitive details checked2026-11-04; the [existing single-request IPC owner](./02-cli-and-processes.md#t02-q08) remains the simpler starting point.
+[Node 24.18 send/callback/flow-control semantics](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#subprocesssendmessage-sendhandle-options-callback), [serialization modes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#advanced-serialization). Version-sensitive details checked 2026-11-04; the [existing single-request IPC owner](./02-cli-and-processes.md#t02-q08) remains the simpler starting point.
 
 ---
 
@@ -1153,7 +1153,7 @@ Acceptance: each promise settles according to its phase, repeated close is stabl
 
 *Study depth: Intermediate; representative infrastructure measurements remain practical work*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -1202,7 +1202,7 @@ assert.throws(() => budget({ replicas: -1 }), RangeError);
 console.log('Capacity multiplication fixture passes; no capacity benchmark is implied.');
 ```
 
-Three replicas with two processes each create24 CPU workers and up to60 configured DB connections in this fixture. Rolling deployments can temporarily add old and new replicas; capacity planning must include that overlap. A bound in one process does not establish a global limit. CPU quotas and available resources matter more than the host’s nominal core count. Shared native work, memory, sockets and dependency capacity still compete.
+Three replicas with two processes each create 24 CPU workers and up to 60 configured DB connections in this fixture. Rolling deployments can temporarily add old and new replicas; capacity planning must include that overlap. A bound in one process does not establish a global limit. CPU quotas and available resources matter more than the host’s nominal core count. Shared native work, memory, sockets and dependency capacity still compete.
 
 <span class="notes-section-label">**A reproducible diagnostic sequence**</span>
 
@@ -1238,10 +1238,10 @@ Choose the bottleneck and ownership boundary first; measure the full topology an
 
 | Boundary | Retained material |
 |---|---|
-| Isolation and per-task ownership | Questions1–2: process/thread differences, result/error/exit/cancel semantics |
-| Data ownership and reusable CPU work | Questions3–4: clone/transfer/shared memory, bounded queue and physical occupancy |
-| Service/process topology | Questions5–7: cluster, forked session, correlated bounded IPC and actual closure |
-| Production choice | Question8: workload, capacity multiplication, diagnosis and recovery decisions |
+| Isolation and per-task ownership | Questions 1–2: process/thread differences, result/error/exit/cancel semantics |
+| Data ownership and reusable CPU work | Questions 3–4: clone/transfer/shared memory, bounded queue and physical occupancy |
+| Service/process topology | Questions 5–7: cluster, forked session, correlated bounded IPC and actual closure |
+| Production choice | Question 8: workload, capacity multiplication, diagnosis and recovery decisions |
 
 - [ ] Reproduce the worker ownership and pool failure checks with an external watchdog.
 - [ ] Run cluster and fork sessions, provoke worker/child loss, and retain PID/readiness/closure evidence.
@@ -1250,4 +1250,4 @@ Choose the bottleneck and ownership boundary first; measure the full topology an
 
 Learning material covers all five listed concurrency source items. Every exercise is still your practical work; none of the local checks establishes production capacity or professional readiness.
 
-Official references: [Node24.18 worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html), [performance diagnosis source](../module-11-performance-diagnostics.md). Last verification:2026-11-05.
+Official references: [Node 24.18 worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html), [performance diagnosis source](../module-11-performance-diagnostics.md). Last verification:2026-11-05.

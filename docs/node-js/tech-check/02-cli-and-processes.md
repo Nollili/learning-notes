@@ -4,13 +4,13 @@ outline: [2, 3]
 
 # CLI and process management
 
-JavaScript examples use Node24, ES Modules (`.mjs`) and built-in APIs. Shell commands use POSIX syntax unless stated otherwise; adapt environment/redirection syntax for your shell. Depth labels describe study depth, not an official exam grade.
+JavaScript examples use Node 24, ES Modules (`.mjs`) and built-in APIs. Shell commands use POSIX syntax unless stated otherwise; adapt environment/redirection syntax for your shell. Depth labels describe study depth, not an official exam grade.
 
 ### How do you run a program and distinguish Node flags from script arguments? {#t02-q01}
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -64,7 +64,7 @@ A real CLI should parse a declared option schema (for example node:util parseArg
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. <span class="notes-section-label">**Why is the number42 received as text?**</span> Operating-system argument lists carry strings. Parse and range-check it; Number conversion alone can accept empty/whitespace or unintended notation.
+1. <span class="notes-section-label">**Why is the number 42 received as text?**</span> Operating-system argument lists carry strings. Parse and range-check it; Number conversion alone can accept empty/whitespace or unintended notation.
 2. <span class="notes-section-label">**Does --trace-warnings prove the source of every error?**</span> No. It adds warning stack information. Thrown errors, failed dependencies and application logs have their own diagnostic paths.
 3. <span class="notes-section-label">**What if node is not found or is the wrong version?**</span> Inspect the executable/toolchain selection in that environment, including PATH and container image; changing application imports cannot fix executable selection.
 
@@ -79,7 +79,7 @@ Keep runtime flags, shell processing and validated application arguments as thre
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
@@ -94,17 +94,17 @@ What is wrong with `const enabled = Boolean(process.env.FEATURE_ENABLED)` when t
 
 **Environment variables supply string configuration, not typed application state**. **Validate them once at startup**, **apply defaults only for genuinely absent values**, convert deliberately and pass a small immutable configuration object to the application. **The string false is truthy**, and truthy defaults can hide invalid or meaningful values.
 
-A .env file is a loading mechanism, not a secret vault. Node24 supports --env-file; **an existing process environment value takes precedence over the file**. Keep credentials out of logs, argv and client bundles, and fail startup safely for invalid essential settings.
+A .env file is a loading mechanism, not a secret vault. Node 24 supports --env-file; **an existing process environment value takes precedence over the file**. Keep credentials out of logs, argv and client bundles, and fail startup safely for invalid essential settings.
 
 </div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Boolean('false') is true because the string is nonempty. Number('') is0, and a || default treats0 like absence. Those conversions can silently change operational policy. Configuration needs a schema: accepted names, types, ranges, required/optional fields, precedence and safe error messages.
+Boolean('false') is true because the string is nonempty. Number('') is 0, and a || default treats 0 like absence. Those conversions can silently change operational policy. Configuration needs a schema: accepted names, types, ranges, required/optional fields, precedence and safe error messages.
 
-A port used for an externally configured service can deliberately forbid0, while a test listener can deliberately allow ephemeral0; decide per application.
+A port used for an externally configured service can deliberately forbid 0, while a test listener can deliberately allow ephemeral 0; decide per application.
 
-The following `config.mjs` exports a pure parser with no network/startup side effect. Defaults apply only when an option is undefined. It accepts decimal ports1–65535 and exactly true/false for the feature switch. The end-of-string guard rejects a trailing newline rather than relying on JavaScript's permissive $ position.
+The following `config.mjs` exports a pure parser with no network/startup side effect. Defaults apply only when an option is undefined. It accepts decimal ports 1–65535 and exactly true/false for the feature switch. The end-of-string guard rejects a trailing newline rather than relying on JavaScript's permissive $ position.
 
 <span class="notes-section-label">**Example**</span>
 
@@ -155,7 +155,7 @@ Parse environment strings into a validated startup contract; defaults, precedenc
 
 *Study depth: Foundational*
 
-Seniority level: Junior\
+Level Up: L1\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -170,7 +170,7 @@ It is **not a substitute for a reproducible module or test**: its state, top-lev
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-In this local Node24 REPL transcript, the prompts/results are terminal interaction, not lines to copy into a .mjs file:
+In this local Node 24 REPL transcript, the prompts/results are terminal interaction, not lines to copy into a .mjs file:
 
 <span class="notes-section-label">**Example**</span>
 
@@ -222,14 +222,14 @@ Use the REPL to explore, then turn important observations into reproducible file
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Standard input is the process's input stream; standard output carries its normal result; standard error carries diagnostics. Their conventional OS descriptors are0,1,2. They can be a terminal, pipe or file, so do not assume interactive prompts or synchronous writes.
+Standard input is the process's input stream; standard output carries its normal result; standard error carries diagnostics. Their conventional OS descriptors are 0, 1 and 2. They can be a terminal, pipe or file, so do not assume interactive prompts or synchronous writes.
 
 A composable CLI keeps **machine-readable output on stdout**, **sends fixed diagnostics to stderr** and **reports failure through its exit status**. It must also respect stream errors/backpressure and close owned interfaces. The OS descriptor identifies an I/O channel, **not a guarantee about the order of two separate output channels**.
 
@@ -263,14 +263,14 @@ try {
 }
 ```
 
-Run `node count-lines.mjs < fixture.txt > result.json 2> errors.log`. `a\nb\n` produces `{"lines":2}`, not3: a final terminator does not add an empty logical line. A blank line within the input is still a line. crlfDelay makes CRLF handling explicit; this is not a binary file/framing protocol.
+Run `node count-lines.mjs < fixture.txt > result.json 2> errors.log`. `a\nb\n` produces `{"lines":2}`, not 3: a final terminator does not add an empty logical line. A blank line within the input is still a line. crlfDelay makes CRLF handling explicit; this is not a binary file/framing protocol.
 
 Limits: readline can accumulate a long line before the check runs, so this is not a hard hostile-input memory cap. A production byte/line protocol needs bounded chunks/framing before accumulation, deadlines and stream-error ownership. This small final stdout write is not a general streaming/backpressure implementation. Large output must observe write(false)/drain or use pipeline. Do not claim a browser ReadableStream and Node process streams have identical methods/lifetimes.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Parsing arbitrary binary input as text or splitting every incoming chunk as if it were a whole line/code point.
-- Using console.error but returning exit0 for a failed CLI.
+- Using console.error but returning exit 0 for a failed CLI.
 - Calling process.exit immediately after a write; asynchronous output can be cut off.
 - Ignoring every stdout error because one expected broken pipe occurred. An EPIPE caused by an intentionally closed downstream consumer needs a chosen cancellation policy; other write failures still matter.
 
@@ -293,12 +293,12 @@ Separate results from diagnostics, and treat standard streams as real resources 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
-Does this Node24 `.mjs` program print saved? What is its exit status?
+Does this Node 24 `.mjs` program print saved? What is its exit status?
 
 ```js
 process.on('exit', () => {
@@ -319,9 +319,9 @@ Node normally exits when no referenced runtime work keeps its event loop alive. 
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The example does not print saved and naturally exits with status2. By the time exit is being processed, scheduling a timer cannot revive normal execution. Making the listener async does not make the runtime await it. Await required persistence/cleanup before reaching termination, then set the appropriate final status.
+The example does not print saved and naturally exits with status 2. By the time exit is being processed, scheduling a timer cannot revive normal execution. Making the listener async does not make the runtime await it. Await required persistence/cleanup before reaching termination, then set the appropriate final status.
 
-Use exit0 for success and a documented nonzero application status for failure; code2 as a usage error is this guide's convention, not a universal Node requirement.
+Use exit 0 for success and a documented nonzero application status for failure; code 2 as a usage error is this guide's convention, not a universal Node requirement.
 
 A referenced timer keeps the process alive by default. Calling timer.unref allows it not to keep the process alive by itself; it does not cancel it. A missing output from an unreferenced timer is therefore not necessarily a timer bug. Conversely a leaked interval or open listening server can prevent a test/CLI from finishing after its apparent result.
 
@@ -361,7 +361,7 @@ After a fatal uncaught error, continuing to accept requests as though state is h
 
 1. <span class="notes-section-label">**Why not use beforeExit as a service's primary stop hook?**</span> A listening service may never naturally drain, and that event does not cover every termination path. Explicit lifecycle triggers and resource owners are clearer.
 2. <span class="notes-section-label">**What does unref mean for a deadline?**</span> An unreferenced timer can still fire while other work keeps the process alive. Do not unref the only owner whose completion the program must await without understanding that contract.
-3. <span class="notes-section-label">**Does exit0 prove business success?**</span> Only if the program sets it according to confirmed outcomes. A swallowed rejection or unverified write can produce a false success status.
+3. <span class="notes-section-label">**Does exit 0 prove business success?**</span> Only if the program sets it according to confirmed outcomes. A swallowed rejection or unverified write can produce a false success status.
 
 ::: tip Key takeaway
 Await owned work before termination; exit events and forced process termination are not asynchronous cleanup strategies.
@@ -374,7 +374,7 @@ Await owned work before termination; exit events and forced process termination 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐
 
 <div class="notes-core-answer">
@@ -414,7 +414,7 @@ console.log(JSON.stringify({
 }));
 ```
 
-The sum is1249975000; timing/memory values vary. hrtime.bigint measures elapsed monotonic duration in nanoseconds; BigInt is converted explicitly because plain JSON.stringify cannot serialize it. cpuUsage reports user/system CPU microseconds, not request latency. An I/O wait can increase elapsed time while consuming little CPU.
+The sum is 1249975000; timing/memory values vary. hrtime.bigint measures elapsed monotonic duration in nanoseconds; BigInt is converted explicitly because plain JSON.stringify cannot serialize it. cpuUsage reports user/system CPU microseconds, not request latency. An I/O wait can increase elapsed time while consuming little CPU.
 
 These process-level measurements include runtime/other activity, not an isolated per-request CPU proof.
 
@@ -448,7 +448,7 @@ Process metadata and measurements are diagnostic evidence only when their scope,
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -530,7 +530,7 @@ Choose execution and output ownership explicitly; direct arguments, bounded reso
 
 *Study depth: Advanced*
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -607,7 +607,7 @@ try { console.log(await calculate()); }
 catch { console.error('Child request failed'); process.exitCode = 1; }
 ```
 
-Expected successful output is36. The parent rejects on timeout, bad/duplicate result, failed startup/send, nonzero/signal termination or clean exit without a result. It waits for close before settling, so merely seeing a result does not leave child completion unowned. The timer is cleared on close.
+Expected successful output is 36. The parent rejects on timeout, bad/duplicate result, failed startup/send, nonzero/signal termination or clean exit without a result. It waits for close before settling, so merely seeing a result does not leave child completion unowned. The timer is cleared on close.
 
 Setting execArgv explicitly avoids accidentally inheriting a parent's inspector port; a real child may need reviewed runtime flags. Ignoring stdio here is deliberate because this protocol has no data/log contract there; a real worker needs a safe bounded diagnostic channel.
 
@@ -618,7 +618,7 @@ POSIX signal checks do not prove Windows behavior. Same-user child processes ret
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Equating Node fork with a worker thread or POSIX heap cloning.
-- Resolving on send callback, exit0 alone, or a message while ignoring a later failed close.
+- Resolving on send callback, exit 0 alone, or a message while ignoring a later failed close.
 - Leaving IPC connected after a one-shot child finishes its computation.
 - Trusting child/model-supplied role/tenant fields or replacing a job budget with an IPC channel buffer.
 
@@ -654,8 +654,8 @@ Diagnose scope/units carefully and launch subprocesses with fixed authority, bou
 1. `node app.mjs --inspect` runs without a debugger. Why?
 2. FEATURE_ENABLED=false enables a feature through Boolean(...). What contract should replace it?
 3. A test prints its final assertion but never exits. What do you inspect before forcing termination?
-4. A child writes stderr but exits0. Is it necessarily a failed command?
-5. A forked child exits0 without sending a reply. Should the parent resolve undefined as success?
+4. A child writes stderr but exits 0. Is it necessarily a failed command?
+5. A forked child exits 0 without sending a reply. Should the parent resolve undefined as success?
 
 <span class="notes-section-label">**Practice answers**</span>
 
@@ -665,7 +665,7 @@ Diagnose scope/units carefully and launch subprocesses with fixed authority, bou
 4. No. stderr is a channel; the command's documented status/result semantics determine success. A failed launch/nonzero/signal is a separate outcome from diagnostic text.
 5. No. The protocol requires a valid result and successful closure. Clean missing-result exit is a protocol failure; preserve the operation's unknown/outcome policy instead of inventing a value.
 
-Official references checked2026-11-04: [Node24.18 CLI](https://nodejs.org/download/release/v24.18.0/docs/api/cli.html), [Process API](https://nodejs.org/docs/latest-v24.x/api/process.html), [REPL](https://nodejs.org/download/release/v24.18.0/docs/api/repl.html), [child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html). APIs used here were exercised on the stated local Node24.18 runtime; do not assume latest online documentation matches every older runtime.
+Official references checked 2026-11-04: [Node 24.18 CLI](https://nodejs.org/download/release/v24.18.0/docs/api/cli.html), [Process API](https://nodejs.org/docs/latest-v24.x/api/process.html), [REPL](https://nodejs.org/download/release/v24.18.0/docs/api/repl.html), [child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html). APIs used here were exercised on the stated local Node 24.18 runtime; do not assume latest online documentation matches every older runtime.
 
 <span id="batch-b03-progress"></span>
 

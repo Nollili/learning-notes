@@ -8,7 +8,7 @@ The primary path is Node.js 24 → `@prometheus-io/client`0.16.1 → Prometheus 
 
 ## Which signals tell you whether the service is healthy? {#t22-q01}
 
-Seniority level: Senior\
+Level Up: L2\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -35,7 +35,7 @@ Define two user-facing SLIs and one saturation signal for the products service. 
 
 ## How do you expose bounded, correctly labelled application metrics? {#t22-q02}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -148,7 +148,7 @@ Extend an owned HTTP application with aborted, failed and successful requests. A
 
 ## How do scraping, PromQL and alerts fit together? {#t22-q03}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -216,7 +216,7 @@ Validate config/rules with the chosen Prometheus distribution and write `promtoo
 
 ## When should you use Grafana or Kibana? {#t22-q04}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -241,7 +241,7 @@ Build one Grafana dashboard, and in an owned Elastic sandbox locate a deliberate
 
 ## Where do Graphite, Zabbix and New Relic fit? {#t22-q05}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">

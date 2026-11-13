@@ -19,7 +19,7 @@ const practiceLevels = new Map([
 function collectTasks(page, source) {
   const tasks = []
   let projectLevel
-  for (const match of source.matchAll(/^(#{2,3}) (.+) \{#([^}\s]+)\}\r?\n(?:\r?\n(?:\*Study depth: [^\n]+\r?\n\r?\n)?Seniority level: [^\n]+\r?\nTech Check level: (\u2B50{1,5})$)?/gmu)) {
+  for (const match of source.matchAll(/^(#{2,3}) (.+) \{#([^}\s]+)\}\r?\n(?:\r?\n(?:\*Study depth: [^\n]+\r?\n\r?\n)?Level Up: L[1-4]\\\r?\nTech Check level: (\u2B50{1,5})$)?/gmu)) {
     const [, heading, title, anchor, stars] = match
     if (page === projectPage && heading === '##') {
       projectLevel = stars?.length

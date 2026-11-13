@@ -23,7 +23,7 @@ Keep the lockfile. Test files below live at the scratch project's root, never in
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L1\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — choose the important partitions first**</span>
@@ -133,7 +133,7 @@ Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — decide whether a change is compatible**</span>
@@ -193,7 +193,7 @@ A contract test verifies an agreement at a boundary: payload shape/types, status
 | Contract element | This lab's expectation |
 |---|---|
 | Request | POST `/quotes`, JSON product ID and quantity |
-| Success | Status200, JSON media type, the three integer-cent fields |
+| Success | Status 200, JSON media type, the three integer-cent fields |
 | Data semantics | Nonnegative safe integers; total equals subtotal plus shipping |
 | Errors | Known statuses and a stable error code; no private diagnostic data |
 | Compatibility | Additional benign metadata is tolerated; missing/renamed/retargeted fields are breaking |
@@ -236,7 +236,7 @@ Official references: [Pact consumer-driven contracts](https://docs.pact.io/), [J
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — name the real boundary**</span>
@@ -386,7 +386,7 @@ Official references: [Jest lifecycle hooks](https://jestjs.io/docs/30.0/setup-te
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — follow the complete local request**</span>
@@ -490,7 +490,7 @@ server.listen(Number(portText), '127.0.0.1', () => {
 });
 ```
 
-Port0 is explicitly allowed for this scratch-service fixture. Its readiness message proves listening, not catalog availability; reads are lazy. Production readiness and allowed port/configuration policy need their own definition.
+Port 0 is explicitly allowed for this scratch-service fixture. Its readiness message proves listening, not catalog availability; reads are lazy. Production readiness and allowed port/configuration policy need their own definition.
 
 <span class="notes-section-label">**`e2e.test.js`**</span>
 
@@ -603,7 +603,7 @@ Official references: [Jest async completion](https://jestjs.io/docs/30.0/asynchr
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — specify the next feature before coding it**</span>
@@ -694,12 +694,12 @@ Official references: [Jest behavior grouping](https://jestjs.io/docs/30.0/api#de
 
 *Study depth: introductory operations with an executable local lab*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — define success before increasing traffic**</span>
 
-The quote API admits at most two concurrent quote handlers in this lab. What happens when four clients each send requests sequentially? Measure valid successes and explicit busy responses; a fast503 is not a fast successful quote.
+The quote API admits at most two concurrent quote handlers in this lab. What happens when four clients each send requests sequentially? Measure valid successes and explicit busy responses; a fast 503 is not a fast successful quote.
 
 `load-lab.js` — no public target, at most eight clients and twenty requests per client:
 
@@ -789,7 +789,7 @@ if (require.main === module) {
 }
 ```
 
-Run `node load-lab.js`. Inspect every counter. The ramp is deliberately tiny and finite; scheduler/cache effects mean there is no promised throughput, latency or exact count of503 responses. A later controlled gate test verifies overload rejection independently of timing.
+Run `node load-lab.js`. Inspect every counter. The ramp is deliberately tiny and finite; scheduler/cache effects mean there is no promised throughput, latency or exact count of 503 responses. A later controlled gate test verifies overload rejection independently of timing.
 
 <div class="notes-core-answer">
 
@@ -811,7 +811,7 @@ This script is a smoke plus bounded local ramp, not a full soak, production capa
 
 <span class="notes-section-label">**Interpret the results carefully**</span>
 
-The script reports successful latency separately from503, malformed response and transport outcomes. Include all outcomes when deciding whether the service met its goal. A small sample's p95 is only a descriptive observation, not strong tail-latency evidence.
+The script reports successful latency separately from 503, malformed response and transport outcomes. Include all outcomes when deciding whether the service met its goal. A small sample's p95 is only a descriptive observation, not strong tail-latency evidence.
 
 This is a closed-loop workload: a client waits before starting its next request. **When the server slows, offered traffic decreases**. An open arrival-rate model can expose overload that this feedback conceals; record planned arrivals and dropped/delayed work rather than silently measuring only requests that were sent. The client and server sharing one laptop also compete for resources.
 
@@ -840,7 +840,7 @@ Official references: [k6 test types](https://grafana.com/docs/k6/latest/testing-
 
 *Study depth: introductory performance reasoning and measurement*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — define what a measurement can prove**</span>
@@ -909,7 +909,7 @@ For the service, use the earlier load experiment and [event-loop diagnosis](./06
 
 Establish a stable baseline on comparable infrastructure, run repeated trials and choose tolerances justified by risk and measurement noise. Keep raw observations and configuration. When variation is similar to the claimed improvement, gather stronger evidence instead of declaring a win.
 
-Use a functional suite to protect outcomes and a dedicated performance job for an agreed budget. For example, a latency SLO must specify workload, percentile, allowed errors and test environment—not merely “responds in under100ms.” Gate only when the experiment can reliably detect a meaningful regression. Keep startup, I/O and representative data sizes in the experiment when they are part of the user-visible cost.
+Use a functional suite to protect outcomes and a dedicated performance job for an agreed budget. For example, a latency SLO must specify workload, percentile, allowed errors and test environment—not merely “responds in under 100 ms.” Gate only when the experiment can reliably detect a meaningful regression. Keep startup, I/O and representative data sizes in the experiment when they are part of the user-visible cost.
 
 Profiles attribute where resources are spent; measurements show whether the result improved. Inspect an unexpected slow sample, check algorithm/data-size changes and compare equivalent optimizations. Do not remove validation, correctness checks or representative work just to improve benchmark numbers.
 
@@ -936,12 +936,12 @@ Official references: [Node performance hooks](https://nodejs.org/download/releas
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — keep the right parts real**</span>
 
-A mock `res.json()` can prove your handler called a function but cannot prove real routing, parser limits, status/media headers or Express5 rejection forwarding. Use the real app through HTTP for those boundaries. Inject a controlled service only when the test intentionally isolates HTTP behavior; use the real service/catalog for provider verification.
+A mock `res.json()` can prove your handler called a function but cannot prove real routing, parser limits, status/media headers or Express 5 rejection forwarding. Use the real app through HTTP for those boundaries. Inject a controlled service only when the test intentionally isolates HTTP behavior; use the real service/catalog for provider verification.
 
 <span class="notes-section-label">**`framework.test.js`**</span>
 
@@ -1111,7 +1111,7 @@ npm run coverage -- --runInBand
 
 Coverage maps statements, branches, functions and lines that executed. Inspect uncovered branches and decide which risks need more evidence. **A percentage does not prove assertions are strong**; the earlier threshold mutation and actual contract-breaking mutation are more direct evidence that particular defects can be caught. Avoid automatic snapshot updates, blanket exclusions or arbitrary universal thresholds.
 
-Autocode: preserve the supplied `test` script, normally `jest`, and all build/test settings. Run `npm run build` and `npm run test` for the actual submission; Module4 additionally requires `npm run coverage`, normally `jest --coverage --coverageReporters=cobertura --coverageDirectory=.`. Never add or modify `src/tests`, fixtures or helpers there, or import it from production. The scratch setup above is not permission to reconfigure an assignment template. This JavaScript lab has no compile/build step; it is not an Autocode submission.
+Autocode: preserve the supplied `test` script, normally `jest`, and all build/test settings. Run `npm run build` and `npm run test` for the actual submission; Module 4 additionally requires `npm run coverage`, normally `jest --coverage --coverageReporters=cobertura --coverageDirectory=.`. Never add or modify `src/tests`, fixtures or helpers there, or import it from production. The scratch setup above is not permission to reconfigure an assignment template. This JavaScript lab has no compile/build step; it is not an Autocode submission.
 
 <span class="notes-section-label">**Reliability and debugging**</span>
 
@@ -1169,7 +1169,7 @@ Advanced Pact deployment gates, real-browser/proxy E2E, database adapters beyond
 3. Your consumer test passes against a hard-coded fixture. What provider step is missing?
 4. An E2E test passes every assertion but the test process never exits. What should you fix?
 5. A benchmark's results changed as well as its timing. Can it demonstrate an optimization?
-6. A coverage report reaches100% after excluding an unimported adapter. What has this established?
+6. A coverage report reaches 100% after excluding an unimported adapter. What has this established?
 
 ::: details Practice explanations
 1. A real controlled PostgreSQL adapter test exercising the actual constraint/concurrency and transaction behavior; the fake cannot establish it.

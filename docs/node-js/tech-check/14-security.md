@@ -8,7 +8,7 @@ These eight questions target independent implementation and Level 4 design reaso
 
 ## How do you turn a threat model into enforceable controls? {#t14-q01}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -38,7 +38,7 @@ Produce a one-page data-flow model with five abuse cases, owners, controls and t
 
 ## How do validation, output encoding, SQL binding and CSRF defenses differ? {#t14-q02}
 
-Seniority level: Senior\
+Level Up: L2\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -93,7 +93,7 @@ Test extra fields, wrong types, oversize JSON, injection-shaped text, unsafe ric
 
 ## How do you prevent SSRF in an outbound HTTP feature? {#t14-q03}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -138,7 +138,7 @@ Use only owned mock destinations: verify rejected provider/path, redirect to a f
 
 ## What do TLS, secret management and authenticated encryption each protect? {#t14-q04}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -184,13 +184,13 @@ Hashing, HMAC, encryption and password hashing have different purposes. AAD bind
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and corrupted ciphertext/tag/context. Accept only when every invalid case fails closed, plaintext is withheld until authentication completes and no secret is logged. References: [Node24 TLS](https://nodejs.org/docs/latest-v24.x/api/tls.html), [crypto AEAD API](https://nodejs.org/docs/latest-v24.x/api/crypto.html), [OWASP secret management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html).
+Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and corrupted ciphertext/tag/context. Accept only when every invalid case fails closed, plaintext is withheld until authentication completes and no secret is logged. References: [Node 24 TLS](https://nodejs.org/docs/latest-v24.x/api/tls.html), [crypto AEAD API](https://nodejs.org/docs/latest-v24.x/api/crypto.html), [OWASP secret management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html).
 
 ---
 
 ## How do you store passwords and resist authentication abuse? {#t14-q05}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -234,7 +234,7 @@ Verify distinct salts, correct/wrong/malformed hashes, controlled rehash, bounde
 
 ## How do npm audit and other security scanners fit a release? {#t14-q06}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -259,7 +259,7 @@ Analyze one advisory's direct/transitive path and write a minimal fix or a justi
 
 ## What does Helmet protect, and how do you test framework hardening? {#t14-q07}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -303,7 +303,7 @@ Use a real loopback request to check CSP, nosniff, referrer policy and removal o
 
 ## Is node:vm, a worker or a container a safe sandbox for untrusted code? {#t14-q08}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -322,7 +322,7 @@ For user-defined reports, prefer a bounded data DSL over JavaScript. Permit a sm
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Write an execution authority matrix and a rejection/cleanup plan. Test a bounded DSL against excess depth, cycles, invalid operators and excessive output. If arbitrary execution is required, use an independently reviewed isolation environment and prove denied file/network/credential access plus process-tree cleanup; do not run hostile demonstrations on your workstation. References: [Node24 vm warning](https://nodejs.org/download/release/v24.18.0/docs/api/vm.html), [permission model limits](https://nodejs.org/docs/latest-v24.x/api/permissions.html), [OWASP Node security](https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Security_Cheat_Sheet.html).
+Write an execution authority matrix and a rejection/cleanup plan. Test a bounded DSL against excess depth, cycles, invalid operators and excessive output. If arbitrary execution is required, use an independently reviewed isolation environment and prove denied file/network/credential access plus process-tree cleanup; do not run hostile demonstrations on your workstation. References: [Node 24 vm warning](https://nodejs.org/download/release/v24.18.0/docs/api/vm.html), [permission model limits](https://nodejs.org/docs/latest-v24.x/api/permissions.html), [OWASP Node security](https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Security_Cheat_Sheet.html).
 
 ## Revision and mixed practice
 

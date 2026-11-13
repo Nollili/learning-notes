@@ -10,7 +10,7 @@ This chapter covers event-driven contracts, EventEmitter, waiting for events and
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
@@ -91,7 +91,7 @@ An event contract includes delivery, payload, failure and subscription lifetime,
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — register before publication**</span>
@@ -168,7 +168,7 @@ Subscribe before publishing, attach observers promptly and cancel waits that no 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict only the guaranteed order**</span>
@@ -204,7 +204,7 @@ Poll retrieves I/O notifications, runs eligible I/O callbacks and can wait when 
 
 JavaScript callbacks and high-priority checkpoint work can delay later callbacks even after I/O or a timer is ready.
 
-Since libuv1.45/Node20, recurring timer processing happens after poll rather than both before and after it; a compatibility pass can occur before entering the loop. A phase diagram is a conceptual cycle, not proof every program starts at its first drawn box. Treat version, callback origin and current scheduling context as part of an ordering question.
+Since libuv 1.45/Node 20, recurring timer processing happens after poll rather than both before and after it; a compatibility pass can occur before entering the loop. A phase diagram is a conceptual cycle, not proof every program starts at its first drawn box. Treat version, callback origin and current scheduling context as part of an ordering question.
 
 The [Node learning reference](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) explains these phase boundaries.
 
@@ -236,12 +236,12 @@ Explain scheduling in its actual callback and runtime context, not from a univer
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — run the same source as two module types**</span>
 
-Save identical content as `queues.cjs` and `queues.mjs`. Predict the complete log order for each on the stated Node24 baseline.
+Save identical content as `queues.cjs` and `queues.mjs`. Predict the complete log order for each on the stated Node 24 baseline.
 
 ```js
 console.log('start');
@@ -309,7 +309,7 @@ Ordering depends on execution context; responsiveness depends on giving the loop
 
 Acceptance: assertions check payloads, counts, ordering, error identity and cleanup. Missing-event tests terminate via explicit abort; uncaught errors run in isolated children. Author checks do not mark learner practice complete.
 
-Official references checked2026-11-04: Node24.18 [EventEmitter and event helpers](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [process.nextTick](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#processnexttickcallback-args); Node [event-loop guide](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick), [setImmediate/CJS–ESM ordering](https://nodejs.org/en/learn/asynchronous-work/understanding-setimmediate); libuv [design overview](https://docs.libuv.org/en/v1.x/design.html). libuv's native internals and OS backends are continued in event-loop diagnosis, rather than inferred from JavaScript print order.
+Official references checked 2026-11-04: Node 24.18 [EventEmitter and event helpers](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [process.nextTick](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#processnexttickcallback-args); Node [event-loop guide](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick), [setImmediate/CJS–ESM ordering](https://nodejs.org/en/learn/asynchronous-work/understanding-setimmediate); libuv [design overview](https://docs.libuv.org/en/v1.x/design.html). libuv's native internals and OS backends are continued in event-loop diagnosis, rather than inferred from JavaScript print order.
 
 
 ---
@@ -318,7 +318,7 @@ Official references checked2026-11-04: Node24.18 [EventEmitter and event helpers
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — what can this prove about threads?**</span>
@@ -361,7 +361,7 @@ A socket notification still needs JavaScript processing after the current stack 
 
 libuv distinguishes long-lived handles, such as a TCP listener or timer, from requests for individual operations. Resource ownership matters even though application code normally uses Node wrappers rather than uv_close directly. Native callbacks must return through the correct runtime integration; ordinary JavaScript callbacks are not run arbitrarily by OS threads.
 
-The documented native pool defaults to4 threads and is shared across event loops in a process. Its work can contend: **many expensive crypto tasks can delay filesystem or system resolver work even when the JavaScript loop remains responsive**. dns.lookup uses system resolution, while dns.resolve-style network DNS has a different path.
+The documented native pool defaults to 4 threads and is shared across event loops in a process. Its work can contend: **many expensive crypto tasks can delay filesystem or system resolver work even when the JavaScript loop remains responsive**. dns.lookup uses system resolution, while dns.resolve-style network DNS has a different path.
 
 Configure UV_THREADPOOL_SIZE before startup only after workload evidence; more threads consume memory and can increase CPU contention. Exact filesystem backend details can vary by runtime/platform, so avoid treating an implementation summary as a universal guarantee.
 
@@ -389,7 +389,7 @@ Separate OS notifications, native worker capacity and JavaScript execution when 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — test only as an owned child process**</span>
@@ -444,7 +444,7 @@ SIGTERM and SIGINT are cooperative termination signals that Node can expose thro
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The normal child logs ready, stopping SIGTERM and closed, then exits0. The hanging child logs the deadline diagnostic and exits1. The interval supplies explicit active work until shutdown; the pending promise alone would not keep the child alive, but the referenced deadline does. The stopping guard prevents repeated signals from starting overlapping cleanup.
+The normal child logs ready, stopping SIGTERM and closed, then exits 0. The hanging child logs the deadline diagnostic and exits 1. The interval supplies explicit active work until shutdown; the pending promise alone would not keep the child alive, but the referenced deadline does. The stopping guard prevents repeated signals from starting overlapping cleanup.
 
 Natural completion clears the owned timer and unregisters only this example's listeners.
 
@@ -484,12 +484,12 @@ A signal initiates a lifecycle protocol; resource owners and an external deadlin
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — interpret the shape, not an exact benchmark**</span>
 
-Save as `measure-loop.mjs`. The finite80ms busy wait is a deliberately bad workload for this local experiment only.
+Save as `measure-loop.mjs`. The finite 80 ms busy wait is a deliberately bad workload for this local experiment only.
 
 ```js
 import { monitorEventLoopDelay, performance } from 'node:perf_hooks';
@@ -568,7 +568,7 @@ Measure scheduling symptoms with units and context, then collect evidence at the
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict whether the immediate gets an opportunity**</span>
@@ -662,7 +662,7 @@ Acceptance: retain command/runtime/platform, assertions and measurements. Close 
 
 1. Async file reads slow down during many native crypto tasks, but the loop remains responsive. Which shared resource merits investigation?
 2. A SIGTERM listener is installed but the server still accepts work. Why can the process remain alive?
-3. The loop monitor's max is80,000,000. What is its millisecond value?
+3. The loop monitor's max is 80,000,000. What is its millisecond value?
 4. ELU is high while CPU is low. Is that impossible?
 5. A child endlessly refills nextTick and its own shutdown timer never runs. Where must the final watchdog live?
 6. Does chunking with setImmediate make each chunk interruptible?
@@ -671,12 +671,12 @@ Acceptance: retain command/runtime/platform, assertions and measurements. Close 
 
 1. The native worker pool and storage/operation queue; measure before changing its size.
 2. The listener changes default signal behaviour, while referenced server resources remain. Stop admission and drain/close owned work under a deadline.
-3. 80ms; histogram durations are nanoseconds.
+3. 80 ms; histogram durations are nanoseconds.
 4. No. An active loop can be blocked in a synchronous native wait; ELU is not CPU percentage.
 5. In an external supervisor/owned parent process able to force termination independently.
 6. No. It permits progress between chunks. Each chunk must itself have bounded acceptable cost.
 
-Additional official references checked2026-11-04: Node24.18 [performance APIs](https://nodejs.org/download/release/v24.18.0/docs/api/perf_hooks.html), [signal events](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#signal-events), [filesystem watcher caveats](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html#caveats); libuv [design](https://docs.libuv.org/en/v1.x/design.html) and [native pool](https://docs.libuv.org/en/v1.x/threadpool.html). These describe stated runtime contracts; local execution does not test every OS backend.
+Additional official references checked 2026-11-04: Node 24.18 [performance APIs](https://nodejs.org/download/release/v24.18.0/docs/api/perf_hooks.html), [signal events](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#signal-events), [filesystem watcher caveats](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html#caveats); libuv [design](https://docs.libuv.org/en/v1.x/design.html) and [native pool](https://docs.libuv.org/en/v1.x/threadpool.html). These describe stated runtime contracts; local execution does not test every OS backend.
 
 <span id="next-batch-checkpoint"></span>
 

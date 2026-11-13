@@ -8,7 +8,7 @@ Use Winston 3.18.3 on Node.js 24 for the worked logger. The primary deployment e
 
 ## What should a log event say, and which level should it use? {#t21-q01}
 
-Seniority level: Senior\
+Level Up: L1\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -40,7 +40,7 @@ Design success, invalid input, unauthorized, dependency timeout and unexpected f
 
 ## How do you configure Winston with a safe structured schema? {#t21-q02}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -153,7 +153,7 @@ Test level thresholds, nested-secret attempts, newline/oversize fields, stream e
 
 ## How do request, job and database logs keep the right context? {#t21-q03}
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">
@@ -201,7 +201,7 @@ Run concurrent real requests/jobs with distinct IDs, induce SQL retry and client
 
 ## How do Logstash and remote logging services change the operating contract? {#t21-q04}
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <div class="notes-core-answer">

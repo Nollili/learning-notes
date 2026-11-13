@@ -4,7 +4,7 @@ outline: [2, 3]
 
 # Design patterns in Node.js applications
 
-These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-frameworks.md#application-frameworks). Examples run as `.mjs` on Node.js24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
+These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-frameworks.md#application-frameworks). Examples run as `.mjs` on Node.js 24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
 
 
 ## Full worked catalogue
@@ -48,7 +48,7 @@ Material completion is separate from practice. Do not implement every pattern in
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -77,7 +77,7 @@ Before refactoring, write a failing behavior or change scenario, identify what c
 
 Factory Method is a particular creation hook in a creator's workflow; a function named `createService` is usually a simple factory, not automatically that GoF pattern. An Adapter changes the interface/representation; a Decorator adds behavior through the interface it promises to preserve. A Strategy supplies an interchangeable algorithm; State changes behavior according to an object's current state and allowed transitions.
 
-The classic [GoF catalogue](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480/9780321700698) contains23 object-oriented patterns. JavaScript can express many roles with functions, closures and objects; **classes are an implementation choice, not the requirement**. ESM encapsulation, dependency injection, middleware and Repository are useful related techniques, but they are not additional members of those23. One design may have more than one role; explain its intent instead of counting labels.
+The classic [GoF catalogue](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480/9780321700698) contains 23 object-oriented patterns. JavaScript can express many roles with functions, closures and objects; **classes are an implementation choice, not the requirement**. ESM encapsulation, dependency injection, middleware and Repository are useful related techniques, but they are not additional members of those 23. One design may have more than one role; explain its intent instead of counting labels.
 
 For Express, factories connect collaborators explicitly. Nest's provider container can wire a factory or strategy; its `@Controller`/`@Injectable` syntax does not by itself demonstrate the object Decorator pattern. Framework interception can resemble decoration but has its own lifecycle contract.
 
@@ -113,7 +113,7 @@ Choose one real catalog change. Write a short decision comparing a direct soluti
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -138,7 +138,7 @@ A simple factory is a useful creation idiom outside the exact GoF list. Use the 
 
 <span class="notes-section-label">**Worked example — an owned product-reader factory**</span>
 
-This reader is deliberately bounded to100 fixture products. It is a small standalone read capability, not a replacement for the catalog's authenticated service. Save the following as `owned-reader.mjs`:
+This reader is deliberately bounded to 100 fixture products. It is a small standalone read capability, not a replacement for the catalog's authenticated service. Save the following as `owned-reader.mjs`:
 
 ```js
 // file: owned-reader.mjs
@@ -199,7 +199,7 @@ Run two readers from the same input. Mutate the input and a returned DTO, close 
 
 <span class="notes-section-label">**Official references**</span>
 
-[ECMAScript Object.create](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.create), [Object.freeze](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.freeze), [Node24 structuredClone](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#structuredclonevalue-options), [Nest provider scopes](https://docs.nestjs.com/fundamentals/injection-scopes). These document implementation mechanics; pattern names describe the design intent above.
+[ECMAScript Object.create](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.create), [Object.freeze](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.freeze), [Node 24 structuredClone](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#structuredclonevalue-options), [Nest provider scopes](https://docs.nestjs.com/fundamentals/injection-scopes). These document implementation mechanics; pattern names describe the design intent above.
 
 ---
 
@@ -207,7 +207,7 @@ Run two readers from the same input. Mutate the input and a returned DTO, close 
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -315,7 +315,7 @@ Wrap the factory reader and the legacy adapter with the same metrics decorator. 
 
 *Study depth: Intermediate; full worked catalogue linked below*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -342,7 +342,7 @@ Strategy makes an algorithm interchangeable; Observer notifies registered collab
 | Template Method | Define a workflow skeleton with overridable steps | An import superclass with deliberate hooks; injected functions often suffice |
 | Visitor | Add operations across a stable object structure | Multiple operations over a typed syntax tree; new node kinds affect visitors |
 
-The family tables introduce all23 GoF patterns. The linked full lessons now give every pattern worked intermediate material; advanced production specialization remains optional. The classification is a vocabulary, not an instruction to use every pattern in one service.
+The family tables introduce all 23 GoF patterns. The linked full lessons now give every pattern worked intermediate material; advanced production specialization remains optional. The classification is a vocabulary, not an instruction to use every pattern in one service.
 
 <span class="notes-section-label">**Worked Strategy — replace rules, preserve the quote boundary**</span>
 
@@ -399,7 +399,7 @@ assert.equal(events.listenerCount('viewed'), 0);
 
 Each subscription owns a unique function, even when callers reuse a callback. Its disposer removes only that registration and is idempotent. The listener policy here is synchronous callbacks only; this API does not await or manage promises returned by async listeners. Node invokes EventEmitter listeners synchronously in registration order; a synchronous throw interrupts that emit and propagates to its caller. Reuse the event chapter for rejection/error policies rather than assume notification is isolated or durable.
 
-If a catalog write commits and a later local notification throws, the commit still happened. An HTTP500 at that point is not proof the write failed. Use durable outcome/idempotency and an outbox when the business requirement needs reliable cross-process publication; those belong to the retained architecture/messaging scope. A local emitter supplies neither persistence nor broker acknowledgments/backpressure. Avoid leaking a listener on every request, and do not disable warnings instead of fixing ownership.
+If a catalog write commits and a later local notification throws, the commit still happened. An HTTP 500 at that point is not proof the write failed. Use durable outcome/idempotency and an outbox when the business requirement needs reliable cross-process publication; those belong to the retained architecture/messaging scope. A local emitter supplies neither persistence nor broker acknowledgments/backpressure. Avoid leaking a listener on every request, and do not disable warnings instead of fixing ownership.
 
 <span class="notes-section-label">**Worked Command and State — separate the request from its execution**</span>
 
@@ -414,7 +414,7 @@ const rename = Object.freeze({
 
 An invoker accepts that request; a handler supplies the trusted actor separately and calls the existing service's version-checked update. Validate an allowlisted command type and fields. The command is a request for authority, not a grant of it. A command object containing a function closure cannot simply be serialized into a durable queue; define the data schema, compatibility, deduplication and trusted execution owner.
 
-A retry with version3 after a successful update to4 can produce a conflict. It does not necessarily tell the caller whether an earlier uncertain attempt committed. Idempotency keys and durable receipts solve a different problem from optimistic concurrency. An “undo” command may itself fail or conflict; it is not transaction rollback or guaranteed compensation of a payment. The [bounded text-history example](../../senior_growth/Coding_principles_patterns_conventions/What_design_patterns_do_you_use_on_daily_basis_in_JS%2C_why_are_they_useful.md#bounded-undo-and-redo-for-owned-text) deliberately limits restoration to owned local strings.
+A retry with version 3 after a successful update to 4 can produce a conflict. It does not necessarily tell the caller whether an earlier uncertain attempt committed. Idempotency keys and durable receipts solve a different problem from optimistic concurrency. An “undo” command may itself fail or conflict; it is not transaction rollback or guaranteed compensation of a payment. The [bounded text-history example](../../senior_growth/Coding_principles_patterns_conventions/What_design_patterns_do_you_use_on_daily_basis_in_JS%2C_why_are_they_useful.md#bounded-undo-and-redo-for-owned-text) deliberately limits restoration to owned local strings.
 
 For State, imagine `Draft` allows rename/publish while `Published` requires a different edit/review policy. Behavior follows current state and permitted transitions; Strategy instead chooses among algorithms for the same operation. Start with a small transition table and explicit guards. State classes become useful when state-specific behavior grows, not merely because a record has a `status` field. Concurrency/authorization still belong in the authoritative service/store operation.
 
@@ -438,7 +438,7 @@ Add pickup shipping and test threshold, negative, oversized, throwing and invali
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24 event delivery and listener lifetime](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [promise return/settlement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises), [Node24 assertions](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). See also the existing [async-iteration explanation](./05-asynchronous-programming.md) and [framework lifecycle](./16-frameworks.md#t16-q08).
+[Node 24 event delivery and listener lifetime](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [promise return/settlement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises), [Node 24 assertions](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). See also the existing [async-iteration explanation](./05-asynchronous-programming.md) and [framework lifecycle](./16-frameworks.md#t16-q08).
 
 ## Revision and practice evidence
 

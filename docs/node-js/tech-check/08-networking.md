@@ -4,20 +4,20 @@ outline: [2, 3]
 
 # Networking and real-time applications
 
-This chapter covers node:net, IP/TCP/UDP, HTTPS and DNS on Node.js24.18.0. Executable network fixtures bind only to loopback and request ephemeral ports; no public service or port is required. It also covers WebSockets, Socket.IO, HTTP inspection, browser interaction and owned client pooling. All ten currently mapped Networking subtopics have study material; learner practice remains separate.
+This chapter covers node:net, IP/TCP/UDP, HTTPS and DNS on Node.js 24.18.0. Executable network fixtures bind only to loopback and request ephemeral ports; no public service or port is required. It also covers WebSockets, Socket.IO, HTTP inspection, browser interaction and owned client pooling. All ten currently mapped Networking subtopics have study material; learner practice remains separate.
 
-These local teaching clients/servers are not production deployment templates. Validation of the real-time examples used ws8.22.1 and socket.io/socket.io-client4.8.4 installed with an isolated temporary lockfile; no repository dependencies were added. Those are tested versions, not a claim that any major-version range is permanently compatible or secure.
+These local teaching clients/servers are not production deployment templates. Validation of the real-time examples used ws 8.22.1 and socket.io/socket.io-client4.8.4 installed with an isolated temporary lockfile; no repository dependencies were added. Those are tested versions, not a claim that any major-version range is permanently compatible or secure.
 
 ### How do TCP sockets differ from HTTP request handling, and how should connection lifetime be owned? {#t08-q01}
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — identify the completion, byte and lifetime boundaries**</span>
 
-Save as `tcp.mjs`. The protocol is one ASCII greeting of at most64 bytes, terminated by EOF. It is deliberately not a general chat or request protocol.
+Save as `tcp.mjs`. The protocol is one ASCII greeting of at most 64 bytes, terminated by EOF. It is deliberately not a general chat or request protocol.
 
 ```js
 import { createServer, createConnection } from 'node:net';
@@ -70,7 +70,7 @@ Own connect/read/write errors and close every accepted/client socket. socket.end
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The fixture prints hello only after EOF. The client accepts arbitrary chunking, accumulates no more than64 logical bytes and has a total deadline spanning connection plus body. A peer that sends a partial greeting and stays open cannot make that call wait forever while the loop progresses. The accepted-socket inactivity timeout is a separate fixture guard.
+The fixture prints hello only after EOF. The client accepts arbitrary chunking, accumulates no more than 64 logical bytes and has a total deadline spanning connection plus body. A peer that sends a partial greeting and stays open cannot make that call wait forever while the loop progresses. The accepted-socket inactivity timeout is a separate fixture guard.
 
 Timer deadlines do not preempt blocked JavaScript and allow some scheduling delay.
 
@@ -96,7 +96,7 @@ A server close waits for existing connections; a malicious or broken peer may re
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
 1. <span class="notes-section-label">**What distinguishes connection refused from a protocol timeout?**</span> Refusal means the transport connection could not be established at that endpoint; a protocol timeout may occur after connection while awaiting completion. Record the actual phase/code.
-2. <span class="notes-section-label">**Does port0 mean a permanent public endpoint?**</span> No. During bind it asks the OS for an available local port; read server.address after listening.
+2. <span class="notes-section-label">**Does port 0 mean a permanent public endpoint?**</span> No. During bind it asks the OS for an available local port; read server.address after listening.
 3. <span class="notes-section-label">**Can net also use local IPC?**</span> Yes, Unix-domain sockets/named-pipe endpoints have separate naming/platform rules; they are not Internet TCP ports.
 
 ::: tip Key takeaway
@@ -110,7 +110,7 @@ A socket is a transport resource; message meaning and lifetime belong to the app
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — receive one owned loopback datagram**</span>
@@ -173,7 +173,7 @@ TCP can split or coalesce application writes; UDP preserves datagram message bou
 
 Keep datagrams small according to the actual protocol/path, and do not present the theoretical UDP payload maximum as a sensible universal network size.
 
-Binding127.0.0.1 restricts this IPv4 fixture to loopback. Binding0.0.0.0 can expose all IPv4 interfaces; :: may also permit IPv4-mapped connections depending on platform/options. IPv6 literals in URLs require brackets. isIP validates literal syntax, not reachability or access policy; a hostname is not an IP literal and DNS introduces additional decisions.
+Binding 127.0.0.1 restricts this IPv4 fixture to loopback. Binding 0.0.0.0 can expose all IPv4 interfaces; :: may also permit IPv4-mapped connections depending on platform/options. IPv6 literals in URLs require brackets. isIP validates literal syntax, not reachability or access policy; a hostname is not an IP literal and DNS introduces additional decisions.
 
 A connected UDP socket selects a peer/filtering relationship; it **does not create TCP-style reliability or an encrypted session**.
 
@@ -191,7 +191,7 @@ Public UDP services also need rate limits, source validation appropriate to the 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
 1. <span class="notes-section-label">**Does UDP connect perform a TCP handshake?**</span> No; it associates a default peer and affects socket behaviour without creating a reliable byte stream.
-2. <span class="notes-section-label">**Does localhost always mean127.0.0.1?**</span> No. Resolution can return IPv6 or several addresses; bind/connect family must be compatible.
+2. <span class="notes-section-label">**Does localhost always mean 127.0.0.1?**</span> No. Resolution can return IPv6 or several addresses; bind/connect family must be compatible.
 3. <span class="notes-section-label">**Why use an ephemeral port here?**</span> It avoids assuming a fixed test port is free; readiness still has to be awaited before sending.
 
 ::: tip Key takeaway
@@ -205,7 +205,7 @@ Addressing, transport guarantees and authenticated application identity are sepa
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — inspect the full response lifetime**</span>
@@ -258,9 +258,9 @@ An HTTPS client must also handle connection/TLS errors, HTTP status, bounded bod
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-For a matching trusted local fixture returning200 and a short body, the helper resolves with that body. It rejects untrusted/mismatched certificates, non200 status, excessive bytes, broken bodies and deadline expiry.
+For a matching trusted local fixture returning 200 and a short body, the helper resolves with that body. It rejects untrusted/mismatched certificates, non-200 status, excessive bytes, broken bodies and deadline expiry.
 
-It does not follow redirects: a3xx response hits its status policy. agent:false gives each demonstration request an individually owned connection instead of changing global agent state. Production connection pooling should have a reviewed owner and capacity/lifetime policy.
+It does not follow redirects: a 3xx response hits its status policy. agent:false gives each demonstration request an individually owned connection instead of changing global agent state. Production connection pooling should have a reviewed owner and capacity/lifetime policy.
 
 The timer covers connection, handshake and body. Request destruction during an active response must result in response failure rather than leaving a detached read; test a server that sends headers then stalls. The one-shot response wait handles an error before headers. Once response consumption begins, that response's stream errors are observed by iteration.
 
@@ -270,7 +270,7 @@ Trust and identity are both required: trusting a test certificate does not autho
 
 SNI selects the intended virtual TLS service, while certificate checks establish identity; neither is user authentication. mTLS adds client certificate validation but still requires application permissions.
 
-TLS1.3 is preferred where supported; TLS1.2 remains a compatibility choice under current reviewed policy. Do not re-enable obsolete SSL/TLS versions to silence errors. Production deployments may terminate TLS at a proxy; secure the proxy-to-service hop for its threat model and trust forwarded metadata only from configured proxies.
+TLS 1.3 is preferred where supported; TLS 1.2 remains a compatibility choice under current reviewed policy. Do not re-enable obsolete SSL/TLS versions to silence errors. Production deployments may terminate TLS at a proxy; secure the proxy-to-service hop for its threat model and trust forwarded metadata only from configured proxies.
 
 URL parsing does not authorize outbound destinations: SSRF/DNS/redirect restrictions remain application work, not something this small helper claims to implement.
 
@@ -278,7 +278,7 @@ URL parsing does not authorize outbound destinations: SSRF/DNS/redirect restrict
 
 - Setting rejectUnauthorized:false, trusting every certificate or ignoring identity mismatch.
 - Clearing the deadline at headers while a body can stall indefinitely.
-- Treating an HTTP500 as a TLS failure or TLS success as authorization.
+- Treating an HTTP 500 as a TLS failure or TLS success as authorization.
 - Retrying non-idempotent writes without knowing their outcome.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
@@ -298,7 +298,7 @@ Validate the peer and own the entire HTTP exchange, including its body and failu
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L4\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — inspect address results without external DNS**</span>
@@ -332,7 +332,7 @@ Handle multiple families, ordering, TTL/cache policy and resolver errors. Use sc
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-The fixture reports one IPv4 record for127.0.0.1. Literal resolution exercises result shape, not external DNS availability. Injection tests should explicitly distinguish a synthetic answer from a real resolver integration result. Input validation here limits the helper's diagnostic contract; it is not a complete hostname validator, authorization boundary or SSRF defense.
+The fixture reports one IPv4 record for 127.0.0.1. Literal resolution exercises result shape, not external DNS availability. Injection tests should explicitly distinguish a synthetic answer from a real resolver integration result. Input validation here limits the helper's diagnostic contract; it is not a complete hostname validator, authorization boundary or SSRF defense.
 
 lookup normally uses system getaddrinfo through the native worker pool; specific resolve queries use network resolver machinery. Consequently heavy native-pool work can delay lookup without a DNS server problem. resolve4 with ttl:true can return address/TTL records; lookup does not expose equivalent authoritative TTL data.
 
@@ -371,12 +371,12 @@ Choose the resolution contract deliberately and validate the actual connection/s
 
 - [ ] Test TCP greeting split/coalesced writes, EOF, oversize, refused connection and a connected peer that stalls. Close listener and every accepted/client socket.
 - [ ] Run the UDP fixture on loopback and test cancellation without a datagram. Explain send callback versus remote receipt and IPv4/IPv6 exposure limits.
-- [ ] Create disposable TLS fixture keys/certificates with the requested SAN; keep them outside the repository. Verify trusted matching success, untrusted chain, wrong identity, non200, oversized/truncated body and headers-then-stall deadline. Never disable certificate checks.
+- [ ] Create disposable TLS fixture keys/certificates with the requested SAN; keep them outside the repository. Verify trusted matching success, untrusted chain, wrong identity, non-200, oversized/truncated body and headers-then-stall deadline. Never disable certificate checks.
 - [ ] Test injected DNS multiple-family results, malformed results and resolver failure; run a controlled resolver integration separately before claiming actual DNS coverage. Explain TTL and connection reuse.
 
 Acceptance: assert results, failure phase/code, bounded completion and owned cleanup. No public endpoint, production key, real credential or global resolver/TLS setting is needed. Loopback and injected tests do not prove public routing, DNS infrastructure, platform matrices or learner performance.
 
-Official references checked2026-11-04: Node24.18 [Net](https://nodejs.org/download/release/v24.18.0/docs/api/net.html), [UDP](https://nodejs.org/download/release/v24.18.0/docs/api/dgram.html), [HTTPS](https://nodejs.org/download/release/v24.18.0/docs/api/https.html), [TLS identity checks](https://nodejs.org/download/release/v24.18.0/docs/api/tls.html#tlscheckserveridentityhostname-cert), [DNS](https://nodejs.org/download/release/v24.18.0/docs/api/dns.html); OWASP [TLS guidance](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html). Primary application stack remains HTTP/HTTPS; raw sockets are for requirements that justify their protocol complexity.
+Official references checked 2026-11-04: Node 24.18 [Net](https://nodejs.org/download/release/v24.18.0/docs/api/net.html), [UDP](https://nodejs.org/download/release/v24.18.0/docs/api/dgram.html), [HTTPS](https://nodejs.org/download/release/v24.18.0/docs/api/https.html), [TLS identity checks](https://nodejs.org/download/release/v24.18.0/docs/api/tls.html#tlscheckserveridentityhostname-cert), [DNS](https://nodejs.org/download/release/v24.18.0/docs/api/dns.html); OWASP [TLS guidance](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html). Primary application stack remains HTTP/HTTPS; raw sockets are for requirements that justify their protocol complexity.
 
 
 ---
@@ -385,7 +385,7 @@ Official references checked2026-11-04: Node24.18 [Net](https://nodejs.org/downlo
 
 *Study depth: Intermediate*
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — choose and defend a transport before reading the answer**</span>
@@ -413,7 +413,7 @@ Frequent editor commands/updates can justify WebSocket or Socket.IO, but conflic
 | Conditional polling | Ordinary requests, validators and familiar infrastructure | Staleness, nonoverlap, backoff/jitter, cancellation and request admission |
 | SSE/EventSource | Server-to-client text events with browser reconnection | Replay cursor/history, reset gaps, proxy buffering, slow clients and heartbeat lifetime |
 | WebSocket | Full-duplex framed messages on a persistent connection | Auth/Origin, schema, payload/rate/queue bounds, heartbeat, reconnect and application replay |
-| Socket.IO4 | Event protocol, acks, reconnection, rooms/namespaces and transport choices | Compatible clients, explicit delivery guarantees, adapters, affinity and recovery limits |
+| Socket.IO 4 | Event protocol, acks, reconnection, rooms/namespaces and transport choices | Compatible clients, explicit delivery guarantees, adapters, affinity and recovery limits |
 
 SSE framing uses a blank line between events, optional event/id/retry fields and UTF-8 text. Last-Event-ID is a reconnect cursor mechanism, not retained storage. Define expired-history behaviour, such as obtaining a new authorized snapshot.
 
@@ -447,12 +447,12 @@ Choose the interaction and recovery contract first; then choose the simplest tra
 
 *Study depth: Intermediate*
 
-Seniority level: Senior\
+Level Up: L3\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — bounded local echo protocol**</span>
 
-Save as `websocket.mjs` in a standalone fixture with a pinned ws8 dependency. This exports a loopback-only unauthenticated lab, not a private-data service. Its allowed message is {id, text}; unknown fields and binary messages are rejected. The test harness must await listening and close/terminate every owned client before awaiting server closure.
+Save as `websocket.mjs` in a standalone fixture with a pinned ws 8 dependency. This exports a loopback-only unauthenticated lab, not a private-data service. Its allowed message is {id, text}; unknown fields and binary messages are rejected. The test harness must await listening and close/terminate every owned client before awaiting server closure.
 
 ```js
 import { WebSocketServer, WebSocket } from 'ws';
@@ -499,13 +499,13 @@ export function createEcho() {
 
 A WebSocket connection provides framed bidirectional messages after protocol negotiation, **not a complete application session**. Own admission/authentication, browser Origin validation where relevant, **per-action authorization, schema/payload/rate limits**, outbound queues, heartbeat, closure and recovery.
 
-Node24 has a built-in WebSocket client, while a server needs a library/framework such as ws. Use WSS outside controlled local development. **Backpressure is not implicit in async message listeners**; bound pending work and define a slow-consumer policy. **Reconnection alone cannot recover missed business messages**.
+Node 24 has a built-in WebSocket client, while a server needs a library/framework such as ws. Use WSS outside controlled local development. **Backpressure is not implicit in async message listeners**; bound pending work and define a slow-consumer policy. **Reconnection alone cannot recover missed business messages**.
 
 </div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-A valid text message is echoed with only its projected fields. Invalid JSON/schema closes with1008, binary input with1003, and ws rejects excessive payload under maxPayload. A close timer escalates to terminate if cooperative closing stalls; the timer is removed once closed.
+A valid text message is echoed with only its projected fields. Invalid JSON/schema closes with 1008, binary input with 1003, and ws rejects excessive payload under maxPayload. A close timer escalates to terminate if cooperative closing stalls; the timer is removed once closed.
 
 The outbound threshold is a local policy, not a proof of total memory bounds, and this tiny fixture does not implement rate/global admission, heartbeat or authentication. Do not expose it as a production example merely because its protocol checks pass.
 
@@ -545,12 +545,12 @@ A long-lived message channel requires an explicitly owned application session an
 
 *Study depth: Intermediate*
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — an acknowledged event under a fixture-only identity**</span>
 
-Save as `socketio.mjs` with pinned Socket.IO4. The caller supplies an owned unlistening node:http server, binds it to loopback/port0, then uses a matching socket.io-client. This fixed fixture token is a teaching gate, never a production credential design.
+Save as `socketio.mjs` with pinned Socket.IO 4. The caller supplies an owned unlistening node:http server, binds it to loopback/port 0, then uses a matching socket.io-client. This fixed fixture token is a teaching gate, never a production credential design.
 
 ```js
 import { Server } from 'socket.io';
@@ -636,7 +636,7 @@ Library conveniences reduce transport plumbing; delivery semantics and business 
 
 *Study depth: Intermediate*
 
-Seniority level: Senior\
+Level Up: L4\
 Tech Check level: ⭐⭐⭐⭐⭐
 
 <span class="notes-section-label">**Example — test sequence gaps rather than assuming the connection is complete**</span>
@@ -718,7 +718,7 @@ Production selection includes overload, recovery and deployment evidence, not on
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <span class="notes-section-label">**Example — predict the status and body before running**</span>
@@ -859,7 +859,7 @@ Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/spe
 
 *Study depth: Intermediate*
 
-Seniority level: Med\
+Level Up: L2\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -958,11 +958,11 @@ addEventListener('pagehide', () => { generation++; current?.abort(); });
 </script>
 ```
 
-The deadline stays active through body consumption. The generation check protects output even if obsolete work settles after cancellation; abort alone is not a complete stale-result policy. Error text is fixed, not raw upstream content. The2048-byte accepted-body limit is not a bound on every browser/network allocation. This small schema check is deliberately narrow, and a general client needs the endpoint's actual schema.
+The deadline stays active through body consumption. The generation check protects output even if obsolete work settles after cancellation; abort alone is not a complete stale-result policy. Error text is fixed, not raw upstream content. The 2048-byte accepted-body limit is not a bound on every browser/network allocation. This small schema check is deliberately narrow, and a general client needs the endpoint's actual schema.
 
 <span class="notes-section-label">**Owned two-origin runner**</span>
 
-Save beside the HTML as `browser-lab.mjs`, run it with Node24 and open the printed page URL. Separate ephemeral ports produce two distinct origins. This is an unauthenticated public-fixture lab only, not a reusable CORS/auth middleware implementation.
+Save beside the HTML as `browser-lab.mjs`, run it with Node 24 and open the printed page URL. Separate ephemeral ports produce two distinct origins. This is an unauthenticated public-fixture lab only, not a reusable CORS/auth middleware implementation.
 
 ```js
 // file: browser-lab.mjs
@@ -1022,7 +1022,7 @@ The server's allowlist permits the exact UI origin. The blocked path intentional
 
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
-If Network shows a failed OPTIONS, inspect allowed origin/method/headers before the GET handler. If the GET returns200 but script rejects, inspect CORS, media type, decoding and schema. If an old result appears, inspect the generation/session owner. Never “fix” this with `mode: 'no-cors'`: an opaque response is not readable application JSON. Do not label every browser error a server500.
+If Network shows a failed OPTIONS, inspect allowed origin/method/headers before the GET handler. If the GET returns 200 but script rejects, inspect CORS, media type, decoding and schema. If an old result appears, inspect the generation/session owner. Never “fix” this with `mode: 'no-cors'`: an opaque response is not readable application JSON. Do not label every browser error a server 500.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -1040,7 +1040,7 @@ Run the two-origin lab. Test every selector value, cancel while Loading, and tri
 
 <span class="notes-section-label">**Official references**</span>
 
-[Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch), [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS), [cookie attributes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie), [OWASP CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html). Checked2026-11-04; AbortSignal.any/timeout require a supporting browser or an equivalent explicitly owned controller/timer fallback.
+[Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch), [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS), [cookie attributes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie), [OWASP CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html). Checked 2026-11-04; AbortSignal.any/timeout require a supporting browser or an equivalent explicitly owned controller/timer fallback.
 
 
 ---
@@ -1049,7 +1049,7 @@ Run the two-origin lab. Test every selector value, cancel while Loading, and tri
 
 *Study depth: Intermediate implementation of a foundational optimization*
 
-Seniority level: Med\
+Level Up: L3\
 Tech Check level: ⭐⭐
 
 <div class="notes-core-answer">
@@ -1157,7 +1157,7 @@ Creating one agent per request prevents meaningful reuse. Increasing maxSockets 
 
 1. <span class="notes-section-label">**Why can one socket still permit two admitted operations?**</span> One is active and one may wait for assignment; the application admission cap bounds both together.
 2. <span class="notes-section-label">**Does maxFreeSockets limit the request queue?**</span> No. It concerns idle reusable connections, not pending operations.
-3. <span class="notes-section-label">**Can a consumed200 body still be invalid?**</span> Yes. Representation/schema/business validation remains after transport completion.
+3. <span class="notes-section-label">**Can a consumed 200 body still be invalid?**</span> Yes. Representation/schema/business validation remains after transport completion.
 
 ::: tip Key takeaway
 Pool connections deliberately, bound work separately, and supervise every request until its body and cleanup settle.
@@ -1165,11 +1165,11 @@ Pool connections deliberately, bound work separately, and supervise every reques
 
 <span class="notes-section-label">**Practice — learner work still required**</span>
 
-Use a controlled server that counts accepted sockets. Verify two sequential reads reuse one socket. Hold one response, queue another with a short deadline and reject a third at admission; then release the hold and demonstrate recovery. Test headers-then-stall, oversized/non200/truncated bodies and close during active work. Acceptance: every promise settles, no owned socket/timer remains, and socket capacity is distinguished from queue/admission. Repeat under the actual TLS/proxy topology before claiming deployment behavior.
+Use a controlled server that counts accepted sockets. Verify two sequential reads reuse one socket. Hold one response, queue another with a short deadline and reject a third at admission; then release the hold and demonstrate recovery. Test headers-then-stall, oversized/non-200/truncated bodies and close during active work. Acceptance: every promise settles, no owned socket/timer remains, and socket capacity is distinguished from queue/admission. Repeat under the actual TLS/proxy topology before claiming deployment behavior.
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node24.18 HTTP Agent and lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#class-httpagent), [HTTPS Agent](https://nodejs.org/download/release/v24.18.0/docs/api/https.html#class-httpsagent), [Node fetch dispatcher](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#fetch). These examples explicitly configure their agent instead of relying on global-agent defaults, which vary across versions.
+[Node 24.18 HTTP Agent and lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#class-httpagent), [HTTPS Agent](https://nodejs.org/download/release/v24.18.0/docs/api/https.html#class-httpsagent), [Node fetch dispatcher](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#fetch). These examples explicitly configure their agent instead of relying on global-agent defaults, which vary across versions.
 
 ## Revision {#group-8-revision}
 
@@ -1182,7 +1182,7 @@ Keep HTTP/HTTPS as the primary API and add a transport only when its interaction
 - [ ] Complete transport, TLS and DNS transport/TLS/DNS exercises with owned fixtures and retained failure evidence.
 - [ ] Compare polling, SSE and bidirectional messaging for a concrete product, including one rejected alternative and its cost.
 - [ ] Run the ws lab on loopback; test text/binary/schema/payload errors, close cleanup and a controlled slow-consumer policy. Add real authentication/authorization and heartbeat under an owned lifecycle before adapting it to private data.
-- [ ] Run compatible Socket.IO4 server/client with acknowledged valid/invalid events, refused authentication, disconnect/reconnect and duplicate attempts. Implement durable idempotency separately before claiming side-effect safety.
+- [ ] Run compatible Socket.IO 4 server/client with acknowledged valid/invalid events, refused authentication, disconnect/reconnect and duplicate attempts. Implement durable idempotency separately before claiming side-effect safety.
 - [ ] Test feed duplicate/gap/epoch/resync and old-session replacement, then exercise the intended proxy/multiple-node topology before claiming deployment behaviour.
 
 - [ ] Run the two-origin browser lab and distinguish CORS/preflight, HTTP, decoding/schema and cancellation outcomes. Explain credential/cookie/CSRF limits separately.
@@ -1208,7 +1208,7 @@ Acceptance: assert protocol outcomes, close/error paths, bounded completion, zer
 5. Follow an explicit reset/snapshot protocol rather than pretending replay is complete.
 6. No. Recheck/revoke subscriptions under the application's authorization/session-lifetime policy.
 
-Additional official references checked2026-11-04: Node24.18 [WebSocket client](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#class-websocket), ws [server/authentication/heartbeat examples](https://github.com/websockets/ws#readme); Socket.IO4 [introduction](https://socket.io/docs/v4/), [delivery guarantees](https://socket.io/docs/v4/delivery-guarantees/), [middleware](https://socket.io/docs/v4/middlewares/), [multiple nodes](https://socket.io/docs/v4/using-multiple-nodes/), [server options](https://socket.io/docs/v4/server-options/); OWASP [WebSocket security](https://cheatsheetseries.owasp.org/cheatsheets/WebSocket_Security_Cheat_Sheet.html). Library installation/version and actual runtime checks are recorded in progress; local tests do not validate a production deployment.
+Additional official references checked 2026-11-04: Node 24.18 [WebSocket client](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#class-websocket), ws [server/authentication/heartbeat examples](https://github.com/websockets/ws#readme); Socket.IO 4 [introduction](https://socket.io/docs/v4/), [delivery guarantees](https://socket.io/docs/v4/delivery-guarantees/), [middleware](https://socket.io/docs/v4/middlewares/), [multiple nodes](https://socket.io/docs/v4/using-multiple-nodes/), [server options](https://socket.io/docs/v4/server-options/); OWASP [WebSocket security](https://cheatsheetseries.owasp.org/cheatsheets/WebSocket_Security_Cheat_Sheet.html). Library installation/version and actual runtime checks are recorded in progress; local tests do not validate a production deployment.
 
 <span id="next-batch-checkpoint"></span>
 
