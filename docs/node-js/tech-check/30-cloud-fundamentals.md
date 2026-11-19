@@ -6,10 +6,17 @@ outline: [2, 3]
 
 AWS is the primary provider, following the existing [AWS service slice](../aws-service-slice.md): HTTPS load balancer → private ECS Fargate tasks → private RDS PostgreSQL, with selected S3 report objects. That slice contains the infrastructure template and prerequisites. This chapter develops the concepts, VM alternative and practice plan. **No cloud resources or costs were created by writing these notes.** Provider references were checked on 2026-11-05; check regional features, quotas and prices before execution.
 
-## How do VMs, containers and managed services change your responsibilities? {#t30-q01}
+<!-- tech-check: t30-q01; level: 3 -->
 
-Level Up: L1\
+## How do VMs, containers and managed services change your responsibilities?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R140](./requirements.md#r140), [R141](./requirements.md#r141), [R181](./requirements.md#r181).
+
 
 <div class="notes-core-answer">
 
@@ -36,10 +43,17 @@ Compare one VM, Fargate and a function for an API plus a report job. Accept with
 
 ---
 
-## How do you configure and recover a VM? {#t30-q02}
+<!-- tech-check: t30-q02; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do you configure and recover a VM?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R140](./requirements.md#r140), [R147](./requirements.md#r147).
+
 
 <div class="notes-core-answer">
 
@@ -63,10 +77,17 @@ In a sandbox account, configure one small VM from a saved specification, attach 
 
 ---
 
-## When should storage be object, block or file based? {#t30-q03}
+<!-- tech-check: t30-q03; level: 3 -->
 
-Level Up: L1\
-Tech Check level: ⭐⭐⭐
+## When should storage be object, block or file based?
+
+*Study depth: Intermediate*
+
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R140](./requirements.md#r140).
+
 
 <div class="notes-core-answer">
 
@@ -111,10 +132,17 @@ In an owned private bucket, upload one authorized report, retrieve it, reject an
 
 ---
 
-## How does an application reach a managed database securely? {#t30-q04}
+<!-- tech-check: t30-q04; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How does an application reach a managed database securely?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R145](./requirements.md#r145).
+
 
 <div class="notes-core-answer">
 
@@ -136,10 +164,17 @@ In the owned AWS slice, verify task→DB connectivity, denial from an unapproved
 
 ---
 
-## Which identities and network boundaries does the cloud service need? {#t30-q05}
+<!-- tech-check: t30-q05; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## Which identities and network boundaries does the cloud service need?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R142](./requirements.md#r142), [R147](./requirements.md#r147).
+
 
 <div class="notes-core-answer">
 
@@ -161,10 +196,18 @@ Write an access matrix for operator, execution role, task role, SQL app role and
 
 ---
 
-## What constitutes a complete first cloud exercise? {#t30-q06}
+<!-- tech-check: t30-q06; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## What constitutes a complete first cloud exercise?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R144](./requirements.md#r144), [R147](./requirements.md#r147).
+
+
 
 <div class="notes-core-answer">
 

@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Architecture is a set of decisions about **ownership, dependencies, state and failure**. These six questions extend the completed [design-pattern catalogue](./18-patterns.md); a catalogue of classes does not replace system design. Examples use Node.js 24 and the existing Express 5/PostgreSQL path. Distributed deployment is a design exercise until tested against real infrastructure.
 
-## How do layers and feature modules fit together? {#t18-q24}
+<!-- tech-check: t18-q24; level: 3 -->
 
-Level Up: L3\
+## How do layers and feature modules fit together?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R062](./requirements.md#r062), [R172](./requirements.md#r172).
+
 
 <div class="notes-core-answer">
 
@@ -86,10 +93,17 @@ Extract a product rename route into these boundaries. Accept only when the servi
 
 ---
 
-## What makes a module maintainable and reusable? {#t18-q25}
+<!-- tech-check: t18-q25; level: 3 -->
 
-Level Up: L2\
+## What makes a module maintainable and reusable?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R129](./requirements.md#r129), [R175](./requirements.md#r175).
+
 
 <div class="notes-core-answer">
 
@@ -119,10 +133,17 @@ Write a one-page module contract and run the same success/not-found/conflict tes
 
 ---
 
-## When should a modular monolith become microservices? {#t18-q26}
+<!-- tech-check: t18-q26; level: 3 -->
 
-Level Up: L3\
+## When should a modular monolith become microservices?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R064](./requirements.md#r064), [R173](./requirements.md#r173), [R174](./requirements.md#r174), [R183](./requirements.md#r183).
+
 
 <div class="notes-core-answer">
 
@@ -157,10 +178,17 @@ Write an extraction ADR comparing one deployable with two. Include three concret
 
 ---
 
-## How do outbox, idempotency and sagas preserve consistency? {#t18-q27}
+<!-- tech-check: t18-q27; level: 3 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+## How do outbox, idempotency and sagas preserve consistency?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R099](./requirements.md#r099), [R100](./requirements.md#r100).
+
 
 <div class="notes-core-answer">
 
@@ -192,10 +220,17 @@ In an owned database/broker fixture, crash after publish but before marking deli
 
 ---
 
-## What does availability versus consistency actually mean? {#t18-q28}
+<!-- tech-check: t18-q28; level: 3 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+## What does availability versus consistency actually mean?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R102](./requirements.md#r102).
+
 
 <div class="notes-core-answer">
 
@@ -221,10 +256,18 @@ For catalogue, checkout and audit history, specify allowed staleness, conflict p
 
 ---
 
-## How do you design for load without guessing? {#t18-q29}
+<!-- tech-check: t18-q29; level: 3 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+## How do you design for load without guessing?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R101](./requirements.md#r101), [R145](./requirements.md#r145).
+
+
 
 <div class="notes-core-answer">
 

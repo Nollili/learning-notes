@@ -410,3 +410,23 @@
 @media (max-width: 600px) { .learning-hub { padding: 32px 20px; } .learning-hub__grid { grid-template-columns: minmax(0, 1fr); } .path-card { padding: 20px; } }
 
 .tech-check-completion { width: fit-content; cursor: pointer; }
+
+/* Wide reference tables retain readable columns inside a keyboard-scrollable region. */
+.vp-doc .notes-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1.5rem;
+}
+.vp-doc .notes-table-scroll table {
+  display: table;
+  width: 100%;
+  min-width: 72rem;
+  max-width: none;
+  margin-block: 0;
+}
+.vp-doc .notes-table-scroll :is(th, td) { overflow-wrap: normal; }
+.vp-doc .notes-table-scroll th { white-space: nowrap; }
+.vp-doc .notes-table-scroll:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}

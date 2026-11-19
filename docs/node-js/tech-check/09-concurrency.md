@@ -6,12 +6,17 @@ outline: [2, 3]
 
 Examples use **Node.js 24.18.0**, ES Modules and built-in APIs. These eight questions cover process/thread isolation, worker and data ownership, bounded pools, cluster, forked IPC sessions and production choices. Practical exercises remain separate.
 
-## How do child processes, cluster workers and worker threads differ in isolation and communication? {#t09-q01}
+<!-- tech-check: t09-q01; level: 3 -->
+
+## How do child processes, cluster workers and worker threads differ in isolation and communication?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080).
+
 
 <span class="notes-section-label">**Example — predict the parent value and identity comparisons**</span>
 
@@ -132,24 +137,29 @@ Identify the execution and ownership boundary before choosing communication, fai
 - [ ] Test worker startup failure, thrown error, malformed result, exit 0 without a result and a worker that reports then stays alive. Every case must terminate under an external test watchdog.
 - [ ] Explain why fork, cluster and worker_threads solve different problems, then choose an approach for a CPU-heavy report, an external executable and an I/O-bound request.
 
-Acceptance: assert values/error paths and actual worker settlement; do not claim thread speedup from the tiny arithmetic example. Process/cluster integration, transfers/shared-memory correctness, reusable pools and cross-platform behaviour are not established by this fixture. Author checks do not complete learner practice.
+Acceptance: assert values/error paths and actual worker settlement; do not claim thread speedup from the tiny arithmetic example. Process/cluster integration, transfers/shared-memory correctness, reusable pools and cross-platform behaviour are not established by this fixture.
 
 Official references checked 2026-11-04: Node 24.18 [worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child_process.fork](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options). Earlier fork/IPC examples remain in [related explanation](./02-cli-and-processes.md#t02-q08); this question adds the process/thread comparison without duplicating that implementation.
 
 ---
 
-## How should a worker task handle result validation, failure, timeout and caller cancellation? {#t09-q02}
+<!-- tech-check: t09-q02; level: 3 -->
+
+## How should a worker task handle result validation, failure, timeout and caller cancellation?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080).
+
 
 <span class="notes-section-label">**Example — predict completion before running**</span>
 
 Use the existing source helper below unchanged. In an owned temporary directory, save it as `worker.ts`, then create sum-worker.mjs and run-worker.mjs. Node 24.18 can strip this helper's erasable TypeScript syntax when imported; **runtime stripping does not type-check it** or implement arbitrary tsconfig transforms.
 
-No TypeScript dependency is needed for this stated runtime experiment. Preserve an Autocode template's compiler/Jest configuration rather than replacing it with this fixture setup.
+No TypeScript dependency is needed for this stated runtime experiment.
 
 <<< ../../workbench/node-js/runtime/worker.ts
 
@@ -260,7 +270,7 @@ Select one outcome, validate its meaning and finish owned cleanup before reporti
 - [ ] Test malformed result, worker throw, clean/nonzero exit without result, deadline, pre-abort and abort while the worker is active. Assert error identity where the contract preserves it and zero retained caller abort listeners.
 - [ ] Exercise first-result-then-extra-message/late-error and explain the selected-outcome policy without relying on fragile millisecond races. Compare reply-then-hang under Q01 and Q02.
 
-Acceptance: every owned worker must settle/terminate and the external test watchdog must remain able to stop a broken case. Record which terminal/cleanup branches were actually exercised; message-deserialization and native termination failures cannot be inferred from an ordinary thrown error. Author checks do not complete learner practice.
+Acceptance: every owned worker must settle/terminate and the external test watchdog must remain able to stop a broken case. Record which terminal/cleanup branches were actually exercised; message-deserialization and native termination failures cannot be inferred from an ordinary thrown error.
 
 Official references checked 2026-11-04: Node 24.18 [worker termination and events](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [AbortSignal reason](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#abortsignalreason), [TypeScript stripping limits](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html#type-stripping). The included implementation is the existing [source helper context](../module-02-standard-library.md#promise-wrapper); no second production helper was added.
 
@@ -269,12 +279,17 @@ Official references checked 2026-11-04: Node 24.18 [worker termination and event
 
 ---
 
-## How do copying, transferring and shared memory change ownership between worker threads? {#t09-q03}
+<!-- tech-check: t09-q03; level: 3 -->
+
+## How do copying, transferring and shared memory change ownership between worker threads?
 
 *Study depth: Intermediate; advanced shared-memory algorithms optional*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080).
+
 
 <div class="notes-core-answer">
 
@@ -437,12 +452,17 @@ Acceptance: retain results/error branches, cleanup evidence and a reasoned copy/
 
 ---
 
-## How does a bounded reusable worker pool own admission, cancellation and shutdown? {#t09-q04}
+<!-- tech-check: t09-q04; level: 3 -->
+
+## How does a bounded reusable worker pool own admission, cancellation and shutdown?
 
 *Study depth: Intermediate; multi-worker tuning and automatic recovery optional extensions*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080).
+
 
 <div class="notes-core-answer">
 
@@ -690,12 +710,17 @@ Acceptance: exact results, failure identities where promised, bounded retained w
 
 ---
 
-## What does cluster share, and who owns service-process readiness and shutdown? {#t09-q05}
+<!-- tech-check: t09-q05; level: 3 -->
+
+## What does cluster share, and who owns service-process readiness and shutdown?
 
 *Study depth: Intermediate; deployment-specific scheduling/replacement tuning optional*
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐, ⭐⭐⭐⭐
+
+Source mapping: [R037](./requirements.md#r037), [R080](./requirements.md#r080).
+
 
 <div class="notes-core-answer">
 
@@ -816,12 +841,17 @@ Acceptance: readiness after both listeners, per-process state, bounded shutdown,
 
 ---
 
-## How should a service own a forked process from startup through actual closure? {#t09-q06}
+<!-- tech-check: t09-q06; level: 3 -->
+
+## How should a service own a forked process from startup through actual closure?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
+
 
 <div class="notes-core-answer">
 
@@ -953,12 +983,17 @@ Acceptance: no child/channel remains after owned close, results and lifecycle fa
 
 ---
 
-## How do repeated IPC requests enforce correlation, flow control and terminal ownership? {#t09-q07}
+<!-- tech-check: t09-q07; level: 3 -->
+
+## How do repeated IPC requests enforce correlation, flow control and terminal ownership?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R117](./requirements.md#r117).
+
 
 <div class="notes-core-answer">
 
@@ -1149,12 +1184,17 @@ Acceptance: each promise settles according to its phase, repeated close is stabl
 
 ---
 
-## How do you choose and troubleshoot a production concurrency model? {#t09-q08}
+<!-- tech-check: t09-q08; level: 3 -->
+
+## How do you choose and troubleshoot a production concurrency model?
 
 *Study depth: Intermediate; representative infrastructure measurements remain practical work*
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R119](./requirements.md#r119), [R101](./requirements.md#r101).
+
 
 <div class="notes-core-answer">
 
@@ -1233,6 +1273,92 @@ Adding threads to I/O wait, increasing every pool simultaneously, forgetting rep
 ::: tip Key takeaway
 Choose the bottleneck and ownership boundary first; measure the full topology and test its failure outcomes.
 :::
+
+<!-- tech-check: t09-q09; level: 3 -->
+
+## What does Event Splitting mean in this high-load preparation path?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: ⭐⭐⭐
+
+Source mapping: [R176](./requirements.md#r176).
+
+
+
+The supplied chart names “Event Splitting” without defining it. This lesson uses an **editorial interpretation: partitioning a long operation into bounded chunks across event-loop turns**. It is not a Node API name. The L3 audience is editorial too; the chart-only entry supplies no career proficiency.
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Partition work so that a callback performs a bounded chunk, then schedules the continuation with a mechanism such as `setImmediate`. **Partitioning improves opportunities for other work to run; it does not create CPU parallelism.** Bound the total input and concurrent jobs as well as the chunk size. Move sufficiently expensive CPU work to an owned worker pool when measurements justify it.
+
+</div>
+
+<span class="notes-section-label">**Run a bounded example**</span>
+
+Save as `event-splitting.mjs` and run `node event-splitting.mjs` with Node 24. This example sums integers rather than accepting arbitrary callback work whose duration could be unbounded.
+
+```js [event-splitting.mjs]
+import assert from 'node:assert/strict';
+import { setImmediate as yieldTurn } from 'node:timers/promises';
+
+async function sumPartitioned(count, { chunkSize = 1000, signal } = {}) {
+  if (!Number.isSafeInteger(count) || count < 0 || count > 1000000)
+    throw new RangeError('count');
+  if (!Number.isSafeInteger(chunkSize) || chunkSize < 1 || chunkSize > 10000)
+    throw new RangeError('chunkSize');
+  signal?.throwIfAborted();
+  let sum = 0;
+  for (let start = 0; start < count; start += chunkSize) {
+    signal?.throwIfAborted();
+    const end = Math.min(start + chunkSize, count);
+    for (let i = start; i < end; i++) sum += i;
+    if (end < count) await yieldTurn(undefined, { signal });
+  }
+  return sum;
+}
+
+let observedOtherWork = false;
+const marker = yieldTurn().then(() => { observedOtherWork = true; });
+assert.equal(await sumPartitioned(10000, { chunkSize: 100 }), 49995000);
+assert.equal(observedOtherWork, true);
+await marker;
+assert.equal(await sumPartitioned(0), 0);
+await assert.rejects(sumPartitioned(5, { chunkSize: 0 }), RangeError);
+const controller = new AbortController();
+const pending = sumPartitioned(1000000, { signal: controller.signal });
+controller.abort();
+await assert.rejects(pending, { name: 'AbortError' });
+console.log('Partitioned result, interleaving and cancellation pass.');
+```
+
+<span class="notes-section-label">**Why this changes responsiveness**</span>
+
+Without the awaited immediate, one loop owns the JavaScript thread until completion. The await allows later chunks to run on subsequent loop turns. `await Promise.resolve()` only schedules a microtask continuation and can keep starving timers/I/O. Calling `EventEmitter.emit()` is also insufficient: ordinary listeners execute synchronously.
+
+The marker assertion shows another scheduled immediate progressed before completion in this fixture. It does not promise timer ordering, fairness between clients or a latency SLA. Count-based chunks work here because each iteration has similar bounded cost. A single expensive regular expression, JSON parse or synchronous native call cannot be interrupted by a chunk boundary outside it. A time budget checked between items also cannot interrupt an indivisible item.
+
+<span class="notes-section-label">**Choose the right boundary**</span>
+
+| Need | Approach | Remaining responsibility |
+|---|---|---|
+| Keep a moderate operation responsive | Partition and yield between chunks | Measure chunk duration and total latency |
+| Run CPU work in parallel | Bounded worker-thread pool | Admission, transfer, cancellation and worker termination |
+| Defer a durable business operation | Queue with an explicit job contract | Idempotency, retries and delivery semantics |
+| Process a large incoming sequence | Stream with backpressure | Bound buffering and the work per chunk |
+
+**Per-job chunking does not bound the number of admitted jobs.** Thousands of yielding jobs can still exhaust memory/CPU. Use the [worker admission/lifecycle lesson](#t09-q04) and [load-measurement lesson](./12-performance-and-v8.md#t12-q05) to decide between rejection, chunking and offloading. Cancelling a partial computation cannot undo effects already committed; keep this example's intermediate sum private until success.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Compare a synchronous sum, this partitioned sum and a worker implementation under the same finite input. Record correct results, total time, loop delay and concurrent health-request latency. Try several chunk sizes, pre-abort and abort during a yield. Accept only with bounded admission and cleanup; report scheduling overhead and retain a slower result. No fixed timing threshold belongs in this functional fixture.
+
+Reference: [Node.js partitioning and offloading guidance](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+
+---
 
 ## Concurrency revision
 

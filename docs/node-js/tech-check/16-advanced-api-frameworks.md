@@ -6,10 +6,17 @@ outline: [2, 3]
 
 This page extends the [framework chapter](./16-frameworks.md) with failure and measurement depth for the supplied ladder's Level 4 API/framework categories. It retains the original owners for process, filesystem, crypto, cluster and streams; it is not a new numbered topic group. Express 5.1.0/Node 24 is primary, with a NestJS companion. Performance and security decisions depend on a stated workload and threat model.
 
-## How do process and cluster owners handle failure beyond a happy-path reply? {#t16-q14}
+<!-- tech-check: t16-q14; level: 4 -->
 
-Level Up: L4\
+## How do process and cluster owners handle failure beyond a happy-path reply?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R037](./requirements.md#r037), [R073](./requirements.md#r073).
+
 
 <div class="notes-core-answer">
 
@@ -33,10 +40,17 @@ Run the existing cluster/fork fixtures and add an API-level scenario: lose a wor
 
 ---
 
-## How do you publish a file without exposing partial content or overwriting an existing result? {#t16-q15}
+<!-- tech-check: t16-q15; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do you publish a file without exposing partial content or overwriting an existing result?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: ⭐, ⭐⭐⭐⭐
+
+Source mapping: [R012](./requirements.md#r012).
+
 
 <div class="notes-core-answer">
 
@@ -142,10 +156,17 @@ Test competing publication, pre-existing target, invalid name, write/sync/link/c
 
 ---
 
-## How do you stream bounded results while owning errors and cancellation? {#t16-q16}
+<!-- tech-check: t16-q16; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do you stream bounded results while owning errors and cancellation?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: ⭐, ⭐⭐⭐⭐
+
+Source mapping: [R042](./requirements.md#r042).
+
 
 <div class="notes-core-answer">
 
@@ -234,10 +255,17 @@ Test slow sink, source/transform/destination errors, oversize chunk, active abor
 
 ---
 
-## How do cryptographic and streaming boundaries affect a service design? {#t16-q17}
+<!-- tech-check: t16-q17; level: 4 -->
 
-Level Up: L4\
+## How do cryptographic and streaming boundaries affect a service design?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R038](./requirements.md#r038).
+
 
 <div class="notes-core-answer">
 
@@ -261,10 +289,18 @@ Corrupt ciphertext/tag/AAD and truncate an owned encrypted object. Accept when a
 
 ---
 
-## How do you measure a framework optimization without removing correctness? {#t16-q18}
+<!-- tech-check: t16-q18; level: 4 -->
 
-Level Up: L4\
+## How do you measure a framework optimization without removing correctness?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
+
+
 
 <div class="notes-core-answer">
 
@@ -347,6 +383,8 @@ A useful production comparison includes request mix, concurrency/arrival model, 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Run the local experiment, then replace the synthetic work with one real measured application bottleneck. Accept with preserved guards/contracts, repeated evidence, resource/variance analysis and a documented cache/config lifetime. Keep an unfavorable result; an optimization attempt can be rejected. References: [Express performance](https://expressjs.com/en/advanced/best-practice-performance/), [Nest provider scopes](https://docs.nestjs.com/fundamentals/injection-scopes), [Nest performance](https://docs.nestjs.com/techniques/performance).
+
+For the equivalent Hapi, Koa and Feathers exercise, see [preserving contracts during framework optimization](./16-framework-alternatives.md#t16-q22).
 
 ## Revision and mixed practice
 

@@ -6,12 +6,17 @@ outline: [2, 3]
 
 Examples target Node 24.18.0. Keep the shown .mjs/.cjs extensions and package.json boundaries: a different module type or transpiler can change the result. All fixture packages below are local teaching files, not registry downloads. Code questions precede their answers.
 
-### What is built in, what is a package, and what does an import specifier select? {#t03-q01}
+<!-- tech-check: t03-q01; level: 1 -->
+
+### What is built in, what is a package, and what does an import specifier select?
 
 *Study depth: Foundational*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R003](./requirements.md#r003), [R107](./requirements.md#r107).
+
 
 <div class="notes-core-answer">
 
@@ -67,12 +72,17 @@ Classify the specifier first: built-in capability, local module and external pac
 
 ---
 
-### How do CommonJS and ES Modules differ, and how do you choose the file's mode? {#t03-q02}
+<!-- tech-check: t03-q02; level: 1 -->
+
+### How do CommonJS and ES Modules differ, and how do you choose the file's mode?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R004](./requirements.md#r004), [R108](./requirements.md#r108).
+
 
 <div class="notes-core-answer">
 
@@ -149,12 +159,17 @@ Module mode is a runtime/package contract, and CJS/ESM interop must be checked a
 
 ---
 
-### Are top-level variables global, and what does the module cache share? {#t03-q03}
+<!-- tech-check: t03-q03; level: 1 -->
+
+### Are top-level variables global, and what does the module cache share?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R005](./requirements.md#r005), [R025](./requirements.md#r025).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -237,12 +252,17 @@ Module-private variables can still be shared through a cached instance; define t
 
 ---
 
-### What is the CommonJS module object, and why does assigning exports sometimes do nothing? {#t03-q04}
+<!-- tech-check: t03-q04; level: 1 -->
+
+### What is the CommonJS module object, and why does assigning exports sometimes do nothing?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐
+
+Source mapping: [R027](./requirements.md#r027).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -313,12 +333,17 @@ exports is an initial alias, module.exports is the public value, and node:module
 
 ---
 
-### How do main, exports, imports and package conditions select an entry point? {#t03-q05}
+<!-- tech-check: t03-q05; level: 1 -->
+
+### How do main, exports, imports and package conditions select an entry point?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐
+
+Source mapping: [R026](./requirements.md#r026), [R108](./requirements.md#r108).
+
 
 <div class="notes-core-answer">
 
@@ -410,12 +435,17 @@ Package metadata selects public runtime entry contracts, and the same package na
 
 ---
 
-### What are dynamic import and top-level await, and what might “Global Async” mean? {#t03-q06}
+<!-- tech-check: t03-q06; level: 1 -->
+
+### What are dynamic import and top-level await, and what might “Global Async” mean?
 
 *Study depth: Advanced*
 
-Level Up: L4\
-Tech Check level: ⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐
+
+Source mapping: [R068](./requirements.md#r068).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -495,12 +525,17 @@ Async module evaluation changes graph readiness; handle it with explicit startup
 
 ---
 
-### How do you diagnose module-loading failures systematically? {#t03-q07}
+<!-- tech-check: t03-q07; level: 1 -->
+
+### How do you diagnose module-loading failures systematically?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐
+
+Source mapping: [R026](./requirements.md#r026), [R116](./requirements.md#r116).
+
 
 <div class="notes-core-answer">
 
@@ -575,12 +610,18 @@ Diagnose the stage and selected target before changing dependencies or runtime c
 
 ---
 
-### What happens in circular dependencies, and why is clearing a cache not a resource reset? {#t03-q08}
+<!-- tech-check: t03-q08; level: 1 -->
+
+### What happens in circular dependencies, and why is clearing a cache not a resource reset?
 
 *Study depth: Advanced*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐
+
+Source mapping: [R026](./requirements.md#r026), [R116](./requirements.md#r116).
+
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 

@@ -6,12 +6,17 @@ outline: [2, 3]
 
 This chapter covers event-driven contracts, EventEmitter, waiting for events and scheduling order. Standalone examples use Node.js 24.18.0, with explicit `.mjs`/`.cjs` filenames. It also covers OS event handling, libuv boundaries and measured diagnosis, completing the five supplied subtopics as study material. See the [course event-loop explanation](../module-01-nodejs-foundations.md#_8-event-loop-deep-dive) for additional context.
 
-### How do EventEmitter listeners, error events and subscription lifetimes work? {#t06-q01}
+<!-- tech-check: t06-q01; level: 2 -->
+
+### How do EventEmitter listeners, error events and subscription lifetimes work?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: ⭐; Related ⭐⭐
+
+Source mapping: [R010](./requirements.md#r010), [R034](./requirements.md#r034).
+
 
 <span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
 
@@ -87,12 +92,17 @@ An event contract includes delivery, payload, failure and subscription lifetime,
 
 ---
 
-### How do you wait for events without missing them or leaking listeners? {#t06-q02}
+<!-- tech-check: t06-q02; level: 2 -->
+
+### How do you wait for events without missing them or leaking listeners?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: ⭐
+
+Source mapping: [R034](./requirements.md#r034).
+
 
 <span class="notes-section-label">**Example — register before publication**</span>
 
@@ -164,12 +174,17 @@ Subscribe before publishing, attach observers promptly and cancel waits that no 
 
 ---
 
-### How do event-loop phases relate to timers, I/O and immediates? {#t06-q03}
+<!-- tech-check: t06-q03; level: 2 -->
+
+### How do event-loop phases relate to timers, I/O and immediates?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R033](./requirements.md#r033), [R156](./requirements.md#r156).
+
 
 <span class="notes-section-label">**Example — predict only the guaranteed order**</span>
 
@@ -232,12 +247,17 @@ Explain scheduling in its actual callback and runtime context, not from a univer
 
 ---
 
-### How do nextTick and promise microtasks differ across CommonJS and ESM? {#t06-q04}
+<!-- tech-check: t06-q04; level: 2 -->
+
+### How do nextTick and promise microtasks differ across CommonJS and ESM?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐
+
+Source mapping: [R157](./requirements.md#r157).
+
 
 <span class="notes-section-label">**Example — run the same source as two module types**</span>
 
@@ -307,19 +327,24 @@ Ordering depends on execution context; responsiveness depends on giving the loop
 - [ ] Reproduce a missed second event using controlled same-turn publication, then register both waits first and abort stranded siblings on failure. Assert zero owned event/error/abort listeners afterward.
 - [ ] Run the I/O scheduling example and both module-mode examples, asserting guaranteed sequences. Explain why the same assertion does not apply to arbitrary top-level timer/immediate code.
 
-Acceptance: assertions check payloads, counts, ordering, error identity and cleanup. Missing-event tests terminate via explicit abort; uncaught errors run in isolated children. Author checks do not mark learner practice complete.
+Acceptance: assertions check payloads, counts, ordering, error identity and cleanup. Missing-event tests terminate via explicit abort; uncaught errors run in isolated children.
 
 Official references checked 2026-11-04: Node 24.18 [EventEmitter and event helpers](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [process.nextTick](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#processnexttickcallback-args); Node [event-loop guide](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick), [setImmediate/CJS–ESM ordering](https://nodejs.org/en/learn/asynchronous-work/understanding-setimmediate); libuv [design overview](https://docs.libuv.org/en/v1.x/design.html). libuv's native internals and OS backends are continued in event-loop diagnosis, rather than inferred from JavaScript print order.
 
 
 ---
 
-### How do OS notifications and libuv's worker pool deliver different kinds of asynchronous work? {#t06-q05}
+<!-- tech-check: t06-q05; level: 2 -->
+
+### How do OS notifications and libuv's worker pool deliver different kinds of asynchronous work?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐
+
+Source mapping: [R071](./requirements.md#r071).
+
 
 <span class="notes-section-label">**Example — what can this prove about threads?**</span>
 
@@ -385,12 +410,17 @@ Separate OS notifications, native worker capacity and JavaScript execution when 
 
 ---
 
-### How should OS signal handlers coordinate bounded shutdown? {#t06-q06}
+<!-- tech-check: t06-q06; level: 2 -->
+
+### How should OS signal handlers coordinate bounded shutdown?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R035](./requirements.md#r035), [R112](./requirements.md#r112).
+
 
 <span class="notes-section-label">**Example — test only as an owned child process**</span>
 
@@ -480,12 +510,17 @@ A signal initiates a lifecycle protocol; resource owners and an external deadlin
 
 ---
 
-### What do event-loop delay and utilization measure? {#t06-q07}
+<!-- tech-check: t06-q07; level: 2 -->
+
+### What do event-loop delay and utilization measure?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R078](./requirements.md#r078), [R116](./requirements.md#r116).
+
 
 <span class="notes-section-label">**Example — interpret the shape, not an exact benchmark**</span>
 
@@ -564,12 +599,18 @@ Measure scheduling symptoms with units and context, then collect evidence at the
 
 ---
 
-### How can you demonstrate starvation and fix fairness safely? {#t06-q08}
+<!-- tech-check: t06-q08; level: 2 -->
+
+### How can you demonstrate starvation and fix fairness safely?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐; Related ⭐⭐
+
+Source mapping: [R033](./requirements.md#r033), [R176](./requirements.md#r176).
+
+
 
 <span class="notes-section-label">**Example — predict whether the immediate gets an opportunity**</span>
 

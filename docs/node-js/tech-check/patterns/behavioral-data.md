@@ -10,12 +10,17 @@ Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules
 
 ---
 
-### How does Interpreter evaluate a small language without executing arbitrary code? {#t18-q17}
+<!-- tech-check: t18-q17; level: 2 -->
+
+### How does Interpreter evaluate a small language without executing arbitrary code?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -124,12 +129,17 @@ Interpreter represents a grammar and defines how its expressions are evaluated.
 
 ---
 
-### How does Iterator expose traversal while preserving resource ownership? {#t18-q18}
+<!-- tech-check: t18-q18; level: 2 -->
+
+### How does Iterator expose traversal while preserving resource ownership?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -236,12 +246,17 @@ Iterator provides sequential traversal without exposing a collection’s represe
 
 ---
 
-### How does Memento restore owned state without exposing its internals? {#t18-q20}
+<!-- tech-check: t18-q20; level: 2 -->
+
+### How does Memento restore owned state without exposing its internals?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -330,12 +345,18 @@ Memento lets an originator capture/restores its state through snapshots held by 
 
 ---
 
-### How does Visitor add operations to a stable object structure? {#t18-q23}
+<!-- tech-check: t18-q23; level: 2 -->
+
+### How does Visitor add operations to a stable object structure?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
+
 
 <div class="notes-core-answer">
 

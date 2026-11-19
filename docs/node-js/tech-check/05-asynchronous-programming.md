@@ -6,14 +6,21 @@ outline: [2, 3]
 
 This chapter covers callback contracts, promises, async/await and error ownership. Examples are standalone `.mjs` files on Node.js 24.18.0, with no external dependencies. It also covers bounded control flow, combinators, cancellation and async iteration, completing the five supplied subtopics as study material.
 
-This chapter complements the [foundations explanation](../module-01-nodejs-foundations.md#_6-asynchronous-programming-patterns); it does not replace an Autocode template's build/Jest configuration.
+This chapter complements the [foundations explanation](../module-01-nodejs-foundations.md#_6-asynchronous-programming-patterns).
 
-### What is an error-first callback contract, and why do timing and exactly-once completion matter? {#t05-q01}
+For the chart’s basic Generators topic, start with [synchronous generators](#t05-q09); return to [async iteration](#t05-q08) after learning promises.
+
+<!-- tech-check: t05-q01; level: 1 -->
+
+### What is an error-first callback contract, and why do timing and exactly-once completion matter?
 
 *Study depth: Foundational to intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R008](./requirements.md#r008).
+
 
 <span class="notes-section-label">**Example — predict before reading the answer**</span>
 
@@ -88,12 +95,17 @@ Specify error delivery, timing and completion count before composing a callback 
 
 ---
 
-### What does a promise represent, and how do chaining and callback adaptation work? {#t05-q02}
+<!-- tech-check: t05-q02; level: 1 -->
+
+### What does a promise represent, and how do chaining and callback adaptation work?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R009](./requirements.md#r009).
+
 
 <span class="notes-section-label">**Example — predict both results**</span>
 
@@ -167,12 +179,17 @@ Keep the completion chain connected; adaptation must preserve the original API's
 
 ---
 
-### What does async/await change, and how should errors and cleanup be structured? {#t05-q03}
+<!-- tech-check: t05-q03; level: 1 -->
+
+### What does async/await change, and how should errors and cleanup be structured?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R032](./requirements.md#r032).
+
 
 <span class="notes-section-label">**Example — identify each observable outcome**</span>
 
@@ -259,12 +276,17 @@ Use await to express completion and ownership, including the error and cleanup p
 
 ---
 
-### Why can asynchronous failures escape a surrounding try/catch? {#t05-q04}
+<!-- tech-check: t05-q04; level: 1 -->
+
+### Why can asynchronous failures escape a surrounding try/catch?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R016](./requirements.md#r016).
+
 
 <span class="notes-section-label">**Example — find the owner of each rejection**</span>
 
@@ -353,12 +375,17 @@ Official references checked 2026-11-04: Node.js 24.18 [error propagation](https:
 
 ---
 
-### How do you choose sequential, concurrent and bounded control flow? {#t05-q05}
+<!-- tech-check: t05-q05; level: 1 -->
+
+### How do you choose sequential, concurrent and bounded control flow?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐
+
+Source mapping: [R031](./requirements.md#r031).
+
 
 <span class="notes-section-label">**Example — predict the result and peak active count**</span>
 
@@ -439,12 +466,17 @@ Control when work starts and define what happens to active work when one item fa
 
 ---
 
-### Which promise combinator matches the required outcome? {#t05-q06}
+<!-- tech-check: t05-q06; level: 1 -->
+
+### Which promise combinator matches the required outcome?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R009](./requirements.md#r009), [R031](./requirements.md#r031).
+
 
 <span class="notes-section-label">**Example — predict order, outcomes and empty-input behavior**</span>
 
@@ -510,12 +542,17 @@ Aggregation chooses an outcome; scheduling, cancellation and side-effect safety 
 
 ---
 
-### How do cancellation and deadlines differ from racing a timeout? {#t05-q07}
+<!-- tech-check: t05-q07; level: 1 -->
+
+### How do cancellation and deadlines differ from racing a timeout?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R031](./requirements.md#r031).
+
 
 <span class="notes-section-label">**Example — explain what actually stops**</span>
 
@@ -602,12 +639,17 @@ A deadline is a policy, an abort is a request, and cleanup needs an owner.
 
 ---
 
-### How do async iterators and generators control demand and cleanup? {#t05-q08}
+<!-- tech-check: t05-q08; level: 3 -->
+
+### How do async iterators and generators control demand and cleanup?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R070](./requirements.md#r070), [R170](./requirements.md#r170), [R171](./requirements.md#r171).
+
 
 <span class="notes-section-label">**Example — predict which values are requested and when close runs**</span>
 
@@ -688,6 +730,87 @@ For a Node stream, consider its async iterator lifecycle and stream.pipeline for
 Async iteration expresses demand and lifetime; cancellation and producer buffering still need explicit contracts.
 :::
 
+<!-- tech-check: t05-q09; level: 1 -->
+
+### How does a synchronous generator pause, resume and finish?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
+Tech Check level: ⭐
+
+Source mapping: [R152](./requirements.md#r152).
+
+
+
+Level Up is the intended career target for this question and answer; the supplied table gives this chart topic no separate Level Up proficiency. Read this Foundations question before the [async generator lesson](#t05-q08).
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Calling a `function*` creates an iterator; **its body starts only when you request a value**. Each `yield` suspends that body, and `next()` resumes it with a result containing `value` and `done`. **A synchronous generator does not give the event loop a turn**: expensive work between yields still runs synchronously on the calling thread.
+
+</div>
+
+<span class="notes-section-label">**Predict, then run**</span>
+
+Save as `generators.mjs` and run `node generators.mjs`. It needs no packages.
+
+```js [generators.mjs]
+import assert from 'node:assert/strict';
+const events = [];
+function* numbers() {
+  events.push('start');
+  try {
+    yield 10;
+    yield 20;
+    return 99;
+  } finally {
+    events.push('close');
+  }
+}
+const iterator = numbers();
+assert.deepEqual(events, []);
+assert.deepEqual(iterator.next(), { value: 10, done: false });
+assert.deepEqual(iterator.next(), { value: 20, done: false });
+assert.deepEqual(iterator.next(), { value: 99, done: true });
+assert.deepEqual(iterator.next(), { value: undefined, done: true });
+assert.deepEqual(events, ['start', 'close']);
+
+// for...of consumes yielded values, excluding the terminal return value.
+assert.deepEqual([...numbers()], [10, 20]);
+events.length = 0;
+for (const value of numbers()) {
+  assert.equal(value, 10);
+  break;
+}
+assert.deepEqual(events, ['start', 'close']);
+
+const manual = numbers();
+manual.next();
+assert.deepEqual(manual.return('stopped'), { value: 'stopped', done: true });
+console.log('Generator progression and early closing pass.');
+```
+
+<span class="notes-section-label">**Detailed explanation**</span>
+
+Each call to `numbers()` owns a separate suspended execution. The generator object is both an iterator (`next`) and iterable (`Symbol.iterator` returns itself). An iterable such as an array can instead create a fresh iterator on each traversal. Reusing an exhausted generator produces no more yielded values.
+
+`done: true` identifies completion even when `value` is meaningful. A yielded `undefined` still has `done: false`; do not test the value alone. `next(input)` supplies the value of the suspended `yield` expression; the first `next` argument has no suspended yield to receive it. `throw(error)` raises an exception at the suspension point and can be handled inside the generator.
+
+Breaking a `for...of` loop invokes an available `return()` method. In this example it enters `finally`; manual consumers must close abandoned iterators themselves. Calling `return()` before the first `next()` does not start the body or its `finally`. Acquire resources inside the generator when iteration begins, and avoid yielding from cleanup if callers rely on one closing call finishing it. The [Iterator pattern](./patterns/behavioral-data.md#t18-q18) develops resource-owning traversal further.
+
+A generator is useful for lazy sequences and traversal. Spreading it into an array materializes all results; spreading an infinite generator never finishes. `yield` hands control to the consumer, which may immediately call `next()` again. Compare `async function*`, whose iteration results are promises, with this synchronous protocol.
+
+<span class="notes-section-label">**Practice and acceptance**</span>
+
+Write a finite `range(start, end)` generator with an exclusive end. Predict its first two results, exhaustion and reuse. Test empty input, early break and manual `return()`. Then add a `try/finally` event log and explain why an unstarted iterator closes differently. Accept when the output matches the protocol and you can explain why a CPU-heavy generator can still block HTTP requests.
+
+References: [ECMAScript generator objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-generator-objects), [generator declarations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
+
+---
+
 ## Revision {#group-5-revision}
 
 Callbacks, promises and async/await express completion with different contracts. Keep every operation's result and rejection connected to an owner. Choose dependency order, aggregation outcome and start limits independently. Cancellation requests cooperation; cleanup and side-effect reconciliation are separate.
@@ -709,7 +832,7 @@ Build an importer from an injected async cursor to an injected save function. Ke
 
 Acceptance: assert the peak limit, no assignment after observed failure under the chosen policy, active-work settlement, pre-abort and mid-flight abort, cursor close on break/error, and cleanup precedence. Include empty input and a rejection reason of undefined.
 
-State that cancellation cannot undo a committed save and demonstrate an idempotency/reconciliation strategy. Never use real production data for this exercise. Documentation and author fixture checks do not mark learner practice complete.
+State that cancellation cannot undo a committed save and demonstrate an idempotency/reconciliation strategy. Never use real production data for this exercise.
 
 <span class="notes-section-label">**Mixed practice — attempt all before reading the answers**</span>
 

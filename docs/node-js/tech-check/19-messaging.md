@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Use PostgreSQL and the existing RabbitMQ job adapter as the primary implementation. Kafka, ActiveMQ/Artemis, SQS and SNS are alternatives for particular contracts, not six compulsory stacks. The canonical [durable jobs lab](../jobs-and-schedules.md) records its exact client/broker versions; select a supported patched broker for deployment. References checked 2026-11-05.
 
-## What contract must a message describe? {#t19-q01}
+<!-- tech-check: t19-q01; level: 5 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+## What contract must a message describe?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R059](./requirements.md#r059).
+
 
 <div class="notes-core-answer">
 
@@ -66,10 +73,17 @@ Specify an export command and its completion event. Test invalid/oversize/old-ve
 
 ---
 
-## How do RabbitMQ confirms, acknowledgements and the outbox fit together? {#t19-q02}
+<!-- tech-check: t19-q02; level: 5 -->
 
-Level Up: L3\
+## How do RabbitMQ confirms, acknowledgements and the outbox fit together?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R059](./requirements.md#r059), [R189](./requirements.md#r189).
+
 
 <div class="notes-core-answer">
 
@@ -97,10 +111,17 @@ Run the canonical lab against owned RabbitMQ/PostgreSQL. Verify duplicate effect
 
 ---
 
-## How do retries, dead letters and failover avoid an outage loop? {#t19-q03}
+<!-- tech-check: t19-q03; level: 5 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do retries, dead letters and failover avoid an outage loop?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R097](./requirements.md#r097).
+
 
 <div class="notes-core-answer">
 
@@ -124,10 +145,17 @@ Inject dependency failure, poison input, broker disconnect and post-commit respo
 
 ---
 
-## How is Kafka consumption different from deleting queue messages? {#t19-q04}
+<!-- tech-check: t19-q04; level: 5 -->
 
-Level Up: L3\
+## How is Kafka consumption different from deleting queue messages?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R059](./requirements.md#r059), [R190](./requirements.md#r190).
+
 
 <div class="notes-core-answer">
 
@@ -168,10 +196,17 @@ In an owned topic/group, stop after a SQL commit but before offset commit, resta
 
 ---
 
-## When do SQS and SNS fit a Node service? {#t19-q05}
+<!-- tech-check: t19-q05; level: 5 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+## When do SQS and SNS fit a Node service?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R059](./requirements.md#r059).
+
 
 <div class="notes-core-answer">
 
@@ -195,10 +230,18 @@ Prepare a scoped topology/configuration locally; in an authorized sandbox test t
 
 ---
 
-## What should you know about ActiveMQ and Artemis before choosing them? {#t19-q06}
+<!-- tech-check: t19-q06; level: 5 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+## What should you know about ActiveMQ and Artemis before choosing them?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R059](./requirements.md#r059).
+
+
 
 <div class="notes-core-answer">
 

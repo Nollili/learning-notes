@@ -10,12 +10,17 @@ Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules
 
 ---
 
-### How does Chain of Responsibility stop, delegate and preserve failure? {#t18-q15}
+<!-- tech-check: t18-q15; level: 2 -->
+
+### How does Chain of Responsibility stop, delegate and preserve failure?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -104,12 +109,17 @@ Chain of Responsibility passes a request through candidate handlers.
 
 ---
 
-### How does Command separate an operation from its invoker, and what can undo promise? {#t18-q16}
+<!-- tech-check: t18-q16; level: 2 -->
+
+### How does Command separate an operation from its invoker, and what can undo promise?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -200,12 +210,17 @@ Command represents an operation so an invoker can trigger it without knowing its
 
 ---
 
-### How does Mediator coordinate peers without becoming a global dependency hub? {#t18-q19}
+<!-- tech-check: t18-q19; level: 2 -->
+
+### How does Mediator coordinate peers without becoming a global dependency hub?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -309,12 +324,17 @@ Mediator centralizes a set of collaborating peers so they need not call one anot
 
 ---
 
-### How does State change permitted behavior as an object moves through its lifecycle? {#t18-q21}
+<!-- tech-check: t18-q21; level: 2 -->
+
+### How does State change permitted behavior as an object moves through its lifecycle?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -405,12 +425,18 @@ State delegates behavior according to the current lifecycle state and permitted 
 
 ---
 
-### How does Template Method define a workflow while allowing selected steps to vary? {#t18-q22}
+<!-- tech-check: t18-q22; level: 2 -->
+
+### How does Template Method define a workflow while allowing selected steps to vary?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164).
+
+
 
 <div class="notes-core-answer">
 

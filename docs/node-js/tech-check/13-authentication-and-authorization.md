@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Use the existing Express 5/PostgreSQL application as the primary browser-session implementation. This chapter adds examination questions and bounded token examples on Node.js 24; it does not introduce a second identity platform. Security references were checked on 2026-11-05. The [full authentication module](../module-09-authentication-authorization.md) contains the session, password-reset and refresh-family implementation.
 
-## How do authentication and authorization differ? {#t13-q01}
+<!-- tech-check: t13-q01; level: 3 -->
 
-Level Up: L1\
-Tech Check level: ⭐⭐⭐
+## How do authentication and authorization differ?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R051](./requirements.md#r051).
+
 
 <div class="notes-core-answer">
 
@@ -51,10 +58,17 @@ Create two tenants and test read/update/delete using the other's IDs, including 
 
 ---
 
-## When should a browser use a session rather than a JWT? {#t13-q02}
+<!-- tech-check: t13-q02; level: 3 -->
 
-Level Up: L3\
+## When should a browser use a session rather than a JWT?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R019](./requirements.md#r019).
+
 
 <div class="notes-core-answer">
 
@@ -80,10 +94,17 @@ Use the [existing session workbench](../module-09-authentication-authorization.m
 
 ---
 
-## What must a JWT verifier actually verify? {#t13-q03}
+<!-- tech-check: t13-q03; level: 3 -->
 
-Level Up: L3\
+## What must a JWT verifier actually verify?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R019](./requirements.md#r019).
+
 
 <div class="notes-core-answer">
 
@@ -156,10 +177,17 @@ Add wrong issuer/key, missing expiry, future `nbf`, malformed claims and revoked
 
 ---
 
-## Where do authentication middleware and Passport strategies fit? {#t13-q04}
+<!-- tech-check: t13-q04; level: 4 -->
 
-Level Up: L4\
+## Where do authentication middleware and Passport strategies fit?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R050](./requirements.md#r050), [R083](./requirements.md#r083), [R125](./requirements.md#r125).
+
 
 <div class="notes-core-answer">
 
@@ -193,10 +221,17 @@ An endlessly redirecting callback can mean the cookie was not stored, proxy trus
 
 ---
 
-## How do third-party login and service-to-service identity work? {#t13-q05}
+<!-- tech-check: t13-q05; level: 4 -->
 
-Level Up: L4\
+## How do third-party login and service-to-service identity work?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R084](./requirements.md#r084), [R085](./requirements.md#r085), [R186](./requirements.md#r186).
+
 
 <div class="notes-core-answer">
 
@@ -220,10 +255,17 @@ Draw browser→backend→provider and service→service trust boundaries. In an 
 
 ---
 
-## How do you bind an OIDC callback to the browser that started login? {#t13-q06}
+<!-- tech-check: t13-q06; level: 4 -->
 
-Level Up: L4\
+## How do you bind an OIDC callback to the browser that started login?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R084](./requirements.md#r084), [R186](./requirements.md#r186).
+
 
 <div class="notes-core-answer">
 
@@ -282,10 +324,17 @@ Check callback URI/proxy origin, transaction cookie scope/SameSite, expired stat
 
 ---
 
-## How do key rotation and token profiles avoid confused trust? {#t13-q07}
+<!-- tech-check: t13-q07; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do key rotation and token profiles avoid confused trust?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+
+Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
+
 
 <div class="notes-core-answer">
 
@@ -353,10 +402,18 @@ Test overlapping/retired keys, wrong issuer/audience/type/algorithm, missing tim
 
 ---
 
-## How do refresh rotation, revocation and sensitive writes survive races? {#t13-q08}
+<!-- tech-check: t13-q08; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do refresh rotation, revocation and sensitive writes survive races?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+
+Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
+
+
 
 <div class="notes-core-answer">
 

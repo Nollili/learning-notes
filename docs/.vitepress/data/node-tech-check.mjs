@@ -5,6 +5,12 @@ export const nodeTechCheckPaths = [
     "description": "Understand the runtime and build command-line programs with modules, asynchronous code and core APIs.",
     "items": [
       {
+        "id": "/node-js/tech-check/core-javascript",
+        "title": "Core JavaScript",
+        "href": "/node-js/tech-check/core-javascript",
+        "type": "Explanation"
+      },
+      {
         "id": "/node-js/tech-check/01-runtime-fundamentals",
         "title": "Runtime fundamentals",
         "href": "/node-js/tech-check/01-runtime-fundamentals",

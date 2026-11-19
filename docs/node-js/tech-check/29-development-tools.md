@@ -6,18 +6,22 @@ outline: [2, 3]
 
 Examples use Node.js 24.18.0 and npm 11. These five questions cover build/test/serve, linting, formatting, routine configuration and IDE debugging. Complete the exercise yourself after working through the example.
 
-### How do package scripts connect a tested build to a running service? {#t29-q01}
+<!-- tech-check: t29-q01; level: 2 -->
+
+### How do package scripts connect a tested build to a running service?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐⭐
+Level Up: L1 — Junior\
+Tech Check level: ⭐
+
+Source mapping: [R023](./requirements.md#r023), [R028](./requirements.md#r028).
+
 
 <span class="notes-section-label">**Example — identify which command keeps running**</span>
 
 Start with the complete isolated build-study fixture from [related explanation](./04-package-management.md#t04-q07): src/add.mjs, build.mjs, checks/add.test.mjs and verify.mjs. Its build copies the module to dist, and its test imports that emitted module. In that disposable fixture only, use this package.json and add serve.mjs below. No dependency installation is required.
 
-Do not replace this repository's scripts or an Autocode template's Jest/build/coverage configuration.
 
 ```json
 {
@@ -141,7 +145,7 @@ Keep build, test, readiness and shutdown as explicit stages with observable outc
 - [ ] Introduce the subtracting defect and prove startup is blocked, then restore it. Also test missing output, malformed PORT and an occupied port.
 - [ ] Supervise a real owned service child: await readiness, perform the request, send termination and verify exit/closed sockets. Include an external watchdog so a defect cannot hang the exercise.
 
-Acceptance: assert stage order, emitted-artifact behaviour, failure exit/no-ready cases, HTTP status/body and actual termination. Do not change protected tests or infer learner completion from the author's fixture checks.
+Acceptance: assert stage order, emitted-artifact behaviour, failure exit/no-ready cases, HTTP status/body and actual termination.
 
 Official references checked 2026-11-04: npm 11 [script lifecycle and ignore-scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/); Node 24.18 [HTTP server close](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#serverclosecallback), [test runner](https://nodejs.org/download/release/v24.18.0/docs/api/test.html). This lesson extends [related explanation](./04-package-management.md#t04-q07), preserving its earlier answer and verification history.
 
@@ -150,12 +154,17 @@ Official references checked 2026-11-04: npm 11 [script lifecycle and ignore-scri
 
 ---
 
-### How do you configure lint execution and change one rule without hiding defects? {#t29-q02}
+<!-- tech-check: t29-q02; level: 2 -->
+
+### How do you configure lint execution and change one rule without hiding defects?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R165](./requirements.md#r165).
+
 
 <div class="notes-core-answer">
 
@@ -167,7 +176,7 @@ Linting applies configured static rules to selected files. **A useful rule chang
 
 <span class="notes-section-label">**Reuse one owned fixture**</span>
 
-Use the complete [existing quality-standard lab](../../senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). It contains package.json, ESM JavaScript/JSDoc source, a behavior test and separate typecheck/build configurations. Copy it into an owned learning directory, preserving the original source notes. This chapter's validation uses ESLint 10.13.0, TypeScript 5.9.3, Node 24.18.0 and npm 11; keep its lockfile. No React/TS parser/plugin is required for this plain-JS scope.
+Use the complete [existing quality-standard lab](../../senior_growth/Clean_code_and_Code_Quality/What_is_code_standard_What_code_standard_is_on_your_current_project_Should_we_always_work_by_code_standard_Have_you_used_linters_and_do_you_have_any_experience_in_configuring_them.md#minimal-executable-standard). It contains package.json, ESM JavaScript/JSDoc source, a behavior test and separate typecheck/build configurations. Copy it into an owned learning directory, preserving the original source notes. Keep the lab’s lockfile. No React/TS parser/plugin is required for this plain-JS scope.
 
 Its `eslint.config.mjs` is a flat config:
 
@@ -187,7 +196,7 @@ export default [
 ];
 ```
 
-Run `npm run lint` using the existing `eslint src --max-warnings=0` script. The `files` pattern is the source-policy scope, while the standalone ignore object excludes owned generated output. Configuration/fixture test files need their own intentional scope if you want to lint them; this example does not claim every repository file was checked. Do not point a formatter/fixer at protected Autocode tests.
+Run `npm run lint` using the existing `eslint src --max-warnings=0` script. The `files` pattern is the source-policy scope, while the standalone ignore object excludes owned generated output. Configuration/fixture test files need their own intentional scope if you want to lint them; this example does not claim every repository file was checked.
 
 <span class="notes-section-label">**A repeatable rule change**</span>
 
@@ -205,7 +214,6 @@ Changing only an editor setting leaves CI unchanged. Running from the wrong pack
 
 1. <span class="notes-section-label">**Can lint pass while the program is wrong?**</span> Yes. A subtraction bug can satisfy every configured static rule; behavior tests exercise a different contract.
 2. <span class="notes-section-label">**Why use print-config?**</span> It verifies the effective configuration for one actual path, rather than guessing from a file you think applies.
-3. <span class="notes-section-label">**Should an existing Autocode template be migrated to this test runner?**</span> No. Preserve its required build/Jest/coverage configuration; this is a separate study fixture.
 
 ::: tip Key takeaway
 Prove the rule, file scope and failure reason before calling a lint-policy change complete.
@@ -221,12 +229,17 @@ Reproduce the loose-equality failure and repair; add an unused declaration and v
 
 ---
 
-### How do formatting, linting, typechecking and tests complement one another? {#t29-q03}
+<!-- tech-check: t29-q03; level: 2 -->
+
+### How do formatting, linting, typechecking and tests complement one another?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R165](./requirements.md#r165), [R166](./requirements.md#r166).
+
 
 <div class="notes-core-answer">
 
@@ -238,7 +251,7 @@ Formatting makes source presentation consistent; linting checks configured stati
 
 <span class="notes-section-label">**Configure one formatter in the owned lab**</span>
 
-Add Prettier 3.6.2 as an exact dev dependency in the same disposable quality fixture (`npm install --save-dev --save-exact prettier@3.6.2`). Retain its updated lockfile. This is not a request to install into an existing Autocode submission or the notes repository.
+Add Prettier 3.6.2 as an exact dev dependency in the same disposable quality fixture (`npm install --save-dev --save-exact prettier@3.6.2`). Retain its updated lockfile.
 
 Save `.prettierrc.json`:
 
@@ -305,12 +318,17 @@ Introduce formatting drift, observe check failure, format only the intended file
 
 ---
 
-### How do you make a routine tool change and diagnose which gate actually failed? {#t29-q04}
+<!-- tech-check: t29-q04; level: 2 -->
+
+### How do you make a routine tool change and diagnose which gate actually failed?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R028](./requirements.md#r028), [R165](./requirements.md#r165).
+
 
 <div class="notes-core-answer">
 
@@ -355,7 +373,7 @@ A watch process deliberately stays alive. A build may succeed while a stale serv
 2. Change addition to subtraction. Verify formatting/lint/typecheck pass while the behavior test fails. Restore it.
 3. Run the full chain, then import `dist/add.js` and assert addition again. The fixture's original test imports source; this separate smoke check verifies the emitted export too.
 
-Do not modify a task's build/Jest/database configuration to imitate this lab. For an Autocode implementation, preserve the supplied scripts and run `npm run build`, `npm run test`, plus Module 4's required Cobertura coverage. Keep `src/tests` untouched. A local hook or `prestart` is bypassable and is not the only CI/acceptance enforcement.
+A local hook or `prestart` can be bypassed. Run the same checks in CI.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -381,12 +399,17 @@ Make one scoped lint/format/typecheck setting change. Acceptance: state the orig
 
 ---
 
-### How do IDE navigation, refactoring and breakpoints help diagnose a Node application? {#t29-q05}
+<!-- tech-check: t29-q05; level: 2 -->
+
+### How do IDE navigation, refactoring and breakpoints help diagnose a Node application?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R018](./requirements.md#r018), [R049](./requirements.md#r049).
+
 
 <div class="notes-core-answer">
 
@@ -442,7 +465,6 @@ For a service, trigger one controlled request after listening and inspect the se
 
 The ordinary launch workflow starts the owned process under a debugger. An explicit `node --inspect`/`--inspect-brk` flow has different start/pause behavior and an inspector endpoint. Keep debugger access local and deliberate; do not expose it through a public bind/tunnel or disable authentication/network protections to simplify attaching. The inspector can inspect/execute powerful process operations. Stop the owned debug process and release resources when finished.
 
-The author check for this lesson uses Node's real in-process Inspector Session to set a conditional breakpoint, observe the paused `add` frame/local value, resume and disconnect. That verifies the underlying breakpoint behavior without opening an inspector listener. **It does not claim that VS Code's GUI, a remote attach or TypeScript source maps were exercised.** The launch JSON and entry point are separately checked; complete the actual IDE exercise yourself.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -466,6 +488,198 @@ Navigate to the implementation, preview a coordinated rename, run the gates, the
 
 [VS Code Node debugging](https://code.visualstudio.com/docs/nodejs/nodejs-debugging), [official documentation source](https://github.com/microsoft/vscode-docs/blob/main/docs/nodejs/nodejs-debugging.md), [refactoring](https://code.visualstudio.com/docs/editing/refactoring), [Node 24 Inspector](https://nodejs.org/download/release/v24.18.0/docs/api/inspector.html). Official site debugging fetch timed out during this review; the maintained Microsoft documentation source was checked instead.
 
+---
+
+<!-- tech-check: t29-q06; level: 2 -->
+
+### How do you diagnose a problem in a remote Node.js process?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R081](./requirements.md#r081).
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Use logs and deployment metadata to identify the affected process and artifact.** Reproduce the problem on an isolated staging replica before pausing execution. **Keep the Inspector on loopback and use an authenticated private connection** if you need to attach from your workstation.
+
+</div>
+
+For a staging exercise, deploy a copy of your own service with a synthetic configuration error. Record the artifact revision and process identity. Start the isolated replica with Inspector bound to its loopback interface, then attach through your environment’s approved private forwarding mechanism. Use a breakpoint immediately before configuration validation and check the value’s type and which branch runs. Keep secret values out of logs and screenshots.
+
+Compare the loaded source with the deployed artifact. A breakpoint in the wrong checkout or an unmatched source map can send you to the wrong line. If the replica starts with a break-on-entry flag, resume execution before expecting application readiness. When done, disconnect, stop the replica and verify the debugging listener is closed. [Node.js debugging and Inspector security](https://nodejs.org/en/learn/getting-started/debugging).
+
+---
+
+<!-- tech-check: t29-q07; level: 2 -->
+
+### How do you trace an async failure across a service and its dependency?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R082](./requirements.md#r082).
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Follow one request through its async boundaries using a request ID and the original error cause.** A stack identifies where an error surfaced. The request ID connects that error to the work that led to it.
+
+</div>
+
+```js
+async function readInventory() {
+  await Promise.resolve();
+  throw new Error('Inventory lookup timed out');
+}
+
+async function loadProduct() {
+  try {
+    return await readInventory();
+  } catch (cause) {
+    throw new Error('Product could not be loaded', { cause });
+  }
+}
+
+try {
+  await loadProduct();
+} catch (error) {
+  console.log(error.message);
+  console.log(error.cause.message);
+}
+```
+
+The first line identifies the failed operation. The second identifies the dependency failure. In this example, removing `await` inside the `try` returns the dependency’s promise before it rejects, so the catch block no longer adds context. In a service, include the same request ID in the entry, dependency and failure records. Report a stable public error and retain diagnostic details in controlled logs.
+
+---
+
+<!-- tech-check: t29-q08; level: 2 -->
+
+### How do you find why a framework application fails to start?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R127](./requirements.md#r127).
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Find the last startup step that succeeded.** Check module loading, configuration, dependency initialization and listening in order. Each step needs different evidence.
+
+</div>
+
+Run the same command and artifact that the service uses. If a module fails to load, check the entry path, package type and installed dependency. If validation fails, check which configuration keys are present and validate their types. If the server reports `EADDRINUSE`, check the configured host and port and identify the listener before changing anything. Once the server is listening, use a readiness check to distinguish a reachable process from a usable service.
+
+In your owned Express project, supply an invalid port and verify that validation stops startup with a clear error. Restore it, then use a second copy of your own service to occupy the port. Verify that the listen error is distinguishable from the configuration error and that both processes can be stopped cleanly.
+
+---
+
+<!-- tech-check: t29-q09; level: 2 -->
+
+### How do you document a JavaScript function with JSDoc?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
+Tech Check level: ⭐⭐
+
+Source mapping: [R021](./requirements.md#r021).
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**JSDoc describes the function contract alongside its implementation.** Use `@param` and `@returns` to document types, explain units in the descriptions, and use `@throws` for expected errors. Static checks can use those annotations. The implementation still validates values at runtime.
+
+</div>
+
+```js
+// @ts-check
+
+/**
+ * @param {number} seconds - A finite, nonnegative duration in seconds.
+ * @returns {number} The duration in milliseconds.
+ * @throws {RangeError} If seconds or the result is outside the supported range.
+ */
+function toMilliseconds(seconds) {
+  const milliseconds = seconds * 1000;
+  if (!Number.isFinite(seconds) || seconds < 0 || !Number.isFinite(milliseconds)) {
+    throw new RangeError('Duration is outside the supported range');
+  }
+  return milliseconds;
+}
+
+console.log(toMilliseconds(2.5));
+```
+
+The example prints `2500`. In your editor or project’s JavaScript type check, try a string argument and observe the diagnostic. Then run with a negative number to see a runtime check that the `number` annotation alone cannot express. [TypeScript JSDoc reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+
+---
+
+<!-- tech-check: t29-q10; level: 3 -->
+
+### How do OpenAPI and Swagger UI document a real HTTP contract?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: ⭐⭐⭐
+
+Source mapping: [R055](./requirements.md#r055), [R177](./requirements.md#r177).
+
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**OpenAPI describes the operations, inputs and outputs an HTTP client can rely on.** Swagger UI renders that description as browsable documentation. **A contract test checks that the implementation still matches the document.**
+
+</div>
+
+```yaml
+openapi: 3.1.0
+info:
+  title: Study Log API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: The process is running
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    const: ok
+```
+
+Load the document in Swagger UI and inspect the documented status and body. In an owned Express fixture, implement the route and make an HTTP test assert the status, content type and response body against the contract. Change the response to `{ status: 'ready' }` and verify the test catches the drift. For application routes, describe expected failure responses too. A security scheme describes how a client supplies credentials, while the service verifies them.
+
+[OpenAPI 3.1 specification](https://spec.openapis.org/oas/v3.1.0.html).
+
+---
+
 ## Tooling revision and practice
 
 - [ ] Reproduce the build/test/serve gate and supervise readiness/shutdown.
@@ -474,4 +688,4 @@ Navigate to the implementation, preview a coordinated rename, run the gates, the
 - [ ] Diagnose a type error and a behavioral error at different gates; inspect the emitted artifact.
 - [ ] Complete the real IDE navigation/refactor/breakpoint exercise and retain redacted evidence.
 
-Acceptance is your reproducible work and explanation, not the existence of these notes. Specialized IDE features, remote debugging and alternative lint/test frameworks remain optional extensions unless your project requires them.
+Acceptance is your reproducible work and explanation, not the existence of these notes. Specialized IDE features and alternative lint/test frameworks remain optional extensions unless your project requires them.

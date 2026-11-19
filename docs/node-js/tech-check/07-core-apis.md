@@ -6,14 +6,18 @@ outline: [2, 3]
 
 This chapter covers Console, asynchronous filesystem operations, Path and OS. Examples are standalone `.mjs` files on Node.js 24.18.0 with no external dependencies. It also covers Buffer, StringDecoder, timers and URL/URI handling; as well as streams, readline, crypto and compression.
 
-Keep the supplied build/Jest/database settings in Autocode submissions; the owned temporary fixtures here do not replace that configuration.
 
-### How should console output, diagnostics and timing be used without obscuring application behaviour? {#t07-q01}
+<!-- tech-check: t07-q01; level: 1 -->
+
+### How should console output, diagnostics and timing be used without obscuring application behaviour?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R011](./requirements.md#r011).
+
 
 <span class="notes-section-label">**Example — predict stdout, stderr and whether assert stops execution**</span>
 
@@ -76,12 +80,17 @@ Output is an interface with timing, privacy and delivery costs, not a substitute
 
 ---
 
-### How do callback and promise file APIs differ, and who owns write completion? {#t07-q02}
+<!-- tech-check: t07-q02; level: 1 -->
+
+### How do callback and promise file APIs differ, and who owns write completion?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: ⭐, ⭐⭐⭐⭐
+
+Source mapping: [R012](./requirements.md#r012), [R111](./requirements.md#r111).
+
 
 <span class="notes-section-label">**Example — predict bytes versus characters and exclusive creation failure**</span>
 
@@ -162,12 +171,17 @@ File API style changes composition; ordering, bytes, ownership and persistence s
 
 ---
 
-### What does path resolve, and why is normalization not a security boundary? {#t07-q03}
+<!-- tech-check: t07-q03; level: 1 -->
+
+### What does path resolve, and why is normalization not a security boundary?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R107](./requirements.md#r107).
+
 
 <span class="notes-section-label">**Example — compare lexical paths without accessing disk**</span>
 
@@ -238,12 +252,17 @@ Path utilities express names; authorization and filesystem identity are separate
 
 ---
 
-### Which OS facts are useful, and which should not drive automatic tuning? {#t07-q04}
+<!-- tech-check: t07-q04; level: 1 -->
+
+### Which OS facts are useful, and which should not drive automatic tuning?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐
+
+Source mapping: [R040](./requirements.md#r040).
+
 
 <span class="notes-section-label">**Example — explain each unit and deliberate omission**</span>
 
@@ -310,19 +329,24 @@ Use OS facts as scoped diagnostic inputs, then choose capacity from the workload
 - [ ] Test lexical path handling for child, sibling prefix, parent, ..notes, Windows volume change and packaged files launched from another cwd. Explain why lexical success cannot authorize a symlink escape.
 - [ ] Produce a minimal OS report with explicit units and no identifying fields, then justify a hypothetical worker cap separately from the parallelism hint.
 
-Acceptance: executable assertions cover results, error codes, stream separation, original-content preservation and owned cleanup. Platform-specific filesystem/security behaviours need an actual platform fixture; lexical syntax checks do not prove them. Author validation and written criteria do not mark learner exercises complete.
+Acceptance: executable assertions cover results, error codes, stream separation, original-content preservation and owned cleanup. Platform-specific filesystem/security behaviours need an actual platform fixture; lexical syntax checks do not prove them.
 
 Official references checked 2026-11-04: Node 24.18 [Console](https://nodejs.org/download/release/v24.18.0/docs/api/console.html), [filesystem contracts](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [Path](https://nodejs.org/download/release/v24.18.0/docs/api/path.html), [OS](https://nodejs.org/download/release/v24.18.0/docs/api/os.html). The examples deliberately state their runtime baseline and filesystem/security limits.
 
 
 ---
 
-### How do Buffer bytes and memory ownership differ from JavaScript strings? {#t07-q05}
+<!-- tech-check: t07-q05; level: 1 -->
+
+### How do Buffer bytes and memory ownership differ from JavaScript strings?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐
+
+Source mapping: [R036](./requirements.md#r036), [R118](./requirements.md#r118).
+
 
 <span class="notes-section-label">**Example — predict which changes are shared**</span>
 
@@ -389,12 +413,17 @@ Track byte range, backing-store lifetime and mutation ownership separately from 
 
 ---
 
-### How does StringDecoder preserve text across arbitrary byte chunks? {#t07-q06}
+<!-- tech-check: t07-q06; level: 1 -->
+
+### How does StringDecoder preserve text across arbitrary byte chunks?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R013](./requirements.md#r013).
+
 
 <span class="notes-section-label">**Example — split a UTF-8 character in the middle**</span>
 
@@ -460,12 +489,17 @@ Keep decoding state across transport chunks, and define whether malformed text i
 
 ---
 
-### How do timers interact with async work, cancellation and process lifetime? {#t07-q07}
+<!-- tech-check: t07-q07; level: 1 -->
+
+### How do timers interact with async work, cancellation and process lifetime?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R014](./requirements.md#r014), [R113](./requirements.md#r113).
+
 
 <span class="notes-section-label">**Example — explain cancellation and repeated-work ordering**</span>
 
@@ -539,12 +573,17 @@ Timers control scheduling intent; the owner controls overlap, failure, cancellat
 
 ---
 
-### How should URL and URI components be parsed and encoded? {#t07-q08}
+<!-- tech-check: t07-q08; level: 1 -->
+
+### How should URL and URI components be parsed and encoded?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R015](./requirements.md#r015).
+
 
 <span class="notes-section-label">**Example — predict duplicate parameters and relative resolution**</span>
 
@@ -618,19 +657,24 @@ Parse structure, encode component data once and authorize the resulting meaning 
 - [ ] Demonstrate nonoverlapping polling, cancellation and cleared handles. Use owned children to show unref permits exit and referenced timers keep a process alive; avoid exact timing assertions.
 - [ ] Test duplicate query keys, literal plus/space, trailing-base-slash resolution, absolute-origin replacement, malformed escapes and file-URL round trips. State that parsing is not fetch authorization.
 
-Acceptance: assertions check byte identity, mutation isolation, decoded content, expected errors, active-run counts and owned cleanup. No external network requests are required. Author fixture validation does not complete learner practice.
+Acceptance: assertions check byte identity, mutation isolation, decoded content, expected errors, active-run counts and owned cleanup. No external network requests are required.
 
 Additional official references checked 2026-11-04: Node 24.18 [Buffer](https://nodejs.org/download/release/v24.18.0/docs/api/buffer.html), [StringDecoder](https://nodejs.org/download/release/v24.18.0/docs/api/string_decoder.html), [timers](https://nodejs.org/download/release/v24.18.0/docs/api/timers.html), [URL and file conversions](https://nodejs.org/download/release/v24.18.0/docs/api/url.html); ECMAScript [URI encoding/decoding](https://tc39.es/ecma262/multipage/global-object.html#sec-uri-handling-functions). Fetch/redirect security requires its own application policy, not just a successful parse.
 
 
 ---
 
-### How do streams and backpressure bound work across a pipeline? {#t07-q09}
+<!-- tech-check: t07-q09; level: 1 -->
+
+### How do streams and backpressure bound work across a pipeline?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐
+Level Up: L4 — Lead\
+Tech Check level: ⭐, ⭐⭐⭐⭐
+
+Source mapping: [R042](./requirements.md#r042), [R115](./requirements.md#r115).
+
 
 <span class="notes-section-label">**Example — predict output and identify who owns completion**</span>
 
@@ -708,12 +752,17 @@ Backpressure is an end-to-end cooperation contract, not a guarantee obtained by 
 
 ---
 
-### How should readline own line processing, input errors and closure? {#t07-q10}
+<!-- tech-check: t07-q10; level: 1 -->
+
+### How should readline own line processing, input errors and closure?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐
+
+Source mapping: [R041](./requirements.md#r041).
+
 
 <span class="notes-section-label">**Example — predict CRLF and final-line handling**</span>
 
@@ -790,12 +839,17 @@ Line extraction, input lifetime and record validation are three distinct respons
 
 ---
 
-### Which crypto primitive fits hashing, authenticity, secrecy and passwords? {#t07-q11}
+<!-- tech-check: t07-q11; level: 4 -->
+
+### Which crypto primitive fits hashing, authenticity, secrecy and passwords?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R038](./requirements.md#r038).
+
 
 <span class="notes-section-label">**Example — verify exact bytes and reject malformed tags**</span>
 
@@ -869,12 +923,18 @@ Choose the primitive for its security property and implement the surrounding byt
 
 ---
 
-### How do you compress or decompress data without unbounded expansion? {#t07-q12}
+<!-- tech-check: t07-q12; level: 1 -->
+
+### How do you compress or decompress data without unbounded expansion?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐
+
+Source mapping: [R043](./requirements.md#r043).
+
+
 
 <span class="notes-section-label">**Example — compress, enforce output budget and decode**</span>
 
@@ -962,7 +1022,7 @@ Core APIs expose different contracts: diagnostics are output interfaces; files r
 
 <span class="notes-section-label">**Learner checklist and integrated exercise**</span>
 
-- [ ] Complete the filesystem and system API/buffers, timers and URLs practices, retaining assertions and limitations rather than treating author checks as learner evidence.
+- [ ] Complete the filesystem and system API/buffers, timers and URLs practices.
 - [ ] Implement a bounded trusted-log import using an owned input, explicit UTF-8/record policy and a slow destination. Demonstrate pipeline success, source/transform/destination errors and abort with cleanup.
 - [ ] Test readline CRLF, empty/final lines, missing input and source failure; explain its line-budget limitations and choose a bounded frame parser for hostile input.
 - [ ] Verify HMAC exact bytes, tampering, malformed tag, wrong key and replay-policy rejection. Keep all fixture keys synthetic and unlogged.

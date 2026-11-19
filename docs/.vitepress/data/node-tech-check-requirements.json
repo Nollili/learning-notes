@@ -1,0 +1,3221 @@
+{
+  "source": "node-levelup-tech-check-merged.md",
+  "sha256": "8ea93eecf322e4297e3575ce15410b984cf529e121705938339c26ba2dc0affe",
+  "requirements": [
+    {
+      "id": "R001",
+      "topic": "Node.js CLI",
+      "requirement": "Basic commands",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R002",
+      "topic": "Node.js CLI",
+      "requirement": "Build-in Node.js CLI options",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R003",
+      "topic": "Node.js Modules",
+      "requirement": "Standard Modules",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R004",
+      "topic": "Node.js Modules",
+      "requirement": "ES Modules",
+      "chart": "Common / ES6 (Modules)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R005",
+      "topic": "Node.js Modules",
+      "requirement": "Module Scope",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R006",
+      "topic": "Node.js Package Managers",
+      "requirement": "CLI Options",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R007",
+      "topic": "Node.js Package Managers",
+      "requirement": "Package Structure",
+      "chart": "Package structure (NPM)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R008",
+      "topic": "Node.js Async programming",
+      "requirement": "Callbacks",
+      "chart": "Callbacks (Asynchronous)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R009",
+      "topic": "Node.js Async programming",
+      "requirement": "Promise",
+      "chart": "Promises (Asynchronous)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R010",
+      "topic": "Node.js Events",
+      "requirement": "Event-Driven Programming",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "R011",
+      "topic": "Node.js API",
+      "requirement": "Console API",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R012",
+      "topic": "Node.js API",
+      "requirement": "File System API",
+      "chart": "File (API); File system (API)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R013",
+      "topic": "Node.js API",
+      "requirement": "String Decoder API",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R014",
+      "topic": "Node.js API",
+      "requirement": "Timer API",
+      "chart": "Timer (API)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R015",
+      "topic": "Node.js API",
+      "requirement": "URI API",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R016",
+      "topic": "Node.js Error Handling",
+      "requirement": "Async errors, Promise rejections",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R017",
+      "topic": "Node.js Error Handling",
+      "requirement": "Error Class",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R018",
+      "topic": "Node.js Debugging",
+      "requirement": "Native debugging",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R019",
+      "topic": "Node.js Authorization",
+      "requirement": "JWT",
+      "chart": "JWT (Security)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R020",
+      "topic": "Node.js Testing",
+      "requirement": "Unit tests",
+      "chart": "Unit Tests (Testing)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R021",
+      "topic": "Node.js Documentation",
+      "requirement": "JSDoc",
+      "chart": "JSDoc (Tools (basic))",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R022",
+      "topic": "Node.js Loggers",
+      "requirement": "Types of logges. Logging levels.",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R023",
+      "topic": "Node.js Deployment",
+      "requirement": "NPM Scripts",
+      "chart": "Scripts (NPM)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R024",
+      "topic": "Node.js CLI",
+      "requirement": "Environment Variables",
+      "chart": "Environment variables (CLI)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R025",
+      "topic": "Node.js Modules",
+      "requirement": "Global Objects",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R026",
+      "topic": "Node.js Modules",
+      "requirement": "Module Load System",
+      "chart": "Load System (Modules)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R027",
+      "topic": "Node.js Modules",
+      "requirement": "Module Object",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R028",
+      "topic": "Node.js Package Managers",
+      "requirement": "Package manager as a build tool",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R029",
+      "topic": "Node.js Package Managers",
+      "requirement": "Package manager configuration",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R030",
+      "topic": "Node.js Package Managers",
+      "requirement": "Package manager scripts",
+      "chart": "Scripts (NPM)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R031",
+      "topic": "Node.js Async programming",
+      "requirement": "Async programming patterns/tools",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "R032",
+      "topic": "Node.js Async programming",
+      "requirement": "async/await",
+      "chart": "Async / Await (Asynchronous)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R033",
+      "topic": "Node.js Events",
+      "requirement": "Event Loop",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "R034",
+      "topic": "Node.js Events",
+      "requirement": "EventEmitter",
+      "chart": "EventEmitter (API)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R035",
+      "topic": "Node.js Events",
+      "requirement": "OS events handlers",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "R036",
+      "topic": "Node.js API",
+      "requirement": "Buffer API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R037",
+      "topic": "Node.js API",
+      "requirement": "Cluster API",
+      "chart": "Cluster (API)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R038",
+      "topic": "Node.js API",
+      "requirement": "Crypto API",
+      "chart": "Crypto (API)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R039",
+      "topic": "Node.js API",
+      "requirement": "Net API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R040",
+      "topic": "Node.js API",
+      "requirement": "OS API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R041",
+      "topic": "Node.js API",
+      "requirement": "Readline API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R042",
+      "topic": "Node.js API",
+      "requirement": "Stream API",
+      "chart": "Stream (API)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R043",
+      "topic": "Node.js API",
+      "requirement": "Zlib API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R044",
+      "topic": "Node.js Error Handling",
+      "requirement": "Custom Errors",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R045",
+      "topic": "Node.js Network",
+      "requirement": "HTTPS",
+      "chart": "HTTPS (Network); HTTPS (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R046",
+      "topic": "Node.js Network",
+      "requirement": "Network API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R047",
+      "topic": "Node.js Real Time Applications",
+      "requirement": "WebSockets",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R048",
+      "topic": "Node.js Performance",
+      "requirement": "Profilers",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R049",
+      "topic": "Node.js Debugging",
+      "requirement": "Inspectors and specialized tools",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R050",
+      "topic": "Node.js Authorization",
+      "requirement": "PassportJS",
+      "chart": "Passport (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R051",
+      "topic": "Node.js Security",
+      "requirement": "Basic practices and approaches",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R052",
+      "topic": "Node.js Testing",
+      "requirement": "Contract tests",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R053",
+      "topic": "Node.js Testing",
+      "requirement": "Integration tests",
+      "chart": "Integration Tests (Testing)",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R054",
+      "topic": "Node.js Testing",
+      "requirement": "TDD/BDD",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R055",
+      "topic": "Node.js Documentation",
+      "requirement": "Third party documentation tools / services",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R056",
+      "topic": "Node.js ORM / ODMNode.js Frameworks Node.js Serverless",
+      "requirement": "Serverless code implementaiton",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R057",
+      "topic": "Node.js ORM / ODMNode.js Frameworks Node.js Serverless",
+      "requirement": "Serverless solution (based on AWS Lambda, Azure functions, Google CloudFunctions, etc.)",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R058",
+      "topic": "Node.js Loggers",
+      "requirement": "Logging tools and libraries (Logstash, Winston etc.)",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R059",
+      "topic": "Node.js Queue",
+      "requirement": "Basic knowledge of tools and solutions (RabbitMQ / AtiveMQ / Kafka / SQS / SNS)",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R060",
+      "topic": "Node.js Containerization",
+      "requirement": "Containerization practices and approaches",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R061",
+      "topic": "Node.js Containerization",
+      "requirement": "Tools and services (Docker, Docker Compose, etc.)",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R062",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Application structure architecture principles",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R063",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Basic GoF Creational, Structural, Behavioral patterns knowledge",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R064",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Microservices basic principles",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R065",
+      "topic": "Node.js Deployment",
+      "requirement": "CI/CD",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R066",
+      "topic": "Node.js Deployment",
+      "requirement": "SSH/Command line tools",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R067",
+      "topic": "Node.js CLI",
+      "requirement": "REPL",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R068",
+      "topic": "Node.js Modules",
+      "requirement": "Module API / Global Async and async modules",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R069",
+      "topic": "Node.js Package Managers",
+      "requirement": "Semantic versioning and package manager registry",
+      "chart": "Semantic versioning (NPM)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R070",
+      "topic": "Node.js Async programming",
+      "requirement": "Async iterators / async-generators",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "R071",
+      "topic": "Node.js Events",
+      "requirement": "libUV",
+      "chart": "libUV (Event Loop)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R072",
+      "topic": "Node.js API",
+      "requirement": "DNS API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "R073",
+      "topic": "Node.js API",
+      "requirement": "Process API",
+      "chart": "Process (API)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R074",
+      "topic": "Node.js Error Handling",
+      "requirement": "Criticality matrix",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R075",
+      "topic": "Node.js Real Time Applications",
+      "requirement": "SocketIO",
+      "chart": "SocketIO (WebSockets)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R076",
+      "topic": "Node.js Real Time Applications",
+      "requirement": "IP sockets",
+      "chart": "IP Sockets (WebSockets)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R077",
+      "topic": "Node.js V8",
+      "requirement": "V8 API, optimizations",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R078",
+      "topic": "Node.js Performance",
+      "requirement": "Performance API",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R079",
+      "topic": "Node.js Performance",
+      "requirement": "Performance testing tools",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R080",
+      "topic": "Node.js Performance",
+      "requirement": "Multithreading (fork, clustering)",
+      "chart": "Child Processes (High-load Ops)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R081",
+      "topic": "Node.js Debugging",
+      "requirement": "Remote debugging",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R082",
+      "topic": "Node.js Debugging",
+      "requirement": "Async code debugging/Memory leaks",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R083",
+      "topic": "Node.js Authorization",
+      "requirement": "PassportJS Strategy",
+      "chart": "Passport (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R084",
+      "topic": "Node.js Authorization",
+      "requirement": "Third party auth services",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R085",
+      "topic": "Node.js Authorization",
+      "requirement": "Microservices Authentication and Authorization",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R086",
+      "topic": "Node.js Security",
+      "requirement": "NPM Audit",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R087",
+      "topic": "Node.js Security",
+      "requirement": "Helmet",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R088",
+      "topic": "Node.js Security",
+      "requirement": "Sandboxing unsafe code",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R089",
+      "topic": "Node.js Security",
+      "requirement": "Third party security check services",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R090",
+      "topic": "Node.js Testing",
+      "requirement": "Stress / load testing",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R091",
+      "topic": "Node.js Testing",
+      "requirement": "Performance testing",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R092",
+      "topic": "Node.js Testing",
+      "requirement": "E2E tests",
+      "chart": "E2E Tests (Testing)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R093",
+      "topic": "Node.js ORM / ODMNode.js Frameworks Node.js Serverless",
+      "requirement": "Extended cofiguration and advanced usage",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R094",
+      "topic": "Node.js Loggers",
+      "requirement": "Remote logging services and tools, configuration and setup",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R095",
+      "topic": "Node.js Vizualization / Monitoring",
+      "requirement": "Purpose of Vizualization / Monitoring tools",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R096",
+      "topic": "Node.js Vizualization / Monitoring",
+      "requirement": "Intermediate Setup and usage of third party services (Kibana, Grafana, Graphite, Prometheus or Zabbix, etc.)",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R097",
+      "topic": "Node.js Queue",
+      "requirement": "Failover techniques",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R098",
+      "topic": "Node.js Containerization",
+      "requirement": "Containers / orchestration management",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R099",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Experience with advanced microservices practices",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R100",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Consistency patterns",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R101",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Performance vs scalability best practices and approaches",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R102",
+      "topic": "Node.js Architecture / Patterns",
+      "requirement": "Availability vs consistency patterns",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "R103",
+      "topic": "Node.js Deployment",
+      "requirement": "Docker images",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R104",
+      "topic": "Node.js Deployment",
+      "requirement": "Cloud deployment",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R105",
+      "topic": "Node.js Core",
+      "requirement": "ability to explain the Node.js runtime purpose and how core APIs differ from browser JavaScript",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R106",
+      "topic": "Node.js Core",
+      "requirement": "knowledge of the event driven, non blocking execution model and the event loop at a conceptual level",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R107",
+      "topic": "Node.js Core",
+      "requirement": "ability to use built in modules such as fs, path, os, and process with documentation",
+      "chart": "Path (API)",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R108",
+      "topic": "Node.js Core",
+      "requirement": "knowledge of CommonJS module basics and package entry points",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R109",
+      "topic": "Node.js Core",
+      "requirement": "ability to run scripts with node and inspect basic process arguments and environment variables",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R110",
+      "topic": "Node.js Core",
+      "requirement": "ability to build and execute small CLI or service scripts using core modules without heavy guidance",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R111",
+      "topic": "Node.js Core",
+      "requirement": "ability to read and write files asynchronously using callbacks, promises, and fs APIs",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R112",
+      "topic": "Node.js Core",
+      "requirement": "ability to manage process lifecycle, exit codes, standard input, standard output, standard error, and environment configuration",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R113",
+      "topic": "Node.js Core",
+      "requirement": "knowledge of timers, buffers, streams, and events for common application tasks",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R114",
+      "topic": "Node.js Core",
+      "requirement": "ability to install dependencies and use package.json scripts while distinguishing core modules from packages",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R115",
+      "topic": "Node.js Core",
+      "requirement": "ability to design Node.js applications around streams, backpressure, and asynchronous control flow",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R116",
+      "topic": "Node.js Core",
+      "requirement": "ability to diagnose module loading, runtime errors, and event loop behavior in live applications",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R117",
+      "topic": "Node.js Core",
+      "requirement": "ability to implement custom event emitters, child process interactions, and IPC where appropriate",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R118",
+      "topic": "Node.js Core",
+      "requirement": "knowledge of performance tradeoffs for buffers, memory usage, and synchronous versus asynchronous APIs",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R119",
+      "topic": "Node.js Core",
+      "requirement": "ability to select and apply core APIs for networking, file systems, and concurrency in production scenarios",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R120",
+      "topic": "Node.js Frameworks",
+      "requirement": "knowledge of common Node.js framework categories and the problems they solve",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R121",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to follow documentation to install, configure, and run a basic framework project",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R122",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to identify core concepts such as routing, middleware, controllers, and request handling",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R123",
+      "topic": "Node.js Frameworks",
+      "requirement": "knowledge of the framework request and response lifecycle at a high level",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R124",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to build simple CRUD endpoints or pages using framework conventions",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R125",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to apply middleware for authentication, validation, and basic error handling",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R126",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to manage configuration, environment variables, and package dependencies in a working application",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R127",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to troubleshoot common setup and runtime issues with documentation support",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R128",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to choose an appropriate framework style for MVC, full-stack, or REST API use cases",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R129",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to design maintainable application structure with modules, services, and reusable components",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R130",
+      "topic": "Node.js Frameworks",
+      "requirement": "ability to implement testing, logging, security, and performance practices within framework-based applications",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R131",
+      "topic": "Node.js Frameworks",
+      "requirement": "knowledge of framework-specific extension points, lifecycle hooks, and deployment considerations",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "Advanced"
+      ],
+      "related": true,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R132",
+      "topic": "Node.js Database Experience",
+      "requirement": "knowledge of basic Node.js database connectivity concepts and common database types",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R133",
+      "topic": "Node.js Database Experience",
+      "requirement": "ability to configure a simple database connection using a driver or library",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R134",
+      "topic": "Node.js Database Experience",
+      "requirement": "knowledge of fundamental create, read, update, and delete operations",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R135",
+      "topic": "Node.js Database Experience",
+      "requirement": "ability to recognize the difference between relational and NoSQL data stores at a high level",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R136",
+      "topic": "Node.js Database Experience",
+      "requirement": "ability to run parameterized queries and basic ORM or query builder operations",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R137",
+      "topic": "Node.js Database Experience",
+      "requirement": "ability to manage connection pooling and handle routine database errors in application code",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R138",
+      "topic": "Node.js Database Experience",
+      "requirement": "knowledge of transaction usage for multi step data changes",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R139",
+      "topic": "Node.js Database Experience",
+      "requirement": "ability to retrieve and persist application data within a working Node.js service",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "Intermediate",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "R140",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "ability to describe common infrastructure components used by Node.js applications, including compute, storage, networking, and runtime dependencies",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R141",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "knowledge of basic cloud service models and typical deployment targets such as virtual machines, containers, and managed platforms",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R142",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "ability to follow documented steps to configure environment variables, secrets, and application settings for a single environment",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R143",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "knowledge of foundational concepts for logging, health checks, and basic process management in a cloud host",
+      "chart": "—",
+      "proficiency": [
+        "Novice",
+        "Novice",
+        "—",
+        "—"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R144",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "ability to deploy and update a Node.js application in at least one cloud environment using documented pipelines or commands",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R145",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "knowledge of load balancing, autoscaling, and managed database or cache integrations used to support application workloads",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R146",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "ability to configure application observability using logs, metrics, and alerts for routine operational monitoring",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R147",
+      "topic": "Node.js Infrastructure and Clouds",
+      "requirement": "ability to collaborate with others to troubleshoot deployment, network, or permission issues using cloud consoles and documentation",
+      "chart": "—",
+      "proficiency": [
+        "—",
+        "—",
+        "Intermediate",
+        "Intermediate"
+      ],
+      "related": true,
+      "levels": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "R148",
+      "topic": "Tech Check / Core JavaScript",
+      "requirement": "—",
+      "chart": "Object (Core JavaScript)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R149",
+      "topic": "Tech Check / Core JavaScript",
+      "requirement": "—",
+      "chart": "Context (Core JavaScript)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R150",
+      "topic": "Tech Check / Core JavaScript",
+      "requirement": "—",
+      "chart": "Closure (Core JavaScript)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R151",
+      "topic": "Tech Check / NPM",
+      "requirement": "—",
+      "chart": "Package.json / package-lock.json (NPM)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R152",
+      "topic": "Tech Check / Asynchronous",
+      "requirement": "—",
+      "chart": "Generators (Asynchronous)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R153",
+      "topic": "Tech Check / Framework (basic)",
+      "requirement": "—",
+      "chart": "Hapi / Express / Koa / Nest.JS / Feathers.JS (Framework (basic)); Hapi / Express / Koa / Nest.JS / Feathers.JS (Framework (intermediate)); Hapi / Express / Koa / Nest.JS / Feathers.JS (Framework (advanced))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R154",
+      "topic": "Tech Check / Framework (basic)",
+      "requirement": "—",
+      "chart": "Concept (Framework (basic)); Concept (Cloud)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "R155",
+      "topic": "Tech Check / Framework (basic)",
+      "requirement": "—",
+      "chart": "Configuration (Framework (basic))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        1
+      ]
+    },
+    {
+      "id": "R156",
+      "topic": "Tech Check / Event Loop",
+      "requirement": "—",
+      "chart": "Phases (Event Loop)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R157",
+      "topic": "Tech Check / Event Loop",
+      "requirement": "—",
+      "chart": "Micro / Tasks (Event Loop)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R158",
+      "topic": "Tech Check / Network",
+      "requirement": "—",
+      "chart": "HTTP Protocol (Network)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R159",
+      "topic": "Tech Check / Network",
+      "requirement": "—",
+      "chart": "HTTP API (Network)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R160",
+      "topic": "Tech Check / Errors",
+      "requirement": "—",
+      "chart": "Named in overview and detailed panel (Errors); Named in overview and detailed panel (V8 Optimizations)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R161",
+      "topic": "Tech Check / Errors",
+      "requirement": "—",
+      "chart": "no subtopics supplied (Errors); no subtopics supplied (V8 Optimizations)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "R162",
+      "topic": "Tech Check / Patterns",
+      "requirement": "—",
+      "chart": "Creational (Patterns)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R163",
+      "topic": "Tech Check / Patterns",
+      "requirement": "—",
+      "chart": "Structural (Patterns)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R164",
+      "topic": "Tech Check / Patterns",
+      "requirement": "—",
+      "chart": "Behavior (Patterns)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R165",
+      "topic": "Tech Check / Tools (basic)",
+      "requirement": "—",
+      "chart": "ESLint (Tools (basic))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R166",
+      "topic": "Tech Check / Tools (basic)",
+      "requirement": "—",
+      "chart": "Style Guide (Tools (basic))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R167",
+      "topic": "Tech Check / Framework (intermediate)",
+      "requirement": "—",
+      "chart": "Routing (Framework (intermediate))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R168",
+      "topic": "Tech Check / Framework (intermediate)",
+      "requirement": "—",
+      "chart": "Middlewares (Framework (intermediate))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R169",
+      "topic": "Tech Check / Framework (intermediate)",
+      "requirement": "—",
+      "chart": "Error Handling (Framework (intermediate))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        2
+      ]
+    },
+    {
+      "id": "R170",
+      "topic": "Tech Check / Generators",
+      "requirement": "—",
+      "chart": "Named in overview (Generators); Named in overview (Databases (intermediate)); Named in overview (API); Named in overview (WebAssembly); Named in overview (Native Modules)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "R171",
+      "topic": "Tech Check / Generators",
+      "requirement": "—",
+      "chart": "no additional criteria supplied (Generators); no additional criteria supplied (Databases (intermediate)); no additional criteria supplied (API); no additional criteria supplied (WebAssembly); no additional criteria supplied (Native Modules)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "R172",
+      "topic": "Tech Check / Architecture",
+      "requirement": "—",
+      "chart": "Layered (Architecture)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R173",
+      "topic": "Tech Check / Architecture",
+      "requirement": "—",
+      "chart": "Micro-Services (Architecture)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R174",
+      "topic": "Tech Check / Architecture",
+      "requirement": "—",
+      "chart": "Event-Driven (Architecture)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R175",
+      "topic": "Tech Check / Architecture",
+      "requirement": "—",
+      "chart": "Flux (Architecture)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R176",
+      "topic": "Tech Check / High-load Ops",
+      "requirement": "—",
+      "chart": "Event Splitting (High-load Ops)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R177",
+      "topic": "Tech Check / Tools (intermediate)",
+      "requirement": "—",
+      "chart": "Swagger (Tools (intermediate))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R178",
+      "topic": "Tech Check / Tools (intermediate)",
+      "requirement": "—",
+      "chart": "Docker (Tools (intermediate))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R179",
+      "topic": "Tech Check / Databases (basic)",
+      "requirement": "—",
+      "chart": "SQL (Databases (basic))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R180",
+      "topic": "Tech Check / Databases (basic)",
+      "requirement": "—",
+      "chart": "NoSQL (Databases (basic))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R181",
+      "topic": "Tech Check / Cloud",
+      "requirement": "—",
+      "chart": "Providers (Cloud)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R182",
+      "topic": "Tech Check / Cloud",
+      "requirement": "—",
+      "chart": "Serverless (Cloud)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R183",
+      "topic": "Tech Check / Cloud",
+      "requirement": "—",
+      "chart": "SOA (Cloud)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        3
+      ]
+    },
+    {
+      "id": "R184",
+      "topic": "Tech Check / Security",
+      "requirement": "—",
+      "chart": "TLS (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R185",
+      "topic": "Tech Check / Security",
+      "requirement": "—",
+      "chart": "SSL (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R186",
+      "topic": "Tech Check / Security",
+      "requirement": "—",
+      "chart": "OAuth (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R187",
+      "topic": "Tech Check / Security",
+      "requirement": "—",
+      "chart": "OWASP (Security)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R188",
+      "topic": "Tech Check / Framework (advanced)",
+      "requirement": "—",
+      "chart": "Optimization (Framework (advanced))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        4
+      ]
+    },
+    {
+      "id": "R189",
+      "topic": "Tech Check / Queues",
+      "requirement": "—",
+      "chart": "RabbitMQ (Queues)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R190",
+      "topic": "Tech Check / Queues",
+      "requirement": "—",
+      "chart": "Kafka (Queues)",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R191",
+      "topic": "Tech Check / Tools (advanced)",
+      "requirement": "—",
+      "chart": "Kibana (Tools (advanced))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R192",
+      "topic": "Tech Check / Tools (advanced)",
+      "requirement": "—",
+      "chart": "Grafana (Tools (advanced))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    },
+    {
+      "id": "R193",
+      "topic": "Tech Check / Tools (advanced)",
+      "requirement": "—",
+      "chart": "New relic (Tools (advanced))",
+      "proficiency": [
+        "—",
+        "—",
+        "—",
+        "—"
+      ],
+      "related": false,
+      "levels": [
+        5
+      ]
+    }
+  ]
+}

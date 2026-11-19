@@ -6,12 +6,17 @@ outline: [2, 3]
 
 JavaScript examples use Node 24, ES Modules (`.mjs`) and built-in APIs. Shell commands use POSIX syntax unless stated otherwise; adapt environment/redirection syntax for your shell. Depth labels describe study depth, not an official exam grade.
 
-### How do you run a program and distinguish Node flags from script arguments? {#t02-q01}
+<!-- tech-check: t02-q01; level: 1 -->
+
+### How do you run a program and distinguish Node flags from script arguments?
 
 *Study depth: Foundational*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R001](./requirements.md#r001), [R002](./requirements.md#r002), [R109](./requirements.md#r109).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -75,12 +80,17 @@ Keep runtime flags, shell processing and validated application arguments as thre
 
 ---
 
-### How should a service turn environment variables into reliable configuration? {#t02-q02}
+<!-- tech-check: t02-q02; level: 1 -->
+
+### How should a service turn environment variables into reliable configuration?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R024](./requirements.md#r024), [R109](./requirements.md#r109), [R142](./requirements.md#r142).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -151,12 +161,17 @@ Parse environment strings into a validated startup contract; defaults, precedenc
 
 ---
 
-### What is the REPL useful for, and where does its behavior differ from a file? {#t02-q03}
+<!-- tech-check: t02-q03; level: 1 -->
+
+### What is the REPL useful for, and where does its behavior differ from a file?
 
 *Study depth: Foundational*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R067](./requirements.md#r067).
+
 
 <div class="notes-core-answer">
 
@@ -218,12 +233,17 @@ Use the REPL to explore, then turn important observations into reproducible file
 
 ---
 
-### How should a CLI use stdin, stdout and stderr without corrupting its output? {#t02-q04}
+<!-- tech-check: t02-q04; level: 1 -->
+
+### How should a CLI use stdin, stdout and stderr without corrupting its output?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R112](./requirements.md#r112).
+
 
 <div class="notes-core-answer">
 
@@ -289,12 +309,17 @@ Separate results from diagnostics, and treat standard streams as real resources 
 
 ---
 
-### What keeps a process alive, and how do exitCode, exit and process events differ? {#t02-q05}
+<!-- tech-check: t02-q05; level: 1 -->
+
+### What keeps a process alive, and how do exitCode, exit and process events differ?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R112](./requirements.md#r112).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -370,12 +395,17 @@ Await owned work before termination; exit events and forced process termination 
 
 ---
 
-### Which Process APIs help diagnose a program without confusing paths, memory and timing? {#t02-q06}
+<!-- tech-check: t02-q06; level: 1 -->
+
+### Which Process APIs help diagnose a program without confusing paths, memory and timing?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R073](./requirements.md#r073).
+
 
 <div class="notes-core-answer">
 
@@ -444,12 +474,17 @@ Process metadata and measurements are diagnostic evidence only when their scope,
 
 ---
 
-### How do spawn, execFile and exec differ, and how do you handle child failures? {#t02-q07}
+<!-- tech-check: t02-q07; level: 3 -->
+
+### How do spawn, execFile and exec differ, and how do you handle child failures?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
+
 
 <div class="notes-core-answer">
 
@@ -526,12 +561,18 @@ Choose execution and output ownership explicitly; direct arguments, bounded reso
 
 ---
 
-### What does Node's fork create, and how do you build a bounded IPC exchange? {#t02-q08}
+<!-- tech-check: t02-q08; level: 3 -->
+
+### What does Node's fork create, and how do you build a bounded IPC exchange?
 
 *Study depth: Advanced*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
+
+
 
 <div class="notes-core-answer">
 

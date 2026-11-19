@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Use Winston 3.18.3 on Node.js 24 for the worked logger. The primary deployment emits structured records to a controlled stream; collection/storage is configured separately. This extends the [production logging lesson](../module-10-production-ready-applications.md#_6-structured-logging), keeping its application lifecycle as the integration owner. References checked 2026-11-05.
 
-## What should a log event say, and which level should it use? {#t21-q01}
+<!-- tech-check: t21-q01; level: 5 -->
 
-Level Up: L1\
-Tech Check level: ⭐⭐⭐⭐⭐
+## What should a log event say, and which level should it use?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R022](./requirements.md#r022).
+
 
 <div class="notes-core-answer">
 
@@ -38,10 +45,17 @@ Design success, invalid input, unauthorized, dependency timeout and unexpected f
 
 ---
 
-## How do you configure Winston with a safe structured schema? {#t21-q02}
+<!-- tech-check: t21-q02; level: 5 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do you configure Winston with a safe structured schema?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R058](./requirements.md#r058).
+
 
 <div class="notes-core-answer">
 
@@ -151,10 +165,17 @@ Test level thresholds, nested-secret attempts, newline/oversize fields, stream e
 
 ---
 
-## How do request, job and database logs keep the right context? {#t21-q03}
+<!-- tech-check: t21-q03; level: 5 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do request, job and database logs keep the right context?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R058](./requirements.md#r058).
+
 
 <div class="notes-core-answer">
 
@@ -199,10 +220,18 @@ Run concurrent real requests/jobs with distinct IDs, induce SQL retry and client
 
 ---
 
-## How do Logstash and remote logging services change the operating contract? {#t21-q04}
+<!-- tech-check: t21-q04; level: 5 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do Logstash and remote logging services change the operating contract?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R094](./requirements.md#r094).
+
+
 
 <div class="notes-core-answer">
 

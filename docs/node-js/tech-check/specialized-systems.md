@@ -6,10 +6,17 @@ outline: [2, 3]
 
 These specialist extensions build on [real-time foundations](./08-networking.md#t08-q06), [concurrency](./09-concurrency.md) and [performance measurement](./12-performance-and-v8.md). Use Node.js 24 for the worked examples; the real-time discussion uses Socket.IO 4.x. Native build commands below are explicitly macOS/arm64 study commands, not a portable release pipeline. References checked 2026-11-05.
 
-## How do authenticated real-time sessions work across multiple servers? {#t08-q12}
+<!-- tech-check: t08-q12; level: 5 -->
 
-Level Up: L4\
+## How do authenticated real-time sessions work across multiple servers?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R075](./requirements.md#r075), [R085](./requirements.md#r085).
+
 
 <div class="notes-core-answer">
 
@@ -36,10 +43,17 @@ Run two owned instances behind a local proxy. Test polling and WebSocket-only tr
 
 ---
 
-## How do slow consumers and replay cursors change a real-time design? {#t08-q13}
+<!-- tech-check: t08-q13; level: 5 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do slow consumers and replay cursors change a real-time design?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R047](./requirements.md#r047).
+
 
 <div class="notes-core-answer">
 
@@ -132,10 +146,17 @@ Extend the feed with bounded history and a deliberately slow client. Accept when
 
 ---
 
-## How do you diagnose reconnect storms and shut down real-time services? {#t08-q14}
+<!-- tech-check: t08-q14; level: 5 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐⭐
+## How do you diagnose reconnect storms and shut down real-time services?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R047](./requirements.md#r047).
+
 
 <div class="notes-core-answer">
 
@@ -164,10 +185,17 @@ Extend the [existing networking fixtures](./08-networking.md#t08-q07) with owned
 
 ---
 
-## What does a native Node-API module add, and what can go wrong? {#t12-q08}
+<!-- tech-check: t12-q08; level: 5 -->
 
-Level Up: L3\
+## What does a native Node-API module add, and what can go wrong?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R170](./requirements.md#r170).
+
 
 <div class="notes-core-answer">
 
@@ -255,10 +283,17 @@ Compile/run this study addon, then design the lifetime/cancellation contract for
 
 ---
 
-## How does WebAssembly exchange values and memory with Node.js? {#t12-q09}
+<!-- tech-check: t12-q09; level: 5 -->
 
-Level Up: L3\
+## How does WebAssembly exchange values and memory with Node.js?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R170](./requirements.md#r170).
+
 
 <div class="notes-core-answer">
 
@@ -322,10 +357,18 @@ Compile an owned numeric function from WAT or a source language, compare boundar
 
 ---
 
-## How do you choose and operate a specialist execution boundary? {#t12-q10}
+<!-- tech-check: t12-q10; level: 5 -->
 
-Level Up: L4\
+## How do you choose and operate a specialist execution boundary?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R170](./requirements.md#r170).
+
+
 
 <div class="notes-core-answer">
 

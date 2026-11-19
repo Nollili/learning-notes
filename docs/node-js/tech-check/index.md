@@ -14,7 +14,7 @@ The [five progressive projects](./progressive-projects.md) grow one repository f
 
 [Open the full-size levels chart](/images/node-js/nodejs-tech-check-levels.png).
 
-Level Up labels indicate the career level each question or project is aimed at. L1 is Junior Software Engineer, L2 is Software Engineer, L3 is Senior Software Engineer and L4 is Lead Software Engineer. The stars show the topic’s level on the Tech Check chart.
+Each question has one Level Up career target for its question and answer: L1 Junior, L2 Software Engineer, L3 Senior or L4 Lead. Study depth describes how deeply the lesson teaches the topic. Tech Check stars distinguish explicit chart entries from Related correspondence. The [source mapping and label guide](./requirements.md) retains the full career/proficiency matrix without repeating it below every question.
 
 ## Node.js Foundations
 

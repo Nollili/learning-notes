@@ -6,10 +6,17 @@ outline: [2, 3]
 
 AWS Lambda is the primary function platform here, alongside the existing long-running Express/Fargate API. Use Node.js 24 (`nodejs24.x`) for the examples; verify runtime availability in the chosen region before deployment. Azure Functions and Google Cloud Run functions remain bounded alternatives. References checked 2026-11-05; no provider deployment is implied by the local handler checks.
 
-## When is a function a good service boundary? {#t20-q01}
+<!-- tech-check: t20-q01; level: 3 -->
 
-Level Up: L3\
+## When is a function a good service boundary?
+
+*Study depth: Foundational*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R057](./requirements.md#r057), [R182](./requirements.md#r182).
+
 
 <div class="notes-core-answer">
 
@@ -31,10 +38,17 @@ Choose one bounded report task and compare function versus container on trigger,
 
 ---
 
-## How do you write and test an HTTP Lambda handler? {#t20-q02}
+<!-- tech-check: t20-q02; level: 3 -->
 
-Level Up: L3\
+## How do you write and test an HTTP Lambda handler?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R056](./requirements.md#r056), [R182](./requirements.md#r182).
+
 
 <div class="notes-core-answer">
 
@@ -128,10 +142,17 @@ Prepare the ZIP/package and infrastructure configuration for one protected route
 
 ---
 
-## How do queue retries avoid repeating business effects? {#t20-q03}
+<!-- tech-check: t20-q03; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How do queue retries avoid repeating business effects?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R056](./requirements.md#r056).
+
 
 <div class="notes-core-answer">
 
@@ -183,10 +204,17 @@ Locally test success/failure ID selection, then run the real durable adapter aga
 
 ---
 
-## Which configuration and operating limits matter first? {#t20-q04}
+<!-- tech-check: t20-q04; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## Which configuration and operating limits matter first?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R057](./requirements.md#r057), [R093](./requirements.md#r093).
+
 
 <div class="notes-core-answer">
 
@@ -210,10 +238,18 @@ Prepare a configuration table with values and reasons, then measure cold/warm du
 
 ---
 
-## How do Azure Functions and Google Cloud functions compare? {#t20-q05}
+<!-- tech-check: t20-q05; level: 3 -->
 
-Level Up: L3\
+## How do Azure Functions and Google Cloud functions compare?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R057](./requirements.md#r057), [R181](./requirements.md#r181).
+
+
 
 <div class="notes-core-answer">
 

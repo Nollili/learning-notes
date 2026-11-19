@@ -8,10 +8,17 @@ The primary path is **PostgreSQL → parameterized SQL → MikroORM**, using Nod
 
 The full [Relational Databases, PostgreSQL and MikroORM module](../module-08-postgresql-mikroorm.md) covers the requested relational curriculum: tables/types/keys, modeling and normalization, joins, indexes, ACID, PostgreSQL setup, ORM CRUD, relationships, population and migrations. Its [SQL workbench](../sql-query-workbench.md) adds executable reports. This page is the technical-examination companion, not a replacement or a second persistence stack.
 
-## How do you choose a database from the data and workload? {#t17-q01}
+<!-- tech-check: t17-q01; level: 3 -->
 
-Level Up: L1\
+## How do you choose a database from the data and workload?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R132](./requirements.md#r132), [R135](./requirements.md#r135), [R179](./requirements.md#r179), [R180](./requirements.md#r180).
+
 
 <div class="notes-core-answer">
 
@@ -39,10 +46,17 @@ Compare catalogue descriptions, stock reservations and a login session store. St
 
 ---
 
-## How should a Node application own connections and credentials? {#t17-q02}
+<!-- tech-check: t17-q02; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How should a Node application own connections and credentials?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R133](./requirements.md#r133), [R137](./requirements.md#r137).
+
 
 <div class="notes-core-answer">
 
@@ -89,10 +103,17 @@ Run two owned application processes with a small pool, observe the combined serv
 
 ---
 
-## How do constraints and parameterized CRUD work together? {#t17-q03}
+<!-- tech-check: t17-q03; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do constraints and parameterized CRUD work together?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R134](./requirements.md#r134), [R136](./requirements.md#r136).
+
 
 <div class="notes-core-answer">
 
@@ -156,10 +177,17 @@ Implement all four operations through the real driver. Test injection-shaped val
 
 ---
 
-## How do joins, unions, upserts and migrations differ? {#t17-q04}
+<!-- tech-check: t17-q04; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do joins, unions, upserts and migrations differ?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R136](./requirements.md#r136).
+
 
 <div class="notes-core-answer">
 
@@ -205,10 +233,17 @@ Use the [SQL report workbench](../sql-query-workbench.md) to explain report grai
 
 ---
 
-## How do transactions prevent overselling, and when can they fail? {#t17-q05}
+<!-- tech-check: t17-q05; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do transactions prevent overselling, and when can they fail?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R138](./requirements.md#r138).
+
 
 <div class="notes-core-answer">
 
@@ -278,10 +313,17 @@ Run two independent clients reserving the last unit: exactly one commits and sto
 
 ---
 
-## What does MikroORM add, and what does it not hide? {#t17-q06}
+<!-- tech-check: t17-q06; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## What does MikroORM add, and what does it not hide?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R136](./requirements.md#r136), [R139](./requirements.md#r139).
+
 
 <div class="notes-core-answer">
 
@@ -316,10 +358,17 @@ Implement create/read/update/delete and one relation in the existing workbench. 
 
 ---
 
-## How do you diagnose a slow database query? {#t17-q07}
+<!-- tech-check: t17-q07; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do you diagnose a slow database query?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R136](./requirements.md#r136).
+
 
 <div class="notes-core-answer">
 
@@ -341,10 +390,17 @@ Load a disposable representative dataset, capture baseline plan/latency and add 
 
 ---
 
-## How do APIs and jobs remain safe when the database is unhealthy? {#t17-q08}
+<!-- tech-check: t17-q08; level: 3 -->
 
-Level Up: L2\
-Tech Check level: ⭐⭐⭐
+## How do APIs and jobs remain safe when the database is unhealthy?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R137](./requirements.md#r137).
+
 
 <div class="notes-core-answer">
 
@@ -366,10 +422,17 @@ Stop only your owned database fixture during a bounded API/job run, restore it a
 
 ---
 
-## How do you prove an isolation level protects the actual invariant? {#t17-q09}
+<!-- tech-check: t17-q09; level: 4 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐
+## How do you prove an isolation level protects the actual invariant?
+
+*Study depth: Advanced*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R138](./requirements.md#r138).
+
 
 <div class="notes-core-answer">
 
@@ -477,10 +540,17 @@ Extend the fixture with a bounded retry that re-evaluates the business decision,
 
 ---
 
-## How do you combine keyset pagination with an evidence-based index? {#t17-q10}
+<!-- tech-check: t17-q10; level: 4 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐
+## How do you combine keyset pagination with an evidence-based index?
+
+*Study depth: Advanced*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R136](./requirements.md#r136).
+
 
 <div class="notes-core-answer">
 
@@ -537,10 +607,18 @@ Add equal timestamps, inserts between pages, another tenant and a changed filter
 
 ---
 
-## How do you diagnose locks, pool exhaustion and risky migrations? {#t17-q11}
+<!-- tech-check: t17-q11; level: 4 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐
+## How do you diagnose locks, pool exhaustion and risky migrations?
+
+*Study depth: Advanced*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
+
+
 
 <div class="notes-core-answer">
 

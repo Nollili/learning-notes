@@ -44,12 +44,17 @@ All **23 GoF patterns** have explanations, worked code, failure cases, alternati
 
 Material completion is separate from practice. Do not implement every pattern in one application; choose a justified variation point and preserve its contract.
 
-### How do you choose a design pattern, and what do the three families mean? {#t18-q01}
+<!-- tech-check: t18-q01; level: 2 -->
+
+### How do you choose a design pattern, and what do the three families mean?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](./requirements.md#r063), [R162](./requirements.md#r162), [R163](./requirements.md#r163), [R164](./requirements.md#r164).
+
 
 <div class="notes-core-answer">
 
@@ -109,12 +114,17 @@ Choose one real catalog change. Write a short decision comparing a direct soluti
 
 ---
 
-### When should you use a factory, builder or singleton, and who owns the created state? {#t18-q02}
+<!-- tech-check: t18-q02; level: 2 -->
+
+### When should you use a factory, builder or singleton, and who owns the created state?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](./requirements.md#r063), [R162](./requirements.md#r162).
+
 
 <div class="notes-core-answer">
 
@@ -203,12 +213,17 @@ Run two readers from the same input. Mutate the input and a returned DTO, close 
 
 ---
 
-### How do Adapter and Decorator differ, and what must a wrapper preserve? {#t18-q03}
+<!-- tech-check: t18-q03; level: 2 -->
+
+### How do Adapter and Decorator differ, and what must a wrapper preserve?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](./requirements.md#r063), [R163](./requirements.md#r163).
+
 
 <div class="notes-core-answer">
 
@@ -311,12 +326,18 @@ Wrap the factory reader and the legacy adapter with the same metrics decorator. 
 
 ---
 
-### How do Strategy, Observer and Command organize behavior without hiding failures? {#t18-q04}
+<!-- tech-check: t18-q04; level: 2 -->
+
+### How do Strategy, Observer and Command organize behavior without hiding failures?
 
 *Study depth: Intermediate; full worked catalogue linked below*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](./requirements.md#r063), [R164](./requirements.md#r164).
+
+
 
 <div class="notes-core-answer">
 

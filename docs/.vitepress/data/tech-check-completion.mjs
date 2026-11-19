@@ -16,18 +16,24 @@ const practiceLevels = new Map([
   ['learner-exercise', 3]
 ])
 
-function collectTasks(page, source) {
+// Curriculum placement is explicit: source stars may be related or span several levels.
+export function collectTasks(page, source) {
   const tasks = []
   let projectLevel
-  for (const match of source.matchAll(/^(#{2,3}) (.+) \{#([^}\s]+)\}\r?\n(?:\r?\n(?:\*Study depth: [^\n]+\r?\n\r?\n)?Level Up: L[1-4]\\\r?\nTech Check level: (\u2B50{1,5})$)?/gmu)) {
-    const [, heading, title, anchor, stars] = match
-    if (page === projectPage && heading === '##') {
-      projectLevel = stars?.length
+  const headings = [...source.matchAll(/^(?:<!-- tech-check: (t\d+-q\d+); level: ([1-5]) -->\r?\n\r?\n)?(#{2,3}) ([^\n]+?)(?: \{#([^}\s]+)\})?\r?$/gm)]
+  for (const match of headings) {
+    const [, questionId, questionLevel, heading, title, legacyAnchor] = match
+    const anchor = questionId ?? legacyAnchor
+    if (!anchor) continue
+    const projectMarker = source.slice(0, match.index).match(/<!-- tech-check-level: ([1-5]) -->\s*$/)?.[1]
+    const assigned = questionLevel ?? projectMarker
+    if (page === projectPage && heading === '##' && /^Project [1-5] — /.test(title)) {
+      projectLevel = assigned && Number(assigned)
       continue
     }
     const level = page === projectPage && /^(Increment [1-4] — |Project [1-5] release check$)/.test(title)
       ? projectLevel
-      : stars?.length ?? practiceLevels.get(anchor)
+      : assigned ? Number(assigned) : practiceLevels.get(anchor)
     if (!level) continue
     const href = `${page}#${anchor}`
     tasks.push({ id: href, href, title: cleanTitle(title), level })
@@ -36,10 +42,13 @@ function collectTasks(page, source) {
 }
 
 const lessonPages = [...new Set(nodeTechCheckPaths.flatMap(path => path.items.map(item => item.href.split('#')[0])))]
+const companionPages = fs.readdirSync('docs' + techCheckRoute)
+  .filter(file => file.endsWith('.md') && /<!-- tech-check: t\d+-q\d+;/.test(fs.readFileSync('docs' + techCheckRoute + file, 'utf8')))
+  .map(file => techCheckRoute + file.slice(0, -3))
 const patternPages = fs.readdirSync('docs' + techCheckRoute + 'patterns')
   .filter(file => file.endsWith('.md'))
   .map(file => techCheckRoute + 'patterns/' + file.slice(0, -3))
-const tasksByPage = new Map([...lessonPages, ...patternPages].map(page => [
+const tasksByPage = new Map([...new Set([...lessonPages, ...companionPages, ...patternPages])].map(page => [
   page, collectTasks(page, fs.readFileSync(`docs${page}.md`, 'utf8'))
 ]))
 
@@ -49,6 +58,15 @@ export const techCheckLevels = nodeTechCheckPaths.map((path, index) => ({
 }))
 
 export function techCheckCompletionPlugin(md) {
+  // Source headings stay clean; hidden metadata preserves saved question URLs.
+  md.core.ruler.before('anchor', 'tech-check-stable-question-ids', state => {
+    for (let index = 0; index < state.tokens.length; index++) {
+      const marker = state.tokens[index]
+      const match = marker.type === 'html_block' && marker.content.trim().match(/^<!-- tech-check: (t\d+-q\d+); level: [1-5] -->$/)
+      const heading = state.tokens[index + 1]
+      if (match && heading?.type === 'heading_open') heading.attrSet('id', match[1])
+    }
+  })
   md.core.ruler.after('anchor', 'tech-check-completion', state => {
     const file = (state.env.relativePath || state.env.path || '').split(path.sep).join('/')
     const start = file.indexOf(techCheckRoute.slice(1))

@@ -8,12 +8,17 @@ An application needs a deliberate failure contract as well as a success contract
 
 Read the examples before their explanations. Error text, paths, payloads and nested causes can contain sensitive data; the examples print only fixed diagnostic fields. The seven questions cover error categories, custom causes, async ownership, diagnosis, recovery policy, Express boundaries and database retries. A revision and separate learner checklist follow.
 
-### What does an Error object tell you, and how do you choose a built-in error type? {#t10-q01}
+<!-- tech-check: t10-q01; level: 2 -->
+
+### What does an Error object tell you, and how do you choose a built-in error type?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R017](./requirements.md#r017), [R161](./requirements.md#r161).
+
 
 <span class="notes-section-label">**Example — predict the categories**</span>
 
@@ -103,12 +108,17 @@ Official references: [Node 24 error classes and system codes](https://nodejs.org
 
 ---
 
-### When should you create a custom error, and how do you preserve its cause safely? {#t10-q02}
+<!-- tech-check: t10-q02; level: 2 -->
+
+### When should you create a custom error, and how do you preserve its cause safely?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R044](./requirements.md#r044).
+
 
 <span class="notes-section-label">**Example — predict the error boundary**</span>
 
@@ -234,12 +244,17 @@ Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodej
 
 ---
 
-### Who owns a failure from a promise, callback or event, and why can try/catch miss it? {#t10-q03}
+<!-- tech-check: t10-q03; level: 2 -->
+
+### Who owns a failure from a promise, callback or event, and why can try/catch miss it?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R016](./requirements.md#r016).
+
 
 <span class="notes-section-label">**Example — predict which boundary catches each failure**</span>
 
@@ -405,12 +420,17 @@ Official references, checked 2026-11-04: [Node error delivery](https://nodejs.or
 
 ---
 
-### How do you diagnose a runtime failure without guessing or leaking sensitive data? {#t10-q04}
+<!-- tech-check: t10-q04; level: 2 -->
+
+### How do you diagnose a runtime failure without guessing or leaking sensitive data?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R116](./requirements.md#r116), [R018](./requirements.md#r018).
+
 
 <span class="notes-section-label">**Example — locate the failing phase before changing code**</span>
 
@@ -566,12 +586,17 @@ Official references, checked 2026-11-04: [Node Error stacks, codes and causes](h
 
 ---
 
-### How do you decide whether to recover, retry, escalate or stop the process? {#t10-q05}
+<!-- tech-check: t10-q05; level: 2 -->
+
+### How do you decide whether to recover, retry, escalate or stop the process?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R074](./requirements.md#r074).
+
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 
@@ -709,12 +734,17 @@ Official references, checked 2026-11-04: [Node uncaught-exception guidance](http
 
 ---
 
-### How should Express translate failures into safe HTTP responses? {#t10-q06}
+<!-- tech-check: t10-q06; level: 2 -->
+
+### How should Express translate failures into safe HTTP responses?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R125](./requirements.md#r125), [R169](./requirements.md#r169).
+
 
 <span class="notes-section-label">**Example — predict the response before running**</span>
 
@@ -858,12 +888,18 @@ Official references, checked 2026-11-04: [Express error handling](https://expres
 
 ---
 
-### How do you classify database failures and retry a complete transaction safely? {#t10-q07}
+<!-- tech-check: t10-q07; level: 2 -->
+
+### How do you classify database failures and retry a complete transaction safely?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐, ⭐⭐⭐⭐
+
+Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
+
+
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 
@@ -1046,7 +1082,7 @@ Retry a confirmed aborted transaction as a whole, with one client per attempt an
 
 In a disposable PostgreSQL database, coordinate two serializable reservations so both initially read the same stock. Acceptance: one transaction aborts with 40001, its full callback is retried, both reservations succeed without losing a decrement, and final stock reflects exactly two committed operations. Separately verify a unique violation is not retried and earlier updates roll back. Simulate rollback failure and an uncertain COMMIT at the adapter boundary, checking both causes/discard behavior and absence of automatic replay. Keep simulations labeled; do not interrupt a real database to mimic an outage.
 
-Official references, checked 2026-11-04: [PostgreSQL 16 transaction retry semantics](https://www.postgresql.org/docs/16/mvcc-serialization-failure-handling.html), [SQLSTATE codes](https://www.postgresql.org/docs/16/errcodes-appendix.html), [node-postgres transaction/client ownership](https://node-postgres.com/features/transactions), [pool ownership](https://node-postgres.com/features/pooling). The executable database baseline for author checks is PostgreSQL 16.13 with pg 8.16.3, not a claim about the newest versions.
+Official references, checked 2026-11-04: [PostgreSQL 16 transaction retry semantics](https://www.postgresql.org/docs/16/mvcc-serialization-failure-handling.html), [SQLSTATE codes](https://www.postgresql.org/docs/16/errcodes-appendix.html), [node-postgres transaction/client ownership](https://node-postgres.com/features/transactions), [pool ownership](https://node-postgres.com/features/pooling).
 
 ## Revision
 
@@ -1089,5 +1125,3 @@ Keep the contracts separate: the Error value describes a failure; the asynchrono
 5. The server may already have committed before its reply was lost. Reconcile a durable operation identity/outcome rather than blindly repeating the write.
 6. It can verify classification and adapter policy for a supplied failure shape. It does not prove real permissions, driver behavior or an actual denied filesystem operation.
 :::
-
-The seven Errors questions now have written material and author checks. Your practice remains separate: completing these notes does not establish that you have implemented, debugged or demonstrated every scenario yourself.

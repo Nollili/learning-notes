@@ -10,12 +10,17 @@ Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules
 
 ---
 
-### How does Bridge let two dimensions of a design vary independently? {#t18-q10}
+<!-- tech-check: t18-q10; level: 2 -->
+
+### How does Bridge let two dimensions of a design vary independently?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163).
+
 
 <div class="notes-core-answer">
 
@@ -103,12 +108,17 @@ Bridge separates an abstraction from its implementation so both can evolve indep
 
 ---
 
-### How does Composite give leaves and groups one usable contract? {#t18-q11}
+<!-- tech-check: t18-q11; level: 2 -->
+
+### How does Composite give leaves and groups one usable contract?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163).
+
 
 <div class="notes-core-answer">
 
@@ -201,12 +211,17 @@ Composite represents a part-whole tree so callers can apply the same operation t
 
 ---
 
-### How does Facade simplify a subsystem without pretending it is transactional? {#t18-q12}
+<!-- tech-check: t18-q12; level: 2 -->
+
+### How does Facade simplify a subsystem without pretending it is transactional?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163).
+
 
 <div class="notes-core-answer">
 
@@ -285,12 +300,17 @@ A Facade offers a focused entry point to a subsystem.
 
 ---
 
-### How does Flyweight share intrinsic state without leaking per-request data? {#t18-q13}
+<!-- tech-check: t18-q13; level: 2 -->
+
+### How does Flyweight share intrinsic state without leaking per-request data?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163).
+
 
 <div class="notes-core-answer">
 
@@ -365,12 +385,18 @@ Flyweight shares reusable intrinsic state while callers supply changing extrinsi
 
 ---
 
-### How can Proxy control access while preserving the reader contract? {#t18-q14}
+<!-- tech-check: t18-q14; level: 2 -->
+
+### How can Proxy control access while preserving the reader contract?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163).
+
+
 
 <div class="notes-core-answer">
 

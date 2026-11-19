@@ -6,12 +6,17 @@ outline: [2, 3]
 
 Examples use Node 24 and ES Modules (`.mjs`) unless stated otherwise. Only built-in modules are needed. Depth labels describe the question's intended study depth. Try each code question before reading its answer.
 
-### What is Node.js, and what changes when JavaScript runs outside the browser? {#t01-q01}
+<!-- tech-check: t01-q01; level: 1 -->
+
+### What is Node.js, and what changes when JavaScript runs outside the browser?
 
 *Study depth: Foundational*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R105](./requirements.md#r105).
+
 
 <div class="notes-core-answer">
 
@@ -75,12 +80,17 @@ Node runs JavaScript with server/OS host facilities; V8 executes the language, a
 
 ---
 
-### What does event-driven, nonblocking execution mean, and does async move work off the main thread? {#t01-q02}
+<!-- tech-check: t01-q02; level: 1 -->
+
+### What does event-driven, nonblocking execution mean, and does async move work off the main thread?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R010](./requirements.md#r010), [R106](./requirements.md#r106).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -156,12 +166,17 @@ Nonblocking I/O permits progress while waiting; async syntax alone cannot preven
 
 ---
 
-### When should you use synchronous or asynchronous filesystem APIs? {#t01-q03}
+<!-- tech-check: t01-q03; level: 1 -->
+
+### When should you use synchronous or asynchronous filesystem APIs?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R118](./requirements.md#r118).
+
 
 <div class="notes-core-answer">
 
@@ -231,12 +246,18 @@ Choose sync versus async from the program's waiting/concurrency needs, and budge
 
 ---
 
-### How do core modules support both a CLI tool and a service? {#t01-q04}
+<!-- tech-check: t01-q04; level: 1 -->
+
+### How do core modules support both a CLI tool and a service?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐
+
+Source mapping: [R107](./requirements.md#r107), [R110](./requirements.md#r110).
+
+
 
 <div class="notes-core-answer">
 

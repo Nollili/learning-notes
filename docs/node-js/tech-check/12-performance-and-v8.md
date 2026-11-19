@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Use Node.js 24.18 as the executable baseline and record its V8/OS/architecture with results. These seven questions cover all retained performance topics with measured examples and a practical optimization workflow. **A local fixture is not production capacity evidence.** Keep correctness, security and failure behavior constant when comparing an optimization. References checked 2026-11-05.
 
-## What does V8 optimize, and what does node:v8 expose? {#t12-q01}
+<!-- tech-check: t12-q01; level: 4 -->
 
-Level Up: L4\
+## What does V8 optimize, and what does node:v8 expose?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R077](./requirements.md#r077), [R160](./requirements.md#r160).
+
 
 <div class="notes-core-answer">
 
@@ -45,10 +52,17 @@ Save the runtime baseline, identify one real hot function and propose a clarity-
 
 ---
 
-## How do CPU profiles and load tests answer different questions? {#t12-q02}
+<!-- tech-check: t12-q02; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do CPU profiles and load tests answer different questions?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R048](./requirements.md#r048), [R079](./requirements.md#r079).
+
 
 <div class="notes-core-answer">
 
@@ -90,10 +104,17 @@ Acquire a real profile under an owned API workload, identify a candidate bottlen
 
 ---
 
-## What do event-loop delay, utilization and request latency tell you? {#t12-q03}
+<!-- tech-check: t12-q03; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## What do event-loop delay, utilization and request latency tell you?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R078](./requirements.md#r078).
+
 
 <div class="notes-core-answer">
 
@@ -143,10 +164,17 @@ Compare a CPU-heavy route, a slow database and a slow response consumer under th
 
 ---
 
-## How do memory retention, GC and Buffer ownership affect performance? {#t12-q04}
+<!-- tech-check: t12-q04; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do memory retention, GC and Buffer ownership affect performance?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R082](./requirements.md#r082), [R118](./requirements.md#r118).
+
 
 <div class="notes-core-answer">
 
@@ -203,10 +231,17 @@ Create a controlled retained-listener/cache leak in an owned fixture, acquire be
 
 ---
 
-## Why does async syntax not solve CPU saturation or overload? {#t12-q05}
+<!-- tech-check: t12-q05; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## Why does async syntax not solve CPU saturation or overload?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+
+Source mapping: [R118](./requirements.md#r118), [R176](./requirements.md#r176).
+
 
 <div class="notes-core-answer">
 
@@ -230,10 +265,17 @@ Implement equivalent bounded CPU work on the main loop, in yielding chunks and i
 
 ---
 
-## How do you add a cache without losing correctness? {#t12-q06}
+<!-- tech-check: t12-q06; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do you add a cache without losing correctness?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐, ⭐⭐⭐
+
+Source mapping: [R101](./requirements.md#r101).
+
 
 <div class="notes-core-answer">
 
@@ -333,10 +375,18 @@ Test expiry, eviction, tenant separation, mutation isolation, invalidation race 
 
 ---
 
-## How do you optimize an Express or Nest application responsibly? {#t12-q07}
+<!-- tech-check: t12-q07; level: 4 -->
 
-Level Up: L4\
+## How do you optimize an Express or Nest application responsibly?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
+
+
 
 <div class="notes-core-answer">
 
@@ -365,5 +415,3 @@ Use the advanced framework experiment to change one middleware/service operation
 
 1. Investigate dependency capacity, client leaks, transaction duration and admission first. Correlate metrics and profile before changing runtime flags.
 2. No. Compare retained memory, aliasing and lifetime as well as copying cost; a small independent copy can fit the ownership requirement better.
-
-All workload, profile, tuning and cache exercises remain learner practice. Author checks establish bounded example behavior, not an SLO or a professional level.

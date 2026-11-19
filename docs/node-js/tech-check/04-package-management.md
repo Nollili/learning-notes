@@ -4,16 +4,19 @@ outline: [2, 3]
 
 # Package management
 
-npm 11.16.0 and Node 24.18.0 are the local validation baseline. npm is the primary package manager here; other managers have different commands, lockfiles and configuration. All executable installation examples use an owned temporary local package, not a registry download or publication.
 
-Keep the supplied build/Jest/database/coverage configuration in an Autocode submission; these disposable learning fixtures do not replace it.
 
-### What is package.json responsible for, and how do installation and runtime loading differ? {#t04-q01}
+<!-- tech-check: t04-q01; level: 1 -->
+
+### What is package.json responsible for, and how do installation and runtime loading differ?
 
 *Study depth: Foundational*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R007](./requirements.md#r007), [R151](./requirements.md#r151).
+
 
 <div class="notes-core-answer">
 
@@ -81,12 +84,17 @@ The manifest declares contracts, the manager prepares dependencies, and the runt
 
 ---
 
-### How do install, ci and dependency categories affect reproducibility? {#t04-q02}
+<!-- tech-check: t04-q02; level: 1 -->
+
+### How do install, ci and dependency categories affect reproducibility?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R114](./requirements.md#r114).
+
 
 <div class="notes-core-answer">
 
@@ -164,12 +172,17 @@ A locked clean installation is one reproducibility boundary; runtime, configurat
 
 ---
 
-### Which npm commands and configuration sources should you inspect when installation differs between environments? {#t04-q03}
+<!-- tech-check: t04-q03; level: 1 -->
+
+### Which npm commands and configuration sources should you inspect when installation differs between environments?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R006](./requirements.md#r006), [R029](./requirements.md#r029).
+
 
 <div class="notes-core-answer">
 
@@ -232,12 +245,17 @@ Diagnose the effective command/configuration and failure stage; a single visible
 
 ---
 
-### How do npm scripts, argument forwarding and lifecycle hooks work? {#t04-q04}
+<!-- tech-check: t04-q04; level: 1 -->
+
+### How do npm scripts, argument forwarding and lifecycle hooks work?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R023](./requirements.md#r023), [R030](./requirements.md#r030).
+
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -271,7 +289,7 @@ For a named task, applicable pre/task/post hooks are part of its lifecycle. A pr
 
 Install/prepare lifecycle behavior can differ between a registry package, local source and pack/build workflows, so verify the actual operation. --ignore-scripts suppresses applicable lifecycle execution under its documented rules, but does not turn explicitly running npm test/npm run into a no-code operation; specifically test the hooks versus explicitly selected script behavior on your npm version.
 
-A deliberately broken wrapper that starts an asynchronous child and exits 0 before awaiting it can conceal failure. Similarly `command || true` can convert failure to success. Preserve an Autocode template's Jest/coverage command and add only authorized production changes; this isolated guide's diagnostic scripts are not permission to rewrite protected tests or required scripts.
+A deliberately broken wrapper that starts an asynchronous child and exits 0 before awaiting it can conceal failure. Similarly `command || true` can convert failure to success.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -295,12 +313,17 @@ Scripts orchestrate explicit commands and hooks; inspect what runs, how argument
 
 ---
 
-### What do SemVer ranges allow, especially before 1.0 and for prereleases? {#t04-q05}
+<!-- tech-check: t04-q05; level: 1 -->
+
+### What do SemVer ranges allow, especially before 1.0 and for prereleases?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐
+
+Source mapping: [R069](./requirements.md#r069).
+
 
 <span class="notes-section-label">**Code-reading question — attempt first**</span>
 
@@ -365,12 +388,17 @@ A version range, a resolved lock and a verified application artifact are three d
 
 ---
 
-### What does a registry provide, and how do you inspect the package that will actually ship? {#t04-q06}
+<!-- tech-check: t04-q06; level: 1 -->
+
+### What does a registry provide, and how do you inspect the package that will actually ship?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐
+
+Source mapping: [R069](./requirements.md#r069).
+
 
 <div class="notes-core-answer">
 
@@ -424,12 +452,17 @@ Inspect and test the distributed artifact under its approved registry/identity c
 
 ---
 
-### In what sense can a package manager be a build tool, and how do you verify the emitted artifact? {#t04-q07}
+<!-- tech-check: t04-q07; level: 1 -->
+
+### In what sense can a package manager be a build tool, and how do you verify the emitted artifact?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R028](./requirements.md#r028).
+
 
 <div class="notes-core-answer">
 
@@ -443,7 +476,7 @@ npm scripts can orchestrate build/check/test tasks and provide local tool lookup
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Use a new owned build fixture with this package.json. The test script belongs only to this disposable fixture; it does not replace an Autocode template's Jest command.
+Use a new owned build fixture with this package.json.
 
 <span class="notes-section-label">**Example — package.json**</span>
 
@@ -535,12 +568,18 @@ Use package scripts to orchestrate explicit stages and verify the exact emitted 
 
 ---
 
-### How do you debug a dependency failure without hiding it through a forced upgrade or configuration reset? {#t04-q08}
+<!-- tech-check: t04-q08; level: 1 -->
+
+### How do you debug a dependency failure without hiding it through a forced upgrade or configuration reset?
 
 *Study depth: Advanced*
 
-Level Up: L2\
-Tech Check level: ⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐
+
+Source mapping: [R029](./requirements.md#r029), [R116](./requirements.md#r116).
+
+
 
 <span class="notes-section-label">**Scenario — attempt first**</span>
 
@@ -626,7 +665,7 @@ SemVer ranges communicate allowed versions but do not prove quality; registries/
 4. The actual file list, exports/main targets, built outputs, dependencies and selected runtime conditions. Fresh-consumer tests expose author-checkout assumptions.
 5. Use an intentional supported update/install workflow in a development fixture, then review/test the changed graph. ci recreates the locked contract rather than silently upgrading it.
 
-Official sources checked 2026-11-04: npm 11 [package metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/), [configuration](https://docs.npmjs.com/cli/v11/using-npm/config/), [registry](https://docs.npmjs.com/cli/v11/using-npm/registry/), [pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/), [SemVer specification](https://semver.org/), [npm range implementation](https://github.com/npm/node-semver). These are the stated baseline's contracts, not a recommendation to publish or install unrelated tooling.
+Official sources checked 2026-11-04: npm 11 [package metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/), [configuration](https://docs.npmjs.com/cli/v11/using-npm/config/), [registry](https://docs.npmjs.com/cli/v11/using-npm/registry/), [pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/), [SemVer specification](https://semver.org/), [npm range implementation](https://github.com/npm/node-semver).
 
 <span id="batch-b07-progress"></span>
 

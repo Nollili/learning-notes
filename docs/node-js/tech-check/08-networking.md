@@ -8,12 +8,17 @@ This chapter covers node:net, IP/TCP/UDP, HTTPS and DNS on Node.js 24.18.0. Exec
 
 These local teaching clients/servers are not production deployment templates. Validation of the real-time examples used ws 8.22.1 and socket.io/socket.io-client4.8.4 installed with an isolated temporary lockfile; no repository dependencies were added. Those are tested versions, not a claim that any major-version range is permanently compatible or secure.
 
-### How do TCP sockets differ from HTTP request handling, and how should connection lifetime be owned? {#t08-q01}
+<!-- tech-check: t08-q01; level: 2 -->
+
+### How do TCP sockets differ from HTTP request handling, and how should connection lifetime be owned?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R039](./requirements.md#r039), [R046](./requirements.md#r046), [R159](./requirements.md#r159).
+
 
 <span class="notes-section-label">**Example — identify the completion, byte and lifetime boundaries**</span>
 
@@ -106,12 +111,17 @@ A socket is a transport resource; message meaning and lifetime belong to the app
 
 ---
 
-### How do IP addressing and UDP datagrams differ from TCP streams? {#t08-q02}
+<!-- tech-check: t08-q02; level: 2 -->
+
+### How do IP addressing and UDP datagrams differ from TCP streams?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R076](./requirements.md#r076).
+
 
 <span class="notes-section-label">**Example — receive one owned loopback datagram**</span>
 
@@ -201,12 +211,17 @@ Addressing, transport guarantees and authenticated application identity are sepa
 
 ---
 
-### What must an HTTPS client validate and supervise beyond receiving headers? {#t08-q03}
+<!-- tech-check: t08-q03; level: 2 -->
+
+### What must an HTTPS client validate and supervise beyond receiving headers?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: ⭐⭐, ⭐⭐⭐
+
+Source mapping: [R045](./requirements.md#r045).
+
 
 <span class="notes-section-label">**Example — inspect the full response lifetime**</span>
 
@@ -294,12 +309,17 @@ Validate the peer and own the entire HTTP exchange, including its body and failu
 
 ---
 
-### How do lookup and resolve differ, and what does a DNS answer prove? {#t08-q04}
+<!-- tech-check: t08-q04; level: 2 -->
+
+### How do lookup and resolve differ, and what does a DNS answer prove?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐, ⭐⭐⭐⭐
+
+Source mapping: [R072](./requirements.md#r072).
+
 
 <span class="notes-section-label">**Example — inspect address results without external DNS**</span>
 
@@ -381,12 +401,17 @@ Official references checked 2026-11-04: Node 24.18 [Net](https://nodejs.org/down
 
 ---
 
-### When should a service use polling, SSE, WebSocket or Socket.IO? {#t08-q05}
+<!-- tech-check: t08-q05; level: 5 -->
+
+### When should a service use polling, SSE, WebSocket or Socket.IO?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R047](./requirements.md#r047), [R075](./requirements.md#r075).
+
 
 <span class="notes-section-label">**Example — choose and defend a transport before reading the answer**</span>
 
@@ -443,12 +468,17 @@ Choose the interaction and recovery contract first; then choose the simplest tra
 
 ---
 
-### What must a WebSocket service own beyond a successful handshake? {#t08-q06}
+<!-- tech-check: t08-q06; level: 5 -->
+
+### What must a WebSocket service own beyond a successful handshake?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R047](./requirements.md#r047).
+
 
 <span class="notes-section-label">**Example — bounded local echo protocol**</span>
 
@@ -541,12 +571,17 @@ A long-lived message channel requires an explicitly owned application session an
 
 ---
 
-### What does Socket.IO add, and what do acknowledgements and reconnection actually guarantee? {#t08-q07}
+<!-- tech-check: t08-q07; level: 5 -->
+
+### What does Socket.IO add, and what do acknowledgements and reconnection actually guarantee?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+Source mapping: [R075](./requirements.md#r075).
+
 
 <span class="notes-section-label">**Example — an acknowledged event under a fixture-only identity**</span>
 
@@ -632,12 +667,17 @@ Library conveniences reduce transport plumbing; delivery semantics and business 
 
 ---
 
-### How do you select and operate a real-time transport in production? {#t08-q08}
+<!-- tech-check: t08-q08; level: 5 -->
+
+### How do you select and operate a real-time transport in production?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐⭐
+
+Source mapping: [R047](./requirements.md#r047), [R119](./requirements.md#r119).
+
 
 <span class="notes-section-label">**Example — test sequence gaps rather than assuming the connection is complete**</span>
 
@@ -714,12 +754,17 @@ Production selection includes overload, recovery and deployment evidence, not on
 
 ---
 
-### How do you inspect an HTTP exchange without confusing transport, status and payload failures? {#t08-q09}
+<!-- tech-check: t08-q09; level: 2 -->
+
+### How do you inspect an HTTP exchange without confusing transport, status and payload failures?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R158](./requirements.md#r158), [R159](./requirements.md#r159).
+
 
 <span class="notes-section-label">**Example — predict the status and body before running**</span>
 
@@ -855,12 +900,17 @@ Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/spe
 
 ---
 
-### How can HTTP request/response coexist with asynchronous browser interaction? {#t08-q10}
+<!-- tech-check: t08-q10; level: 2 -->
+
+### How can HTTP request/response coexist with asynchronous browser interaction?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R159](./requirements.md#r159).
+
 
 <div class="notes-core-answer">
 
@@ -1045,12 +1095,18 @@ Run the two-origin lab. Test every selector value, cancel while Loading, and tri
 
 ---
 
-### How do connection reuse and client pooling help without creating an unbounded queue? {#t08-q11}
+<!-- tech-check: t08-q11; level: 2 -->
+
+### How do connection reuse and client pooling help without creating an unbounded queue?
 
 *Study depth: Intermediate implementation of a foundational optimization*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R046](./requirements.md#r046).
+
+
 
 <div class="notes-core-answer">
 

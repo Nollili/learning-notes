@@ -6,10 +6,17 @@ outline: [2, 3]
 
 The primary delivery path packages the existing Express 5/Node.js 24 application into a reviewed container for AWS ECS, with PostgreSQL migrations owned separately. NestJS follows the same runtime/health/artifact rules. Use the [full-stack deployment lesson](../full-stack-deployment.md), [container lab](../container-deployment-lab.md) and [release compatibility lab](../release-artifact-compatibility.md) as implementation owners. This chapter prepares a release; it does not publish an image, push Git or deploy resources.
 
-## What should npm scripts and CI gates guarantee? {#t24-q01}
+<!-- tech-check: t24-q01; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## What should npm scripts and CI gates guarantee?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: ⭐; Related ⭐⭐⭐
+
+Source mapping: [R023](./requirements.md#r023), [R065](./requirements.md#r065).
+
 
 <div class="notes-core-answer">
 
@@ -21,8 +28,6 @@ Scripts expose repeatable project commands; CI runs them in a clean environment 
 
 In a TypeScript Node application, a typical sequence is locked dependency installation → type/lint checks → tests → compilation → artifact verification. The exact scripts belong to the task template. This documentation repository has only docs scripts at its root; do not add generic `build`/`test` scripts merely to make an example look uniform.
 
-For an EPAM Autocode solution, preserve `npm run build`, `npm run test`, and Module 4's required Cobertura coverage contract. Autocode replaces `src/tests`; never modify/import/rely on that directory for production behavior. Close servers, pools and timers so checks terminate. CI should use production code and actual task settings rather than locally altered tests.
-
 Use `npm ci` with the reviewed lock. A cache accelerates installation but is not the release artifact or a promise that another job has dependencies installed. Install needed build/test dependencies in the verification stage, then package only required runtime files. Test runtime startup with production dependencies and the correct OS/architecture/Node contract.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
@@ -31,10 +36,17 @@ On the actual application template, run its exact commands in a clean owned chec
 
 ---
 
-## How do you build once and verify what will be released? {#t24-q02}
+<!-- tech-check: t24-q02; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How do you build once and verify what will be released?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R065](./requirements.md#r065).
+
 
 <div class="notes-core-answer">
 
@@ -81,10 +93,17 @@ Build an owned application image once, save its digest and prepare (without push
 
 ---
 
-## How do you configure one environment and manage it safely? {#t24-q03}
+<!-- tech-check: t24-q03; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How do you configure one environment and manage it safely?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R066](./requirements.md#r066), [R142](./requirements.md#r142).
+
 
 <div class="notes-core-answer">
 
@@ -100,18 +119,23 @@ On a VM alternative, use a process manager such as systemd to own the non-root N
 
 An SSH/CLI runbook should name the target account/region/host, artifact digest, working directory and narrow command before mutation. Copy only reviewed files, preserve permissions, check exit status and record sanitized output. A remote shell must not run unquoted user-controlled strings. For ECS, ordinary operators update the service through the deployment mechanism; editing files inside a running task is not a repeatable release.
 
-Use the supplied task's database credentials/configuration exactly in Autocode. Production identity and secret rotation are separate environment operations, not reasons to change an exercise's predefined database settings.
-
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Prepare a redacted environment inventory and a dry-run management checklist. Start the owned application with missing/invalid configuration and prove it fails before becoming ready, then verify secret rotation/restart in an isolated environment. Accept with no secret in source, artifacts, shell history or shared logs. References: [systemd service units](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html), [OpenSSH client](https://man.openbsd.org/ssh), [ECS secrets](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
 
 ---
 
-## How do health checks and graceful shutdown protect a release? {#t24-q04}
+<!-- tech-check: t24-q04; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How do health checks and graceful shutdown protect a release?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R112](./requirements.md#r112), [R143](./requirements.md#r143).
+
 
 <div class="notes-core-answer">
 
@@ -133,10 +157,17 @@ Start an owned instance with one active request, signal shutdown and verify read
 
 ---
 
-## How do you roll out and roll back an API with a database? {#t24-q05}
+<!-- tech-check: t24-q05; level: 3 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+## How do you roll out and roll back an API with a database?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R104](./requirements.md#r104), [R144](./requirements.md#r144).
+
 
 <div class="notes-core-answer">
 
@@ -160,10 +191,18 @@ Run the compatibility lab locally, interrupt the backfill and recover. Prepare a
 
 ---
 
-## What evidence belongs in a delivery handoff? {#t24-q06}
+<!-- tech-check: t24-q06; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## What evidence belongs in a delivery handoff?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R065](./requirements.md#r065), [R147](./requirements.md#r147).
+
+
 
 <div class="notes-core-answer">
 

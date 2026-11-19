@@ -87,7 +87,7 @@ The JSONL repository remains the default in Project 2. In Project 3, PostgreSQL 
 - Use **semantic HTML, a small shared CSS file and vanilla browser JavaScript** for the Projects 2–3 UI. It should exercise the real HTTP API without adding React, a bundler or a second application architecture.
 - Use **PostgreSQL with MikroORM 7** in Project 3. Write and inspect migrations; do not use schema synchronization as the deployment mechanism.
 - Use a **container deployment as the primary operational path**. A serverless report handler is a bounded alternative, not a second complete platform.
-- Keep all work in a new learning repository. Do not place its tests in an EPAM Autocode assignment's protected `src/tests` directory or replace a supplied assignment configuration.
+- Keep all work in a new learning repository.
 
 Suggested repository name: `node-learning-progress`.
 
@@ -140,10 +140,16 @@ Use this compact decision template:
 
 **Do not count an increment complete from a screenshot or from “it works on my machine.”** Keep the command, expected observable result and one failure-path result.
 
+<!-- tech-check-level: 1 -->
+
 ## Project 1 — Foundations CLI {#project-1-foundations-cli}
 
-Level Up: L1\
+*Study depth: Foundational to intermediate*
+
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
 
 ### Outcome
 
@@ -218,10 +224,16 @@ Project 1 is releasable when all of these are true:
 
 Save this state as the `foundations-cli` release or tag before continuing.
 
+<!-- tech-check-level: 2 -->
+
 ## Project 2 — HTTP application {#project-2-http-application}
 
-Level Up: L2\
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
 
 ### Outcome
 
@@ -334,10 +346,16 @@ Failure drill: identify one pattern that would add indirection without a current
 
 Save this state as the `http-application` release or tag.
 
+<!-- tech-check-level: 3 -->
+
 ## Project 3 — Deployable service {#project-3-deployable-service}
 
-Level Up: L3\
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
 
 ### Outcome
 
@@ -415,10 +433,16 @@ Failure drill: wrong database DNS name, unreadable runtime path, SIGTERM during 
 
 Save this state as the `deployable-service` release or tag.
 
+<!-- tech-check-level: 4 -->
+
 ## Project 4 — Hardened and optimized service {#project-4-hardened-service}
 
-Level Up: L4\
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
 
 ### Outcome
 
@@ -478,10 +502,16 @@ Failure drill: serialization retry, mutable pagination boundary, blocked lock, e
 
 Save this state as `project-4-hardened-service`.
 
+<!-- tech-check-level: 5 -->
+
 ## Project 5 — Operated specialized service {#project-5-operated-specialized-service}
 
-Level Up: L4\
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐⭐
+
+The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
 
 ### Outcome
 

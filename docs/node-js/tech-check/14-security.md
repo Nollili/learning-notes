@@ -6,10 +6,17 @@ outline: [2, 3]
 
 These eight questions target independent implementation and Level 4 design reasoning. The primary stack remains Node.js 24, Express 5, PostgreSQL and the existing Argon2id/session implementation. Examples are bounded teaching fixtures, not an assurance that a deployed application is secure. Official security guidance checked 2026-11-05.
 
-## How do you turn a threat model into enforceable controls? {#t14-q01}
+<!-- tech-check: t14-q01; level: 4 -->
 
-Level Up: L4\
+## How do you turn a threat model into enforceable controls?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
+
 
 <div class="notes-core-answer">
 
@@ -36,10 +43,17 @@ Produce a one-page data-flow model with five abuse cases, owners, controls and t
 
 ---
 
-## How do validation, output encoding, SQL binding and CSRF defenses differ? {#t14-q02}
+<!-- tech-check: t14-q02; level: 4 -->
 
-Level Up: L2\
+## How do validation, output encoding, SQL binding and CSRF defenses differ?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
+
 
 <div class="notes-core-answer">
 
@@ -91,10 +105,17 @@ Test extra fields, wrong types, oversize JSON, injection-shaped text, unsafe ric
 
 ---
 
-## How do you prevent SSRF in an outbound HTTP feature? {#t14-q03}
+<!-- tech-check: t14-q03; level: 4 -->
 
-Level Up: L3\
+## How do you prevent SSRF in an outbound HTTP feature?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
+
 
 <div class="notes-core-answer">
 
@@ -136,10 +157,17 @@ Use only owned mock destinations: verify rejected provider/path, redirect to a f
 
 ---
 
-## What do TLS, secret management and authenticated encryption each protect? {#t14-q04}
+<!-- tech-check: t14-q04; level: 4 -->
 
-Level Up: L3\
+## What do TLS, secret management and authenticated encryption each protect?
+
+*Study depth: Advanced*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐⭐
+
+Source mapping: [R038](./requirements.md#r038), [R184](./requirements.md#r184), [R185](./requirements.md#r185).
+
 
 <div class="notes-core-answer">
 
@@ -188,10 +216,17 @@ Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and c
 
 ---
 
-## How do you store passwords and resist authentication abuse? {#t14-q05}
+<!-- tech-check: t14-q05; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do you store passwords and resist authentication abuse?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R051](./requirements.md#r051).
+
 
 <div class="notes-core-answer">
 
@@ -232,10 +267,17 @@ Verify distinct salts, correct/wrong/malformed hashes, controlled rehash, bounde
 
 ---
 
-## How do npm audit and other security scanners fit a release? {#t14-q06}
+<!-- tech-check: t14-q06; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## How do npm audit and other security scanners fit a release?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R086](./requirements.md#r086), [R089](./requirements.md#r089).
+
 
 <div class="notes-core-answer">
 
@@ -257,10 +299,17 @@ Analyze one advisory's direct/transitive path and write a minimal fix or a justi
 
 ---
 
-## What does Helmet protect, and how do you test framework hardening? {#t14-q07}
+<!-- tech-check: t14-q07; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## What does Helmet protect, and how do you test framework hardening?
+
+*Study depth: Intermediate*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R087](./requirements.md#r087).
+
 
 <div class="notes-core-answer">
 
@@ -301,10 +350,18 @@ Use a real loopback request to check CSP, nosniff, referrer policy and removal o
 
 ---
 
-## Is node:vm, a worker or a container a safe sandbox for untrusted code? {#t14-q08}
+<!-- tech-check: t14-q08; level: 4 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐⭐
+## Is node:vm, a worker or a container a safe sandbox for untrusted code?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐⭐
+
+Source mapping: [R088](./requirements.md#r088).
+
+
 
 <div class="notes-core-answer">
 

@@ -6,14 +6,19 @@ outline: [2, 3]
 
 The first four questions cover **Node.js Foundations**. The application questions then build an **Express 5** catalog and introduce a smaller **NestJS 11** companion. Express is the primary stack; you do not need to implement the whole application twice.
 
-Use a separate learning folder for the runnable example. Preserve an existing project's build, test and database configuration, particularly an Autocode template. The initial Foundations lab has no authentication or persistence. The later catalog adds fixture authentication and an in-memory repository, with their production limitations made explicit.
+Use a separate learning folder for the runnable example. The initial Foundations lab has no authentication or persistence. The later catalog adds fixture authentication and an in-memory repository, with their production limitations made explicit.
 
-### What does a web framework provide, and how do MVC, full-stack frameworks and API frameworks differ? {#t16-q01}
+<!-- tech-check: t16-q01; level: 1 -->
+
+### What does a web framework provide, and how do MVC, full-stack frameworks and API frameworks differ?
 
 *Study depth: Foundational*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R120](./requirements.md#r120), [R128](./requirements.md#r128), [R154](./requirements.md#r154).
+
 
 <span class="notes-section-label">**Think before reading**</span>
 
@@ -73,12 +78,17 @@ Official references: [Express FAQ: structure and database boundaries](https://ex
 
 ---
 
-### How should you choose a framework without learning every alternative? {#t16-q02}
+<!-- tech-check: t16-q02; level: 1 -->
+
+### How should you choose a framework without learning every alternative?
 
 *Study depth: Foundational → Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: ⭐, ⭐⭐, ⭐⭐⭐⭐
+
+Source mapping: [R120](./requirements.md#r120), [R153](./requirements.md#r153).
+
 
 <span class="notes-section-label">**Decision exercise — attempt first**</span>
 
@@ -133,17 +143,22 @@ Choose for requirements and maintainability, then measure. Learning one stack de
 
 Write a one-page decision record for the scenario. Acceptance: compare Express with one alternative, name two constraints and one measurable success criterion, and explain the cost and rollback approach for a migration. Keeping Express is a valid conclusion.
 
-Official references: [Koa middleware composition](https://koajs.com/), [NestJS concepts](https://docs.nestjs.com/), [Hapi](https://hapi.dev/), [Feathers overview](https://feathersjs.com/). Only Express is executed in the following lab.
+Official references: [Koa middleware composition](https://koajs.com/), [NestJS concepts](https://docs.nestjs.com/), [Hapi](https://hapi.dev/), [Feathers overview](https://feathersjs.com/). Only Express is executed in the following lab. For runnable alternatives, continue with [Hapi, Koa and Feathers configuration, routes and lifecycle](./16-framework-alternatives.md).
 
 
 ---
 
-### How do you install Express and separate the application from its HTTP server? {#t16-q03}
+<!-- tech-check: t16-q03; level: 1 -->
+
+### How do you install Express and separate the application from its HTTP server?
 
 *Study depth: Foundational → Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐
+
+Source mapping: [R121](./requirements.md#r121), [R155](./requirements.md#r155).
+
 
 <span class="notes-section-label">**Predict before running**</span>
 
@@ -158,7 +173,7 @@ npm init -y
 npm install --save-exact express@5.2.1
 ```
 
-This example uses Express 5.2.1, a pinned validation baseline, not a claim that it is the newest or permanently safe release. Express 5 requires Node 18 or higher; use the guide's Node 24 baseline. Keep `package.json` and `package-lock.json` together; a clean checkout uses `npm ci`. `.mjs` selects ES Modules without changing `package.json`'s module type.
+Keep `package.json` and `package-lock.json` together; a clean checkout uses `npm ci`. `.mjs` selects ES Modules without changing `package.json`'s module type.
 
 Save this as `app.mjs`:
 
@@ -267,12 +282,17 @@ Official references: [Express installation](https://expressjs.com/en/starter/ins
 
 ---
 
-### How should configuration and dependencies enter an application? {#t16-q04}
+<!-- tech-check: t16-q04; level: 1 -->
+
+### How should configuration and dependencies enter an application?
 
 *Study depth: Foundational → Intermediate*
 
-Level Up: L1\
-Tech Check level: ⭐
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐
+
+Source mapping: [R126](./requirements.md#r126).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -374,7 +394,6 @@ Official references: [Node 24 environment files](https://nodejs.org/download/rel
 - [ ] Explain the app/server distinction and diagnose a port conflict.
 - [ ] Validate configuration before resource acquisition and stop the local service cleanly.
 
-These are learner tasks. Written answers and author checks do not mark them completed. This page finishes the basic framework scope; advanced routing, middleware composition, business CRUD, persistence, authentication and optimization remain in their respective application/service groups.
 
 <span class="notes-section-label">**Mixed practice — answer before revealing the explanations**</span>
 
@@ -392,23 +411,28 @@ These are learner tasks. Written answers and author checks do not mark them comp
 
 ## References and scope
 
-Official Express documentation was checked on 2026-11-04. The executable baseline is Node.js 24.18.0 and Express 5.2.1, with npm's lockfile in a disposable lab. No framework migration or dependency update is required in your existing projects. The [Express and architecture course](../module-06-express-architecture.md) provides broader examples; these questions focus on the Foundations exam scope.
+The [Express and architecture course](../module-06-express-architecture.md) provides broader examples; these questions focus on the Foundations exam scope.
 
 ## Express applications with NestJS alongside {#application-frameworks}
 
 Express is the main implementation: an app is an ordered HTTP middleware/router handler. NestJS adds an application structure around controllers, injected providers and modules, with guards, pipes, interceptors and filters for particular lifecycle concerns. Nest is a separate framework, not the next Express version. Its default Express adapter does not make all Express assumptions portable to every Nest adapter.
 
-The application examples below use Express 5.2.1 and Node 24.18.0. They introduce a small in-memory Products API; it complements the tested quote API rather than replacing that lesson. A bounded Nest 11.1.6 companion is assembled later, with equivalent read concepts and explicit limits. Keep all experiments in a separate lab and preserve actual assignment templates.
+The application examples below use Express 5.2.1 and Node 24.18.0. They introduce a small in-memory Products API; it complements the tested quote API rather than replacing that lesson. A bounded Nest 11.1.6 companion is assembled later, with equivalent read concepts and explicit limits. Run the examples in a separate lab.
 
 
 ---
 
-### How do Express routes match methods, paths and parameters? {#t16-q05}
+<!-- tech-check: t16-q05; level: 2 -->
+
+### How do Express routes match methods, paths and parameters?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R122](./requirements.md#r122), [R167](./requirements.md#r167).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -474,12 +498,17 @@ Official references: [Express routing](https://expressjs.com/en/guide/routing/),
 
 ---
 
-### How does middleware compose request behavior without hanging or responding twice? {#t16-q06}
+<!-- tech-check: t16-q06; level: 2 -->
+
+### How does middleware compose request behavior without hanging or responding twice?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R123](./requirements.md#r123), [R168](./requirements.md#r168).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -572,12 +601,17 @@ Official references: [Express middleware](https://expressjs.com/en/guide/using-m
 
 ---
 
-### What belongs in a controller rather than a service or repository? {#t16-q07}
+<!-- tech-check: t16-q07; level: 2 -->
+
+### What belongs in a controller rather than a service or repository?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R124](./requirements.md#r124).
+
 
 <span class="notes-section-label">**Example — locate the decisions**</span>
 
@@ -679,12 +713,17 @@ Official references: [Express response API](https://expressjs.com/en/5x/api/resp
 
 ---
 
-### How do request completion, client disconnect and business completion differ? {#t16-q08}
+<!-- tech-check: t16-q08; level: 2 -->
+
+### How do request completion, client disconnect and business completion differ?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R123](./requirements.md#r123), [R131](./requirements.md#r131).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -753,12 +792,17 @@ Official references: [Node HTTP response lifecycle](https://nodejs.org/download/
 
 ---
 
-### How do CRUD endpoints and an HTML page share business rules safely? {#t16-q09}
+<!-- tech-check: t16-q09; level: 2 -->
+
+### How do CRUD endpoints and an HTML page share business rules safely?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
-Tech Check level: ⭐⭐
+Level Up: L2 — Software Engineer\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R124](./requirements.md#r124).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -916,12 +960,17 @@ Share use cases between representations, and keep validation, ownership, concurr
 
 ---
 
-### How do authentication, validation and error middleware work together? {#t16-q10}
+<!-- tech-check: t16-q10; level: 2 -->
+
+### How do authentication, validation and error middleware work together?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R125](./requirements.md#r125), [R169](./requirements.md#r169).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -1030,12 +1079,17 @@ Only a trusted verifier establishes actor context; the use case still checks per
 
 **Official references:** [Express error handling](https://expressjs.com/en/guide/error-handling/), [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), [Nest guards](https://docs.nestjs.com/guards), [Nest validation](https://docs.nestjs.com/techniques/validation), [Nest filters](https://docs.nestjs.com/exception-filters).
 
-### How do modules, services and injection keep an application reusable? {#t16-q11}
+<!-- tech-check: t16-q11; level: 2 -->
+
+### How do modules, services and injection keep an application reusable?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R129](./requirements.md#r129).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -1217,12 +1271,17 @@ Make dependency direction and lifetime explicit; framework conventions do not re
 
 ---
 
-### Which extension points and lifecycle hooks should own cross-cutting work? {#t16-q12}
+<!-- tech-check: t16-q12; level: 2 -->
+
+### Which extension points and lifecycle hooks should own cross-cutting work?
 
 *Study depth: Intermediate, with deeper framework internals optional*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R131](./requirements.md#r131).
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -1280,12 +1339,18 @@ Use framework hooks as well-placed entry points into explicit owners, not as a r
 
 ---
 
-### What must change when a framework app moves from a lab to deployment? {#t16-q13}
+<!-- tech-check: t16-q13; level: 2 -->
+
+### What must change when a framework app moves from a lab to deployment?
 
 *Study depth: Intermediate; advanced operations remain separate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R126](./requirements.md#r126), [R131](./requirements.md#r131).
+
+
 
 <span class="notes-section-label">**Predict before reading**</span>
 

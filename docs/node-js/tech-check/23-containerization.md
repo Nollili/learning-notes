@@ -6,10 +6,17 @@ outline: [2, 3]
 
 Use the [canonical Node/PostgreSQL container lab](../container-deployment-lab.md) for the runnable implementation. This chapter explains its decisions and troubleshooting in five questions. Docker commands use the Compose plugin (`docker compose`); the lab records its own tested Engine/Compose/image versions. Its previous live-container evidence is historical, not a new run from reading this page.
 
-## What are images, containers, volumes and registries? {#t23-q01}
+<!-- tech-check: t23-q01; level: 3 -->
 
-Level Up: L1\
-Tech Check level: ⭐⭐⭐
+## What are images, containers, volumes and registries?
+
+*Study depth: Foundational*
+
+Level Up: L1 — Junior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R060](./requirements.md#r060).
+
 
 <div class="notes-core-answer">
 
@@ -31,10 +38,17 @@ Draw which data survives process restart, container replacement, volume deletion
 
 ---
 
-## How do you build a small, reproducible Node image? {#t23-q02}
+<!-- tech-check: t23-q02; level: 3 -->
 
-Level Up: L3\
+## How do you build a small, reproducible Node image?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R061](./requirements.md#r061), [R103](./requirements.md#r103), [R178](./requirements.md#r178).
+
 
 <div class="notes-core-answer">
 
@@ -60,10 +74,17 @@ Build the owned canonical lab, inspect runtime UID and files, then rebuild after
 
 ---
 
-## How do Compose networking, readiness and secrets fit together? {#t23-q03}
+<!-- tech-check: t23-q03; level: 3 -->
 
-Level Up: L3\
+## How do Compose networking, readiness and secrets fit together?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
+
+Source mapping: [R061](./requirements.md#r061), [R178](./requirements.md#r178).
+
 
 <div class="notes-core-answer">
 
@@ -89,10 +110,17 @@ Use the lab's owned-copy setup, then `docker compose -p "$lab_project" config --
 
 ---
 
-## How do tags, digests and orchestration affect delivery? {#t23-q04}
+<!-- tech-check: t23-q04; level: 3 -->
 
-Level Up: L4\
-Tech Check level: ⭐⭐⭐
+## How do tags, digests and orchestration affect delivery?
+
+*Study depth: Advanced*
+
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R098](./requirements.md#r098), [R103](./requirements.md#r103).
+
 
 <div class="notes-core-answer">
 
@@ -114,10 +142,18 @@ Resolve an owned test image to its digest, inspect its platform and prepare a re
 
 ---
 
-## How do you troubleshoot a container that will not work? {#t23-q05}
+<!-- tech-check: t23-q05; level: 3 -->
 
-Level Up: L3\
-Tech Check level: ⭐⭐⭐
+## How do you troubleshoot a container that will not work?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐⭐
+
+Source mapping: [R060](./requirements.md#r060).
+
+
 
 <div class="notes-core-answer">
 
@@ -156,7 +192,7 @@ Inject three separate failures in an owned copy: wrong database hostname, wrong 
 
 ## Revision and practical checkpoint
 
-Trace source/context → layers → release digest → process identity → listener/network → dependency → shutdown → data recovery. The canonical lab remains the implementation owner. Fresh author checks and their exact limits are recorded in the [Services tracker](./progress.md#services-completion); they do not complete your exercises or establish a cloud rollout.
+Trace source/context → layers → release digest → process identity → listener/network → dependency → shutdown → data recovery. The canonical lab remains the implementation owner.
 
 ### Mixed practice
 

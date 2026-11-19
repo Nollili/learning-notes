@@ -4,7 +4,7 @@ outline: [2, 3]
 
 # Testing Node.js applications
 
-These questions build one small quote API through several test boundaries. The primary stack is Node.js 24.18.0, Jest 30.2.0, Express 5.2.1 and Supertest 7.1.4. Versions are a reproducible lab baseline, not a claim about the newest releases.
+These questions build one small quote API through several test boundaries. The primary stack is Node.js 24.18.0, Jest 30.2.0, Express 5.2.1 and Supertest 7.1.4.
 
 Create a separate scratch project. This lab uses CommonJS `.js` files so the basic Jest configuration needs no ESM loader or transform. Other chapters' `.mjs` examples remain ES Modules; follow an existing application's module/test setup instead of changing it to match this lab.
 
@@ -17,14 +17,19 @@ npm install --save-exact express@5.2.1
 npm install --save-dev --save-exact jest@30.2.0 supertest@7.1.4
 ```
 
-Keep the lockfile. Test files below live at the scratch project's root, never in an Autocode `src/tests` directory. Preserve supplied build/Jest/database settings in actual assignments. The notes repository itself has a documentation build, not these application scripts.
+Keep the lockfile. Place the test files at the scratch project’s root.
 
-### What makes a useful unit test, and which cases should it cover? {#t15-q01}
+<!-- tech-check: t15-q01; level: 2 -->
+
+### What makes a useful unit test, and which cases should it cover?
 
 *Study depth: Intermediate*
 
-Level Up: L1\
+Level Up: L1 — Junior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R020](./requirements.md#r020).
+
 
 <span class="notes-section-label">**Example — choose the important partitions first**</span>
 
@@ -129,12 +134,17 @@ Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), 
 
 ---
 
-### What does contract testing verify that ordinary unit tests can miss? {#t15-q02}
+<!-- tech-check: t15-q02; level: 2 -->
+
+### What does contract testing verify that ordinary unit tests can miss?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R052](./requirements.md#r052).
+
 
 <span class="notes-section-label">**Example — decide whether a change is compatible**</span>
 
@@ -232,12 +242,17 @@ Official references: [Pact consumer-driven contracts](https://docs.pact.io/), [J
 
 ---
 
-### How do you write an integration test with real components and isolated state? {#t15-q03}
+<!-- tech-check: t15-q03; level: 2 -->
+
+### How do you write an integration test with real components and isolated state?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
+Level Up: L3 — Senior\
 Tech Check level: ⭐⭐
+
+Source mapping: [R053](./requirements.md#r053).
+
 
 <span class="notes-section-label">**Example — name the real boundary**</span>
 
@@ -382,12 +397,17 @@ Official references: [Jest lifecycle hooks](https://jestjs.io/docs/30.0/setup-te
 
 ---
 
-### What should a backend end-to-end test exercise and clean up? {#t15-q04}
+<!-- tech-check: t15-q04; level: 2 -->
+
+### What should a backend end-to-end test exercise and clean up?
 
 *Study depth: Intermediate*
 
-Level Up: L4\
+Level Up: L4 — Lead\
 Tech Check level: ⭐⭐
+
+Source mapping: [R092](./requirements.md#r092).
+
 
 <span class="notes-section-label">**Example — follow the complete local request**</span>
 
@@ -599,12 +619,17 @@ Official references: [Jest async completion](https://jestjs.io/docs/30.0/asynchr
 
 ---
 
-### How do TDD and BDD change the way you develop and review behavior? {#t15-q05}
+<!-- tech-check: t15-q05; level: 2 -->
+
+### How do TDD and BDD change the way you develop and review behavior?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R054](./requirements.md#r054).
+
 
 <span class="notes-section-label">**Example — specify the next feature before coding it**</span>
 
@@ -690,12 +715,17 @@ Official references: [Jest behavior grouping](https://jestjs.io/docs/30.0/api#de
 
 ---
 
-### How do load and stress tests reveal behavior that functional tests miss? {#t15-q06}
+<!-- tech-check: t15-q06; level: 2 -->
+
+### How do load and stress tests reveal behavior that functional tests miss?
 
 *Study depth: introductory operations with an executable local lab*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R090](./requirements.md#r090).
+
 
 <span class="notes-section-label">**Example — define success before increasing traffic**</span>
 
@@ -836,12 +866,17 @@ Official references: [k6 test types](https://grafana.com/docs/k6/latest/testing-
 
 ---
 
-### How do you measure performance without turning timing noise into a flaky test? {#t15-q07}
+<!-- tech-check: t15-q07; level: 2 -->
+
+### How do you measure performance without turning timing noise into a flaky test?
 
 *Study depth: introductory performance reasoning and measurement*
 
-Level Up: L4\
-Tech Check level: ⭐⭐
+Level Up: L4 — Lead\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R091](./requirements.md#r091).
+
 
 <span class="notes-section-label">**Example — define what a measurement can prove**</span>
 
@@ -932,12 +967,18 @@ Official references: [Node performance hooks](https://nodejs.org/download/releas
 
 ---
 
-### How do you test an Express application without mocking away its framework behavior? {#t15-q08}
+<!-- tech-check: t15-q08; level: 2 -->
+
+### How do you test an Express application without mocking away its framework behavior?
 
 *Study depth: Intermediate*
 
-Level Up: L3\
-Tech Check level: ⭐⭐
+Level Up: L3 — Senior\
+Tech Check level: Related ⭐⭐
+
+Source mapping: [R130](./requirements.md#r130).
+
+
 
 <span class="notes-section-label">**Example — keep the right parts real**</span>
 
@@ -1111,7 +1152,6 @@ npm run coverage -- --runInBand
 
 Coverage maps statements, branches, functions and lines that executed. Inspect uncovered branches and decide which risks need more evidence. **A percentage does not prove assertions are strong**; the earlier threshold mutation and actual contract-breaking mutation are more direct evidence that particular defects can be caught. Avoid automatic snapshot updates, blanket exclusions or arbitrary universal thresholds.
 
-Autocode: preserve the supplied `test` script, normally `jest`, and all build/test settings. Run `npm run build` and `npm run test` for the actual submission; Module 4 additionally requires `npm run coverage`, normally `jest --coverage --coverageReporters=cobertura --coverageDirectory=.`. Never add or modify `src/tests`, fixtures or helpers there, or import it from production. The scratch setup above is not permission to reconfigure an assignment template. This JavaScript lab has no compile/build step; it is not an Autocode submission.
 
 <span class="notes-section-label">**Reliability and debugging**</span>
 
@@ -1150,7 +1190,7 @@ Select evidence by the risk, not by a test filename. A unit test checks a focuse
 | A supposed optimization changes outputs or is within noise | Correctness checksum, repeated samples and an honest comparison |
 | Parser/error middleware is bypassed by mocks | Real HTTP framework requests and public contract checks |
 
-<span class="notes-section-label">**Learner practice backlog — not completed by the author checks**</span>
+<span class="notes-section-label">**Learner practice**</span>
 
 - [ ] Reproduce the threshold mutant and explain why that precise test fails.
 - [ ] Break and restore the provider contract, preserving the consumer's requirements.
@@ -1182,6 +1222,6 @@ Advanced Pact deployment gates, real-browser/proxy E2E, database adapters beyond
 
 ## References and validation scope
 
-Official documentation was checked 2026-11-04. Run commands inside the standalone lab, preserve its lockfile and keep the versions/module format explicit. The [testing course](../module-04-testing.md) contains deeper Jest/assertion/timer/CI explanations. The single [progress tracker](./progress.md#testing-completion) records executed author checks, remaining learner tasks and exact continuation.
+Official documentation was checked 2026-11-04. Run commands inside the standalone lab, preserve its lockfile and keep the versions/module format explicit. The [testing course](../module-04-testing.md) contains deeper Jest/assertion/timer/CI explanations.
 
 The examples do not replace an assignment's predefined tests, demonstrate production capacity, or establish your professional readiness. They provide complete study material for the eight listed Testing topics with an executable local boundary and a separate practical backlog.

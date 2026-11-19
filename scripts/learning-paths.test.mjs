@@ -43,9 +43,10 @@ test('Tech Check totals count each under-heading completion control once', async
     const file = `docs${page}.md`
     const source = fs.readFileSync(file, 'utf8')
     const html = await markdown.renderAsync(source, { path: file })
+    assert.doesNotMatch(html, /\{#t\d+-q\d+\}/, file)
     assert.equal((html.match(/<\/h[23]>\s*<TechCheckCompletion /g) ?? []).length, pageTasks.length, file)
     for (const task of pageTasks) assert.ok(html.includes(`item-id="${task.id}"`), task.href)
-    for (const [, anchor] of source.matchAll(/^#{2,3} .+ \{#(t\d+-q\d+)\}$/gm)) {
+    for (const [, anchor] of source.matchAll(/^<!-- tech-check: (t\d+-q\d+); level: [1-5] -->$/gm)) {
       assert.ok(pageTasks.some(task => task.href === `${page}#${anchor}`), anchor)
     }
   }

@@ -10,12 +10,17 @@ Examples are standalone `.mjs` files for Node.js 24.18.0, using built-in modules
 
 ---
 
-### How does Factory Method vary construction inside a stable workflow? {#t18-q05}
+<!-- tech-check: t18-q05; level: 2 -->
+
+### How does Factory Method vary construction inside a stable workflow?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162).
+
 
 <div class="notes-core-answer">
 
@@ -99,12 +104,17 @@ A creator defines a workflow and delegates creation through an overridable metho
 
 ---
 
-### How does Abstract Factory keep a family of collaborators compatible? {#t18-q06}
+<!-- tech-check: t18-q06; level: 2 -->
+
+### How does Abstract Factory keep a family of collaborators compatible?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162).
+
 
 <div class="notes-core-answer">
 
@@ -187,12 +197,17 @@ An Abstract Factory supplies a related family of products behind agreed interfac
 
 ---
 
-### When does Builder help, and how does build avoid leaking mutable state? {#t18-q07}
+<!-- tech-check: t18-q07; level: 2 -->
+
+### When does Builder help, and how does build avoid leaking mutable state?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162).
+
 
 <div class="notes-core-answer">
 
@@ -274,12 +289,17 @@ Builder collects meaningful construction steps before producing a validated prod
 
 ---
 
-### How does Prototype create from an exemplar without confusing copying and delegation? {#t18-q08}
+<!-- tech-check: t18-q08; level: 2 -->
+
+### How does Prototype create from an exemplar without confusing copying and delegation?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162).
+
 
 <div class="notes-core-answer">
 
@@ -357,12 +377,18 @@ Prototype creates a new product from an existing exemplar through a defined clon
 
 ---
 
-### What does Singleton guarantee, and when is explicit application ownership safer? {#t18-q09}
+<!-- tech-check: t18-q09; level: 2 -->
+
+### What does Singleton guarantee, and when is explicit application ownership safer?
 
 *Study depth: Intermediate*
 
-Level Up: L2\
+Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
+
+Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162).
+
+
 
 <div class="notes-core-answer">
 
