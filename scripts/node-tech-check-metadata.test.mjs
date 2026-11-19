@@ -28,7 +28,7 @@ test('the published reference retains all source rows and four career cells', ()
   for (const row of requirements.values()) {
     assert.equal(row.proficiency.length, 4, row.id)
     assert(row.proficiency.every(cell => ['—', 'Novice', 'Intermediate', 'Advanced'].includes(cell)), row.id)
-    const levels = `${row.related ? 'Related ' : ''}${row.levels.join(', ')}`
+    const levels = row.levels.map(level => '⭐'.repeat(level)).join(', ')
     const expected = `| <span id="${row.id.toLowerCase()}"></span>${row.id} | ${[row.topic, row.requirement, row.chart, ...row.proficiency, levels].join(' | ')} |`
     assert(reference.includes(expected), row.id)
   }

@@ -57,9 +57,12 @@ test('hub sources and Senior Growth titles follow export and emoji rules', () =>
       else if (/\.(md|mjs|vue|css|js|ts|json|html|svg|txt)$/.test(entry.name)) {
         const source = fs.readFileSync(file, 'utf8')
         const isTechCheckMarkdown = file.startsWith(path.join(docs, 'node-js', 'tech-check') + path.sep) && file.endsWith('.md')
-        const sourceWithoutLevelStars = isTechCheckMarkdown
+        let sourceWithoutLevelStars = isTechCheckMarkdown
           ? source.replace(/^Tech Check level: (?:Related )?⭐{1,5}(?:, ⭐{1,5})*(?:; Related ⭐{1,5}(?:, ⭐{1,5})*)?\\?$/gmu, '')
           : source
+        if (file === path.join(docs, 'node-js/tech-check/requirements.md')) {
+          sourceWithoutLevelStars = sourceWithoutLevelStars.replace(/\| (?:Related )?⭐{1,5}(?:, ⭐{1,5})* \|$/gmu, '| |')
+        }
         assert.equal(hasEmoji(sourceWithoutLevelStars), false, `Emoji in ${file}`)
         if (file.endsWith('.md')) {
           const tokens = markdown.parse(source, { path: file })

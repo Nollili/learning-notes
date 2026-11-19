@@ -56,3 +56,4 @@ The chart summarizes the five levels and their topic groups, from JavaScript and
 - [Node.js exercises](../../practice/node-js/index.md): independent implementation tasks.
 - [JavaScript technical questions](./js-tech-check.md): language concepts to review alongside Node.js.
 - [React technical questions](./react-tech-check.md): frontend concepts for your application's interface.
+- [Sortable requirements table](./requirements.md#source-matrix): compare all 193 requirements by topic, Level Up proficiency and Tech Check level.

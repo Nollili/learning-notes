@@ -5,6 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import MermaidDiagram from '../components/MermaidDiagram.vue'
 import TechCheckCompletion from '../components/TechCheckCompletion.vue'
 import LearningPath from '../components/LearningPath.vue'
+import SortableTable from '../components/SortableTable.vue'
 import './styles.css'
 
 export default {
@@ -17,5 +18,6 @@ export default {
     app.component('TechCheckCompletion', TechCheckCompletion)
     app.component('LearningPath', LearningPath)
     app.component('LearningHub', LearningHub)
+    app.component('SortableTable', SortableTable)
   }
 }
