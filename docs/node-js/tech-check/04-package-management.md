@@ -6,6 +6,10 @@ outline: [2, 3]
 
 
 
+<span class="notes-section-label">**First pass:**</span> learn what `package.json` and the lockfile do, `npm install` versus `npm ci`, and how to run a script (questions 1, 2 and 4). Then read the stable-version examples in question 5. Configuration precedence, packaging, build artifacts and dependency investigations can wait until you have a working package. The local tarball lab is optional.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t04-q01; level: 1 -->
 
 ### What is package.json responsible for, and how do installation and runtime loading differ?
@@ -104,6 +108,26 @@ Commit and review the lockfile, and keep relevant install settings consistent be
 
 </div>
 
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Use a separate learning folder for this exercise:
+
+```sh
+mkdir npm-learning
+cd npm-learning
+npm init -y
+npm install --save-exact express@5.2.1
+npm ci
+```
+
+`npm init -y` creates a default `package.json`. `npm install` adds Express and creates a lockfile recording the installed dependency versions. The later `npm ci` removes `node_modules` and recreates it using that lockfile. It does not choose newer versions. Use `npm install` when intentionally changing dependencies and `npm ci` to reproduce the recorded installation.
+
+Keep both `package.json` and `package-lock.json`. You will use Express in the framework lesson; you do not need to understand its API yet. The optional local-package lab below teaches packaging separately.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 A dependency tree contains direct packages plus their transitive dependencies. Pinning one direct version does not freeze every descendant unless the resolved graph is retained. Conversely a lockfile does not guarantee all packages are trustworthy or all install/build effects are deterministic.
@@ -165,6 +189,7 @@ Root-project install/prepare scripts can also run under an install policy; --ign
 A locked clean installation is one reproducibility boundary; runtime, configuration, scripts and tested artifacts still need ownership.
 :::
 
+::::
 
 ---
 

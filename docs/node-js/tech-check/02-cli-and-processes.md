@@ -6,6 +6,10 @@ outline: [2, 3]
 
 JavaScript examples use Node 24, ES Modules (`.mjs`) and built-in APIs. Shell commands use POSIX syntax unless stated otherwise; adapt environment/redirection syntax for your shell. Depth labels describe study depth, not an official exam grade.
 
+<span class="notes-section-label">**First pass:**</span> study questions 1–5: running a script, environment settings, the REPL, terminal input/output and exit status. In question 5, focus on `process.exitCode` and closing work before finishing. Return to process diagnostics, subprocesses and IPC in questions 6–8 after building your first CLI.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t02-q01; level: 1 -->
 
 ### How do you run a program and distinguish Node flags from script arguments?
@@ -94,10 +98,6 @@ Tech Check level: ⭐
 Source mapping: [R024](./requirements.md#r024), [R109](./requirements.md#r109), [R142](./requirements.md#r142).
 
 
-<span class="notes-section-label">**Code question — attempt first**</span>
-
-What is wrong with `const enabled = Boolean(process.env.FEATURE_ENABLED)` when the environment contains FEATURE_ENABLED=false? Would `Number(process.env.PORT) || 3000` reliably distinguish absent, zero and malformed configuration?
-
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
@@ -107,6 +107,36 @@ Environment variables provide settings such as a port number or a feature flag. 
 **`'false'` is a nonempty string, so `Boolean('false')` is `true`.** Parse boolean settings explicitly. A `.env` file is a way to load settings, not a secure place by itself. With Node 24's `--env-file`, an existing environment value takes priority over the file. Keep secrets out of logs, command-line arguments and browser code.
 
 </div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `port.mjs`:
+
+```js
+const portText = process.env.PORT ?? '3000';
+const port = Number(portText);
+const isWholeNumber = Number.isInteger(port);
+const isInRange = port >= 1 && port <= 65535;
+
+if (portText.trim() === '' || !isWholeNumber || !isInRange) {
+  console.error('PORT must be a whole number from 1 to 65535');
+  process.exitCode = 1;
+} else {
+  console.log(`Using port ${port}`);
+}
+```
+
+Run `node port.mjs` to see the default, `3000`. In a macOS/Linux shell, try `PORT=3100 node port.mjs`, then `PORT=oops node port.mjs`. In PowerShell, set `$env:PORT = '3100'` before running the file; remove it afterward with `Remove-Item Env:PORT`.
+
+`??` supplies a default only when the setting is absent. `Number` converts the supplied string, and the named checks make the accepted range visible. This introductory parser accepts JavaScript numeric forms such as `3e3`; the stricter decimal-only parser below shows how to narrow that policy.
+
+For a boolean setting, compare the string explicitly: `process.env.FEATURE_ENABLED === 'true'`. Validate that a supplied value is either `'true'` or `'false'` if other spellings should be rejected.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+<span class="notes-section-label">**Code question — attempt first**</span>
+
+What is wrong with `const enabled = Boolean(process.env.FEATURE_ENABLED)` when the environment contains FEATURE_ENABLED=false? Would `Number(process.env.PORT) || 3000` reliably distinguish absent, zero and malformed configuration?
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -158,6 +188,7 @@ Source code should depend on validated configuration rather than read ambient en
 Parse environment strings into a validated startup contract; defaults, precedence and secret handling are explicit policy.
 :::
 
+::::
 
 ---
 

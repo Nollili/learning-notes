@@ -6,7 +6,7 @@ outline: [2, 3]
 
 Learn how Node.js works, build applications and practise explaining engineering decisions. Start with Foundations if you are new to Node.js, or choose the level that matches your next goal.
 
-Work through each level in order: read the explanations, try the examples, then build its project. Use the Completed checkbox below each question or task title to track your progress.
+Work through each level in order. In Foundations, follow each chapter’s first-pass guidance, try its starter examples and build the starter CLI before returning to deeper explanations. Later project increments extend that same application. Use the Completed checkbox below each question or task title to track your progress.
 
 The [five progressive projects](./progressive-projects.md) grow one repository from a command-line program into an operated service.
 
@@ -24,7 +24,13 @@ Each question has one Level Up career target for its question and answer: L1 Jun
 
 Understand the runtime and build command-line programs with modules, asynchronous code and core APIs.
 
+Start here if you know variables, functions, arrays and basic JavaScript control flow. Core JavaScript below reviews references, `this` and closures; it is not a complete introduction to the language.
+
+**Your first goal is a small working CLI.** Read each chapter’s first-pass guidance rather than treating every advanced question as a prerequisite. The Core answer gives the main idea; try the short example, change one input and explain the result. Expand the deeper explanation when you are ready for more detail.
+
 <LearningPath path-id="foundations" />
+
+Finish the [starter CLI milestone](./progressive-projects.md#starter-cli-milestone) before attempting event-based storage, streaming reports or shutdown drills. These later increments remain part of the full Foundations project, but are separate learning steps.
 
 ## Building Node.js Applications
 

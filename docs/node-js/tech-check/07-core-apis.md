@@ -7,6 +7,10 @@ outline: [2, 3]
 This chapter covers Console, asynchronous filesystem operations, Path and OS. Examples are standalone `.mjs` files on Node.js 24.18.0 with no external dependencies. It also covers Buffer, StringDecoder, timers and URL/URI handling; as well as streams, readline, crypto and compression.
 
 
+<span class="notes-section-label">**First pass:**</span> use console output, read/write one small file and build paths (questions 1–3). Then try the file-copy example in question 9. Look up OS facts, bytes, decoding, timers, URLs and readline as your CLI needs them. Custom streams, authentication helpers and bounded decompression are later labs; you do not need to implement them to finish the starter CLI.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t07-q01; level: 1 -->
 
 ### How should console output, diagnostics and timing be used without obscuring application behaviour?
@@ -92,6 +96,39 @@ Tech Check level: ⭐, ⭐⭐⭐⭐
 Source mapping: [R012](./requirements.md#r012), [R111](./requirements.md#r111).
 
 
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Both callback-based file APIs and `node:fs/promises` can perform asynchronous file operations. The first reports the result through callback arguments; the second returns a promise you can await inside `try/catch`. Prefer the built-in promise API for new promise-based code. **`readFile()` returns bytes as a `Buffer` unless you specify a text encoding.**
+
+**Wait for a write to finish before starting another write to the same target.** Handle failures and close any file handles you opened. By default, `writeFile()` can replace existing content. The `wx` flag creates a new file and fails if the target already exists. A completed write is not automatically a transaction or a guarantee that data will survive a system crash. Cancellation does not guarantee that nothing was written.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `small-file.mjs` in a learning folder:
+
+```js
+import { writeFile, readFile } from 'node:fs/promises';
+
+try {
+  await writeFile('study-message.txt', 'Hello from Node!', 'utf8');
+  const text = await readFile('study-message.txt', 'utf8');
+  console.log(text);
+} catch {
+  console.error('Could not write or read the message');
+  process.exitCode = 1;
+}
+```
+
+Run `node small-file.mjs`. It prints `Hello from Node!` and leaves the text file for you to inspect. **This overwrites `study-message.txt` if it already exists**, so use a learning folder. The first `await` finishes the write before the read starts. `utf8` makes the read return text. Try changing the filename to a missing subdirectory to observe an error.
+
+This is for one small local file. The deeper example compares callbacks, raw bytes and exclusive creation without overwriting existing files.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
 <span class="notes-section-label">**Example — predict bytes versus characters and exclusive creation failure**</span>
 
 Save as `files.mjs`. All mutations stay under a newly created private temporary directory owned by this invocation.
@@ -127,16 +164,6 @@ try {
 }
 ```
 
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-Both callback-based file APIs and `node:fs/promises` can perform asynchronous file operations. The first reports the result through callback arguments; the second returns a promise you can await inside `try/catch`. Prefer the built-in promise API for new promise-based code. **`readFile()` returns bytes as a `Buffer` unless you specify a text encoding.**
-
-**Wait for a write to finish before starting another write to the same target.** Handle failures and close any file handles you opened. By default, `writeFile()` can replace existing content. The `wx` flag creates a new file and fails if the target already exists. A completed write is not automatically a transaction or a guarantee that data will survive a system crash. Cancellation does not guarantee that nothing was written.
-
-</div>
-
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is café, `5 4`, EEXIST, then café. UTF-8 uses five bytes for this text, while its JavaScript string has four UTF-16 code units. The callback wrapper is justified interoperability: its promise settles only after the write callback and then read callback. An error returns before a later stage can start. The native-promise path expresses the same dependency with awaits.
@@ -168,6 +195,7 @@ AbortSignal support is best effort for supported APIs and can leave partial cont
 File API style changes composition; ordering, bytes, ownership and persistence still need explicit contracts.
 :::
 
+::::
 
 ---
 
@@ -670,6 +698,44 @@ Tech Check level: ⭐, ⭐⭐⭐⭐
 Source mapping: [R042](./requirements.md#r042), [R115](./requirements.md#r115).
 
 
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Streams process data in chunks. A Readable produces data, a Writable receives it, a Duplex does both, and a Transform changes incoming chunks into outgoing chunks. **Backpressure tells a fast producer to slow down for a slower consumer.**
+
+**When `write()` returns `false`, the chunk was accepted, but you must pause further writes.** Wait for `drain` or handle a failure. Prefer awaiting `pipeline()` when connecting streams: it helps coordinate data flow, errors, completion and cleanup.
+
+`highWaterMark` is a queue threshold, not a strict limit on total memory. Also limit chunk sizes, data expansion, active asynchronous work and other queues your application keeps.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Create a small `source.txt` file and save this beside it as `copy.mjs`:
+
+```js
+import { createReadStream, createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+
+try {
+  await pipeline(
+    createReadStream('source.txt'),
+    createWriteStream('copy.txt', { flags: 'wx' })
+  );
+  console.log('Copy finished');
+} catch {
+  console.error('Could not copy the file');
+  process.exitCode = 1;
+}
+```
+
+Run `node copy.mjs` from that folder. Open `copy.txt` and compare it with the source. Run again: `wx` makes the operation fail rather than replace an existing copy.
+
+The readable stream supplies chunks; the writable stream receives them. `pipeline` coordinates their speed and reports completion or failure. This is backpressure: the reader slows down when the writer cannot keep up. A failed copy can leave a partial destination file; reliable publication is a later step. Learn to connect existing streams before implementing custom stream classes below.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
 <span class="notes-section-label">**Example — predict output and identify who owns completion**</span>
 
 Save as `streams.mjs`. Each source is used once; these finite strings are trusted fixture data.
@@ -697,18 +763,6 @@ const destination = new Writable({
 await upperCaseTo(source, destination);
 console.log(text, destination.writableFinished);
 ```
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-Streams process data in chunks. A Readable produces data, a Writable receives it, a Duplex does both, and a Transform changes incoming chunks into outgoing chunks. **Backpressure tells a fast producer to slow down for a slower consumer.**
-
-**When `write()` returns `false`, the chunk was accepted, but you must pause further writes.** Wait for `drain` or handle a failure. Prefer awaiting `pipeline()` when connecting streams: it helps coordinate data flow, errors, completion and cleanup.
-
-`highWaterMark` is a queue threshold, not a strict limit on total memory. Also limit chunk sizes, data expansion, active asynchronous work and other queues your application keeps.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -745,6 +799,7 @@ On HTTP sockets, pipeline destruction may close the connection before a separate
 Backpressure is an end-to-end cooperation contract, not a guarantee obtained by choosing one threshold.
 :::
 
+::::
 
 ---
 

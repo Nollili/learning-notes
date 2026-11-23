@@ -175,6 +175,34 @@ node src/cli/main.mjs report --output progress.jsonl.gz
 
 The CLI uses only Node built-ins. **This lets you learn Node's APIs directly** before a framework manages some of the work.
 
+### Starter CLI milestone {#starter-cli-milestone}
+
+**Finish this small version first.** Build only `add --title "Read a file"` and `list`, storing an array of items in one small `study-items.json` file. An item needs only an ID and a nonblank title. Use `crypto.randomUUID()` for the ID.
+
+Work in three steps:
+
+1. Keep an array in memory. Write functions to add an item and return the list. Pass the title into the function; keep `process.argv` in the entry file.
+2. Connect `add` and `list` to those functions. Print results to stdout and invalid-command/title messages to stderr. Set a nonzero exit code for invalid input.
+3. Load the array with `readFile` and `JSON.parse`, then save changes with `writeFile` and `JSON.stringify`. If the file is missing (`ENOENT`), start with an empty array. Report other read errors and malformed JSON rather than overwriting them. Check that the loaded value is an array of items with string IDs and nonblank string titles.
+
+Run from one learning folder with one process at a time. This version rewrites a small file; it does not provide concurrent updates or crash-safe storage. Keep important data elsewhere while learning.
+
+Try this flow:
+
+```sh
+node src/cli/main.mjs add --title "Read a file"
+node src/cli/main.mjs list
+```
+
+Stop and check that you can:
+
+- [ ] Add an item, close the program and see it in a later `list` command.
+- [ ] Reject a blank title without changing the saved file.
+- [ ] Report malformed JSON without replacing it with an empty list.
+- [ ] Explain the import, command-line arguments, `await`, JSON conversion and error path.
+
+This is a useful first completion point. You do not yet need repository interfaces, event replay, streams, compression, checksums or signal handlers. The full increments below add those skills to the same application. When moving to JSONL, use a separate data file or deliberately migrate the starter records; an array file is not a JSONL event log. Keep a copy of the passing starter version before extending it.
+
 ### What you learn and why it belongs here
 
 | Knowledge | Use in the project | Why it matters |

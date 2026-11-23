@@ -10,6 +10,10 @@ This chapter complements the [foundations explanation](../module-01-nodejs-found
 
 For the chart’s basic Generators topic, start with [synchronous generators](#t05-q09); return to [async iteration](#t05-q08) after learning promises.
 
+<span class="notes-section-label">**First pass:**</span> work through the short callback, promise and async/await examples in questions 1–3. Then learn why a later error needs its own handler (question 4) and compare sequence with a small `Promise.all` (question 5). Custom worker pools, combinator edge cases, cancellation and async iterators are a second pass. Read the synchronous generator introduction in question 9 before async generators in question 8.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t05-q01; level: 1 -->
 
 ### What is an error-first callback contract, and why do timing and exactly-once completion matter?
@@ -21,6 +25,38 @@ Tech Check level: ⭐
 
 Source mapping: [R008](./requirements.md#r008).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+A callback is a function you pass to another function. **A callback is not necessarily asynchronous**: the receiving function may call it immediately or later. Many Node APIs use `callback(error, result)`: on success, the error is `null` and the result contains the value; on failure, the error contains an `Error`.
+
+**An operation that promises one result should call its callback exactly once.** After reporting an error, return so the success code cannot run too. Document when the callback can run. A `try/catch` around the original call cannot catch an exception thrown later in an asynchronous callback. Handle errors inside that callback, or use a suitable promise-based API.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Create a small `message.txt` containing `Hello`, then save this as `read-callback.mjs` in the same folder:
+
+```js
+import { readFile } from 'node:fs';
+
+readFile('message.txt', 'utf8', (error, text) => {
+  if (error) {
+    console.error('Could not read the file');
+    process.exitCode = 1;
+    return;
+  }
+  console.log(text);
+});
+console.log('Read requested');
+```
+
+Run `node read-callback.mjs` from that folder. `Read requested` appears before `Hello`: the callback runs after the file operation reports its result. Its first argument describes a failure; on success it is `null`. Rename the file and run again. The `return` stops the error branch from also printing a success result.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
 
 <span class="notes-section-label">**Example — predict before reading the answer**</span>
 
@@ -50,16 +86,6 @@ doubleLater(3, (error, result) => {
 doubleLater(NaN, (error) => console.log('invalid', error.name));
 console.log('scheduled');
 ```
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-A callback is a function you pass to another function. **A callback is not necessarily asynchronous**: the receiving function may call it immediately or later. Many Node APIs use `callback(error, result)`: on success, the error is `null` and the result contains the value; on failure, the error contains an `Error`.
-
-**An operation that promises one result should call its callback exactly once.** After reporting an error, return so the success code cannot run too. Document when the callback can run. A `try/catch` around the original call cannot catch an exception thrown later in an asynchronous callback. Handle errors inside that callback, or use a suitable promise-based API.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -92,6 +118,7 @@ Avoid wrapping the entire callback invocation in a catch that invokes the same c
 Specify error delivery, timing and completion count before composing a callback API.
 :::
 
+::::
 
 ---
 
@@ -106,6 +133,36 @@ Tech Check level: ⭐
 
 Source mapping: [R009](./requirements.md#r009).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+A promise represents one result that may arrive later. It starts pending, then becomes fulfilled with a value or rejected with a reason. **Every `.then()` returns a new promise.** Returning a value supplies the next result; returning a promise makes the chain wait for it; throwing makes the next promise reject.
+
+**Promise handlers run later, but a `new Promise()` executor runs immediately.** Return or await work that the caller needs to wait for, including its errors. Prefer built-in promise APIs when available. `promisify()` can adapt a compatible error-first callback API, but not an arbitrary stream of events. A promise does not create a worker thread or automatically cancel work.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `promise.mjs`:
+
+```js
+const result = Promise.resolve(3);
+
+result
+  .then(value => value * 2)
+  .then(value => console.log(value));
+
+console.log('Waiting for the result');
+```
+
+Run `node promise.mjs`. It prints `Waiting for the result`, then `6`. `Promise.resolve(3)` creates a fulfilled promise. The first handler returns `6`, which becomes the next handler's input. Both handlers run after the current synchronous code.
+
+For a real operation that can fail, attach a `.catch()` handler. The next question shows the same error handling using `try/catch` and `await`. Learn this simple chain before studying callback adaptation or promise executor timing below.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
 
 <span class="notes-section-label">**Example — predict both results**</span>
 
@@ -134,16 +191,6 @@ const next = once.then(value => { calls.push('handler'); return value * 3; });
 calls.push('sync');
 console.log('chain', await next, calls.join(','));
 ```
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-A promise represents one result that may arrive later. It starts pending, then becomes fulfilled with a value or rejected with a reason. **Every `.then()` returns a new promise.** Returning a value supplies the next result; returning a promise makes the chain wait for it; throwing makes the next promise reject.
-
-**Promise handlers run later, but a `new Promise()` executor runs immediately.** Return or await work that the caller needs to wait for, including its errors. Prefer built-in promise APIs when available. `promisify()` can adapt a compatible error-first callback API, but not an arbitrary stream of events. A promise does not create a worker thread or automatically cancel work.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -176,6 +223,7 @@ Do not use an async executor inside new Promise: the executor's returned promise
 Keep the completion chain connected; adaptation must preserve the original API's contract.
 :::
 
+::::
 
 ---
 
@@ -190,6 +238,42 @@ Tech Check level: ⭐
 
 Source mapping: [R032](./requirements.md#r032).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**An `async` function always returns a promise.** `await` pauses that function until a value or promise has an outcome, while other JavaScript work can run. If the promise rejects, `await` throws the rejection reason, which a surrounding `try/catch` can handle.
+
+**`await` does not move calculations to another thread.** Long synchronous calculations can still block other requests. Use `finally` for cleanup that must run after either success or failure. When you start opening resources yourself, the deeper example explains how to wait for both the operation and its cleanup.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Create a small `message.txt` containing `Hello` and save this beside it as `read-await.mjs`:
+
+```js
+import { readFile } from 'node:fs/promises';
+
+async function printMessage() {
+  const text = await readFile('message.txt', 'utf8');
+  console.log(text);
+}
+
+try {
+  await printMessage();
+} catch {
+  console.error('Could not read the message');
+  process.exitCode = 1;
+}
+```
+
+Run `node read-await.mjs` from that folder. `readFile` returns a promise; `await` lets the next line use its completed value. If the read fails, execution jumps to `catch`. Rename the file to see that path. Unlike the callback version, the successful steps read from top to bottom.
+
+The file API handles its internal file resource here. When your own code opens a resource explicitly, learn the `finally` cleanup pattern below.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
 
 <span class="notes-section-label">**Example — identify each observable outcome**</span>
 
@@ -226,16 +310,6 @@ try {
 }
 ```
 
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-**An `async` function always returns a promise.** `await` pauses that function until a value or promise has an outcome, while other JavaScript work can run. If the promise rejects, `await` throws the rejection reason, which a surrounding `try/catch` can handle.
-
-**`await` does not move calculations to another thread.** Long synchronous calculations can still block other requests. Use `finally` to release resources your operation opened, and await cleanup if it is asynchronous. Decide how to report a cleanup error when the main operation has also failed. Inside `try/catch/finally`, `return await` can be necessary to keep local error handling and cleanup active until the returned operation finishes.
-
-</div>
-
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The example prints `data true`, then `Could not load configuration TypeError`. Resource acquisition is before the try: if it rejects before transferring ownership, this function has no acquired resource to close. The acquire implementation must handle its own partially acquired resources.
@@ -271,6 +345,7 @@ Dependency order also remains real: await user then fetch permissions when permi
 Use await to express completion and ownership, including the error and cleanup paths.
 :::
 
+::::
 
 ---
 
@@ -383,6 +458,39 @@ Tech Check level: ⭐
 Source mapping: [R031](./requirements.md#r031).
 
 
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Run operations in sequence when each needs the previous result.** Independent I/O operations can run concurrently: several can be waiting for results during the same period. For a large collection, limit how many operations may run at once.
+
+**`Promise.all()` does not limit how much work starts.** If you start thousands of reads before passing their promises to it, those reads have already started. The pool below limits active operations, keeps results in input order and stops starting new items after it notices a failure. It waits for active operations to finish before rejecting. Choose a limit your database, filesystem or other dependency can handle; concurrent waiting does not itself mean parallel JavaScript execution.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `sequence.mjs`:
+
+```js
+async function double(value) {
+  return value * 2;
+}
+
+const first = await double(2);
+const second = await double(first);
+console.log(second);
+
+const independent = await Promise.all([double(3), double(4)]);
+console.log(independent);
+```
+
+It prints `8`, then an array containing `6` and `8`. The first two operations run in sequence because the second needs the first result. The two calls inside `Promise.all` are started before waiting for their combined result. This arithmetic example shows composition, not a speed improvement or separate CPU threads.
+
+Use `Promise.all` for a small known set of independent operations. It rejects if an input rejects, but does not cancel the others. For many inputs, limit how many operations start at once; implementing that worker pool is an optional next step below.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
 <span class="notes-section-label">**Example — predict the result and peak active count**</span>
 
 Save as `bounded.mjs`. Inputs are a finite, dense, application-owned array; mapper returns when its owned work finishes.
@@ -418,16 +526,6 @@ const output = await mapBounded([3, 1, 2], 2, async value => {
 console.log(output.join(','), peak, active);
 ```
 
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-**Run operations in sequence when each needs the previous result.** Independent I/O operations can run concurrently: several can be waiting for results during the same period. For a large collection, limit how many operations may run at once.
-
-**`Promise.all()` does not limit how much work starts.** If you start thousands of reads before passing their promises to it, those reads have already started. The pool below limits active operations, keeps results in input order and stops starting new items after it notices a failure. It waits for active operations to finish before rejecting. Choose a limit your database, filesystem or other dependency can handle; concurrent waiting does not itself mean parallel JavaScript execution.
-
-</div>
-
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `6,2,4 2 0`. Multiple workers claim indices synchronously before yielding at await, so no two workers claim the same index on this one JavaScript thread. Each stores its result at the original index, independently of completion order. The finite result array still uses O(n) memory; limiting active work does not make the entire input/output streaming or bounded in size.
@@ -457,6 +555,7 @@ Libraries such as p-limit or a job queue can provide different scheduling featur
 Control when work starts and define what happens to active work when one item fails.
 :::
 
+::::
 
 ---
 

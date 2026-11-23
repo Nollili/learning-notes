@@ -6,6 +6,10 @@ outline: [2, 3]
 
 Examples target Node 24.18.0. Keep the shown .mjs/.cjs extensions and package.json boundaries: a different module type or transpiler can change the result. All fixture packages below are local teaching files, not registry downloads. Code questions precede their answers.
 
+<span class="notes-section-label">**First pass:**</span> study questions 1–3 and the `exports` assignment distinction in question 4. Run the two-file ESM example before comparing CommonJS. Package conditions, loader bridges, asynchronous module initialization, diagnostic resolvers and cycles in questions 4–8 are second-pass material.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t03-q01; level: 1 -->
 
 ### What is built in, what is a package, and what does an import specifier select?
@@ -90,9 +94,35 @@ Node supports two module systems. **CommonJS uses `require()` and `module.export
 
 **Use `.cjs` for CommonJS and `.mjs` for ESM.** For `.js`, Node considers the nearest `package.json` and its `type`, as well as applicable syntax-detection rules. Make the intended format explicit.
 
-ESM can import CommonJS. Modern Node can also `require()` ESM when the loaded module and its dependencies do not use top-level `await`; saying that `require()` can never load ESM is outdated.
+For your first program, choose ESM and use the `.mjs` examples below. The deeper explanation covers how the two systems can work together.
 
 </div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save these two files in the same folder.
+
+`greeting.mjs`:
+
+```js
+export function greet(name) {
+  return `Hello, ${name}!`;
+}
+```
+
+`main.mjs`:
+
+```js
+import { greet } from './greeting.mjs';
+
+console.log(greet('Alice'));
+```
+
+Run `node main.mjs`. It prints `Hello, Alice!`. `export` makes the function available to another file; `import` brings it into this one. The `./` means the same folder as the importing file. Include the `.mjs` extension. Learn this ESM pattern first, then compare it with CommonJS below.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -152,6 +182,7 @@ In Node 24.18, `require('./value.mjs')` can obtain this synchronous module's nam
 Module mode is a runtime/package contract, and CJS/ESM interop must be checked against the actual graph and Node version.
 :::
 
+::::
 
 ---
 

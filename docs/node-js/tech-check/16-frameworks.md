@@ -8,6 +8,10 @@ The first four questions cover **Node.js Foundations**. The application question
 
 Use a separate learning folder for the runnable example. The initial Foundations lab has no authentication or persistence. The later catalog adds fixture authentication and an in-memory repository, with their production limitations made explicit.
 
+<span class="notes-section-label">**First pass:**</span> read the Core answers in questions 1–4, install Express and run the two-file `/hello` example in question 3. Learn one route before adding configuration and controlled shutdown. Framework comparisons are reference reading. Questions 5–13 belong to Building Node.js Applications, after Foundations.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t16-q01; level: 1 -->
 
 ### What does a web framework provide, and how do MVC, full-stack frameworks and API frameworks differ?
@@ -162,9 +166,15 @@ Tech Check level: ⭐
 Source mapping: [R121](./requirements.md#r121), [R155](./requirements.md#r155).
 
 
-<span class="notes-section-label">**Predict before running**</span>
+<div class="notes-core-answer">
 
-If a test imports `app.mjs`, should it immediately open port 3000? If a port is occupied, does constructing an Express application detect that failure?
+<p class="notes-core-answer__title">Core answer</p>
+
+Install Express as a runtime dependency because the running server needs it. **Keep creating the Express app separate from starting the server.** The app defines how requests are handled; a separate startup file creates the HTTP server, starts listening and handles shutdown.
+
+**The HTTP server manages the port and connections.** Creating an Express app does not prove that a port is available. Report startup success only after the server confirms it is listening. This separation also lets tests import the app without unexpectedly starting a server.
+
+</div>
 
 <span class="notes-section-label">**Create a separate lab folder**</span>
 
@@ -176,6 +186,49 @@ npm install --save-exact express@5.2.1
 ```
 
 Keep `package.json` and `package-lock.json` together; a clean checkout uses `npm ci`. `.mjs` selects ES Modules without changing `package.json`'s module type.
+
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Start with these two files.
+
+`first-app.mjs`:
+
+```js
+import express from 'express';
+
+export function createApp() {
+  const app = express();
+  app.get('/hello', (_request, response) => {
+    response.json({ message: 'Hello!' });
+  });
+  return app;
+}
+```
+
+`first-server.mjs`:
+
+```js
+import { createApp } from './first-app.mjs';
+
+const server = createApp().listen(3000, '127.0.0.1', () => {
+  console.log('Open http://127.0.0.1:3000/hello');
+});
+server.on('error', () => {
+  console.error('Could not start the server');
+  process.exitCode = 1;
+});
+```
+
+Run `node first-server.mjs` from your lab folder and open the printed address. You should see `{"message":"Hello!"}`. `get` matches an HTTP GET request for `/hello`; `json` sends a JSON response. `_request` is an ordinary parameter name indicating that this handler does not use it.
+
+The app file defines responses without opening a port. The server file starts listening. Stop this local exercise with Ctrl+C. It uses the default signal behavior; the optional next version adds a controlled shutdown deadline. Keep it on the loopback address shown here while learning.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+<span class="notes-section-label">**Predict before running**</span>
+
+If a test imports `app.mjs`, should it immediately open port 3000? If a port is occupied, does constructing an Express application detect that failure?
 
 Save this as `app.mjs`:
 
@@ -239,16 +292,6 @@ try {
 
 Run `node server.mjs` and request `http://127.0.0.1:3000/health` in another terminal or browser. Expect status 200 with `{"status":"ok","service":"study"}`; an unmatched path returns JSON with status 404. Stop the server with Ctrl+C.
 
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-Install Express as a runtime dependency because the running server needs it. **Keep creating the Express app separate from starting the server.** The app defines how requests are handled; a separate startup file creates the HTTP server, starts listening and handles shutdown.
-
-**The HTTP server manages the port and connections.** Creating an Express app does not prove that a port is available. Report startup success only after the server confirms it is listening. This separation also lets tests import the app without unexpectedly starting a server.
-
-</div>
-
 <span class="notes-section-label">**Detailed explanation**</span>
 
 `createApp()` returns a new middleware/router stack. It can be imported without binding a port, and separate instances can have different configuration. The server entry point composes that handler with Node HTTP, reports readiness after `listening`, and turns bind failure into a nonzero exit status.
@@ -283,6 +326,7 @@ Run two servers on the same port. Acceptance: the second exits unsuccessfully wi
 
 Official references: [Express installation](https://expressjs.com/en/starter/installing/), [Express 5 migration requirements](https://expressjs.com/en/guide/migrating-5/), [Node 24 HTTP lifecycle](https://nodejs.org/download/release/v24.18.0/docs/api/http.html#servercloseallconnections).
 
+::::
 
 ---
 

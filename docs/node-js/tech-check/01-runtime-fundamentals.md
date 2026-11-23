@@ -6,6 +6,10 @@ outline: [2, 3]
 
 Examples use Node 24 and ES Modules (`.mjs`) unless stated otherwise. Only built-in modules are needed. Depth labels describe the question's intended study depth. Try each code question before reading its answer.
 
+<span class="notes-section-label">**First pass:**</span> read the Core answer panels and try the short examples in questions 1–4. In question 3, focus on when a file read blocks other work. Leave worker internals, isolation and the longer service examples for a second reading.
+
+The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+
 <!-- tech-check: t01-q01; level: 1 -->
 
 ### What is Node.js, and what changes when JavaScript runs outside the browser?
@@ -28,6 +32,22 @@ The JavaScript language stays the same, but the available tools change. **Node h
 
 </div>
 
+<span class="notes-section-label">**Example**</span>
+
+Attempt this in a `.mjs` file on Node 24, without DOM libraries or a bundler:
+
+```js
+console.log(typeof document);
+console.log(typeof process);
+console.log(typeof Buffer);
+```
+
+Expected output is `undefined`, `object`, `function`, on separate lines. `typeof` can check a name that does not exist without throwing. Node supplies `process` and `Buffer`, but does not supply the browser’s `document`. This example runs directly in Node, without tools that add browser APIs.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 A runtime is the environment that loads and executes a program and supplies APIs beyond the language. ECMAScript defines language features such as objects, functions and promises. It does not itself define an HTTP server, filesystem access or a browser document.
@@ -48,18 +68,6 @@ In a browser you normally use JavaScript to react to user input and update a doc
 
 Cross-platform means supported Node distributions run on multiple operating systems. It does not make paths, file permissions, shell commands, signal behavior or native dependencies identical. Use portable APIs and test the deployment OS rather than concatenate a Windows or Unix path/shell command and assume universal behavior.
 
-<span class="notes-section-label">**Example**</span>
-
-Attempt this in a `.mjs` file on Node 24, without DOM libraries or a bundler:
-
-```js
-console.log(typeof document);
-console.log(typeof process);
-console.log(typeof Buffer);
-```
-
-Expected output is `undefined`, `object`, `function`, on separate lines. `typeof` safely examines an absent identifier. `process` and `Buffer` are Node facilities; their availability is not evidence that browser-page code has the same facilities. Bundlers can insert polyfills, and browser workers have different globals from pages, so this is not a universal browser-output prediction.
-
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Calling Node a programming language: the language is JavaScript; Node supplies its runtime/host.
@@ -77,6 +85,7 @@ Expected output is `undefined`, `object`, `function`, on separate lines. `typeof
 Node runs JavaScript with server/OS host facilities; V8 executes the language, and the host determines the available resources and boundaries.
 :::
 
+::::
 
 ---
 
@@ -91,6 +100,32 @@ Tech Check level: ⭐
 
 Source mapping: [R010](./requirements.md#r010), [R106](./requirements.md#r106).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Event-driven code responds to things that happen, such as a request arriving, a file read finishing or a timer becoming ready. I/O means input/output: for example, reading a file or waiting for a network response. **Nonblocking I/O lets Node handle other work while it waits.**
+
+**Adding `async` does not move a calculation to another thread.** An async function starts running immediately and keeps running until it pauses, for example at `await`. A long calculation can still delay other requests. Expensive calculations may need a worker thread or a separate process.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `waiting.mjs` and run `node waiting.mjs`:
+
+```js
+console.log('Start');
+setTimeout(() => console.log('Timer finished'), 0);
+console.log('End');
+```
+
+The output is `Start`, `End`, then `Timer finished`. Node finishes the current JavaScript before calling the timer function. The zero means the timer can become ready soon; it does not interrupt the current code.
+
+**Waiting for a timer is different from doing a calculation.** A long loop still occupies the JavaScript thread, even inside an `async` function.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -108,16 +143,6 @@ const result = calculate();
 console.log('end');
 console.log(result instanceof Promise);
 ```
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-Event-driven code responds to things that happen, such as a request arriving, a file read finishing or a timer becoming ready. I/O means input/output: for example, reading a file or waiting for a network response. **Nonblocking I/O lets Node handle other work while it waits.**
-
-**Adding `async` does not move a calculation to another thread.** An async function starts running immediately and keeps running until it pauses, for example at `await`. A long calculation can still delay other requests. Expensive calculations may need a worker thread or a separate process.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -163,6 +188,7 @@ Do not spawn one unbounded worker per hostile request.
 Nonblocking I/O permits progress while waiting; async syntax alone cannot prevent CPU work from blocking a JavaScript execution thread.
 :::
 
+::::
 
 ---
 
@@ -268,6 +294,28 @@ Core modules are built into Node. Examples include `node:fs/promises` for files,
 A command-line tool usually performs a task, prints a result and exits. **A service keeps running to accept new work**, such as HTTP requests. Both can use the same core modules. Both must check input, handle errors and close resources they open, such as files or servers. A framework can help organize the code, but you do not need one to start.
 
 </div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Create a small `message.txt` file containing `Hello from a file`. Save this code beside it as `read-message.mjs`, then run `node read-message.mjs` from that folder:
+
+```js
+import { readFile } from 'node:fs/promises';
+
+try {
+  const text = await readFile('message.txt', 'utf8');
+  console.log(text);
+} catch {
+  console.error('Could not read message.txt');
+  process.exitCode = 1;
+}
+```
+
+`readFile` is a built-in tool, so there is nothing to install. `await` waits for its result before printing it. `utf8` asks for text instead of raw bytes. Rename the text file and run again to try the error path. This example reads one small local file completely into memory.
+
+:::: details Deeper explanation and additional examples — optional on your first pass
+
+
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -381,6 +429,8 @@ The timeout settings do not interrupt synchronous CPU work and do not configure 
 ::: tip Key takeaway
 Core modules provide the building blocks; a program's interface, lifetime and owned resources determine whether it behaves as a CLI or a service.
 :::
+
+::::
 
 ## Revision {#group1-revision}
 
