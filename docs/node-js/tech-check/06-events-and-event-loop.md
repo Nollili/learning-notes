@@ -6,6 +6,10 @@ outline: [2, 3]
 
 This chapter covers event-driven contracts, EventEmitter, waiting for events and scheduling order. Standalone examples use Node.js 24.18.0, with explicit `.mjs`/`.cjs` filenames. It also covers OS event handling, libuv boundaries and measured diagnosis, completing the five supplied subtopics as study material. See the [course event-loop explanation](../module-01-nodejs-foundations.md#_8-event-loop-deep-dive) for additional context.
 
+<span class="notes-section-label">**First pass:**</span> Start with [one listener](#t06-q01) and [one event wait](#t06-q02). Register, emit, predict the output, then remove the listener. Next explain why a long synchronous handler blocks other callbacks. Return to exact microtask ordering, libuv mechanisms, utilization measurements and starvation experiments after your HTTP app works.
+
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+
 <!-- tech-check: t06-q01; level: 2 -->
 
 ### How do EventEmitter listeners, error events and subscription lifetimes work?
@@ -17,6 +21,39 @@ Tech Check level: ⭐, ⭐⭐
 
 Source mapping: [R010](./requirements.md#r010), [R034](./requirements.md#r034).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Event-driven code registers functions, called listeners, to respond when something happens. `EventEmitter` sends these notifications inside one process. **`emit()` calls listeners immediately, in registration order.** `prependListener()` can put a listener first. **`emit()` returns whether listeners existed**, not whether their work succeeded or finished.
+
+Use `once()` for a listener that should run only once. To remove a listener with `off()`, pass the same function you registered. **Emitting `'error'` without an error listener throws an exception.** Remove subscriptions when you no longer need them. An emitter does not save events for replay, deliver them to another process or make a group of changes transactional.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `first-event.mjs` and run `node first-event.mjs`:
+
+```js
+import { EventEmitter } from 'node:events';
+
+const lessons = new EventEmitter();
+lessons.on('finished', title => {
+  console.log(`Finished: ${title}`);
+});
+
+console.log('Before');
+lessons.emit('finished', 'File reads');
+console.log('After');
+```
+
+The output is `Before`, `Finished: File reads`, then `After`. `on` registers a function; `emit` calls it immediately. It does not put the listener on a background thread.
+
+Change `on` to `once` and emit the event twice: the listener should run only for the first emission. Next, give the listener a name and pass that same function to `off` when you no longer need it. Learn these steps before studying the ordering and error cases below.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
 
@@ -44,15 +81,7 @@ console.log(seen.join(','));
 console.log(jobs.listenerCount('completed'));
 ```
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-Event-driven code registers functions, called listeners, to respond when something happens. `EventEmitter` sends these notifications inside one process. **`emit()` calls listeners immediately, in registration order.** `prependListener()` can put a listener first. **`emit()` returns whether listeners existed**, not whether their work succeeded or finished.
-
-Use `once()` for a listener that should run only once. To remove a listener with `off()`, pass the same function you registered. **Emitting `'error'` without an error listener throws an exception.** Remove subscriptions when you no longer need them. An emitter does not save events for replay, deliver them to another process or make a group of changes transactional.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -89,6 +118,7 @@ Dispose only subscriptions you own; removeAllListeners can break other component
 An event contract includes delivery, payload, failure and subscription lifetime, not merely a string name.
 :::
 
+::::
 
 ---
 
@@ -103,6 +133,38 @@ Tech Check level: ⭐
 
 Source mapping: [R034](./requirements.md#r034).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**An emitter does not save past events for future listeners.** Register all the listeners you need before starting code that might emit those events. If you wait for one event before registering for the next, the second event may already be gone.
+
+`events.once()` returns a promise that resolves with an array of the event's arguments. When waiting for an ordinary event, it normally rejects if the emitter emits `'error'`. **Use an `AbortSignal` to cancel waits you no longer need and remove their listeners.** Attach rejection handling promptly to every promise; cancelling a wait does not necessarily stop the producer.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `first-wait.mjs`:
+
+```js
+import { EventEmitter, once } from 'node:events';
+
+const lessons = new EventEmitter();
+const ready = once(lessons, 'ready', {
+  signal: AbortSignal.timeout(1000)
+});
+lessons.emit('ready', 'File reads');
+const [title] = await ready;
+console.log(title);
+```
+
+Run `node first-wait.mjs`. It prints `File reads`. Register the wait before emitting: the emitter does not keep old events for later listeners. `once` returns a promise whose result is an array of event arguments. The one-second signal prevents an absent notification from leaving the wait unlimited. In this successful example the listener is removed after delivery.
+
+The deeper example adds several waits, cancellation cleanup and error handling. Use those patterns before turning a teaching wait into an application operation.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Example — register before publication**</span>
 
@@ -128,15 +190,7 @@ console.log(source.listenerCount('ready'), source.listenerCount('done'),
   source.listenerCount('error'));
 ```
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-**An emitter does not save past events for future listeners.** Register all the listeners you need before starting code that might emit those events. If you wait for one event before registering for the next, the second event may already be gone.
-
-`events.once()` returns a promise that resolves with an array of the event's arguments. When waiting for an ordinary event, it normally rejects if the emitter emits `'error'`. **Use an `AbortSignal` to cancel waits you no longer need and remove their listeners.** Attach rejection handling promptly to every promise; cancelling a wait does not necessarily stop the producer.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -171,6 +225,7 @@ For repeated notifications, events.on provides an async iterator, but queued eve
 Subscribe before publishing, attach observers promptly and cancel waits that no longer have an owner.
 :::
 
+::::
 
 ---
 

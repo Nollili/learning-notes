@@ -463,9 +463,12 @@ The [Express and architecture course](../module-06-express-architecture.md) prov
 
 ## Express applications with NestJS alongside {#application-frameworks}
 
-Express is the main implementation: an app is an ordered HTTP middleware/router handler. NestJS adds an application structure around controllers, injected providers and modules, with guards, pipes, interceptors and filters for particular lifecycle concerns. Nest is a separate framework, not the next Express version. Its default Express adapter does not make all Express assumptions portable to every Nest adapter.
+**Learn both Express and NestJS in small steps.** Start with the two Express routes in question 5, try the Nest starter below, then add middleware (question 6), controllers/services (question 7), and error handling (question 10). Return to CRUD and request-lifetime details after a basic request and HTTP test work.
 
-The application examples below use Express 5.2.1 and Node 24.18.0. They introduce a small in-memory Products API; it complements the tested quote API rather than replacing that lesson. A bounded Nest 11.1.6 companion is assembled later, with equivalent read concepts and explicit limits. Run the examples in a separate lab.
+Express shows the request/response mechanics directly. Nest groups them into controllers, providers and modules. Later questions introduce guards, pipes, filters, interceptors and lifecycle hooks alongside the relevant Express concern. The full companions remain available; you do not need to assemble every feature before your first response.
+
+The examples use Express 5.2.1, Nest 11.1.6 and Node 24.18.0 in separate lab folders. The Products API teaches framework concepts; Project 2 applies those concepts to the existing Learning Progress application. Its Project 1 contracts remain the source of truth for that homework.
+
 
 
 ---
@@ -481,6 +484,68 @@ Tech Check level: ⭐⭐
 
 Source mapping: [R122](./requirements.md#r122), [R167](./requirements.md#r167).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+An Express route matches an HTTP method and a path pattern, including any prefix where its router is mounted. Use a `Router` to group related routes. **Register specific paths before overlapping parameter routes**: for example, `/stats` before `/:id`, so `stats` is not mistaken for an ID.
+
+**A route match does not make its input valid or authorized.** Check decoded path parameters, query values and body fields separately, and verify that the caller may perform the requested action.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Start a separate `products-routing-lab` folder, run `npm init -y`, then `npm install --save-exact express@5.2.1`. Keep the generated lockfile. Save two files:
+
+`products-app.mjs`:
+
+```js
+import express from 'express';
+
+export function createProductsApp() {
+  const app = express();
+  const products = [{ id: 'p1', name: 'Book' }];
+
+  app.get('/products', (_req, res) => {
+    res.json({ items: products });
+  });
+  app.get('/products/:id', (req, res) => {
+    const product = products.find(item => item.id === req.params.id);
+    if (!product) {
+      res.status(404).json({ error: 'PRODUCT_NOT_FOUND' });
+      return;
+    }
+    res.json(product);
+  });
+  return app;
+}
+```
+
+`products-server.mjs`:
+
+```js
+import { createProductsApp } from './products-app.mjs';
+
+const server = createProductsApp().listen(3000, '127.0.0.1', () => {
+  console.log('Open http://127.0.0.1:3000/products');
+});
+server.on('error', () => {
+  console.error('Could not start the Products server');
+  process.exitCode = 1;
+});
+```
+
+Run `node products-server.mjs`. Visit `/products`, `/products/p1` and `/products/missing`: expect the list, the Book object and a 404 error. `:id` captures one path segment in `req.params.id`. Keep the app separate from listening so tests can import it. Stop the local server with Ctrl+C.
+
+This first lab serves a fixed product with no user input written to storage. The complete router below adds controllers, more methods and route-ordering cases.
+
+<span class="notes-section-label">**NestJS bridge — the same route**</span>
+
+In Nest, `@Controller('products')` supplies the prefix and `@Get(':id')` marks the method handling an item request. `@Param('id')` supplies the captured string. A method can return an object and Nest sends its JSON response. Run the small [Nest starter](#nest-starter) after these two Express routes, before the full CRUD catalogue. Both frameworks are part of the first pass.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -507,15 +572,7 @@ export function createProductRouter(controllers) {
 
 Mount it with `app.use('/products', createProductRouter(controllers))`. For a routing-only check, supply handlers that return a small fixed marker; that verifies matching without claiming CRUD or persistence. Real controllers and services follow in separate questions.
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-An Express route matches an HTTP method and a path pattern, including any prefix where its router is mounted. Use a `Router` to group related routes. **Register specific paths before overlapping parameter routes**: for example, `/stats` before `/:id`, so `stats` is not mistaken for an ID.
-
-**A route match does not make its input valid or authorized.** Check decoded path parameters, query values and body fields separately, and verify that the caller may perform the requested action.
-
-</div>
 
 <span class="notes-section-label">**Explanation and edge cases**</span>
 
@@ -545,6 +602,102 @@ Practice — learner work still required: mount marker controllers and test coll
 
 Official references: [Express routing](https://expressjs.com/en/guide/routing/), [Express 5 migration](https://expressjs.com/en/guide/migrating-5/), [Nest controllers](https://docs.nestjs.com/controllers).
 
+::::
+
+### Nest starter {#nest-starter}
+
+**Keep NestJS in your first pass.** Run the two Express routes in question 5 first, then build the same small read API here. You need only three Nest roles to begin: a controller receives a request, a provider supplies behavior/data, and a module registers them. A decorator is an annotation such as `@Get()` that gives Nest information about a class or method.
+
+Create a separate `first-nest-lab` folder. This companion uses TypeScript because Nest's decorators need compilation; the main project remains plain JavaScript. Use Node 24 and keep the lockfile.
+
+```sh
+mkdir first-nest-lab
+cd first-nest-lab
+npm init -y
+npm pkg set type=commonjs
+npm install --save-exact @nestjs/common@11.1.6 @nestjs/core@11.1.6 @nestjs/platform-express@11.1.6 reflect-metadata@0.2.2 rxjs@7.8.2
+npm install --save-dev --save-exact typescript@5.9.3 @types/node@24.10.0
+```
+
+Save as `first-nest.ts`:
+
+```ts
+import 'reflect-metadata';
+import { Controller, Get, Injectable, Module, NotFoundException, Param } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+
+@Injectable()
+class ProductsService {
+  list() {
+    return [{ id: 'p1', name: 'Book' }];
+  }
+}
+
+@Controller('products')
+class ProductsController {
+  constructor(private readonly products: ProductsService) {}
+
+  @Get()
+  list() {
+    return { items: this.products.list() };
+  }
+
+  @Get(':id')
+  get(@Param('id') id: string) {
+    const product = this.products.list().find(item => item.id === id);
+    if (!product) throw new NotFoundException();
+    return product;
+  }
+}
+
+@Module({ controllers: [ProductsController], providers: [ProductsService] })
+class AppModule {}
+
+export function createFirstNestApp() {
+  return NestFactory.create(AppModule, { logger: false });
+}
+
+if (require.main === module) {
+  void createFirstNestApp().then(async app => {
+    try {
+      await app.listen(3001, '127.0.0.1');
+      console.log('Open http://127.0.0.1:3001/products');
+    } catch (error) {
+      await app.close();
+      throw error;
+    }
+  }).catch(() => {
+    console.error('Could not start the Nest server');
+    process.exitCode = 1;
+  });
+}
+```
+
+Save as `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "outDir": "dist"
+  },
+  "include": ["first-nest.ts"]
+}
+```
+
+Add `"build": "tsc -p tsconfig.json"` and `"start": "node dist/first-nest.js"` to `package.json` scripts. Run `npm run build`, then `npm start`. Visit `/products` and `/products/p1`: both return the same successful data as Express, on port 3001. `/products/missing` returns 404; Nest's default error body differs from the Express teaching body. Stop the server with Ctrl+C.
+
+The controller asks for `ProductsService` in its constructor; Nest creates and supplies it because the module registers that provider. This is dependency injection. `@Get(':id')` and `@Param('id')` replace manual path matching and parameter access; returning an object replaces the Express `res.json(...)` call. The `require.main` check starts listening only when this compiled file is run directly, so a test can import its factory.
+
+Change the provider's product name and observe both routes. Then trace controller → provider without looking at the annotations. You do not need guards, pipes, interceptors or custom filters to understand this first request. Add them one concern at a time through the later questions; **they remain part of the Applications learning path**. The full authenticated, validated Nest companion in question 11 is the next version, not a replacement for this first exercise.
+
+Official references: [Nest controllers](https://docs.nestjs.com/controllers), [providers](https://docs.nestjs.com/providers), [modules](https://docs.nestjs.com/modules). This uses the pinned Nest 11 setup above; ordinary Node TypeScript stripping does not compile its decorator/metadata syntax.
 
 ---
 
@@ -559,6 +712,37 @@ Tech Check level: ⭐⭐
 
 Source mapping: [R123](./requirements.md#r123), [R168](./requirements.md#r168).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**Express middleware runs in registration order.** Each path through a middleware function must send or finish a response, pass control with `next()`, or report an error. If it does none of these, the request can hang.
+
+Register checks before the routes they protect and keep error middleware last. **Do not call `next()` after sending the response.** Also, `next()` does not return a promise for all later work. Writing `await next()` does not make Express wait for downstream handlers as Koa does.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+In `createProductsApp()` from the previous question, insert this middleware after creating `app` and before registering its routes:
+
+```js
+app.use((_req, res, next) => {
+  res.setHeader('X-Study-Lab', 'products');
+  next();
+});
+```
+
+Restart the server and inspect a response's headers: `X-Study-Lab` should be `products`. The middleware does its work, then `next()` lets routing continue. Temporarily remove `next()`: the request waits because this function neither continues nor sends a response. Cancel that request and restore `next()` before continuing.
+
+Next, move the middleware after the routes: a route that already sends its response does not reach it. This makes registration order visible without adding authentication or lifecycle listeners yet.
+
+<span class="notes-section-label">**NestJS bridge — middleware first, guards later**</span>
+
+A Nest app can register this same three-argument middleware with `app.use(...)` before `app.init()` or `app.listen()`. Try it in `createFirstNestApp()` from the [starter](#nest-starter) and inspect the same header. Use a guard later when deciding whether a selected handler may run; learn pipes when converting/validating its inputs, then filters when translating errors. The dedicated Nest comparisons and full companion below retain those steps.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Predict before reading**</span>
 
@@ -610,15 +794,7 @@ export function createApplication({ router, authenticate, errorHandler, observe 
 
 For routing-only tests, pass an explicit fixture authenticator that calls `next()` and a four-argument fixed 500 error handler. That is a public test boundary, not private API authentication. The real fixture credential verifier and error mapping are supplied later; this factory has no automatic allow-all default.
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-**Express middleware runs in registration order.** Each path through a middleware function must send or finish a response, pass control with `next()`, or report an error. If it does none of these, the request can hang.
-
-Register checks before the routes they protect and keep error middleware last. **Do not call `next()` after sending the response.** Also, `next()` does not return a promise for all later work. Writing `await next()` does not make Express wait for downstream handlers as Koa does.
-
-</div>
 
 <span class="notes-section-label">**Reason about ordering and ownership**</span>
 
@@ -648,6 +824,7 @@ Practice — learner work still required: record pipeline order, test a denied r
 
 Official references: [Express middleware](https://expressjs.com/en/guide/using-middleware/), [Nest request lifecycle](https://docs.nestjs.com/faq/request-lifecycle), [Nest middleware](https://docs.nestjs.com/middleware).
 
+::::
 
 ---
 

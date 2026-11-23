@@ -4,7 +4,11 @@ outline: [2, 3]
 
 # Development tools and IDE workflows
 
-Examples use Node.js 24.18.0 and npm 11. These five questions cover build/test/serve, linting, formatting, routine configuration and IDE debugging. Complete the exercise yourself after working through the example.
+Examples use Node.js 24.18.0 and npm 11. These questions cover package scripts, linting, formatting, configuration, debugging and documentation. Complete the exercise yourself after working through the example.
+
+<span class="notes-section-label">**First pass:**</span> Use your existing lab to learn [start/check commands](#t29-q01), [one lint rule](#t29-q02) and a [breakpoint](#t29-q05). Run the Nest starter's build before starting its emitted JavaScript. The larger build-artifact and quality-standard fixtures are a second reading; remote diagnosis and generated API documentation follow once local requests work.
+
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
 
 <!-- tech-check: t29-q01; level: 2 -->
 
@@ -17,6 +21,37 @@ Tech Check level: ⭐
 
 Source mapping: [R023](./requirements.md#r023), [R028](./requirements.md#r028).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Package scripts name commands for different stages. **Build produces the files to run; tests check behavior; start launches the service.** A `prestart` hook can run commands before `start`; the deeper build fixture demonstrates that sequence. The first plain-JavaScript lab runs directly without generated output.
+
+**Print a readiness message only after the server is listening.** The service then keeps running until its active resources close. Use a smoke check with a time limit to request an endpoint and confirm shutdown. A build passing or a process starting does not, by itself, prove that the service is ready for deployment or will shut down correctly.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Use the lab containing `products-server.mjs` from the [first routing example](./16-frameworks.md#t16-q05). Add these commands to its existing `package.json` scripts; keep its dependency declarations:
+
+```json
+{
+  "scripts": {
+    "start": "node products-server.mjs",
+    "check": "node --check products-app.mjs && node --check products-server.mjs"
+  }
+}
+```
+
+Run `npm run check`, then `npm start`. The syntax check finishes; the server stays running so it can receive requests. Open `/products`, then stop the server with Ctrl+C. A syntax check does not prove imports resolve or routes work: the HTTP tests in the testing lesson check behavior.
+
+**Plain JavaScript can run without a build step.** When a project compiles TypeScript or produces other generated files, its build must finish before those files are tested or started. The Nest starter has such a build; use its own scripts. In the separate Jest lab, `npm test` runs Jest. Preserve an existing task template's scripts rather than copying these scratch-lab settings into it.
+
+The deeper example deliberately introduces build output and `prestart` so you can investigate each stage separately.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Example — identify which command keeps running**</span>
 
@@ -90,15 +125,7 @@ if (!/^\d{1,5}$(?![\s\S])/.test(rawPort) || Number(rawPort) > 65535) {
 }
 ```
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-Package scripts name commands for different stages. **Build produces the files to run; tests check behavior; start launches the service.** In this example, `npm start` runs `prestart` first: the build must pass, then the tests must pass, before the server starts.
-
-**Print a readiness message only after the server is listening.** The service then keeps running until its active resources close. Use a smoke check with a time limit to request an endpoint and confirm shutdown. A build passing or a process starting does not, by itself, prove that the service is ready for deployment or will shut down correctly.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -139,6 +166,8 @@ CI should invoke the required build/test checks explicitly and promote the same 
 Keep build, test, readiness and shutdown as explicit stages with observable outcomes and an owner for the running service.
 :::
 
+::::
+
 ## Small-batch learner practice {#small-batch-learner-practice}
 
 - [ ] Recreate the linked build fixture and run npm start; capture build/test success before the ready line and GET /sum returning 5.
@@ -175,6 +204,35 @@ Linting checks selected files against configured code rules without running the 
 Try an example that should fail, then fix it and confirm it passes. **Disabling a rule changes what you check; it does not fix the code's behavior.** Ignoring a file also changes the checking policy, so make that choice deliberately.
 
 </div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Start in the same Products lab; this exercise needs no separate quality-standard project. Install a local pinned linter:
+
+```sh
+npm install --save-dev --save-exact eslint@9.39.1
+```
+
+Create `eslint.config.mjs`:
+
+```js
+export default [{
+  files: ['equality.mjs'],
+  rules: { eqeqeq: ['error', 'always'] }
+}];
+```
+
+Create `equality.mjs`:
+
+```js
+export const same = (first, second) => first == second;
+```
+
+Run `npx eslint equality.mjs`. The `eqeqeq` rule rejects `==`. For this exercise, the intended behavior is strict equality: replace it with `===` and rerun. The command should now pass. Add `"lint": "eslint equality.mjs"` to your existing scripts to run it with `npm run lint`.
+
+This first configuration checks one named file and one rule. It does not claim to check your entire application. Expand the file scope and rules deliberately after you can explain the failure and fix. The deeper lab adds those concerns, typechecking and configuration diagnostics.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Reuse one owned fixture**</span>
 
@@ -228,6 +286,8 @@ Reproduce the loose-equality failure and repair; add an unused declaration and v
 <span class="notes-section-label">**Official references**</span>
 
 [ESLint flat configuration](https://eslint.org/docs/latest/use/configure/configuration-files), [eqeqeq](https://eslint.org/docs/latest/rules/eqeqeq), [CLI and configuration diagnosis](https://eslint.org/docs/latest/use/command-line-interface). Use documentation matching your pinned version; latest documentation can include later options.
+
+::::
 
 ---
 

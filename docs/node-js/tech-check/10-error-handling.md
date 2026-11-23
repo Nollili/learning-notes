@@ -8,6 +8,10 @@ An application needs a deliberate failure contract as well as a success contract
 
 Read the examples before their explanations. Error text, paths, payloads and nested causes can contain sensitive data; the examples print only fixed diagnostic fields. The seven questions cover error categories, custom causes, async ownership, diagnosis, recovery policy, Express boundaries and database retries. A revision and separate learner checklist follow.
 
+<span class="notes-section-label">**First pass:**</span> Read [built-in errors](#t10-q01), then the short [custom error](#t10-q02). Try one success and one failure before studying cause chains. Next connect [async failures](#t10-q03) to the [Express error boundary](#t10-q06). Database transaction retries belong after the database stage; they are not required for the Project 2 file repository.
+
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+
 <!-- tech-check: t10-q01; level: 2 -->
 
 ### What does an Error object tell you, and how do you choose a built-in error type?
@@ -122,6 +126,43 @@ Tech Check level: ⭐⭐
 Source mapping: [R044](./requirements.md#r044).
 
 
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Create a custom error when callers need to recognize a specific application failure, such as a product conflict. Extend `Error`, set a clear name and give it a stable code. **When adding context to an earlier failure, keep the original error in `cause`.** This preserves useful diagnostic information.
+
+**Choose public error fields explicitly instead of sending the internal error object.** Stack traces, database details and other internal values may reveal sensitive information. A custom class or code identifies a failure; it does not automatically mean the operation can be retried, recovered or safely explained to a client in full.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Save as `first-custom-error.mjs`:
+
+```js
+class ItemNotFoundError extends Error {
+  constructor() {
+    super('Item was not found');
+    this.name = 'ItemNotFoundError';
+    this.code = 'ITEM_NOT_FOUND';
+  }
+}
+
+try {
+  throw new ItemNotFoundError();
+} catch (error) {
+  console.log(error instanceof ItemNotFoundError);
+  console.log(error.code);
+}
+```
+
+Run it with Node. It prints `true` and `ITEM_NOT_FOUND`. The class gives a meaningful application failure a recognizable identity; the stable code lets an adapter choose a response without matching message text. For Project 2, the HTTP adapter maps this case to 404.
+
+To preserve an earlier failure when adding context, use `new Error('Could not load the item', { cause: originalError })`. This creates a new error and retains the original value in `.cause`; it does not handle or retry the failure. The deeper example demonstrates that chain and chooses safe public fields separately.
+
+:::: details Deeper explanation and complete examples — second reading
+
 <span class="notes-section-label">**Example — predict the error boundary**</span>
 
 Save as `product-errors.mjs`. Both operations fail, but one has a valid “not found” result and the other cannot obtain a result at all. Which failure should preserve an underlying cause? Which information may leave the application?
@@ -183,15 +224,7 @@ for (const findById of [
 }
 ```
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-Create a custom error when callers need to recognize a specific application failure, such as a product conflict. Extend `Error`, set a clear name and give it a stable code. **When adding context to an earlier failure, keep the original error in `cause`.** This preserves useful diagnostic information.
-
-**Choose public error fields explicitly instead of sending the internal error object.** Stack traces, database details and other internal values may reveal sensitive information. A custom class or code identifies a failure; it does not automatically mean the operation can be retried, recovered or safely explained to a client in full.
-
-</div>
 
 <span class="notes-section-label">**Example answer**</span>
 
@@ -245,6 +278,7 @@ Inject a valid product, `null`, a rejected Error, a rejected `null`, and an inva
 
 Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodejs.org/download/release/v24.18.0/docs/api/errors.html#class-error), [cause accepts arbitrary values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause), [Error subclasses](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#custom_error_types).
 
+::::
 
 ---
 

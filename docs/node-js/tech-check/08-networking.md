@@ -8,6 +8,185 @@ This chapter covers node:net, IP/TCP/UDP, HTTPS and DNS on Node.js 24.18.0. Exec
 
 These local teaching clients/servers are not production deployment templates. Validation of the real-time examples used ws 8.22.1 and socket.io/socket.io-client4.8.4 installed with an isolated temporary lockfile; no repository dependencies were added. Those are tested versions, not a claim that any major-version range is permanently compatible or secure.
 
+<span class="notes-section-label">**First pass:**</span> Start with [HTTP inspection](#t08-q09), now placed first, using the Products server you already ran in the framework lesson. Then study [browser requests](#t08-q10) when adding the project UI. TCP/UDP, DNS/TLS mechanisms, real-time transports and client pooling remain later readings: they explain boundaries you will encounter, but do not block your first HTTP application.
+
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+
+<!-- tech-check: t08-q09; level: 2 -->
+
+### How do you inspect an HTTP exchange without confusing transport, status and payload failures?
+
+*Study depth: Intermediate*
+
+Level Up: L2 — Software Engineer\
+Tech Check level: ⭐⭐
+
+Source mapping: [R158](./requirements.md#r158), [R159](./requirements.md#r159).
+
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+Inspect an HTTP exchange in order: request method and URL, request headers and body, then response status, headers and body. **A working connection can still return an HTTP error.** A successful HTTP status can also carry data that is invalid for your application.
+
+**`fetch()` normally resolves even for a 404 or 500**, so check whether the status matches what the endpoint promises. Receiving headers is only one step: read the body, handle failures during that read, and check the data's expected shape and values.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Keep the [starter Products server](./16-frameworks.md#t16-q05) running in another terminal. Save as `first-request.mjs`:
+
+```js
+try {
+  const response = await fetch('http://127.0.0.1:3000/products/p1', {
+    signal: AbortSignal.timeout(2000)
+  });
+  console.log('Status:', response.status);
+  console.log('Type:', response.headers.get('content-type'));
+  console.log('Body:', await response.text());
+} catch {
+  console.error('The request or body read failed');
+  process.exitCode = 1;
+}
+```
+
+Run `node first-request.mjs`. Expect status 200, a JSON content type and the Book product. Change `p1` to `missing`: the response is 404 with an error body, but `fetch` still fulfills. Stop the server and retry: now the request rejects and reaches `catch`.
+
+**An HTTP failure status and a failed connection are different outcomes.** This client reads the complete body of a tiny fixed local response. A client for arbitrary remote content also needs a byte limit and data validation. Learn HEAD, empty bodies and additional status codes in the deeper example.
+
+:::: details Deeper explanation and complete examples — second reading
+
+<span class="notes-section-label">**Example — predict the status and body before running**</span>
+
+Save as `http-inspection.mjs` and run with Node.js 24.18.0. This self-contained fixture serves only fixed, tiny responses on loopback. Predict what changes for a missing path, a HEAD request, an unsupported method and an empty success response.
+
+```js
+import { createServer } from 'node:http';
+import { once } from 'node:events';
+
+const representation = JSON.stringify({ id: 'p1', name: 'Book' });
+const server = createServer((req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    res.writeHead(405, { Allow: 'GET, HEAD', 'Content-Length': '0' });
+    res.end();
+    return;
+  }
+  if (req.url === '/empty') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+  const found = req.url === '/products/p1';
+  const body = found ? representation : JSON.stringify({ error: 'NOT_FOUND' });
+  res.writeHead(found ? 200 : 404, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Length': Buffer.byteLength(body)
+  });
+  res.end(req.method === 'HEAD' ? undefined : body);
+});
+
+try {
+  const listening = once(server, 'listening');
+  server.listen(0, '127.0.0.1');
+  await listening;
+  const base = `http://127.0.0.1:${server.address().port}`;
+  for (const [path, method] of [
+    ['/products/p1', 'GET'], ['/missing', 'GET'],
+    ['/products/p1', 'HEAD'], ['/products/p1', 'POST'], ['/empty', 'GET']
+  ]) {
+    const response = await fetch(base + path, {
+      method, redirect: 'error', signal: AbortSignal.timeout(1000)
+    });
+    const text = await response.text();
+    console.log(JSON.stringify({
+      method, path, status: response.status, ok: response.ok,
+      contentType: response.headers.get('content-type'),
+      allow: response.headers.get('allow'), body: text
+    }));
+  }
+} finally {
+  if (server.listening) await new Promise((resolve, reject) => {
+    server.close(error => error ? reject(error) : resolve());
+    server.closeAllConnections();
+  });
+}
+```
+
+
+
+<span class="notes-section-label">**Example answer**</span>
+
+The five status codes are 200, 404, 200, 405 and 204. `ok` is true for the 200 and 204 responses, false for 404 and 405. The first two responses carry JSON text. HEAD, 405 in this fixture, and 204 have empty bodies.
+
+HEAD still advertises the JSON representation's media type and byte length. That length describes the corresponding GET content, not bytes a client should wait for in this HEAD response. The 405 includes `Allow: GET, HEAD`. **A 204 has no body to parse**; calling `json()` on empty content would fail rather than produce an empty object.
+
+<span class="notes-section-label">**Methods describe semantics, not just route names**</span>
+
+| Method | Intended use | Important boundary |
+|---|---|---|
+| GET | Retrieve a representation | Do not use it for an intended state-changing operation |
+| HEAD | Obtain GET-like response metadata without response content | Do not require a JSON body |
+| POST | Process submitted content according to the resource contract | Do not assume safe retry after an unknown outcome |
+| PUT | Create/replace the target state according to its contract | Idempotence concerns intended effect, not identical responses |
+| PATCH | Apply a partial change | The patch format and operation determine repeatability |
+| DELETE | Remove the target's association/resource according to its contract | A repeated request can return a different status |
+| OPTIONS | Describe communication options | Browser preflight is one use, not its entire meaning |
+
+A safe method has read-oriented requested semantics; incidental logging does not make it unsafe. **Idempotent means repeating the same request has the same intended server effect** as applying it once. It does not guarantee exactly-once execution or identical timestamps/statuses. POST retries generally need an application idempotency/outcome design when side effects matter.
+
+<span class="notes-section-label">**Headers and bodies have separate jobs**</span>
+
+`Content-Type` describes the representation being sent; `Accept` expresses the response formats a client can handle. Sending `Accept: application/json` does not make an HTML error page valid JSON. `Content-Length` counts bytes, not JavaScript string length. Do not invent a length for an encoded or streaming body without understanding its framing.
+
+A request can have valid JSON syntax and still fail domain validation. A response can claim a JSON media type but contain malformed JSON, or parse successfully into the wrong shape. Validate each boundary deliberately rather than treating `response.json()` as schema validation. A body is normally consumed once; retaining a small parsed value is different from repeatedly reading the stream.
+
+<span class="notes-section-label">**Status codes guide diagnosis**</span>
+
+- 200/201/204: successful response, created resource, or success without content. A creation response can identify the new resource with `Location`.
+- 3xx: redirection or conditional-request outcomes; inspect policy and headers. Not every 3xx is a redirect to follow, and a 304 is not a new JSON representation.
+- 400/401/403/404/405: malformed request, authentication challenge, refusal, missing resource, or method unsupported for this target. A 401 uses an appropriate `WWW-Authenticate` challenge; 405 supplies `Allow`.
+- 409/413/415: state conflict, oversized content, or unsupported media type/encoding contract.
+- 429/500/503: rate limit, unexpected server failure, or temporary unavailability. Consider documented retry hints and replay safety rather than retrying automatically.
+
+<span class="notes-section-label">**A repeatable inspection workflow**</span>
+
+In browser developer tools, open Network, trigger one action and select its request. Compare URL/method, request headers/payload, status, response headers and response content. Check Timing to separate waiting from body transfer. Redact cookies, authorization and sensitive payloads before sharing evidence.
+
+For the fixture, add `console.error(base)` after startup to learn its temporary address, then inspect it while paused in a debugger, or keep a separate owned server running. With a known active address, `curl -i URL` shows response headers and content; `curl -I URL` makes a HEAD request. These tools observe an exchange, not the validity of the application's business rules.
+
+If there is no response, identify DNS, connect, TLS or cancellation failure before discussing HTTP status. If a response exists, inspect its status and content before blaming JSON parsing. If content is malformed, preserve a safe bounded diagnostic sample rather than dumping credentials or a huge body into logs.
+
+<span class="notes-section-label">**Common mistakes**</span>
+
+- Catching only rejected fetch promises and treating a fulfilled 404 as success.
+- Calling `json()` unconditionally for HEAD, 204 or an HTML gateway error.
+- Reporting every failed request as a server exception; status and failure phase matter.
+- Treating idempotence as proof that every retry is cost-free or returns the same response.
+- Copying this fixed-response fixture's full `text()` read into an unbounded external client. Study the [HTTPS body/deadline lesson](#t08-q03) and add schema/media checks for real integrations.
+
+<span class="notes-section-label">**Examiner follow-ups**</span>
+
+1. <span class="notes-section-label">**Can a 200 still fail the application contract?**</span> Yes. The content may be malformed, missing fields or represent the wrong business outcome; inspect and validate it separately.
+2. <span class="notes-section-label">**Why can DELETE return 204 first and 404 later yet remain idempotent?**</span> The requested final state can be the same—no current association—even though responses differ. The endpoint must document its policy.
+3. <span class="notes-section-label">**Does abort prove a submitted write did not commit?**</span> No. Cancelling the local wait does not roll back remote effects. Reconcile uncertain outcomes before repeating writes.
+
+::: tip Key takeaway
+Debug an HTTP exchange in layers: transport, method/target, status, headers, body completion, then application meaning.
+:::
+
+<span class="notes-section-label">**Practice — learner work still required**</span>
+
+Run the fixture and retain a redacted comparison of all five responses. Then make an owned endpoint return status 200 with malformed JSON and another return an HTML error. Acceptance: distinguish HTTP failure from decoding/schema failure; explain empty HEAD/204 bodies, `Allow`, JSON media types and byte lengths; close all servers and connections. Inspect one browser exchange separately before claiming developer-tools practice.
+
+Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/specs/rfc9110.html), [HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods), [status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status), [Fetch response handling](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch), [Node 24 HTTP](https://nodejs.org/download/release/v24.18.0/docs/api/http.html).
+
+::::
+
+---
+
 <!-- tech-check: t08-q01; level: 2 -->
 
 ### How do TCP sockets differ from HTTP request handling, and how should connection lifetime be owned?
@@ -754,154 +933,6 @@ Shutdown stops admission, detaches subscriptions, gives active clients a bounded
 ::: tip Key takeaway
 Production selection includes overload, recovery and deployment evidence, not only the normal message exchange.
 :::
-
-
----
-
-<!-- tech-check: t08-q09; level: 2 -->
-
-### How do you inspect an HTTP exchange without confusing transport, status and payload failures?
-
-*Study depth: Intermediate*
-
-Level Up: L2 — Software Engineer\
-Tech Check level: ⭐⭐
-
-Source mapping: [R158](./requirements.md#r158), [R159](./requirements.md#r159).
-
-
-<span class="notes-section-label">**Example — predict the status and body before running**</span>
-
-Save as `http-inspection.mjs` and run with Node.js 24.18.0. This self-contained fixture serves only fixed, tiny responses on loopback. Predict what changes for a missing path, a HEAD request, an unsupported method and an empty success response.
-
-```js
-import { createServer } from 'node:http';
-import { once } from 'node:events';
-
-const representation = JSON.stringify({ id: 'p1', name: 'Book' });
-const server = createServer((req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    res.writeHead(405, { Allow: 'GET, HEAD', 'Content-Length': '0' });
-    res.end();
-    return;
-  }
-  if (req.url === '/empty') {
-    res.writeHead(204);
-    res.end();
-    return;
-  }
-  const found = req.url === '/products/p1';
-  const body = found ? representation : JSON.stringify({ error: 'NOT_FOUND' });
-  res.writeHead(found ? 200 : 404, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(body)
-  });
-  res.end(req.method === 'HEAD' ? undefined : body);
-});
-
-try {
-  const listening = once(server, 'listening');
-  server.listen(0, '127.0.0.1');
-  await listening;
-  const base = `http://127.0.0.1:${server.address().port}`;
-  for (const [path, method] of [
-    ['/products/p1', 'GET'], ['/missing', 'GET'],
-    ['/products/p1', 'HEAD'], ['/products/p1', 'POST'], ['/empty', 'GET']
-  ]) {
-    const response = await fetch(base + path, {
-      method, redirect: 'error', signal: AbortSignal.timeout(1000)
-    });
-    const text = await response.text();
-    console.log(JSON.stringify({
-      method, path, status: response.status, ok: response.ok,
-      contentType: response.headers.get('content-type'),
-      allow: response.headers.get('allow'), body: text
-    }));
-  }
-} finally {
-  if (server.listening) await new Promise((resolve, reject) => {
-    server.close(error => error ? reject(error) : resolve());
-    server.closeAllConnections();
-  });
-}
-```
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-Inspect an HTTP exchange in order: request method and URL, request headers and body, then response status, headers and body. **A working connection can still return an HTTP error.** A successful HTTP status can also carry data that is invalid for your application.
-
-**`fetch()` normally resolves even for a 404 or 500**, so check whether the status matches what the endpoint promises. Receiving headers is only one step: read the body, handle failures during that read, and check the data's expected shape and values.
-
-</div>
-
-<span class="notes-section-label">**Example answer**</span>
-
-The five status codes are 200, 404, 200, 405 and 204. `ok` is true for the 200 and 204 responses, false for 404 and 405. The first two responses carry JSON text. HEAD, 405 in this fixture, and 204 have empty bodies.
-
-HEAD still advertises the JSON representation's media type and byte length. That length describes the corresponding GET content, not bytes a client should wait for in this HEAD response. The 405 includes `Allow: GET, HEAD`. **A 204 has no body to parse**; calling `json()` on empty content would fail rather than produce an empty object.
-
-<span class="notes-section-label">**Methods describe semantics, not just route names**</span>
-
-| Method | Intended use | Important boundary |
-|---|---|---|
-| GET | Retrieve a representation | Do not use it for an intended state-changing operation |
-| HEAD | Obtain GET-like response metadata without response content | Do not require a JSON body |
-| POST | Process submitted content according to the resource contract | Do not assume safe retry after an unknown outcome |
-| PUT | Create/replace the target state according to its contract | Idempotence concerns intended effect, not identical responses |
-| PATCH | Apply a partial change | The patch format and operation determine repeatability |
-| DELETE | Remove the target's association/resource according to its contract | A repeated request can return a different status |
-| OPTIONS | Describe communication options | Browser preflight is one use, not its entire meaning |
-
-A safe method has read-oriented requested semantics; incidental logging does not make it unsafe. **Idempotent means repeating the same request has the same intended server effect** as applying it once. It does not guarantee exactly-once execution or identical timestamps/statuses. POST retries generally need an application idempotency/outcome design when side effects matter.
-
-<span class="notes-section-label">**Headers and bodies have separate jobs**</span>
-
-`Content-Type` describes the representation being sent; `Accept` expresses the response formats a client can handle. Sending `Accept: application/json` does not make an HTML error page valid JSON. `Content-Length` counts bytes, not JavaScript string length. Do not invent a length for an encoded or streaming body without understanding its framing.
-
-A request can have valid JSON syntax and still fail domain validation. A response can claim a JSON media type but contain malformed JSON, or parse successfully into the wrong shape. Validate each boundary deliberately rather than treating `response.json()` as schema validation. A body is normally consumed once; retaining a small parsed value is different from repeatedly reading the stream.
-
-<span class="notes-section-label">**Status codes guide diagnosis**</span>
-
-- 200/201/204: successful response, created resource, or success without content. A creation response can identify the new resource with `Location`.
-- 3xx: redirection or conditional-request outcomes; inspect policy and headers. Not every 3xx is a redirect to follow, and a 304 is not a new JSON representation.
-- 400/401/403/404/405: malformed request, authentication challenge, refusal, missing resource, or method unsupported for this target. A 401 uses an appropriate `WWW-Authenticate` challenge; 405 supplies `Allow`.
-- 409/413/415: state conflict, oversized content, or unsupported media type/encoding contract.
-- 429/500/503: rate limit, unexpected server failure, or temporary unavailability. Consider documented retry hints and replay safety rather than retrying automatically.
-
-<span class="notes-section-label">**A repeatable inspection workflow**</span>
-
-In browser developer tools, open Network, trigger one action and select its request. Compare URL/method, request headers/payload, status, response headers and response content. Check Timing to separate waiting from body transfer. Redact cookies, authorization and sensitive payloads before sharing evidence.
-
-For the fixture, add `console.error(base)` after startup to learn its temporary address, then inspect it while paused in a debugger, or keep a separate owned server running. With a known active address, `curl -i URL` shows response headers and content; `curl -I URL` makes a HEAD request. These tools observe an exchange, not the validity of the application's business rules.
-
-If there is no response, identify DNS, connect, TLS or cancellation failure before discussing HTTP status. If a response exists, inspect its status and content before blaming JSON parsing. If content is malformed, preserve a safe bounded diagnostic sample rather than dumping credentials or a huge body into logs.
-
-<span class="notes-section-label">**Common mistakes**</span>
-
-- Catching only rejected fetch promises and treating a fulfilled 404 as success.
-- Calling `json()` unconditionally for HEAD, 204 or an HTML gateway error.
-- Reporting every failed request as a server exception; status and failure phase matter.
-- Treating idempotence as proof that every retry is cost-free or returns the same response.
-- Copying this fixed-response fixture's full `text()` read into an unbounded external client. Reuse the earlier body/deadline ownership principles and add schema/media checks for real integrations.
-
-<span class="notes-section-label">**Examiner follow-ups**</span>
-
-1. <span class="notes-section-label">**Can a 200 still fail the application contract?**</span> Yes. The content may be malformed, missing fields or represent the wrong business outcome; inspect and validate it separately.
-2. <span class="notes-section-label">**Why can DELETE return 204 first and 404 later yet remain idempotent?**</span> The requested final state can be the same—no current association—even though responses differ. The endpoint must document its policy.
-3. <span class="notes-section-label">**Does abort prove a submitted write did not commit?**</span> No. Cancelling the local wait does not roll back remote effects. Reconcile uncertain outcomes before repeating writes.
-
-::: tip Key takeaway
-Debug an HTTP exchange in layers: transport, method/target, status, headers, body completion, then application meaning.
-:::
-
-<span class="notes-section-label">**Practice — learner work still required**</span>
-
-Run the fixture and retain a redacted comparison of all five responses. Then make an owned endpoint return status 200 with malformed JSON and another return an HTML error. Acceptance: distinguish HTTP failure from decoding/schema failure; explain empty HEAD/204 bodies, `Allow`, JSON media types and byte lengths; close all servers and connections. Inspect one browser exchange separately before claiming developer-tools practice.
-
-Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/specs/rfc9110.html), [HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods), [status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status), [Fetch response handling](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch), [Node 24 HTTP](https://nodejs.org/download/release/v24.18.0/docs/api/http.html).
 
 
 ---

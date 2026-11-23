@@ -36,7 +36,13 @@ Finish the [starter CLI milestone](./progressive-projects.md#starter-cli-milesto
 
 Build and test HTTP applications, handle failures and choose useful application patterns.
 
+**Begin with the finished Project 1 release**, including its [handoff contract](./progressive-projects.md#project-1-handoff-contract). Start a small Express app, then run its NestJS counterpart. Add middleware, errors and a unit/HTTP test before diving into network protocols or process supervision.
+
+NestJS remains part of this level: learn controllers, providers and modules first; add guards, pipes, filters and interceptors alongside the matching application concerns. Follow each chapter's first-pass guide rather than treating every complete lab as an opening exercise.
+
 <LearningPath path-id="applications" />
+
+Use the [first HTTP milestone](./progressive-projects.md#first-http-milestone) for an early checkpoint. Then complete the remaining Project 2 increments and release checks before starting Services.
 
 ## Designing Node.js Services
 

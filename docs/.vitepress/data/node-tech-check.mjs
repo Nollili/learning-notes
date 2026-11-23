@@ -66,21 +66,9 @@ export const nodeTechCheckPaths = [
     "description": "Build and test HTTP applications, handle failures and choose useful application patterns.",
     "items": [
       {
-        "id": "/node-js/tech-check/06-events-and-event-loop",
-        "title": "Events and the event loop",
-        "href": "/node-js/tech-check/06-events-and-event-loop",
-        "type": "Explanation"
-      },
-      {
-        "id": "/node-js/tech-check/08-networking",
-        "title": "Networking",
-        "href": "/node-js/tech-check/08-networking",
-        "type": "Explanation"
-      },
-      {
-        "id": "/node-js/tech-check/29-development-tools",
-        "title": "Development-tool workflows",
-        "href": "/node-js/tech-check/29-development-tools",
+        "id": "/node-js/tech-check/16-frameworks#application-frameworks",
+        "title": "Express and NestJS",
+        "href": "/node-js/tech-check/16-frameworks#application-frameworks",
         "type": "Explanation"
       },
       {
@@ -96,9 +84,21 @@ export const nodeTechCheckPaths = [
         "type": "Explanation"
       },
       {
-        "id": "/node-js/tech-check/16-frameworks#application-frameworks",
-        "title": "Express and NestJS",
-        "href": "/node-js/tech-check/16-frameworks#application-frameworks",
+        "id": "/node-js/tech-check/08-networking",
+        "title": "Networking",
+        "href": "/node-js/tech-check/08-networking",
+        "type": "Explanation"
+      },
+      {
+        "id": "/node-js/tech-check/29-development-tools",
+        "title": "Development-tool workflows",
+        "href": "/node-js/tech-check/29-development-tools",
+        "type": "Explanation"
+      },
+      {
+        "id": "/node-js/tech-check/06-events-and-event-loop",
+        "title": "Events and the event loop",
+        "href": "/node-js/tech-check/06-events-and-event-loop",
         "type": "Explanation"
       },
       {

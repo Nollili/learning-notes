@@ -19,6 +19,10 @@ npm install --save-dev --save-exact jest@30.2.0 supertest@7.1.4
 
 Keep the lockfile. Place the test files at the scratch project’s root.
 
+<span class="notes-section-label">**First pass:**</span> Run [one unit test](#t15-q01), then [one HTTP test](#t15-q08), now placed immediately after it. Continue with [real-component integration](#t15-q03), [contracts](#t15-q02), then [separate-process E2E](#t15-q04). TDD/BDD, load/stress and performance measurement extend that base. The small Nest app is also exercised through HTTP; keep its compilation separate from this CommonJS Jest scratch lab.
+
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+
 <!-- tech-check: t15-q01; level: 2 -->
 
 ### What makes a useful unit test, and which cases should it cover?
@@ -30,6 +34,45 @@ Tech Check level: ⭐⭐
 
 Source mapping: [R020](./requirements.md#r020).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+A useful unit test checks one coherent behavior in isolation. **Assert what a caller can observe**, such as the returned value, an error or an important effect. Avoid tying the test to private implementation steps unless those steps are part of the requirement.
+
+**Cover normal inputs, boundary values, invalid inputs and relevant dependency failures.** Work out the expected result independently of the code under test; copying its calculation can copy its bug too. Control randomness, time and other changing inputs. Use the smallest test scope that can reliably detect the problem.
+
+</div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+Use the scratch-project setup above. Begin with one small calculation, before adding custom errors or repositories.
+
+`first-price.js`:
+
+```js
+function subtotal(unitPriceCents, quantity) {
+  return unitPriceCents * quantity;
+}
+module.exports = { subtotal };
+```
+
+`first-price.test.js`:
+
+```js
+const { subtotal } = require('./first-price');
+
+test('two 500-cent products cost 1000 cents', () => {
+  expect(subtotal(500, 2)).toBe(1000);
+});
+```
+
+Run `npm test -- --runInBand first-price.test.js`. `test` names a behavior; `expect` checks the result; `toBe` compares the number with your expected value. Change `*` to `+`: this test must fail. Restore it before continuing.
+
+This tiny function assumes validated positive integer inputs; it is not yet the full pricing rule. Next, work through the shipping-threshold example below: test just below, exactly at and just above 5,000 cents, then add invalid inputs. Learn ordinary `test` first, then use `test.each` to avoid repeating the same test structure.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Example — choose the important partitions first**</span>
 
@@ -94,15 +137,7 @@ test.each([0, -1, 1.5, '500', Infinity])('rejects catalog price %p', price => {
 
 Run `npm test -- --runInBand pricing.test.js`. The three threshold neighbors should pass; changing `>= 5000` to `> 5000` should make the exact-boundary test fail.
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-A useful unit test checks one coherent behavior in isolation. **Assert what a caller can observe**, such as the returned value, an error or an important effect. Avoid tying the test to private implementation steps unless those steps are part of the requirement.
-
-**Cover normal inputs, boundary values, invalid inputs and relevant dependency failures.** Work out the expected result independently of the code under test; copying its calculation can copy its bug too. Control randomness, time and other changing inputs. Use the smallest test scope that can reliably detect the problem.
-
-</div>
 
 <span class="notes-section-label">**Why these assertions matter**</span>
 
@@ -133,118 +168,295 @@ Practice — learner work still required: explain the threshold partitions, run 
 
 Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), [matchers](https://jestjs.io/docs/30.0/using-matchers), [mock functions](https://jestjs.io/docs/30.0/mock-functions).
 
+::::
 
 ---
 
-<!-- tech-check: t15-q02; level: 2 -->
+<!-- tech-check: t15-q08; level: 2 -->
 
-### What does contract testing verify that ordinary unit tests can miss?
+### How do you test an Express application without mocking away its framework behavior?
 
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
 Tech Check level: ⭐⭐
 
-Source mapping: [R052](./requirements.md#r052).
+Source mapping: [R130](./requirements.md#r130).
 
 
-<span class="notes-section-label">**Example — decide whether a change is compatible**</span>
-
-A quote consumer expects integer cent fields. The provider changes `totalCents: 1500` to `totalCents: "15.00"`, or nests the fields under `data`. Its own unit tests still pass. What evidence catches the consumer/provider disagreement?
-
-`quote-contract.js` — a small consumer-side runtime reader:
-
-```js
-// file: quote-contract.js
-function readQuote(body) {
-  const fields = ['subtotalCents', 'shippingCents', 'totalCents'];
-  if (!body || typeof body !== 'object' || Array.isArray(body) ||
-      fields.some(key => !Number.isSafeInteger(body[key]) || body[key] < 0) ||
-      !Number.isSafeInteger(body.subtotalCents + body.shippingCents) ||
-      body.totalCents !== body.subtotalCents + body.shippingCents) {
-    throw new TypeError('Incompatible quote response');
-  }
-  return Object.fromEntries(fields.map(key => [key, body[key]]));
-}
-module.exports = { readQuote };
-```
-
-<span class="notes-section-label">**`contract.test.js`**</span>
-
-```js
-// file: contract.test.js
-const { readQuote } = require('./quote-contract');
-const expected = { subtotalCents: 1000, shippingCents: 500, totalCents: 1500 };
-
-test('accepts the consumer contract and ignores additive metadata', () => {
-  expect(readQuote({ ...expected, version: 'v1' })).toEqual(expected);
-});
-test.each([
-  { ...expected, totalCents: '15.00' },
-  { data: expected },
-  { ...expected, totalCents: 1000 },
-  { ...expected, shippingCents: -1 },
-  null
-])('rejects incompatible response %p', body => {
-  expect(() => readQuote(body)).toThrow(TypeError);
-});
-```
-
-Run `npm test -- --runInBand contract.test.js`. All six cases should pass because incompatible representations are deliberately rejected. These checks exercise the reader, not a deployed provider; the later framework/provider tests pass a real HTTP response through this same reader.
 
 <div class="notes-core-answer">
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A contract test checks the agreement between two parts of a system. For an HTTP API, this includes input and output shapes, types, status codes, content types and required behavior.
+**Send requests through the real Express request-handling chain** when testing routes, middleware, parsing or error responses. Check status, headers, public response data and important side effects. Replace a service or dependency with a test double only where you clearly define that boundary.
 
-**Consumer-driven contract testing records what the client needs and checks the provider against it.** This catches cases where each side passes its own unit tests but they disagree when used together. **A shared fake does not prove the real client and provider agree.** The test must verify the relevant agreement against the real participant it claims to check.
+Export the app separately from starting its server, use isolated fixtures, await each request and close any servers you create. **Also keep a smaller suite with real application components connected together.** It can catch setup mistakes or changes in dependency behavior that mocked tests miss.
 
 </div>
 
-<span class="notes-section-label">**Define the agreement before choosing tooling**</span>
+<span class="notes-section-label">**Start here — one working example**</span>
 
-| Contract element | This lab's expectation |
-|---|---|
-| Request | POST `/quotes`, JSON product ID and quantity |
-| Success | Status 200, JSON media type, the three integer-cent fields |
-| Data semantics | Nonnegative safe integers; total equals subtotal plus shipping |
-| Errors | Known statuses and a stable error code; no private diagnostic data |
-| Compatibility | Additional benign metadata is tolerated; missing/renamed/retargeted fields are breaking |
+After the first unit test, add a small HTTP test in the same CommonJS scratch lab. These files are independent of the larger quote API, so you do not need its service, repository or contract checker yet.
 
-The reader checks structural and arithmetic agreement, not every pricing rule. The threshold rule belongs to the pricing tests. Tolerating additive fields is a consumer compatibility choice, **not permission for the provider to expose secrets**; the provider still needs an explicit public-field projection test.
+`first-http-app.js`:
 
-For a repository contract, run the same behavioral suite against a fake and the real adapter: absence semantics, supported queries and failure behavior must match. A fake that returns `undefined` while production returns `null` can invalidate service tests. This lab's real file adapter is introduced next.
+```js
+const express = require('express');
+const { subtotal } = require('./first-price');
 
-<span class="notes-section-label">**Consumer-driven workflows**</span>
+function createFirstApp() {
+  const app = express();
+  app.get('/quote', (_req, res) => {
+    res.json({ subtotalCents: subtotal(500, 2) });
+  });
+  return app;
+}
+module.exports = { createFirstApp };
+```
 
-Tools such as Pact can record consumer interactions and verify them against the provider, tracking versions and deployment compatibility. The useful workflow is consumer expectation → published/versioned contract → provider verification → deployment decision. A green consumer test against a mock alone is only the first step.
+`first-http.test.js`:
 
-Schema checks do not automatically prove authorization, state transitions, transaction isolation or the intended production deployment. Add semantic examples where types alone are insufficient. Coordinate breaking changes with versioning or an expand/migrate/retire process rather than updating both sides' fixtures silently.
+```js
+const request = require('supertest');
+const { createFirstApp } = require('./first-http-app');
 
-<span class="notes-section-label">**Common mistakes**</span>
+test('GET /quote returns the calculated subtotal', async () => {
+  const response = await request(createFirstApp())
+    .get('/quote')
+    .timeout({ response: 1000, deadline: 2000 });
 
-- Calling a hard-coded sample a verified provider contract.
-- Updating expected payloads to match a break without consulting consumers.
-- Requiring exact equality for every optional metadata field while overlooking a required field's changed units.
-- Treating a schema as a substitute for integration or critical E2E behavior.
+  expect(response.status).toBe(200);
+  expect(response.headers['content-type']).toMatch(/json/);
+  expect(response.body).toEqual({ subtotalCents: 1000 });
+});
+```
+
+Run `npm test -- --runInBand first-http.test.js`. Supertest manages a temporary listener for the app; the awaited request observes its response and completion. The test uses real Express routing and JSON output. No `listen()` call belongs in the imported app file. Change the route or response field and confirm the test catches it.
+
+For NestJS, the same three assertions still matter. Build an app with `createFirstNestApp()` from the [Nest starter](./16-frameworks.md#nest-starter), call `await app.init()`, send the request with `request(app.getHttpServer())`, and close it in `finally` with `await app.close()`. Keep the companion's compilation setup; the CommonJS JavaScript Jest lab does not compile TypeScript decorators automatically.
+
+<span class="notes-section-label">**NestJS HTTP check — run the companion too**</span>
+
+In the `first-nest-lab` folder, install `supertest@7.1.4` as a development dependency and save `nest-http-check.cjs`:
+
+```js
+const assert = require('node:assert/strict');
+const request = require('supertest');
+const { createFirstNestApp } = require('./dist/first-nest.js');
+
+async function check() {
+  const app = await createFirstNestApp();
+  try {
+    await app.init();
+    const response = await request(app.getHttpServer())
+      .get('/products')
+      .timeout({ response: 1000, deadline: 2000 });
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.body, { items: [{ id: 'p1', name: 'Book' }] });
+  } finally {
+    await app.close();
+  }
+}
+check().catch(() => { console.error('Nest HTTP check failed'); process.exitCode = 1; });
+```
+
+Run `npm run build`, then `node nest-http-check.cjs`. Success exits quietly; a wrong status or body fails with a nonzero exit code. The `finally` closes the Nest application even when an assertion fails. Change the expected product name temporarily to prove that check can fail, then restore it.
+
+After these first tests, follow the integration, contract and process-level E2E lessons. Before entering those full quote labs, expand the original unit-pricing example to create `pricing.js` and its boundary tests. The larger suite below depends on the later quote files (`pricing.js`, `service.js`, `catalog.js`, `app.js` and `quote-contract.js`); return to it after assembling those files.
+
+:::: details Deeper explanation and complete examples — second reading
+
+<span class="notes-section-label">**Example — keep the right parts real**</span>
+
+A mock `res.json()` can prove your handler called a function but cannot prove real routing, parser limits, status/media headers or Express 5 rejection forwarding. Use the real app through HTTP for those boundaries. Inject a controlled service only when the test intentionally isolates HTTP behavior; use the real service/catalog for provider verification.
+
+<span class="notes-section-label">**`framework.test.js`**</span>
+
+```js
+// file: framework.test.js
+const request = require('supertest');
+const { createServer } = require('node:http');
+const { EventEmitter, once } = require('node:events');
+const { mkdtemp, writeFile, rm } = require('node:fs/promises');
+const { tmpdir } = require('node:os');
+const { join } = require('node:path');
+const { createApp } = require('./app');
+const { createQuoteService } = require('./service');
+const { createFileCatalog } = require('./catalog');
+const { readQuote } = require('./quote-contract');
+const quote = { subtotalCents: 1000, shippingCents: 500, totalCents: 1500 };
+const input = { id: 'p1', quantity: 2 };
+let directory, file;
+beforeEach(async () => {
+  directory = await mkdtemp(join(tmpdir(), 'quote-framework-'));
+  file = join(directory, 'catalog.json');
+  await writeFile(file, JSON.stringify([
+    { id: 'p1', unitPriceCents: 500, internalNote: 'PRIVATE_SENTINEL' }
+  ]));
+});
+afterEach(async () => {
+  if (directory) await rm(directory, { recursive: true, force: true });
+});
+function realApp() { return createApp(createQuoteService(createFileCatalog(file))); }
+async function withApp(app, exercise) {
+  const server = createServer(app);
+  try {
+    const listening = once(server, 'listening');
+    server.listen(0, '127.0.0.1');
+    await listening;
+    const client = request(server);
+    return await exercise({
+      get: path => client.get(path).timeout({ response: 1500, deadline: 2500 }),
+      post: path => client.post(path).timeout({ response: 1500, deadline: 2500 })
+    });
+  } finally {
+    if (server.listening) await new Promise((resolve, reject) => {
+      server.close(error => error ? reject(error) : resolve());
+      server.closeAllConnections();
+    });
+  }
+}
+test('real provider satisfies the consumer contract without private fields', async () => {
+  await withApp(realApp(), async client => {
+    const response = await client.post('/quotes').send(input)
+      .expect('Content-Type', /json/).expect(200);
+    expect(readQuote(response.body)).toEqual(quote);
+    expect(response.body).toEqual(quote);
+    expect(JSON.stringify(response.body)).not.toContain('PRIVATE_SENTINEL');
+  });
+});
+test('rejects extra input fields before invoking the service', async () => {
+  const service = { quote: jest.fn().mockResolvedValue(quote) };
+  await withApp(createApp(service), async client => {
+    const response = await client.post('/quotes').send({ ...input, role: 'admin' }).expect(400);
+    expect(response.body.error.code).toBe('INVALID_BODY');
+    expect(service.quote).not.toHaveBeenCalled();
+  });
+});
+test('real parser rejects malformed JSON', async () => {
+  await withApp(realApp(), async client => {
+    const response = await client.post('/quotes').set('Content-Type', 'application/json')
+      .send('{').expect(400);
+    expect(response.body).toEqual({ error: { code: 'MALFORMED_JSON' } });
+  });
+});
+test('real parser enforces the byte limit before route validation', async () => {
+  await withApp(realApp(), async client => {
+    const response = await client.post('/quotes').send({ ...input, extra: 'x'.repeat(1500) })
+      .expect(413);
+    expect(response.body.error.code).toBe('BODY_TOO_LARGE');
+  });
+});
+test('media, missing product, invalid quantity and unknown route keep distinct responses', async () => {
+  await withApp(realApp(), async client => {
+    await client.post('/quotes').type('text').send('text').expect(415);
+    const missing = await client.post('/quotes').send({ id: 'missing', quantity: 1 }).expect(404);
+    expect(missing.body.error.code).toBe('PRODUCT_NOT_FOUND');
+    const invalid = await client.post('/quotes').send({ ...input, quantity: 0 }).expect(400);
+    expect(invalid.body.error.code).toBe('INVALID_QUANTITY');
+    const route = await client.get('/missing').expect(404);
+    expect(route.body.error.code).toBe('ROUTE_NOT_FOUND');
+  });
+});
+test('rejected service work produces a safe500 and releases admission for the next call', async () => {
+  const service = { quote: jest.fn().mockRejectedValueOnce(new Error('PRIVATE_SENTINEL'))
+    .mockResolvedValue(quote) };
+  await withApp(createApp(service, { maxActive: 1 }), async client => {
+    const failed = await client.post('/quotes').send(input).expect(500);
+    expect(failed.body).toEqual({ error: { code: 'INTERNAL_ERROR' } });
+    expect(JSON.stringify(failed.body)).not.toContain('PRIVATE_SENTINEL');
+    await client.post('/quotes').send(input).expect(200);
+  });
+});
+test('rejects overload while work is held and recovers when that work settles', async () => {
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const events = new EventEmitter();
+  const service = { quote: jest.fn(async () => {
+    events.emit('entered');
+    await gate;
+    return quote;
+  }) };
+  await withApp(createApp(service, { maxActive: 1 }), async client => {
+    const entered = once(events, 'entered', { signal: AbortSignal.timeout(1500) });
+    const pending = client.post('/quotes').send(input).then(response => response);
+    pending.catch(() => {});
+    try {
+      await entered;
+      const rejected = await client.post('/quotes').send(input).expect(503);
+      expect(rejected.body).toEqual({ error: { code: 'BUSY' } });
+      expect(service.quote).toHaveBeenCalledTimes(1);
+      release();
+      expect((await pending).status).toBe(200);
+      await client.post('/quotes').send(input).expect(200);
+      expect(service.quote).toHaveBeenCalledTimes(2);
+    } finally {
+      release();
+      await Promise.allSettled([pending]);
+    }
+  });
+});
+```
+
+Run `npm test -- --runInBand framework.test.js`. Each HTTP request has a response/overall deadline; a Jest test timeout alone would not cancel a pending request. The overload test waits for a service-entry event, not an arbitrary sleep. It always releases its gate and observes the pending request, so an assertion failure does not intentionally leave held work behind. The recovery call proves that the admission count returns to its usable state.
+
+
+
+<span class="notes-section-label">**Choose the test boundary deliberately**</span>
+
+The real-provider test verifies the consumer reader against the actual HTTP representation and checks exact safe public fields. The injected rejection test isolates Express promise forwarding and the public error boundary; it is not a database outage test. The gate is a deterministic scheduling device, not a simulated throughput benchmark.
+
+For a NestJS or another framework, use its supported composition/testing utilities and replace declared providers deliberately. A compiled testing module with every adapter mocked still does not prove the real database or HTTP deployment. Keep one coherent primary framework here; alternatives are not separate mastery requirements.
+
+<span class="notes-section-label">**Coverage and required project checks**</span>
+
+In this scratch lab, add `jest.config.cjs` to describe which application/consumer sources coverage should include:
+
+```js
+// file: jest.config.cjs
+module.exports = {
+  testEnvironment: 'node',
+  collectCoverageFrom: [
+    'pricing.js', 'service.js', 'catalog.js', 'app.js', 'credit.js', 'quote-contract.js'
+  ]
+};
+```
+
+Startup glue, the benchmark and load driver are deliberately outside this listed-source report; they have separate executable checks. Do not present the resulting percentage as coverage of every file or every deployed process. Child-process execution is not automatically instrumented by the parent's Jest report.
+
+```bash
+npm test -- --runInBand
+npm pkg set 'scripts.coverage=jest --coverage --coverageReporters=cobertura --coverageDirectory=.'
+npm run coverage -- --runInBand
+```
+
+Coverage maps statements, branches, functions and lines that executed. Inspect uncovered branches and decide which risks need more evidence. **A percentage does not prove assertions are strong**; the earlier threshold mutation and actual contract-breaking mutation are more direct evidence that particular defects can be caught. Avoid automatic snapshot updates, blanket exclusions or arbitrary universal thresholds.
+
+
+<span class="notes-section-label">**Reliability and debugging**</span>
+
+A false green can come from missing `await`, an assertion that never ran, stale mocks, an unreviewed snapshot or a test that bypasses real validation. Restore spies after replacement; clearing call history does not restore the original method. If testing an owned timer, scope fake timers narrowly, advance the appropriate timers/microtasks and restore real timers. Do not fake the clock around real network tests by default.
+
+When a suite hangs, inspect listeners, child processes, pools, watchers and timers. Use `--detectOpenHandles` as a diagnostic, not `--forceExit` as a fix. If a test fails only in the full suite or parallel execution, investigate shared paths/ports, environment and mock state. Fresh directories and ephemeral ports remove common collisions; tests should still pass alone and together.
+
+Common mistakes: mocking `req`/`res` and claiming full HTTP coverage; accepting status alone; letting injected fakes drift from real contracts; treating failed shutdown as success; using coverage to claim professional readiness.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
-1. <span class="notes-section-label">**Is this reader a complete contract-testing platform?**</span> No. It is an executable local boundary agreement; publication/version gates and consumer/provider deployments are not implemented.
-2. <span class="notes-section-label">**Can a shape-correct total still be wrong?**</span> Yes. Semantic examples and business tests are still needed.
-3. <span class="notes-section-label">**Why allow unknown benign fields?**</span> It permits additive evolution when the consumer does not depend on those fields. Provider disclosure rules remain separate.
+1. <span class="notes-section-label">**Does passing an app to Supertest avoid all sockets?**</span> Not generally; it can manage a temporary listener. This lab explicitly binds its owned server to loopback.
+2. <span class="notes-section-label">**Why test recovery after rejection?**</span> A leaked admission slot may hide until the next request; the public follow-up reveals that lifecycle defect.
+3. <span class="notes-section-label">**Does a safe body prove safe logging?**</span> No. Internal/default logging and public projection are separate policies and need their own evidence.
 
 ::: tip Key takeaway
-Verify both sides of a boundary agreement; a convenient mock is not evidence that the provider satisfies its consumers.
+Use the real framework for framework claims, a real composition for integration claims, and an explicit lifecycle owner for every resource.
 :::
 
-Practice — learner work still required: change the provider's total to a string and identify the failing contract. Acceptance: retain the consumer reader, later exercise it against the actual HTTP response, and explain which changes require consumer coordination.
+Practice — learner work still required: run the suite and introduce a provider change that makes the numeric total a string. Acceptance: the actual-provider contract test fails for that break; restoring the contract passes. Exercise overload and recovery, inspect the coverage report without changing its source list, and explain all untested deployment/infrastructure boundaries.
 
-Official references: [Pact consumer-driven contracts](https://docs.pact.io/), [Jest assertions](https://jestjs.io/docs/30.0/expect).
+Official references: [Supertest](https://github.com/forwardemail/supertest), [Express error ownership](https://expressjs.com/en/guide/error-handling/), [Jest coverage configuration](https://jestjs.io/docs/30.0/configuration), [Jest timer controls](https://jestjs.io/docs/30.0/timer-mocks).
 
-
----
+::::
 
 <!-- tech-check: t15-q03; level: 2 -->
 
@@ -399,6 +611,116 @@ State what is real, isolate its data, and verify the interaction you would other
 Practice — learner work still required: introduce a catalog-format mismatch and observe the integration fail. Acceptance: fresh fixtures pass independently, malformed/missing data remains a failure, and no directory survives cleanup. Repeat the equivalent contract against your actual database adapter before claiming database integration coverage.
 
 Official references: [Jest lifecycle hooks](https://jestjs.io/docs/30.0/setup-teardown), [Node filesystem APIs](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [node-postgres transaction ownership](https://node-postgres.com/features/transactions).
+
+
+---
+
+<!-- tech-check: t15-q02; level: 2 -->
+
+### What does contract testing verify that ordinary unit tests can miss?
+
+*Study depth: Intermediate*
+
+Level Up: L3 — Senior\
+Tech Check level: ⭐⭐
+
+Source mapping: [R052](./requirements.md#r052).
+
+
+<span class="notes-section-label">**Example — decide whether a change is compatible**</span>
+
+A quote consumer expects integer cent fields. The provider changes `totalCents: 1500` to `totalCents: "15.00"`, or nests the fields under `data`. Its own unit tests still pass. What evidence catches the consumer/provider disagreement?
+
+`quote-contract.js` — a small consumer-side runtime reader:
+
+```js
+// file: quote-contract.js
+function readQuote(body) {
+  const fields = ['subtotalCents', 'shippingCents', 'totalCents'];
+  if (!body || typeof body !== 'object' || Array.isArray(body) ||
+      fields.some(key => !Number.isSafeInteger(body[key]) || body[key] < 0) ||
+      !Number.isSafeInteger(body.subtotalCents + body.shippingCents) ||
+      body.totalCents !== body.subtotalCents + body.shippingCents) {
+    throw new TypeError('Incompatible quote response');
+  }
+  return Object.fromEntries(fields.map(key => [key, body[key]]));
+}
+module.exports = { readQuote };
+```
+
+<span class="notes-section-label">**`contract.test.js`**</span>
+
+```js
+// file: contract.test.js
+const { readQuote } = require('./quote-contract');
+const expected = { subtotalCents: 1000, shippingCents: 500, totalCents: 1500 };
+
+test('accepts the consumer contract and ignores additive metadata', () => {
+  expect(readQuote({ ...expected, version: 'v1' })).toEqual(expected);
+});
+test.each([
+  { ...expected, totalCents: '15.00' },
+  { data: expected },
+  { ...expected, totalCents: 1000 },
+  { ...expected, shippingCents: -1 },
+  null
+])('rejects incompatible response %p', body => {
+  expect(() => readQuote(body)).toThrow(TypeError);
+});
+```
+
+Run `npm test -- --runInBand contract.test.js`. All six cases should pass because incompatible representations are deliberately rejected. These checks exercise the reader, not a deployed provider; the later framework/provider tests pass a real HTTP response through this same reader.
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+A contract test checks the agreement between two parts of a system. For an HTTP API, this includes input and output shapes, types, status codes, content types and required behavior.
+
+**Consumer-driven contract testing records what the client needs and checks the provider against it.** This catches cases where each side passes its own unit tests but they disagree when used together. **A shared fake does not prove the real client and provider agree.** The test must verify the relevant agreement against the real participant it claims to check.
+
+</div>
+
+<span class="notes-section-label">**Define the agreement before choosing tooling**</span>
+
+| Contract element | This lab's expectation |
+|---|---|
+| Request | POST `/quotes`, JSON product ID and quantity |
+| Success | Status 200, JSON media type, the three integer-cent fields |
+| Data semantics | Nonnegative safe integers; total equals subtotal plus shipping |
+| Errors | Known statuses and a stable error code; no private diagnostic data |
+| Compatibility | Additional benign metadata is tolerated; missing/renamed/retargeted fields are breaking |
+
+The reader checks structural and arithmetic agreement, not every pricing rule. The threshold rule belongs to the pricing tests. Tolerating additive fields is a consumer compatibility choice, **not permission for the provider to expose secrets**; the provider still needs an explicit public-field projection test.
+
+For a repository contract, run the same behavioral suite against a fake and the real adapter: absence semantics, supported queries and failure behavior must match. A fake that returns `undefined` while production returns `null` can invalidate service tests. This lab's real file adapter is introduced next.
+
+<span class="notes-section-label">**Consumer-driven workflows**</span>
+
+Tools such as Pact can record consumer interactions and verify them against the provider, tracking versions and deployment compatibility. The useful workflow is consumer expectation → published/versioned contract → provider verification → deployment decision. A green consumer test against a mock alone is only the first step.
+
+Schema checks do not automatically prove authorization, state transitions, transaction isolation or the intended production deployment. Add semantic examples where types alone are insufficient. Coordinate breaking changes with versioning or an expand/migrate/retire process rather than updating both sides' fixtures silently.
+
+<span class="notes-section-label">**Common mistakes**</span>
+
+- Calling a hard-coded sample a verified provider contract.
+- Updating expected payloads to match a break without consulting consumers.
+- Requiring exact equality for every optional metadata field while overlooking a required field's changed units.
+- Treating a schema as a substitute for integration or critical E2E behavior.
+
+<span class="notes-section-label">**Examiner follow-ups**</span>
+
+1. <span class="notes-section-label">**Is this reader a complete contract-testing platform?**</span> No. It is an executable local boundary agreement; publication/version gates and consumer/provider deployments are not implemented.
+2. <span class="notes-section-label">**Can a shape-correct total still be wrong?**</span> Yes. Semantic examples and business tests are still needed.
+3. <span class="notes-section-label">**Why allow unknown benign fields?**</span> It permits additive evolution when the consumer does not depend on those fields. Provider disclosure rules remain separate.
+
+::: tip Key takeaway
+Verify both sides of a boundary agreement; a convenient mock is not evidence that the provider satisfies its consumers.
+:::
+
+Practice — learner work still required: change the provider's total to a string and identify the failing contract. Acceptance: retain the consumer reader, later exercise it against the actual HTTP response, and explain which changes require consumer coordination.
+
+Official references: [Pact consumer-driven contracts](https://docs.pact.io/), [Jest assertions](https://jestjs.io/docs/30.0/expect).
 
 
 ---
@@ -980,216 +1302,6 @@ Official references: [Node performance hooks](https://nodejs.org/download/releas
 
 
 ---
-
-<!-- tech-check: t15-q08; level: 2 -->
-
-### How do you test an Express application without mocking away its framework behavior?
-
-*Study depth: Intermediate*
-
-Level Up: L3 — Senior\
-Tech Check level: ⭐⭐
-
-Source mapping: [R130](./requirements.md#r130).
-
-
-
-<span class="notes-section-label">**Example — keep the right parts real**</span>
-
-A mock `res.json()` can prove your handler called a function but cannot prove real routing, parser limits, status/media headers or Express 5 rejection forwarding. Use the real app through HTTP for those boundaries. Inject a controlled service only when the test intentionally isolates HTTP behavior; use the real service/catalog for provider verification.
-
-<span class="notes-section-label">**`framework.test.js`**</span>
-
-```js
-// file: framework.test.js
-const request = require('supertest');
-const { createServer } = require('node:http');
-const { EventEmitter, once } = require('node:events');
-const { mkdtemp, writeFile, rm } = require('node:fs/promises');
-const { tmpdir } = require('node:os');
-const { join } = require('node:path');
-const { createApp } = require('./app');
-const { createQuoteService } = require('./service');
-const { createFileCatalog } = require('./catalog');
-const { readQuote } = require('./quote-contract');
-const quote = { subtotalCents: 1000, shippingCents: 500, totalCents: 1500 };
-const input = { id: 'p1', quantity: 2 };
-let directory, file;
-beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'quote-framework-'));
-  file = join(directory, 'catalog.json');
-  await writeFile(file, JSON.stringify([
-    { id: 'p1', unitPriceCents: 500, internalNote: 'PRIVATE_SENTINEL' }
-  ]));
-});
-afterEach(async () => {
-  if (directory) await rm(directory, { recursive: true, force: true });
-});
-function realApp() { return createApp(createQuoteService(createFileCatalog(file))); }
-async function withApp(app, exercise) {
-  const server = createServer(app);
-  try {
-    const listening = once(server, 'listening');
-    server.listen(0, '127.0.0.1');
-    await listening;
-    const client = request(server);
-    return await exercise({
-      get: path => client.get(path).timeout({ response: 1500, deadline: 2500 }),
-      post: path => client.post(path).timeout({ response: 1500, deadline: 2500 })
-    });
-  } finally {
-    if (server.listening) await new Promise((resolve, reject) => {
-      server.close(error => error ? reject(error) : resolve());
-      server.closeAllConnections();
-    });
-  }
-}
-test('real provider satisfies the consumer contract without private fields', async () => {
-  await withApp(realApp(), async client => {
-    const response = await client.post('/quotes').send(input)
-      .expect('Content-Type', /json/).expect(200);
-    expect(readQuote(response.body)).toEqual(quote);
-    expect(response.body).toEqual(quote);
-    expect(JSON.stringify(response.body)).not.toContain('PRIVATE_SENTINEL');
-  });
-});
-test('rejects extra input fields before invoking the service', async () => {
-  const service = { quote: jest.fn().mockResolvedValue(quote) };
-  await withApp(createApp(service), async client => {
-    const response = await client.post('/quotes').send({ ...input, role: 'admin' }).expect(400);
-    expect(response.body.error.code).toBe('INVALID_BODY');
-    expect(service.quote).not.toHaveBeenCalled();
-  });
-});
-test('real parser rejects malformed JSON', async () => {
-  await withApp(realApp(), async client => {
-    const response = await client.post('/quotes').set('Content-Type', 'application/json')
-      .send('{').expect(400);
-    expect(response.body).toEqual({ error: { code: 'MALFORMED_JSON' } });
-  });
-});
-test('real parser enforces the byte limit before route validation', async () => {
-  await withApp(realApp(), async client => {
-    const response = await client.post('/quotes').send({ ...input, extra: 'x'.repeat(1500) })
-      .expect(413);
-    expect(response.body.error.code).toBe('BODY_TOO_LARGE');
-  });
-});
-test('media, missing product, invalid quantity and unknown route keep distinct responses', async () => {
-  await withApp(realApp(), async client => {
-    await client.post('/quotes').type('text').send('text').expect(415);
-    const missing = await client.post('/quotes').send({ id: 'missing', quantity: 1 }).expect(404);
-    expect(missing.body.error.code).toBe('PRODUCT_NOT_FOUND');
-    const invalid = await client.post('/quotes').send({ ...input, quantity: 0 }).expect(400);
-    expect(invalid.body.error.code).toBe('INVALID_QUANTITY');
-    const route = await client.get('/missing').expect(404);
-    expect(route.body.error.code).toBe('ROUTE_NOT_FOUND');
-  });
-});
-test('rejected service work produces a safe500 and releases admission for the next call', async () => {
-  const service = { quote: jest.fn().mockRejectedValueOnce(new Error('PRIVATE_SENTINEL'))
-    .mockResolvedValue(quote) };
-  await withApp(createApp(service, { maxActive: 1 }), async client => {
-    const failed = await client.post('/quotes').send(input).expect(500);
-    expect(failed.body).toEqual({ error: { code: 'INTERNAL_ERROR' } });
-    expect(JSON.stringify(failed.body)).not.toContain('PRIVATE_SENTINEL');
-    await client.post('/quotes').send(input).expect(200);
-  });
-});
-test('rejects overload while work is held and recovers when that work settles', async () => {
-  let release;
-  const gate = new Promise(resolve => { release = resolve; });
-  const events = new EventEmitter();
-  const service = { quote: jest.fn(async () => {
-    events.emit('entered');
-    await gate;
-    return quote;
-  }) };
-  await withApp(createApp(service, { maxActive: 1 }), async client => {
-    const entered = once(events, 'entered', { signal: AbortSignal.timeout(1500) });
-    const pending = client.post('/quotes').send(input).then(response => response);
-    pending.catch(() => {});
-    try {
-      await entered;
-      const rejected = await client.post('/quotes').send(input).expect(503);
-      expect(rejected.body).toEqual({ error: { code: 'BUSY' } });
-      expect(service.quote).toHaveBeenCalledTimes(1);
-      release();
-      expect((await pending).status).toBe(200);
-      await client.post('/quotes').send(input).expect(200);
-      expect(service.quote).toHaveBeenCalledTimes(2);
-    } finally {
-      release();
-      await Promise.allSettled([pending]);
-    }
-  });
-});
-```
-
-Run `npm test -- --runInBand framework.test.js`. Each HTTP request has a response/overall deadline; a Jest test timeout alone would not cancel a pending request. The overload test waits for a service-entry event, not an arbitrary sleep. It always releases its gate and observes the pending request, so an assertion failure does not intentionally leave held work behind. The recovery call proves that the admission count returns to its usable state.
-
-<div class="notes-core-answer">
-
-<p class="notes-core-answer__title">Core answer</p>
-
-**Send requests through the real Express request-handling chain** when testing routes, middleware, parsing or error responses. Check status, headers, public response data and important side effects. Replace a service or dependency with a test double only where you clearly define that boundary.
-
-Export the app separately from starting its server, use isolated fixtures, await each request and close any servers you create. **Also keep a smaller suite with real application components connected together.** It can catch setup mistakes or changes in dependency behavior that mocked tests miss.
-
-</div>
-
-<span class="notes-section-label">**Choose the test boundary deliberately**</span>
-
-The real-provider test verifies the consumer reader against the actual HTTP representation and checks exact safe public fields. The injected rejection test isolates Express promise forwarding and the public error boundary; it is not a database outage test. The gate is a deterministic scheduling device, not a simulated throughput benchmark.
-
-For a NestJS or another framework, use its supported composition/testing utilities and replace declared providers deliberately. A compiled testing module with every adapter mocked still does not prove the real database or HTTP deployment. Keep one coherent primary framework here; alternatives are not separate mastery requirements.
-
-<span class="notes-section-label">**Coverage and required project checks**</span>
-
-In this scratch lab, add `jest.config.cjs` to describe which application/consumer sources coverage should include:
-
-```js
-// file: jest.config.cjs
-module.exports = {
-  testEnvironment: 'node',
-  collectCoverageFrom: [
-    'pricing.js', 'service.js', 'catalog.js', 'app.js', 'credit.js', 'quote-contract.js'
-  ]
-};
-```
-
-Startup glue, the benchmark and load driver are deliberately outside this listed-source report; they have separate executable checks. Do not present the resulting percentage as coverage of every file or every deployed process. Child-process execution is not automatically instrumented by the parent's Jest report.
-
-```bash
-npm test -- --runInBand
-npm pkg set 'scripts.coverage=jest --coverage --coverageReporters=cobertura --coverageDirectory=.'
-npm run coverage -- --runInBand
-```
-
-Coverage maps statements, branches, functions and lines that executed. Inspect uncovered branches and decide which risks need more evidence. **A percentage does not prove assertions are strong**; the earlier threshold mutation and actual contract-breaking mutation are more direct evidence that particular defects can be caught. Avoid automatic snapshot updates, blanket exclusions or arbitrary universal thresholds.
-
-
-<span class="notes-section-label">**Reliability and debugging**</span>
-
-A false green can come from missing `await`, an assertion that never ran, stale mocks, an unreviewed snapshot or a test that bypasses real validation. Restore spies after replacement; clearing call history does not restore the original method. If testing an owned timer, scope fake timers narrowly, advance the appropriate timers/microtasks and restore real timers. Do not fake the clock around real network tests by default.
-
-When a suite hangs, inspect listeners, child processes, pools, watchers and timers. Use `--detectOpenHandles` as a diagnostic, not `--forceExit` as a fix. If a test fails only in the full suite or parallel execution, investigate shared paths/ports, environment and mock state. Fresh directories and ephemeral ports remove common collisions; tests should still pass alone and together.
-
-Common mistakes: mocking `req`/`res` and claiming full HTTP coverage; accepting status alone; letting injected fakes drift from real contracts; treating failed shutdown as success; using coverage to claim professional readiness.
-
-<span class="notes-section-label">**Examiner follow-ups**</span>
-
-1. <span class="notes-section-label">**Does passing an app to Supertest avoid all sockets?**</span> Not generally; it can manage a temporary listener. This lab explicitly binds its owned server to loopback.
-2. <span class="notes-section-label">**Why test recovery after rejection?**</span> A leaked admission slot may hide until the next request; the public follow-up reveals that lifecycle defect.
-3. <span class="notes-section-label">**Does a safe body prove safe logging?**</span> No. Internal/default logging and public projection are separate policies and need their own evidence.
-
-::: tip Key takeaway
-Use the real framework for framework claims, a real composition for integration claims, and an explicit lifecycle owner for every resource.
-:::
-
-Practice — learner work still required: run the suite and introduce a provider change that makes the numeric total a string. Acceptance: the actual-provider contract test fails for that break; restoring the contract passes. Exercise overload and recovery, inspect the coverage report without changing its source list, and explain all untested deployment/infrastructure boundaries.
-
-Official references: [Supertest](https://github.com/forwardemail/supertest), [Express error ownership](https://expressjs.com/en/guide/error-handling/), [Jest coverage configuration](https://jestjs.io/docs/30.0/configuration), [Jest timer controls](https://jestjs.io/docs/30.0/timer-mocks).
 
 ## Testing revision
 

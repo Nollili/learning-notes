@@ -7,42 +7,9 @@ outline: [2, 3]
 These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-frameworks.md#application-frameworks). Examples run as `.mjs` on Node.js 24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
 
 
-## Full worked catalogue
+<span class="notes-section-label">**First pass:**</span> Read the [concrete change](#t18-q01), then try a small factory or Adapter/Strategy only when your application needs one. Explain the input, result and reason for the extra function before adding more abstractions. The [full catalogue](#full-worked-catalogue) follows the four introductory questions as reference reading; learning all 23 patterns is not a prerequisite for completing the HTTP milestone.
 
-All **23 GoF patterns** have explanations, worked code, failure cases, alternatives and practical acceptance at intermediate depth. This overview retains the original four questions; the focused pages expand the remaining patterns without duplicating Adapter/Decorator or Strategy/Observer.
-
-- [Creational patterns](./patterns/creational.md): construction hooks, product families, builders, cloning and scoped single instances.
-- [Structural patterns](./patterns/structural.md): independent variation, trees, subsystem entry points, shared intrinsic state and access proxies.
-- [Behavioral workflows](./patterns/behavioral-workflows.md): handler chains, commands, coordination, state transitions and workflow skeletons.
-- [Behavioral data and traversal](./patterns/behavioral-data.md): bounded expressions, iterators, opaque history and visitors.
-
-| Pattern | Worked lesson |
-|---|---|
-| Factory Method | [Explanation, example and practice](./patterns/creational.md#t18-q05) |
-| Abstract Factory | [Explanation, example and practice](./patterns/creational.md#t18-q06) |
-| Builder | [Explanation, example and practice](./patterns/creational.md#t18-q07) |
-| Prototype | [Explanation, example and practice](./patterns/creational.md#t18-q08) |
-| Singleton | [Explanation, example and practice](./patterns/creational.md#t18-q09) |
-| Adapter | [Explanation, example and practice](./18-patterns.md#t18-q03) |
-| Bridge | [Explanation, example and practice](./patterns/structural.md#t18-q10) |
-| Composite | [Explanation, example and practice](./patterns/structural.md#t18-q11) |
-| Decorator | [Explanation, example and practice](./18-patterns.md#t18-q03) |
-| Facade | [Explanation, example and practice](./patterns/structural.md#t18-q12) |
-| Flyweight | [Explanation, example and practice](./patterns/structural.md#t18-q13) |
-| Proxy | [Explanation, example and practice](./patterns/structural.md#t18-q14) |
-| Chain of Responsibility | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q15) |
-| Command | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q16) |
-| Interpreter | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q17) |
-| Iterator | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q18) |
-| Mediator | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q19) |
-| Memento | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q20) |
-| Observer | [Explanation, example and practice](./18-patterns.md#t18-q04) |
-| State | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q21) |
-| Strategy | [Explanation, example and practice](./18-patterns.md#t18-q04) |
-| Template Method | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q22) |
-| Visitor | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q23) |
-
-Material completion is separate from practice. Do not implement every pattern in one application; choose a justified variation point and preserve its contract.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
 
 <!-- tech-check: t18-q01; level: 2 -->
 
@@ -69,6 +36,25 @@ A design pattern is a named approach to a problem that appears repeatedly. It ex
 Choose a pattern to solve a concrete problem, such as replacing one algorithm independently of its caller. A pattern name does not prove the code behaves correctly. Check that it preserves the results, errors and other behavior callers rely on.
 
 </div>
+
+<span class="notes-section-label">**Start here — one working example**</span>
+
+You need a title in its original form or in uppercase. First keep the choice visible:
+
+```js
+function formatTitle(title, format) {
+  if (format === 'text') return title;
+  if (format === 'upper') return title.toUpperCase();
+  throw new Error('Unknown format');
+}
+console.log(formatTitle('File reads', 'text'));
+```
+
+Try changing the format to `upper`: it prints `FILE READS`. Two simple choices do not require a pattern hierarchy. If formatting later grows into independently tested algorithms, you can pass the selected formatting function to its caller—a Strategy. Explain the change that makes that extra separation useful before adding it.
+
+In NestJS, an injected provider can supply the chosen behavior; in Express, a factory argument can do the same. Both express dependency injection. The provider/container vocabulary is useful, but does not require introducing a class for every function.
+
+:::: details Deeper explanation and complete examples — second reading
 
 <span class="notes-section-label">**Reason from a concrete change**</span>
 
@@ -117,6 +103,8 @@ Choose one real catalog change. Write a short decision comparing a direct soluti
 <span class="notes-section-label">**References**</span>
 
 [Existing design-decision context](../../engineering/design.md), [existing pattern pitfalls](../../senior_growth/Coding_principles_patterns_conventions/What_are_the_common_pitfalls_when_applying_a_design_pattern.md), [official Nest custom-provider mechanics](https://docs.nestjs.com/fundamentals/custom-providers). Pattern selection here is a reasoned design interpretation, not a framework mandate or an official detailed examination rubric.
+
+::::
 
 ---
 
@@ -472,6 +460,43 @@ Add pickup shipping and test threshold, negative, oversized, throwing and invali
 <span class="notes-section-label">**Official references**</span>
 
 [Node 24 event delivery and listener lifetime](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [promise return/settlement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises), [Node 24 assertions](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). See also the existing [async-iteration explanation](./05-asynchronous-programming.md) and [framework lifecycle](./16-frameworks.md#t16-q08).
+
+## Full worked catalogue
+
+All **23 GoF patterns** have explanations, worked code, failure cases, alternatives and practical acceptance at intermediate depth. This overview retains the original four questions; the focused pages expand the remaining patterns without duplicating Adapter/Decorator or Strategy/Observer.
+
+- [Creational patterns](./patterns/creational.md): construction hooks, product families, builders, cloning and scoped single instances.
+- [Structural patterns](./patterns/structural.md): independent variation, trees, subsystem entry points, shared intrinsic state and access proxies.
+- [Behavioral workflows](./patterns/behavioral-workflows.md): handler chains, commands, coordination, state transitions and workflow skeletons.
+- [Behavioral data and traversal](./patterns/behavioral-data.md): bounded expressions, iterators, opaque history and visitors.
+
+| Pattern | Worked lesson |
+|---|---|
+| Factory Method | [Explanation, example and practice](./patterns/creational.md#t18-q05) |
+| Abstract Factory | [Explanation, example and practice](./patterns/creational.md#t18-q06) |
+| Builder | [Explanation, example and practice](./patterns/creational.md#t18-q07) |
+| Prototype | [Explanation, example and practice](./patterns/creational.md#t18-q08) |
+| Singleton | [Explanation, example and practice](./patterns/creational.md#t18-q09) |
+| Adapter | [Explanation, example and practice](./18-patterns.md#t18-q03) |
+| Bridge | [Explanation, example and practice](./patterns/structural.md#t18-q10) |
+| Composite | [Explanation, example and practice](./patterns/structural.md#t18-q11) |
+| Decorator | [Explanation, example and practice](./18-patterns.md#t18-q03) |
+| Facade | [Explanation, example and practice](./patterns/structural.md#t18-q12) |
+| Flyweight | [Explanation, example and practice](./patterns/structural.md#t18-q13) |
+| Proxy | [Explanation, example and practice](./patterns/structural.md#t18-q14) |
+| Chain of Responsibility | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q15) |
+| Command | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q16) |
+| Interpreter | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q17) |
+| Iterator | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q18) |
+| Mediator | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q19) |
+| Memento | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q20) |
+| Observer | [Explanation, example and practice](./18-patterns.md#t18-q04) |
+| State | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q21) |
+| Strategy | [Explanation, example and practice](./18-patterns.md#t18-q04) |
+| Template Method | [Explanation, example and practice](./patterns/behavioral-workflows.md#t18-q22) |
+| Visitor | [Explanation, example and practice](./patterns/behavioral-data.md#t18-q23) |
+
+Material completion is separate from practice. Do not implement every pattern in one application; choose a justified variation point and preserve its contract.
 
 ## Revision and practice evidence
 

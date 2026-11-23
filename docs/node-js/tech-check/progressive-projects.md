@@ -90,8 +90,8 @@ A few terms used in the instructions:
 - **Owning a resource means being responsible for closing it.** Owning an asynchronous operation means waiting for its outcome, handling errors and arranging cleanup.
 
 - Use **Node.js 24 LTS** and ES Modules. The official Node 24 documentation showed v24.22.2 when this plan was checked on 2026-11-05; use the current supported patch in that release line rather than depending on a patch-specific accident.
-- Use **plain JavaScript** for this sequence. TypeScript is valuable, but it is outside the current Tech Check checklist and would add another learning variable.
-- Use **Express 5** as the primary framework. NestJS remains a comparison: after Project 2, map the Express composition root, routes and middleware to Nest modules, controllers, providers, guards and filters. Reimplementing the whole service in both frameworks is not required.
+- Use **plain JavaScript** for the cumulative application. The small NestJS companion uses the lesson’s compiled TypeScript setup for decorators; it does not require rewriting the main application in TypeScript.
+- Use **Express 5** as the primary framework. NestJS remains part of Project 2: run its small read companion, then map the Express setup, routes and middleware to Nest modules, controllers, providers, guards, pipes, filters and interceptors. Reimplementing the whole service in both frameworks is not required.
 - Use **semantic HTML, a small shared CSS file and vanilla browser JavaScript** for the Projects 2–3 UI. It should exercise the real HTTP API without adding React, a bundler or a second application architecture.
 - Use **PostgreSQL with MikroORM 7** in Project 3. Write and inspect migrations; do not use schema synchronization as the deployment mechanism.
 - Use a **container deployment as the primary operational path**. A serverless report handler is a bounded alternative, not a second complete platform.
@@ -169,6 +169,7 @@ Example user flow:
 node src/cli/main.mjs add --title "Event loop" --minutes 45
 node src/cli/main.mjs start <item-id>
 node src/cli/main.mjs finish <item-id> --note "Explained microtasks aloud"
+node src/cli/main.mjs complete <item-id>
 node src/cli/main.mjs list --status done
 node src/cli/main.mjs report --output progress.jsonl.gz
 ```
@@ -215,17 +216,121 @@ This is a useful first completion point. You do not yet need repository interfac
 | Timers, readline and console | Add a bounded confirmation prompt and a timeout-aware import | Open timers and interfaces can keep Node running; define how a prompt can be cancelled |
 | Framework foundations | Record why the first milestone does not need Express | A small CLI can work well without a web framework; explain that choice |
 
+### Project 1 handoff contract {#project-1-handoff-contract}
+
+**The starter CLI is an intermediate checkpoint.** Complete all four increments and the release checks below before starting Project 2. The finished Foundations homework must provide the following behavior; build it a step at a time rather than implementing this entire contract at once.
+
+<span class="notes-section-label">**Increment 1: items, sessions and transitions**</span>
+
+A study item has `id`, `title`, `estimateMinutes`, `status`, `resourceUrl`, `createdAt`, `updatedAt` and `sessions`. Generate new item and session IDs with `crypto.randomUUID()`. Treat IDs as opaque, nonempty strings of at most 64 characters; do not derive a file path from an ID. Times are UTC ISO strings obtained from an injected clock. A test can supply a fixed clock and ID generator.
+
+| Field | Required rule |
+|---|---|
+| `title` | Trim surrounding whitespace; retain 1–120 characters |
+| `estimateMinutes` | Integer from 1 to 1,440 |
+| `status` | `active` when added; `done` only after explicit completion |
+| `resourceUrl` | `null` when omitted; otherwise a valid `https:` URL of at most 2,048 characters, without embedded username/password; store its normalized `href` |
+| `sessions` | Initially empty; each session has `id`, `startedAt`, `finishedAt` and `note` |
+
+A new session has `finishedAt: null` and `note: ''`. Finishing it sets a finish time no earlier than its start and a trimmed note of at most 1,000 characters. Completed sessions contribute `finishedAt - startedAt` milliseconds to reported study time. An unfinished session contributes zero; its running duration must not depend on when a report happens to be read.
+
+| Operation | Allowed transition | Rejected case |
+|---|---|---|
+| Add item | Create an `active` item with no sessions | Invalid title, estimate or resource URL |
+| Start session | Add one open session to an `active` item | Item is `done`, or already has an open session |
+| Finish session | Finish that item's one open session | No open session exists |
+| Complete item | Change `active` to `done` | An open session exists, or item is already `done` |
+
+**Finishing a session does not complete the item.** A learner may study it several times before marking it done. Completed items remain readable; reopening, editing and deleting are outside Projects 1–2. Different items may each have an open session.
+
+Expose `help`, `add`, `get`, `list`, `start`, `finish`, `complete`, `import` and `report` commands by the end of Project 1. `start`, `finish` and `complete` take an item ID. For example, finish the current session with `finish ITEM_ID --note "Practised file reads"`, then mark the item done with `complete ITEM_ID`.
+
+<span class="notes-section-label">**Increments 1–2: reusable application operations**</span>
+
+Export `createStudyApplication({ repository, clock, makeId })`, which returns the operations below, including `importEvents` and `createProgressReport`. Here `clock()` returns a UTC ISO timestamp string and `makeId()` returns a new ID; validate their returned values before recording an event. Each operation returns a promise. The CLI parses strings and calls them with checked JavaScript values. Project 2's controllers call the same operations. **Application operations must not read terminal arguments or write HTTP responses.**
+
+| Operation | Input | Successful result |
+|---|---|---|
+| `addItem` | `{ title, estimateMinutes, resourceUrl? }` | The created item |
+| `getItem` | `itemId` | The item, including its sessions |
+| `listItems` | `{ status?, limit?, offset? }` (default `{}`) | `{ items, total, limit, offset }` |
+| `startSession` | `itemId` | The newly opened session |
+| `finishSession` | `itemId, { note? }` (default `{}`) | The finished session |
+| `completeItem` | `itemId` | The completed item |
+
+For `listItems`, omit `status` to include both states; otherwise accept only `active` or `done`. Implement pagination in Project 1: `limit` defaults to 20 and must be an integer from 1 to 100; `offset` defaults to 0 and must be a nonnegative safe integer. Filter first, retain item-creation event order, then slice. `total` counts all matching items before slicing; an offset past the end returns an empty `items` array. Support matching `--status`, `--limit` and `--offset` CLI options. Do not add cursor pagination at this stage.
+
+Use stable `.code` values on errors. `INVALID_INPUT` means a supplied argument failed validation; `ITEM_NOT_FOUND` means a valid ID has no item; `STATE_CONFLICT` means a requested transition is unavailable. Storage failures are `STORAGE_INVALID` for malformed/inconsistent stored records and `STORAGE_UNAVAILABLE` for a failed I/O operation. Cancellation uses `OPERATION_ABORTED`. Missing items reject in application operations; they do not return a successful empty result. An unexpected programming error remains an unexpected error, rather than being relabeled as invalid input.
+
+Retain underlying I/O errors in `cause`, and add a line number to invalid-storage/import errors without including raw file contents. A malformed import is `INVALID_INPUT`; an import that conflicts with existing state is `STATE_CONFLICT`; malformed existing storage is `STORAGE_INVALID`. The CLI prints a useful message to stderr and uses a nonzero exit code. Project 2 maps invalid input to 400, missing items to 404, state conflicts to 409 and unexpected/storage failures to a fixed safe 500 response. Startup failures occur before accepting HTTP requests.
+
+<span class="notes-section-label">**Increment 2: repository and JSONL records**</span>
+
+Here, “interface” means a documented JavaScript object contract; **no TypeScript interface is required**. Construct one `StudyItemRepository` per running application, using a configured data directory. It exposes:
+
+| Repository method | Contract |
+|---|---|
+| `findById(itemId)` | Resolve with a reconstructed item or `null` when absent |
+| `list({ status } = {})` | Resolve with all matching reconstructed items in creation order; pagination belongs to `listItems` |
+| `append(event)` | Validate and append one event, resolve with `undefined` only after the write completes; reject duplicate IDs and impossible transitions |
+| `appendBatch(events, { signal } = {})` | Check the entire candidate against a temporary replay state before writing; then append in order and resolve with `undefined`. A validation failure writes nothing; an I/O failure may leave a prefix |
+| `close()` | Finish pending owned work and close opened handles; repeated calls are safe; reject new work once closing starts |
+
+Returned item/session objects must not expose mutable repository state. A missing log means an empty repository; a missing configured directory may be created at startup. Permissions errors and damaged data must not be treated as empty storage. All methods are asynchronous, including `close()`. `append` and `appendBatch` share the same event validation: malformed candidate events reject with `INVALID_INPUT`, duplicate IDs/impossible transitions with `STATE_CONFLICT`; invalid records found while opening an existing log reject with `STORAGE_INVALID`.
+
+Use a single `events.jsonl` file with one version-1 event per UTF-8 line and a newline after each record. Each event contains `version`, `eventId`, `type`, `itemId`, `at` and `data`. `eventId` is unique across the log. New event IDs use the injected UUID generator. `at` is the operation's timestamp; event order in the file is authoritative, and times for an item must not move backward.
+
+| Event type | `data` fields | Replay effect |
+|---|---|---|
+| `item-added` | `title`, `estimateMinutes`, `resourceUrl` | Create the item; set `createdAt` and `updatedAt` to `at` |
+| `session-started` | `sessionId` | Add an open session with `startedAt: at`; update the item timestamp |
+| `session-finished` | `sessionId`, `note` | Finish the matching open session at `at`; update the item timestamp |
+| `item-completed` | `{}` | Set status to `done`; update the item timestamp |
+
+For example, these are four consecutive records for one item. The short IDs are valid illustrative imported IDs; newly generated IDs use UUIDs.
+
+```jsonl
+{"version":1,"eventId":"e1","type":"item-added","itemId":"item-1","at":"2026-11-23T09:00:00.000Z","data":{"title":"File reads","estimateMinutes":30,"resourceUrl":null}}
+{"version":1,"eventId":"e2","type":"session-started","itemId":"item-1","at":"2026-11-23T09:05:00.000Z","data":{"sessionId":"session-1"}}
+{"version":1,"eventId":"e3","type":"session-finished","itemId":"item-1","at":"2026-11-23T09:25:00.000Z","data":{"sessionId":"session-1","note":"Practised readFile"}}
+{"version":1,"eventId":"e4","type":"item-completed","itemId":"item-1","at":"2026-11-23T09:26:00.000Z","data":{}}
+```
+
+Replay validates field names/types, supported version/type, unique event IDs, unique item/session IDs, references and the transition rules above. Reuse the same pure transition function when checking new events and replaying stored ones. Reject unknown fields, blank records and a nonempty final line without its terminating newline. A single final newline is the terminator, not an extra blank record. Stop on the first invalid record and report its one-based line number. Do not silently skip or repair it.
+
+Serialize each complete read → validate → append operation through one application-owned queue, including imports. Reads/reports take their snapshot between mutations; one `list` or report must not mix states from different points in a mutation. The JSONL adapter can keep reconstructed state in memory and update it only after a successful append. `appendBatch` checks cancellation before each record and waits for any write already started before returning; cancellation does not undo committed records. If a write fails after possibly writing partial bytes, stop further mutations and require reopening/validating the log. **Projects 1–2 support one owning process at a time.** Do not run the CLI and HTTP server simultaneously against this file. A second writer is an unsupported failure drill, not a promised concurrency guarantee.
+
+<span class="notes-section-label">**Increment 3: bounded import and report contract**</span>
+
+Document numeric limits in configuration and test them. Use these learning defaults: 16 KiB per encoded event line (including newline), 1,000 events and 1 MiB total per import, and 10,000 events / 10 MiB for the stored log. Reject an append/import that would exceed the log limits. Limit incoming bytes before retaining an entire oversized line; a check after `readline` has already assembled that line is insufficient.
+
+`importEvents({ inputPath, signal })` imports an ordered suffix of version-1 events using the same replay rules. Read and structurally validate the whole bounded candidate, then call `repository.appendBatch(events, { signal })`. The repository checks it against a temporary copy of its current replay state, including previously seen event IDs, before appending anything. Reject duplicates, including reimporting previously accepted events; do not silently deduplicate. A valid import resolves with `{ importedEvents }`. Validation failure leaves storage unchanged. An I/O failure or cancellation during append may leave a committed prefix or a damaged final line: report failure, stop writes and reopen/validate before continuing. This file adapter does not promise transactional import or rollback.
+
+Export `createProgressReport({ signal } = {})` from the application layer. It resolves with a **fresh gzip-readable stream from one consistent item snapshot**. Consumption must propagate errors and cancellation through the serializer and compression stages; cancellation destroys the owned stages. The application owns no HTTP response or output filename. Both the CLI and Project 2 consume this same report stream with `pipeline()`.
+
+After decompression, the report is UTF-8 JSONL with one row per item, in creation order, including both statuses. A row has exactly `id`, `title`, `estimateMinutes`, `status`, `completedSessions` and `studiedMilliseconds`. Empty storage produces a valid gzip stream whose decompressed content is empty. For the four-event example above, the report contains:
+
+```jsonl
+{"id":"item-1","title":"File reads","estimateMinutes":30,"status":"done","completedSessions":1,"studiedMilliseconds":1200000}
+```
+
+The report is a summary, not the event log, and **must not be passed to `importEvents`**. Session notes and resource URLs stay out of this report. Do not promise identical compressed bytes across runtime versions; verify the checksum of the actual bytes produced.
+
+The CLI's `report --output PATH` writes the gzip stream to a temporary sibling file while counting and hashing the compressed bytes with SHA-256. Await the complete pipeline, then rename the temporary file to publish it. On success, print one JSON record to stdout: `{ "path": "progress.jsonl.gz", "bytes": 123, "sha256": "<64 lowercase hex characters>" }`, using the actual path, byte count and digest. The checksum is returned in this metadata; no separate checksum sidecar is required. On failure, remove the temporary file and leave a previous successful report intact. This promises publication after successful processing, not crash durability on every filesystem.
+
+In Project 2, `GET /reports/progress` serves the same gzip bytes as a download with `Content-Type: application/gzip` and `Content-Disposition: attachment; filename="progress.jsonl.gz"`. Do not set `Content-Encoding: gzip` for this file-download contract. Stop the report stream if the client disconnects; failures after response headers are sent cannot be replaced by a new JSON error response. The first HTTP implementation does not need to advertise a checksum before the stream finishes.
+
 ### Increment 1 — executable package and pure domain {#increment-1-—-executable-package-and-pure-domain}
 
 Create `package.json` with a Node engine requirement and `start`, `test` and `check` scripts. Add a `StudyItem` function for the business rules: check the title, positive estimate in minutes and allowed state. Generate IDs with `crypto.randomUUID()`. Pass a clock into operations that need time so tests can supply a predictable value.
 
-The CLI should support `help`, `add` and `list`. Keep parsing in the CLI adapter; **business-rule functions must not read `process.argv`, environment variables or files directly**. Pass the values they need as arguments.
+At this first increment, support `help`, `add` and `list`; add `get`, `start`, `finish` and `complete` with persistence in Increment 2. Keep parsing in the CLI adapter; **business-rule functions must not read `process.argv`, environment variables or files directly**. Pass the values they need as arguments.
 
 Failure drill: pass an unknown command, a blank title and a non-integer duration. The program must write a useful message to stderr, set a nonzero exit code and avoid creating a partial record.
 
 ### Increment 2 — owned asynchronous persistence {#increment-2-—-owned-asynchronous-persistence}
 
-Define a `StudyItemRepository` interface: the operations, results and errors storage must provide. Implement it with JSONL using `node:fs/promises`, `node:path` and a configured data directory. Rebuild the current state by reading and applying validated events such as `item-added` and `item-finished` in order.
+Implement the JavaScript `StudyItemRepository` contract in the [handoff specification](#project-1-handoff-contract). Implement it with JSONL using `node:fs/promises`, `node:path` and a configured data directory. Rebuild the current state by reading and applying the four validated event types specified above in order.
 
 Use only one writing process at this stage. Document that `appendFile` does not provide database transactions across processes. Reject invalid or oversized lines and report the line number. Do not silently skip damaged data.
 
@@ -249,16 +354,23 @@ Failure drill: leave a timer or readline interface open, observe the hanging tes
 
 ### Project 1 release check {#project-1-release-check}
 
-Project 1 is releasable when all of these are true:
+**All four increments are required for the Project 2 handoff.** The starter CLI alone is not the completed homework. Project 1 is releasable when all of these are true:
 
 - [ ] A clean checkout installs reproducibly and `npm run check && npm test` exits successfully.
-- [ ] Add/start/finish/list work against an owned temporary data directory; invalid input leaves no partial event.
+- [ ] Add/get/list/start/finish/complete work against an owned temporary data directory; invalid input leaves no partial event.
+- [ ] A deterministic test covers add → start → finish → complete, reopens the repository and recovers the same item/session state. Finishing alone leaves the item active.
+- [ ] Invalid transitions, missing IDs, duplicate events and invalid stored records produce the documented error codes. A failed validation leaves the log unchanged.
+- [ ] List filtering, creation order, defaults and pagination boundaries match the shared application contract; returned objects cannot mutate stored state.
+- [ ] The same application operations pass through a repository contract suite that Project 2 can also run against its in-memory adapter.
 - [ ] Import limits and corrupt-line errors include useful context without leaking file contents unnecessarily.
-- [ ] A compressed report can be read back through gunzip, its recorded checksum matches and a failed export leaves the previous report intact.
+- [ ] A compressed report can be read back through gunzip, matches the specified row fields/counts/durations, and handles empty storage. Its stdout byte count and SHA-256 match the published file; a failed export leaves the previous report intact.
+- [ ] A second consumer can request a fresh report stream without using CLI parsing or an output filename; cancellation stops the stream and releases its resources.
 - [ ] SIGINT during an owned operation exits within the documented deadline and leaves no open handles.
 - [ ] You can explain from memory: Node versus V8, sync versus async I/O, promise ownership, ESM loading, stream backpressure and why a framework was not needed.
 
-Save this state as the `foundations-cli` release or tag before continuing.
+Save this state as the **`project-1-foundations-cli`** release or tag before continuing. Include the source, lockfile, tests, documented configuration/commands and a short contract note linking the operations, event schema and report schema. Keep generated data/reports in an ignored learning-data directory; tests create their own fixtures.
+
+Project 2 starts from this release. It adds HTTP/UI adapters and an in-memory test repository; it does not redesign the item lifecycle, replace the event schema or duplicate the report generator.
 
 <!-- tech-check-level: 2 -->
 
@@ -273,7 +385,7 @@ The stars show this project's stage in the learning path. The linked lessons kee
 
 ### Outcome
 
-Start from the passing `project-1-foundations-cli` version and **extend the existing application**. Keep its business rules, operations, storage interface, JSONL implementation and CLI working. Add Express 5 to expose the same operations over HTTP and stream the existing report. Define error handling and tests. Serve a **small browser UI from the same origin** using `src/http/public/`; it should exercise this API without becoming a separate frontend project.
+Start from the passing `project-1-foundations-cli` version, including the complete [Project 1 handoff contract](#project-1-handoff-contract), and **extend the existing application**. Keep its business rules, operations, storage interface, JSONL implementation and CLI working. Add Express 5 to expose the same operations over HTTP and stream the existing report. Define error handling and tests. Serve a **small browser UI from the same origin** using `src/http/public/`; it should exercise this API without becoming a separate frontend project.
 
 ```text
 POST   /items
@@ -287,6 +399,10 @@ GET    /health/ready
 ```
 
 The CLI remains usable. **The CLI and HTTP API use the same business operations.** This checks that the business rules do not depend on terminal input.
+
+Use the Project 1 item fields and pagination envelope unchanged. `POST /items` calls `addItem`; collection/item GETs call `listItems`/`getItem`; `PATCH /items/:id/complete` accepts an empty JSON object and calls `completeItem`. For `POST /items/:id/sessions`, accept `{ "action": "start" }` or `{ "action": "finish", "note": "..." }` and call the corresponding session operation. Reject other actions/fields. Return the operation result as JSON: 201 for item/session creation and 200 for reads, session finish and item completion. Parse numeric query strings before calling `listItems` and use the specified error-code mapping. The report endpoint uses `createProgressReport` and the download headers defined in the handoff contract.
+
+The JSONL adapter still has one owning process: stop the HTTP server before using the standalone CLI against the same data directory. Supporting simultaneous writers is a later storage change.
 
 The page needs only:
 
@@ -305,6 +421,17 @@ The page needs only:
 ```
 
 Use a real `<form>`, labeled controls, buttons, a list/table appropriate to the content, visible focus, an `aria-live` status region and a layout that becomes one column on a narrow screen. Do not add charts, client-side routing, drag-and-drop, animation or a component library unless a concrete requirement justifies one.
+
+### First HTTP milestone {#first-http-milestone}
+
+**Keep the full Project 1 release as your starting point.** This checkpoint makes the first Project 2 increment smaller; it does not replace the Foundations handoff or any later Project 2 release check.
+
+1. Create an importable Express app and a separate server entry. Inject the existing `createStudyApplication` result; do not move file parsing or domain rules into routes.
+2. Implement only `POST /items` and `GET /items`, preserving the handoff's input fields, list envelope, status codes and error codes. Use a bounded JSON parser and one final error handler. The file repository remains the local default, with one owning process.
+3. Add two HTTP tests: create a valid item through the real app, then list it and check the returned fields; submit a blank title and prove the error response leaves storage unchanged. Use a fresh temporary data directory and close resources after each test. Keep the existing CLI/domain tests passing.
+4. Run the [small NestJS read API](./16-frameworks.md#nest-starter) and compare its controller/provider/module wiring with Express. Add one HTTP check for its list response and close the app afterward. This is a small framework companion, not a second implementation of the full homework.
+
+You have reached this checkpoint when a request can add an item, a later request can list it, invalid input cannot change the log, both frameworks' request paths can be explained, and every test exits. **Now extend the same application** with the UI, remaining routes, reporting and the networking/lifecycle drills below. The full increments add these concerns one at a time.
 
 ### What you learn and why it belongs here
 
@@ -378,7 +505,7 @@ Failure drill: identify a pattern that would add extra layers without solving a 
 - [ ] Unit, HTTP integration, contract and real-adapter tests catch different deliberate failures; coverage exclusions are explained.
 - [ ] The bounded load run records environment, concurrency, latency distribution and error count without calling the result production capacity.
 - [ ] You can trace one request from socket/framework through validation, use case, repository, event and response, including who owns every rejection.
-- [ ] You can explain why each retained pattern exists and why NestJS was not implemented in parallel.
+- [ ] You can explain why each retained pattern exists, run/test the small NestJS companion, and map its controllers/providers/modules and later request hooks to the Express implementation without duplicating the whole service.
 
 Save this state as the `http-application` release or tag.
 
