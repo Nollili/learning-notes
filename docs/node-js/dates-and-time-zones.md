@@ -11,7 +11,7 @@ Use this lesson for JavaScript/TypeScript and PostgreSQL boundaries. The executa
 | Local date and time | Appointment requested for09:00 | Calendar/time fields plus the intended zone and resolution policy |
 | Elapsed duration | Timeout of500ms | Numeric elapsed units; monotonic clock for measurement |
 
-An offset such as +02:00 identifies one displacement from UTC; Europe/Budapest identifies a rule set that can use different offsets across dates. TIMESTAMPTZ preserves the instant, not the original IANA zone or original offset. Store the zone separately when future local-time intent matters. A birthday is not midnight UTC: converting it to another zone can move it onto the previous date.
+An offset such as `+02:00` is a fixed difference from UTC. `Europe/Budapest` names a set of time-zone rules whose offset can change with the date. **TIMESTAMPTZ preserves the instant, not the original zone or offset.** Store the zone separately when future local time matters. A birthday is a calendar date, not midnight UTC; converting a midnight instant to another zone can change the displayed date.
 
 JavaScript Date stores epoch milliseconds and has no per-instance IANA zone. Local getters/setters use the runtime's zone; UTC getters/setters use UTC. A Date is mutable, and invalid dates hold NaN. PostgreSQL can retain microseconds, so converting through Date loses precision; keep exact text for cursor ordering as in [cursor pagination](./cursor-pagination.md).
 
@@ -21,7 +21,7 @@ Do not use Date.parse as a permissive validator for arbitrary human-entered text
 
 <<< ../workbench/node-js/runtime/dates/date-boundaries.ts
 
-These contracts accept years1000–9999 and UTC instants with exactly three fractional digits. Rejecting other legitimate ISO forms is intentional input policy, not a claim those forms are invalid standards. If an API accepts offsets or microseconds, implement and test that broader grammar without silently truncating. Round-trip validation catches normalized impossible dates such as February30. The calendar helper handles leap days and month/year boundaries; adding months requires a separate clamp/reject/rollover policy. January31 plus one month has no universal business answer.
+These input rules accept years 1000–9999 and UTC instants with exactly three fractional digits. Other valid ISO forms are rejected deliberately, not declared invalid by the standard. If you accept offsets or microseconds, broaden and test the rules without silently dropping precision. Parsing and formatting back catches impossible dates normalized by the parser, such as February 30. The calendar helper handles leap days and month/year boundaries. **Adding months needs a business rule**: January 31 plus one month could reject, clamp or roll over.
 
 Use Date.now for wall-clock timestamps, not reliable elapsed timings: clock synchronization can move wall time. Use performance.now or process.hrtime.bigint for duration measurement within the same process; monotonic readings are not portable persisted instants.
 
@@ -42,7 +42,7 @@ For the installed Europe/Budapest rules in2026:
 
 <<< ../workbench/node-js/runtime/dates/dst-cases.ts
 
-Expected hours: springBefore01, springAfter03; both autumn values02 with different offset parts. Noon on March28 plus24 elapsed hours is13:00 on March29, not local noon. The two local noons are23 elapsed hours apart. Across the autumn transition they can be25 hours apart. A “daily09:00” rule and “every24 hours” are different schedules.
+Expected hours are `01` before the spring change and `03` afterward. Both autumn values show `02`, but with different offsets. Noon on March 28 plus 24 elapsed hours becomes 13:00 on March 29, not local noon. The two spring noons are 23 hours apart; autumn noons can be 25 hours apart. **“Daily at 09:00” and “every 24 hours” are different schedules.**
 
 For user-entered appointments, explicitly choose what happens to nonexistent times (reject, shift or skip) and repeated times (ask the user, choose earlier or choose later). Record the selected instant and zone; retain local intent/rule version where rescheduling or audit requires it. Do not pretend splitting a string, formatting to parts or calling local Date setters implements arbitrary IANA-zone resolution. Use a maintained zone-aware resolver when that feature is required.
 
@@ -71,7 +71,7 @@ ROLLBACK;
 
 The repeated local labels both show2026-10-25 02:30 but their instants differ by3600 seconds. Spring calendar-day arithmetic in this explicit session zone yields82800 seconds;24 hours yields86400. Session zone is a dependency of calendar operations, not a harmless display setting. Use DATE plus integer days for plain date arithmetic, and explicit zones for business-calendar operations. A database pool can reuse sessions; transaction-local settings prevent an accidentally persistent test zone from leaking into unrelated work.
 
-For user-day reports, derive the start and next calendar-day boundary in the intended zone, then query `instant >= start AND instant < nextStart`. Do not assume the range is always24 hours, and do not use an inclusive23:59:59.999 endpoint that loses finer precision. Keep the timestamp column unwrapped in range predicates when that enables the intended index. Choose tenant/business zone explicitly rather than depend on whichever server received the request.
+For a user's daily report, calculate that day's start and the next calendar-day start in the intended zone. Query `instant >= start AND instant < nextStart`. **A calendar day is not always 24 hours.** Avoid an inclusive `23:59:59.999` endpoint, which misses finer timestamp precision. Leave the timestamp column unwrapped where that allows the intended index. Select the tenant's or business's zone explicitly rather than inheriting whichever server handled the request.
 
 ## Practice and failure diagnosis
 

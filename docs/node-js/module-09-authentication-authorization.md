@@ -96,7 +96,7 @@ request + cookie → server loads session → identity
 
 ### Worked browser session: login, CSRF and logout
 
-A browser session is an opaque identifier in a cookie plus a server-side record. The cookie does not contain the password, account record or permission list. The runnable application uses `express-session` with `connect-pg-simple` and the same PostgreSQL database as the application. The migration creates `textbook_sessions`; no request creates schema. Two explicitly owned pools serve the ORM and session/SQL work, so count both in the connection budget.
+A browser session uses a random-looking ID in a cookie and a record stored on the server. The cookie does not contain the password, account object or permission list. This application uses `express-session` and `connect-pg-simple` with its existing PostgreSQL database. A migration creates `textbook_sessions`; requests never create schema. **Count both database pools**: one serves the ORM and another serves session/SQL work.
 
 Read the [complete `app.ts` workbench reference](../workbench/node-js/backend/session-app.md). It is imported directly from `examples/node-textbook/src/app.ts` in the repository, so the workbench listing stays aligned with the runnable source.
 
@@ -110,7 +110,7 @@ Read the [complete `app.ts` workbench reference](../workbench/node-js/backend/se
 
 **Why regenerate?** If an attacker already knows an anonymous session ID, keeping it after login would associate that known identifier with the victim's identity. Regeneration replaces it. Saving before sending the login response ensures the next request can find the new record. Changing identity also rotates the CSRF token, so clients replace their old token.
 
-**Why both Origin and a token?** A synchronizer token is random state tied to the server session and supplied explicitly in a custom header. Another site cannot read `/csrf` through the same-origin policy; the application does not enable cross-origin reads. Exact Origin validation adds a separate check on unsafe methods. The local JSON client must send both. GET/HEAD handlers do not change business state. XSS executing in this application's own origin can still obtain a token and act as the user; sessions/CSRF do not cure XSS.
+<span class="notes-section-label">**Why both Origin and a token?**</span> A synchronizer token is random data tied to the server session and sent explicitly in a custom header. The same-origin policy prevents another site from reading `/csrf`, and this application does not enable cross-origin reads. Exact Origin checking adds a separate protection for unsafe methods. The local JSON client must send both; GET and HEAD do not change business state. **CSRF defenses do not fix XSS.** Malicious script already running in this application's origin can obtain a token and act as the user.
 
 The sample cookie is HttpOnly, host-only, SameSite=Lax, path `/`, and has an eight-hour maximum age. A server-side establishment timestamp enforces the same absolute lifetime even when the store touches the row. There is no rolling lifetime. Secure cookies require HTTPS; the loopback HTTP tutorial explicitly uses `secure: false`. A hosted HTTPS adaptation must enable Secure, validate its actual proxy topology, and use a shared secret/store across replicas. The example does not trust forwarded IP/protocol headers.
 
@@ -129,7 +129,7 @@ Recovery is another authentication boundary. `src/security.ts` implements the st
 5. Update the hash and increment `credential_version`, consume other reset credentials, revoke refresh families and delete the account's session records in the same transaction. Commit once. A second concurrent completion fails.
 6. Require a fresh login. Do not automatically log in from a recovery request. The browser clears its old cookie.
 
-The session carries a credential version that protected requests compare to the account. This also rejects a stale login/session that raced password reset. Revocation affects subsequent authentication checks; it cannot undo a request already authorized and in flight. Highly sensitive operations may require a fresh version check inside their business transaction.
+Protected requests compare the session's credential version with the account's current version. This also rejects a login that became stale while a password reset was happening. **Revocation changes later checks; it cannot undo already authorized work.** Sensitive writes may need a fresh version check within the business transaction itself.
 
 **Local delivery:** the runnable server writes a reset credential to a private `.local-inbox` file, simulating a mailbox on your own computer; it sends no email. Read it only to finish the local exercise and delete it afterward. The test suite injects an in-memory delivery recorder. A hosted implementation needs a reviewed mail provider/queue, short retention, fixed trusted reset origin, and a page that avoids token leakage through referrers, analytics or third-party scripts.
 
@@ -306,7 +306,7 @@ export function verifyAccessToken(
 }
 ```
 
-**What it does:** verifies signature/algorithm/issuer/audience and present time claims, then explicitly requires the application schema: bounded subject, allowlisted role, access-token purpose, integer iat/exp and a positive lifetime of at most 900 seconds. jsonwebtoken checks exp when present; it does not require exp automatically. This API requires it. Five seconds of clock tolerance is a deliberate bounded skew policy, not an expiry bypass. Use synchronized server clocks; test boundaries with the injected clock.
+<span class="notes-section-label">**What it does:**</span> verifies the signature, allowed algorithm, issuer, audience and time claims when present. It then requires this application's claim schema: a length-limited subject, allowed role, access-token purpose, integer `iat` and `exp`, and a positive lifetime no longer than 900 seconds. **`jsonwebtoken` checks an existing expiry but does not require one automatically; this API requires it.** The five-second tolerance allows limited clock skew, not an expiry bypass. Synchronize server clocks and test boundaries with the injected clock.
 
 The issuer projects trusted fields rather than signing arbitrary caller properties. Other APIs may choose different subject/lifetime policies. A typed return cannot replace these runtime checks.
 
@@ -391,7 +391,7 @@ Throwing the replay error inside a callback that automatically rolls back would 
 | B obtains the lock after A commits | B sees a consumed token and commits family revocation | B gets 401 |
 | A presents its replacement afterward | The family is revoked | A also gets 401 and must log in |
 
-This chooses strict replay handling: a benign retry after losing the successful response also revokes the family. Serialize refresh requests in the client and require login after an ambiguous failure. A grace/retry-cache design is possible but needs its own bounded replay analysis; do not silently accept an old token twice. Rotation provides replay detection, not proof that the first presenter was legitimate.
+This design handles replay strictly: if a client loses a successful response and retries the old token, the family is revoked even when the retry is innocent. Send refresh requests one at a time and require login after an uncertain failure. A grace period or saved-response design is possible, but needs separate limits and replay analysis. **Rotation detects reuse; it does not prove the first person using a token was legitimate.** Never silently accept an old token twice.
 
 [Related practice](../practice/node-js/module-09-authentication-authorization.md).
 
@@ -782,7 +782,7 @@ export async function updateOwnedProduct(
 }
 ```
 
-**What it does:** checks resource, owner and tenant in the same UPDATE that changes it; values are bound, identifiers are fixed. The products table must declare owner_id/tenant_id (non-null foreign keys in the tenant model), in addition to the scalar columns in the PostgreSQL lesson. An earlier scoped read alone does not authorize a later unscoped update: ownership can change between those operations. Ignore caller-supplied owner/tenant fields; derive actor from verified current membership.
+<span class="notes-section-label">**What it does:**</span> checks the resource ID, owner and tenant in the UPDATE that changes the row. Values use query parameters and identifiers are fixed. The products table needs `owner_id` and `tenant_id` as non-null foreign keys in the tenant model, as well as the earlier scalar columns. **A permission check in an earlier read does not protect a later unrestricted update.** Ownership may change between them. Derive the actor from verified current membership and ignore owner or tenant fields supplied in the body.
 
 A single-statement conditional write prevents that gap, subject to the selected PostgreSQL isolation/locking policy. This raw SQL bypasses the ORM identity map; return the projected row and avoid retaining stale managed Product instances in the same request.
 
@@ -1186,7 +1186,7 @@ function resolveInsideUploadRoot(untrustedName: string): string {
 
 **When to use it:** use containment checks when a caller influences a filesystem location. A stronger design generates server-side storage names and stores the original display name as metadata.
 
-Do not rely only on removing `../`. Encodings, platform separators, absolute paths, and symbolic links can defeat simple string replacement. If attackers can create symbolic links inside the root, additional filesystem controls are required. This is a lexical check, not a filesystem sandbox: resolving a name and opening it later can race replacement. The `path` APIs in [Module 2](./module-02-standard-library.md) normalize names; they do not resolve this authority boundary.
+Removing `../` alone is insufficient. Encoding, platform separators, absolute paths and symbolic links can bypass simple replacements. This example checks path strings, not full filesystem containment. **A check followed by an open can race a path replacement.** If an attacker can create symlinks under the root, use additional filesystem controls. The `path` APIs in [Module 2](./module-02-standard-library.md) normalize names; they do not solve that access-control problem.
 
 Prefer opaque server-generated names under a trusted immutable root, or a separately reviewed no-follow/open-relative storage adapter. Do not present `startsWith(root)` or this relative-path check as protection against attacker-controlled symlinks.
 

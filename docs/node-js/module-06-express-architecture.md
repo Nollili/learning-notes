@@ -477,7 +477,7 @@ function logger(req: Request, res: Response, next: NextFunction): void {
 }
 ```
 
-Avoid logging passwords, authorization tokens, cookies, or sensitive request bodies. originalUrl/path/query values can also contain secrets or user identifiers; log an application-owned normalized route template, not a full incoming URL. The small logger uses req.route.path after routing and an unmatched fallback; mounted routers need a safe configured feature prefix for unambiguous metrics. Completion-only logs omit aborted requests; a production logger should classify close-before-finish once without duplicate logging.
+Do not log passwords, tokens, cookies or sensitive bodies. `originalUrl`, path and query values can contain secrets too. **Log a server-controlled route template, not the full incoming URL.** The small logger uses `req.route.path` after routing and a fallback for unmatched requests. Mounted routers also need a safe feature prefix so route names are unambiguous. A finish-only logger misses aborted requests; a production logger should record close-before-finish once, without duplicate entries.
 
 ### Authentication middleware
 
@@ -1174,7 +1174,7 @@ async function createOrder(command: CreateOrderCommand) {
 }
 ```
 
-The repository claim result is a discriminated union with separate processing/completed variants, so only a completed claim exposes a replay response. This prevents accidentally replaying a processing record and keeps persistence coordination out of HTTP status types. actorId comes from verified request context, not a client-selected body field. Keys are scoped by actor+operation (and tenant where applicable), bounded/validated, and fingerprints are derived server-side from normalized operation input rather than accepted as client authority.
+The claim result has separate `processing` and `completed` variants. Only the completed variant exposes a response for replay. **An unfinished operation must not be replayed as a finished response.** This keeps storage coordination separate from HTTP status types. Get `actorId` from verified caller context, not the request body. Scope keys by actor and operation, plus tenant where needed, and validate their size and format. Compute the input fingerprint on the server from normalized values; do not trust a fingerprint supplied by the client.
 
 An implementation on a transactional relational store can claim with an INSERT protected by a composite primary/unique key:
 
@@ -1189,7 +1189,7 @@ RETURNING request_key;
 -- If claimed: create order, UPDATE this record to completed with response, COMMIT.
 ```
 
-The claim adapter must implement the documented transaction/isolation behavior, not merely expose this method name. On PostgreSQL concurrent unique-key inserts coordinate with the conflicting transaction; after a conflict use a fresh READ COMMITTED statement/appropriate locking to read its committed result. If retention cleanup can remove the row between conflict and read, retry the entire transaction under a bounded policy or coordinate cleanup; never interpret a missing read as permission to duplicate the business write.
+The claim adapter must provide the promised transaction and isolation behavior, not just a method with the right name. In PostgreSQL, concurrent inserts of the same unique key coordinate with the conflicting transaction. After a conflict, read its committed result using a fresh Read Committed statement or appropriate locking. Cleanup could remove the row between conflict and read. In that case, coordinate cleanup or retry the whole transaction with a limit. **A missing row after a conflict is not permission to repeat the business write.**
 
 A rollback must remove both claim and business changes. A permanently committed processing state requires explicit lease/recovery semantics; the simple same-transaction design commits only completed results.
 
@@ -1297,7 +1297,7 @@ Express turns Node's low-level HTTP primitives into an ordered routing and middl
 
 ## Storage rows, domain states and public DTOs
 
-An interface name does not establish a boundary. Returning an ORM entity directly lets a later internal field addition leak into JSON even if a controller's TypeScript return annotation names fewer fields. Structural typing is not runtime field removal. Keep a repository mapper, a domain contract and a deliberately projected response when they differ; avoid three identical types only for ceremony.
+An interface name alone does not separate responsibilities. Returning an ORM entity directly can expose a new internal field in JSON, even if the controller's TypeScript type lists fewer fields. **TypeScript types do not remove runtime fields.** Use explicit storage mapping, business values and public response selection where those representations differ. Do not create three identical types just to add layers.
 
 This focused catalog projection extends the Products API concepts without changing that introductory CRUD contract. Its price is positive integer minor units, not the CRUD sketch's floating-point price. A storage row has snake_case fields and a driver Date; the domain has immutable primitive values and a publication discriminant; the response excludes tenant/internal supplier fields. Draft and published states cannot simultaneously omit/require the publication time.
 
@@ -1355,7 +1355,7 @@ Only the presentation adapter knows status200/404; domain outcomes have no Expre
 
 The mapper intentionally strips extra storage columns and then explicitly projects each layer. A future supplier_cost_cents/internal_note/driver helper is never spread into the public response. This is a defense against accidental serialization, not an authorization mechanism. Derive trustedTenantId from verified context; filter by tenant/visibility in the actual repository query as well, before pagination/aggregation. More detailed ownership/permission rules belong to the use case. Do not trust a body tenantId or this pure helper as proof that a caller may view the catalog.
 
-Readonly constrains TypeScript assignments, not all JavaScript mutation. Values here are primitives, so they do not share a mutable Date/ORM relation across layers; freeze/copy deeper structures if the actual ownership contract requires it. The ISO string follows JavaScript Date millisecond precision and UTC formatting; a microsecond-sensitive cursor needs the dedicated database timestamp contract rather than this projection. Validate API JSON separately: z.date expects a real driver Date, not an arbitrary timestamp string from a request. A storage adapter must match the configured driver conversions.
+`Readonly` restricts TypeScript assignments, not every possible JavaScript mutation. These values are primitives, so they do not share a mutable Date or ORM relation between layers. Copy or freeze nested values when needed. The ISO timestamp uses JavaScript Date's millisecond precision and UTC formatting; a cursor needing microseconds requires the separate database timestamp design. **Validate each representation for where it comes from.** `z.date` expects a driver Date, not arbitrary JSON timestamp text, and the storage adapter must match the configured driver conversions.
 
 [Related practice](../practice/node-js/module-06-express-architecture.md).
 

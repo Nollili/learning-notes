@@ -272,7 +272,7 @@ Node.js executes JavaScript callbacks on an event-loop thread. A long-running ca
 
 ### Event-loop utilization
 
-The owned helper above reports utilization and delay together from one timer. It returns stop, which clears the timer and disables histogram sampling; call it on application shutdown, replacement and failed startup. unref only allows process exit—it does not dispose the timer or histogram. stop is idempotent. An observation with no histogram samples reports null delay values instead of a made-up zero/NaN.
+The helper reports utilization and delay using one timer. Call its returned `stop` function during shutdown, replacement or failed startup; it clears the timer and disables histogram sampling. **`unref()` allows process exit but does not clean up the timer or histogram.** Calling `stop` repeatedly is safe. If no histogram samples exist, delay values are `null`, rather than an invented zero or `NaN`.
 
 If the observation sink throws, the helper stops and exposes stopped=true; the owner must surface that diagnostic failure through an independent safe health path rather than assume reporting continues. The callback is synchronous and must not return a promise.
 
@@ -323,7 +323,7 @@ console.log({
 
 **When to use it:** export these values periodically as metrics. Trends are more useful than one reading.
 
-These categories overlap: arrayBuffers is included in external, heapUsed is within heapTotal, and RSS covers resident process memory rather than an independent sum of those counters. Do not add rss+heap+external+arrayBuffers to invent a total. With worker threads, RSS is process-wide while other reported fields concern the current thread. Compare like-for-like snapshots/runtime/workload and retained ownership; these counters alone cannot prove a leak.
+These memory figures overlap. `arrayBuffers` is included in `external`, and `heapUsed` is part of `heapTotal`. RSS covers memory resident for the process, so **adding all these counters does not give a meaningful total**. With workers, RSS is process-wide while other reported fields concern the current thread. Compare the same runtime and workload, then investigate retained references. These numbers alone do not prove a memory leak.
 
 ### Normal growth versus a leak
 
@@ -483,7 +483,7 @@ Measure pool acquisition separately from query execution.
 
 <<< ../workbench/node-js/runtime/diagnostics/measured-db.ts
 
-**What it does:** records both successful and failed acquisition/query durations separately. An acquisition failure emits no query sample and has no client to release. Query failure still releases exactly once; a throwing observation sink cannot leak an acquired connection or mask the original DB result. droppedObservations makes that telemetry loss visible. Query+release failure preserves both causes in an AggregateError; map them to safe categories rather than log raw statements, parameters or error objects. The observer must be synchronous; use fixed low-cardinality operation labels at the actual adapter.
+<span class="notes-section-label">**What it does:**</span> measures connection acquisition and query execution separately, including failures. Failed acquisition records no query sample and leaves no client to release. Query failure still releases its client exactly once. If the reporting callback throws, it cannot leak the connection or replace the database result; `droppedObservations` records that lost reporting. If query and release both fail, `AggregateError` preserves both causes. Report safe categories, not raw SQL, parameters or error objects. The observer must be synchronous, with a small fixed set of operation labels.
 
 This port does not cancel driver calls, enforce SQL parameterization inside an arbitrary query implementation or impose a DB deadline. Keep the real driver's statement/connection timeouts and owned client lifecycle. A duration wrapper cannot force a blocked promise to settle.
 

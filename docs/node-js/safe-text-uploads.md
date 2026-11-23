@@ -1,6 +1,6 @@
 # A Bounded Text Upload and Its Threat Model
 
-Continue Node24/Express5/PostgreSQL16/Zod4. This lab accepts only small UTF-8 text, stores it under an opaque application-generated key and serves it as a fixed text attachment after current access checks. The base endpoint does not support multipart, images, PDFs, archives, remote URLs or executable content processing. A separate multipart variant below accepts only the same bounded text format. Those formats need their own maintained parser/inspection/isolation contracts; do not widen this endpoint merely by accepting another MIME string.
+This Node 24/Express 5/PostgreSQL 16/Zod 4 lab accepts only small UTF-8 text files. The server generates a storage key, keeps the file private and checks current access before returning it as a fixed text attachment. The base endpoint does not accept multipart data, images, PDFs, archives, remote URLs or executable-content processing. The separate multipart variant below accepts only the same size-limited text format. **Changing a MIME string does not make a new format safe to process.** Other formats need their own maintained parsers, inspection and isolation rules.
 
 ## Assets, boundaries and abuse cases
 
@@ -40,17 +40,17 @@ CREATE TABLE text_uploads (
 
 ## What the state machine guarantees—and what it leaves open
 
-A reservation is pending before filesystem work. Only a successfully written/closed file can be finalized ready; only ready/current-owner/unexpired metadata is downloadable. The read allocates at most8193bytes and detects truncation, extra bytes or digest mismatch before sending content. The app never renders uploaded text as HTML and ignores filename headers. Text that looks like HTML remains inert attachment bytes; the inspection contract is bounded valid text/control policy, not a malware scanner or proof that an arbitrary named format is safe.
+The database reservation starts as pending before file work begins. A file becomes ready only after writing and closing succeed. Download requires ready, unexpired metadata belonging to the current owner. The read allocates no more than 8,193 bytes and checks for truncation, extra bytes and checksum mismatch before sending. **Uploaded text is never rendered as HTML.** Filename headers are ignored, and HTML-looking text remains attachment bytes. This checks size-limited valid text and permitted controls; it is not malware scanning or proof that any named file format is safe.
 
 The root/parent tree is private and not attacker-writable; files are server-created and immutable. This is not an attacker-writable filesystem sandbox. Do not expose arbitrary roots, symlinks, file names or paths through the API. A compromised server/root is outside this fixture's guarantee. A real storage adapter may use no-follow/open-relative primitives or versioned object storage under a stronger threat model. Current actor values come only from the guard; do not deserialize an actor from a source/body/model response.
 
-A failed reserve/finalize acknowledgment may have committed. The code returns a server-generated ID with a controlled pending outcome instead of deleting bytes blindly and potentially breaking a committed ready row. The authenticated status route resolves current authoritative state; a missing ID, still-pending ID and ready ID drive explicit UI recovery. Pending/partial/abandoned artifacts need bounded cleanup and monitoring. A crash after file creation can leave a pending row/file; expiry/cleanup must cover both states.
+A missing reserve/finalize acknowledgement does not prove the database write failed. The code returns a server-generated ID with a controlled pending outcome instead of blindly deleting bytes that may belong to a committed ready row. **Use the authenticated status route to resolve an uncertain outcome.** Missing, pending and ready states require different UI recovery. A crash can leave a pending row and file, so cleanup and monitoring must cover partial and abandoned files as well as ready ones.
 
 This endpoint is not idempotent across new POSTs: an automatic retry can create another object. Add a durable caller-operation policy before promising duplicate-upload prevention, as explained in the [approved-write recovery lesson](../python-for-ai/approved-writes.md).
 
 The table here is distinct from the generic retention fixture. Integrate its pending/ready metadata and private keys into the [retention/deletion adapter](./retention-and-deletion.md) explicitly; copying that sweeper without changing its table does not clean these uploads. Authentication expires access immediately; cleanup deletes owned bytes/metadata and retries safely. Do not orphan files by deleting metadata first. Record only safe counts/state/error categories, not raw text, tokens, actor credentials or absolute paths.
 
-Per-request8KiB limits do not enforce per-user/tenant disk quotas, total concurrent uploads or a global flood budget. Guard/rate/admission limits belong before parsing; database/file deadlines, storage quotas, lifecycle cleanup and expiry indexing belong in deployment. Upload permission is checked at admission; highly sensitive revocation during an in-flight operation needs a stronger transaction/current-membership policy. Download authorization is checked anew on every request. The fixture contains no public sharing or arbitrary delete endpoint.
+An 8 KiB request limit does not impose disk quotas per user or tenant, limit all concurrent uploads or prevent a service-wide flood. Authenticate and limit admission before parsing. Deployment still needs database/file deadlines, storage quotas, cleanup and expiry indexes. Upload permission is checked when work is accepted; sensitive revocation during active work needs a stronger transaction/current-membership rule. **Download permission is checked again on every request.** This lab provides neither public sharing nor arbitrary deletion.
 
 ## Practice and acceptance
 
@@ -64,7 +64,7 @@ Source: `docs/workbench/node-js/security/upload-lab/multipart.mjs`. Copy it into
 
 <<< ../workbench/node-js/security/upload-lab/multipart.mjs
 
-The parser owns a5second total parse deadline,8KiB file cap and16KiB wire cap, disallows fields/multiple files and rejects unsupported compression. All parts must finish before the row is inserted. Busboy emits `partsLimit` when its count is reached: the cap is2, while exactly one file is accepted and other fields are forbidden. An initial cap of1 rejected the valid single-part fixture; this was corrected and rerun. The wire limiter bounds multipart framing as well as content.
+The parser limits total parsing time to five seconds, file content to 8 KiB and the full multipart request to 16 KiB. It rejects fields, multiple files and unsupported compression, and waits for all parts before inserting the row. Busboy emits `partsLimit` when the configured count is reached. Its cap is therefore 2, while the application still accepts exactly one file and forbids other fields. A cap of 1 incorrectly rejected the valid single-part test; that was corrected and retested. **The wire-byte limit covers multipart framing as well as file content.**
 
 The installed Busboy1.6 source uses an internal header-pair bound; this example deliberately avoids an ineffective per-parser headerPairs override and requires ingress header limits as well. Its pipeline may destroy a malformed/oversized request socket; clients must handle a disconnected upload as well as a controlled400. Do not promise a JSON error after a destroyed connection.
 

@@ -1,12 +1,12 @@
 # GraphQL: a bounded catalogue query
 
-GraphQL is a typed query/execution model, not a database or an automatic authorization layer. A schema describes fields, argument types and nullability; a query selects a projection; resolvers obtain the data. REST remains the primary course API. Learn GraphQL as an alternative when clients need evolving nested projections and the team can own query cost, resolver authorization and schema compatibility.
+GraphQL describes typed queries and how to execute them. A schema defines fields, argument types and whether values may be null; a query selects fields, and resolvers obtain their values. **GraphQL is neither a database nor automatic authorization.** REST remains the main course API. Consider GraphQL when clients need changing nested data selections and the team can manage query cost, resolver permissions and compatible schema changes.
 
 This worked fixture uses **Node24.18.0 and graphql-js17.0.2**, pinned from the official npm registry on2026-10-25. It executes the real GraphQL engine in-process, without introducing an additional web framework or running a hosted API. Consult the [official GraphQL.js route](https://www.graphql-js.org/docs/running-an-express-graphql-server/) before adding an HTTP adapter; do not mix v16/v17 experimental APIs into this small stable schema example.
 
 ## Read the contract
 
-`CoursePage!` means the page cannot be null on a successful resolution; `[Course!]!` means the list and its elements are non-null. If a required nested field fails, GraphQL error propagation can null a parent up to a nullable boundary. Choose nullability from the real availability/domain contract rather than adding exclamation marks everywhere. Clients inspect `errors` and `data`; a fulfilled request or an HTTP200 alone is not proof every requested field succeeded.
+`CoursePage!` cannot be null when resolved successfully. `[Course!]!` means neither the list nor its elements may be null. Failure of a required nested field can set a parent to null, continuing up to a nullable field. Choose those rules from real data and availability needs, not by adding exclamation marks everywhere. **Check both `errors` and `data`.** A fulfilled request or HTTP 200 does not mean every requested field succeeded.
 
 The fixed named operation below requests IDs/titles/authors plus cursor metadata. Its variables carry data, not query syntax. For this teaching endpoint, a server-owned **persisted-operation allowlist** admits only `catalogue.v1`; clients cannot submit arbitrary aliases, fragments or deep nesting. Combined with `first<=20`, this gives a small known work shape. A general query endpoint additionally needs byte/token/depth/complexity limits, validated variable-dependent list costs and aggregate admission/rate budgets. Depth alone misses wide aliases or expensive fields. See [official complexity controls](https://www.graphql-js.org/docs/operation-complexity-controls/).
 
@@ -70,13 +70,13 @@ export async function executeCatalogue(operationId, variables, viewer) {
 }
 ```
 
-The authenticated viewer is a **trusted server context**, not query input. The HTTP adapter must validate its session/access token and establish subject/tenant before calling this function. The fixture supplies synthetic viewers directly, so it tests scope isolation rather than token verification. Unknown extra variables cannot smuggle in a tenant override. Scope is applied before cursor lookup, page slicing and author loading, so another tenant's ID is not used to locate an unrestricted cursor or fetch related data.
+**The authenticated viewer comes from trusted server context, not query input.** The HTTP adapter verifies the session/token and establishes subject and tenant before calling this function. This fixture injects made-up viewers directly, so it tests data separation, not token verification. Extra variables cannot override tenant scope. Apply scope before cursor lookup, pagination and author loading so another tenant's ID never triggers an unrestricted lookup.
 
 The raw ID cursor is suitable only for this fixed synthetic in-memory catalogue: ordering is stable here and the data is unchanged. A real endpoint needs the [scoped signed cursor/ordering contract](./cursor-pagination.md), matching database sort/collation/tie-breaker and an explicit live-feed or snapshot policy. An opaque cursor does not grant access. Do not describe this array slice as a database keyset-performance test.
 
 ## N+1 and request-owned data loading
 
-A naive `Course.author` resolver fetching once per course makes one course query plus N author queries, often repeating the same author. Here the page resolver collects distinct author IDs and loads one **tenant-scoped batch**, then supplies each nested object to GraphQL's default field resolver. A real repository would execute one parameterized tenant+ID query and preserve missing/error semantics. The fixture's batch counter proves the adapter invocation shape; it is not a measurement of SQL traffic.
+Fetching each course's author separately creates one course query plus N author queries, often repeating authors. Here, the page resolver collects distinct author IDs and loads them in **one tenant-scoped batch**. It then supplies the nested objects to GraphQL's default resolver. A real repository should use one parameterized tenant-and-ID query and preserve missing/error behavior. The fixture counts adapter calls; it does not measure actual SQL traffic.
 
 DataLoader is another option for independently resolved nested fields: create it per request/principal, batch keys, return results aligned to input keys, and avoid a global cache leaking one tenant's result to another. Authorization still belongs in the domain/repository boundary. The fixture intentionally repeats author IDu1 across tenants and verifies different names. See [official N+1/DataLoader guidance](https://www.graphql-js.org/docs/n1-dataloader/) and [authorization strategies](https://www.graphql-js.org/docs/authorization-strategies/).
 

@@ -13,7 +13,7 @@ Primary application stack remains HTTP JSON on Node24 with the [networking bound
 
 ## SSE is a framed UTF-8 HTTP response
 
-Set Content-Type:text/event-stream, disable inappropriate storage and flush response headers. Events consist of fields terminated by a blank line. Multiple data lines join with newline; JSON.stringify of a projected object fits in one data line because embedded newlines are escaped. `id` updates EventSource's last event ID, `retry` suggests reconnection delay, and colon-prefixed comment lines can serve as heartbeats. Reconnection supplies Last-Event-ID; it does not implement replay storage or exactly-once effects for you. A204 response tells the native client to stop reconnecting. HTTP2 multiplexing changes connection constraints, not these event fields.
+Set `Content-Type: text/event-stream`, disable inappropriate storage and flush headers. A blank line ends each event. Multiple `data` lines join with newlines; `JSON.stringify` escapes embedded newlines, so a selected object fits on one data line. `id` updates EventSource's last event ID, `retry` suggests a reconnect delay, and comment lines beginning with a colon can act as heartbeats. **Last-Event-ID identifies a position; it does not store history or prevent duplicate effects.** A 204 response tells the native client to stop reconnecting. HTTP/2 multiplexing changes connection constraints, not event fields.
 
 ### A bounded in-memory progress log
 
@@ -114,7 +114,7 @@ export function openProgressStream(request, response, log, cursor,
 
 Register this handler only after verifying the session and permission for that feed. Parse the cursor as a bounded decimal safe integer from Last-Event-ID on reconnect or a validated `after` query on first connection. Reject malformed/future IDs with400 before streaming. A cookie-based EventSource uses normal credential/CORS rules; it cannot set arbitrary Authorization headers through its native constructor. Choose an intentional same-origin session route or a separately implemented streaming fetch client; do not put long-lived bearer credentials in the URL.
 
-The queue budget includes Node's currently buffered response bytes; if full, disconnect rather than retain unlimited events. Heartbeats do not prove client receipt and TCP buffering still exists. `X-Accel-Buffering:no` is an nginx-specific hint, not a universal proxy configuration. Disable inappropriate response buffering/compression for this route and test the real ingress idle/read timeouts. Admission must bound concurrent subscribers separately. A returned disposer ends the connection during shutdown; call all owned disposers and stop publishing before exiting. This small log/handler does not provide cross-instance pub/sub, durable replay or atomic business delivery.
+The queue budget includes bytes already buffered in Node's response. Disconnect a client that exceeds it instead of retaining unlimited events. Heartbeats do not prove receipt, and TCP buffering still exists. `X-Accel-Buffering: no` is only an nginx hint; configure and test buffering, compression and idle/read timeouts at the real ingress. Limit subscriber count separately. During shutdown, stop publishing and call every returned connection disposer. **This local handler does not provide cross-instance distribution, durable replay or atomic business delivery.**
 
 ### Browser consumer and reset protocol
 
@@ -212,7 +212,7 @@ export function startPolling(load, consume, {
 
 Pause/resume on visibility/offline state only if the product defines how stale data and resumption work. Conditional requests with ETag/If-None-Match can reduce unchanged payload bytes;304 is a successful “no new representation” outcome, not malformed JSON to parse.
 
-The adapter must settle after abort/deadline; AbortSignal.timeout does not forcibly settle an arbitrary noncooperative promise. A stuck adapter prevents overlap (this scheduler will not start a second request) but still needs transport/resource cancellation. consume and onError are synchronous trusted callbacks in this teaching contract; async processing needs to be awaited and explicitly owned, and error reporting must not throw. Do not blindly retry writes merely because this read-polling scheduler retries classified failures.
+The adapter must finish after abort or deadline; `AbortSignal.timeout` cannot force an uncooperative promise to settle. A stuck adapter prevents a second overlapping request but still needs real transport cancellation and resource cleanup. Here, `consume` and `onError` are trusted synchronous callbacks. If consumption becomes async, await and manage it; error reporting must not throw. **A retry policy for reads is not permission to retry uncertain writes.**
 
 ## gRPC/protobuf awareness: a worked contract
 
@@ -252,7 +252,7 @@ const call = client.getProgress({ courseId: 'c1' }, {
 
 The runtime field naming depends on generated/loader options (for example keepCase); align the JS request shape with the selected toolchain and type declarations. An actual example requires generated code/descriptors and server setup from the official Node tutorial. This is introductory contract/readability coverage; a full deployed gRPC service is optional practice for this target.
 
-A gRPC call completes with its own status, often carried in trailing metadata; a transport HTTP200 is not proof of RPC success. Distinguish INVALID_ARGUMENT, UNAUTHENTICATED, PERMISSION_DENIED, NOT_FOUND, UNAVAILABLE and DEADLINE_EXCEEDED, and translate them deliberately at an HTTP/browser gateway. Clients need deadlines—do not assume a useful default—and the server/downstream work must cooperate with cancellation. A timed-out write can have committed, so retries still require idempotency and a total budget. Flow control does not remove application message-size/queue/concurrency limits.
+gRPC returns its own status, often in trailing metadata. **An HTTP 200 does not prove an RPC succeeded.** Distinguish invalid input, missing identity, denied permission, missing resource, unavailable service and deadline expiry, and map them deliberately at any HTTP gateway. Clients need explicit deadlines; server and downstream work must cooperate with cancellation. A timed-out write may already have committed, so retries need idempotency and a total budget. Flow control does not replace message-size, queue or concurrency limits.
 
 Browsers do not expose the same raw HTTP2/trailer interface as a Node gRPC client. gRPC-Web or a suitable gateway/alternative is a separate deployment/client contract with supported streaming modes; do not promise all bidirectional gRPC functionality through ordinary browser fetch. For a public browser CRUD app, HTTP JSON plus SSE can be simpler. gRPC is attractive when typed cross-language service contracts, generated clients and streaming justify its infrastructure/tooling cost. Compare debuggability, schema ownership, proxies and operational support—not a blanket “binary always faster” claim.
 

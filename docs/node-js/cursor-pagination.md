@@ -1,6 +1,6 @@
 # Deterministic Cursor Pagination
 
-Use keyset pagination for a growing ordered feed when “continue after this row” matters more than “jump to page37.” OFFSET is simpler for small/admin result sets and arbitrary page numbers, but skipped rows still cost work and concurrent inserts can shift page boundaries. Neither approach automatically creates a snapshot across HTTP requests.
+Use keyset pagination for a growing ordered feed when you need to continue after the last row. OFFSET is simpler for small administrative lists or jumping to a numbered page, but the database still processes skipped rows and concurrent inserts can shift page boundaries. **Neither method freezes the result across separate HTTP requests.**
 
 This worked path uses Node24, TypeScript5.9, Express5.3, Zod4.6 and MikroORM7.2/PostgreSQL16. It extends the [SQL workbench](../workbench/node-js/database/sql-queries.md) with a tenant-scoped orders API. The server must authorize reading that tenant's orders; a cursor is never an access credential.
 
@@ -22,7 +22,7 @@ CREATE INDEX feed_orders_page_idx
 
 Use actual tenant foreign keys in the complete domain. ID and created_at are immutable ordering keys under the write policy. Both are non-null. Descending continuation uses `(created_at,id) < (cursor_time,cursor_id)`, matching ORDER BY created_at DESC,id DESC. ID breaks timestamp ties. Mixed-direction sorts require a different comparison, and nullable keys need explicit handling.
 
-PostgreSQL timestamps can retain microseconds; JavaScript Date retains milliseconds. Converting a database position to Date and back can skip or repeat rows. The SQL below projects exactly six fractional digits in UTC as text and the codec keeps that text intact. The example bounds dates to ordinary four-digit AD years rather than PostgreSQL's entire date range.
+PostgreSQL timestamps can preserve microseconds, but JavaScript Date preserves only milliseconds. **Converting a cursor timestamp through Date can skip or repeat rows.** The SQL below returns UTC text with exactly six fractional digits, which the cursor codec keeps unchanged. This example accepts ordinary four-digit AD years, not PostgreSQL's full date range.
 
 ## Signed scoped cursor and query boundary
 
@@ -40,7 +40,7 @@ The decoder bounds input before decoding, verifies the signature before trusting
 
 The required authorization middleware must authenticate and authorize reading tenant orders before tenantFor returns a context. Reuse the [authentication boundary](./module-09-authentication-authorization.md); these injected adapters make the trust dependency explicit. Do not replace the middleware with a check that an Authorization header merely exists. Use the production request logging/error handler and database deadlines from [production lifecycle](./module-10-production-ready-applications.md). Successful responses contain only ID, timestamp, amount and continuation; permission/tenant metadata is absent.
 
-The API fetches limit+1 rows to decide whether another page exists, returns only limit rows and places the cursor after the last returned row, not the extra row. This bounds materialized results to101. A database adapter must honor the SQL LIMIT; schema validation alone does not stop an arbitrary adapter from allocating unbounded data before returning.
+The API reads `limit + 1` rows to check whether another page exists. It returns only `limit` rows and places the cursor after the last returned row, not the extra one. The maximum collected result is therefore 101 rows. **The actual adapter must enforce SQL LIMIT.** Validating the returned shape cannot stop an arbitrary adapter from first loading unlimited data.
 
 ## What concurrent changes mean
 

@@ -167,7 +167,7 @@ API → durable message → consumer → later result
 
 ### Do not use a queue to pretend synchronous work is asynchronous
 
-If an HTTP request publishes a message and then blocks waiting for the consumer's answer, the queue may add complexity without removing temporal coupling. Sometimes this request-reply pattern is justified, but it needs the same timeout, correlation, capacity, and failure analysis as HTTP.
+If an HTTP request publishes a message and then waits for the consumer's reply, both sides still need to be available at the same time. **A queue does not automatically remove that timing dependency.** Request-reply messaging can be appropriate, but still needs deadlines, matching IDs, capacity limits and failure handling, just as HTTP does.
 
 ### A practical decision
 
@@ -959,9 +959,9 @@ If these answers are vague, the boundary is not ready.
 
 ### One-minute recap
 
-Distribution introduces uncertain outcomes, duplicates, reordering, delayed visibility, and partial failure. Begin with a modular monolith unless independent deployment or isolation provides enough value to justify those costs. Use synchronous calls for immediate results and durable messaging for work that can complete later. Assume at-least-once delivery can duplicate work. Protect important effects with idempotency, acknowledgements after durable processing, and reconciliation. Use a transactional outbox to connect local commits to eventual publication.
+Distributed work can produce unknown outcomes, duplicates, out-of-order messages, stale reads and failures affecting only part of the system. Start with a modular monolith unless independent deployment or isolation justifies those costs. Use direct calls for results needed now and durable messages for work that can finish later. **At-least-once delivery can repeat work.** Protect important effects with idempotency, acknowledge only after durable processing, and keep a way to check uncertain outcomes. A transactional outbox links a local commit to later publication.
 
-Model cross-service workflows as durable sagas with explicit compensation. Caches require freshness and invalidation policies. Retries require deadlines, backoff, jitter, and classification. Circuit breakers stop repeated failing calls, while bulkheads limit their blast radius. Prefer data-store constraints to distributed locks; if leases protect correctness, fence stale owners. Make every intermediate state and recovery path observable.
+Store cross-service workflow progress as a saga with explicit compensating actions. Define cache freshness and invalidation. Retry only classified failures within deadlines, with backoff and jitter. A circuit breaker temporarily stops failing calls; a bulkhead limits how much capacity one dependency can consume. Prefer database constraints to distributed locks. If leases protect correctness, **reject actions from stale owners using fencing checks**. Make intermediate states and recovery visible in logs, metrics or status records.
 
 ### Further reading
 

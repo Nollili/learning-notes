@@ -12,9 +12,9 @@ See the [rendered runtime source collection and run instructions](./runtime/inde
 - `runtime/json-lines.ts`: bounded byte frames, strict UTF-8 and nonnull object output.
 - `runtime/child.ts`: one owned child; settle at close, including startup/abort failure.
 
-These sources are included directly in their teaching pages, so the displayed implementation and canonical source agree. Compile TypeScript using the documented compatible compiler/types, then run JavaScript; native type stripping is not a substitute for type checking.
+The teaching pages include these source files directly, so the displayed code matches the maintained implementation. Compile TypeScript with the documented compatible compiler and types, then run the resulting JavaScript. **Running by stripping types does not check those types.**
 
-Reference scope matters: the limiter is a bounded array batch, the worker is not a pool, the parser is not a domain validator, and the child helper does not own a process tree. Backend/database/deployment fixtures have separate dependency and environment requirements.
+Check what each example actually provides. The limiter processes a size-limited array batch; the worker helper is not a reusable pool. The parser checks record format, not business fields. The child helper manages one child, not all descendants. Backend, database and deployment examples need their own dependencies and environment setup.
 
 ## Backend and persistence collections
 
@@ -31,4 +31,4 @@ Reference scope matters: the limiter is a bounded array batch, the worker is not
 - `messaging/jobs-lab/`: RabbitMQ/outbox and PostgreSQL scheduler examples. Run `node ownership.check.mjs` from that fixture directory after its locked install for startup/publication cleanup failure checks without a live broker. The [jobs lesson](../../node-js/jobs-and-schedules.md) defines dependencies, uncertain windows and operational limits.
 - `deployment/container-lab/` and `deployment/full-stack-lab/`: copy both dependency-complete directories as directed by the [deployment lesson](../../node-js/full-stack-deployment.md). Setup creates only owned temporary fixture resources. Container locks/hidden setup files stay with their sources.
 
-A directory of source is not automatically a complete application. Setup paths, exact dependencies, synthetic identities, integration ports and unimplemented deployment adapters are documented in the corresponding lesson. Real database, broker, browser, provider and cloud checks have separate evidence requirements. Do not run fixture reset/cleanup scripts against an existing user database or shared service.
+**Source files alone do not always form a complete application.** The lesson explains setup paths, exact dependencies, made-up test identities, connection interfaces and deployment code you still need to supply. Real database, broker, browser, provider and cloud behavior each need their own checks. Never run reset or cleanup scripts against an existing user database or shared service.

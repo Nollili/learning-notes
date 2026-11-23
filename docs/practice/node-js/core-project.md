@@ -6,7 +6,7 @@
 
 Know JavaScript functions, scope, arrays/objects, promises and basic `try`/`catch`. Read Node Modules 1–3, the testing parts of Module 4 and raw HTTP/client parts of Module 5. Use runtime diagnostics from Module 11 and lifecycle principles from Module 10 as needed. Compile typed implementations with the chosen project's existing compiler; plain ESM JavaScript is also suitable in a new independent practice directory.
 
-Build one CLI that reads a local NDJSON log file and returns a small summary. Then expose the same pure analysis behind a loopback HTTP endpoint. Reuse concepts from the [runtime workbench](../../workbench/node-js/index.md), but implement your application independently. A framework or persistence layer would obscure this project's runtime goals.
+Build a CLI that reads a local NDJSON log—one JSON record per line—and returns a small summary. Expose the same analysis function through an HTTP endpoint accessible only on your machine. Use the [runtime workbench](../../workbench/node-js/index.md) for reference, but write your own application. **Keep this first project focused on the runtime**; a framework or database would add unrelated work.
 
 Each nonblank line is a JSON object with exactly `level` (`info`, `warn` or `error`) and `message` (a string of 1–200 characters). The source is synthetic and contains no credentials. Count records by level and return exactly `{total, info, warn, error}`; do not retain or echo message text. For the three records below, the summary is total 3, info 1, warn 0, error 2.
 
@@ -18,7 +18,7 @@ Each nonblank line is a JSON object with exactly `level` (`info`, `warn` or `err
 
 ## N-01 — CLI, modules and filesystem ownership
 
-**Scope:** `node analyze.mjs <input> <output>` in an owned learner directory. Separate argument/config validation, analysis and the executable entry point. Importing the analysis module must not start work or open handles. Use explicit ESM markers; compare a tiny `.cjs` export in the separate module exercise.
+<span class="notes-section-label">**Scope:**</span> run `node analyze.mjs <input> <output>` in your practice directory. Separate argument/settings validation, analysis and the executable entry point. **Importing the analysis module must not start work or open resources.** Mark ESM explicitly and compare a small `.cjs` export in the separate module exercise.
 
 **Acceptance:** missing arguments produce a safe usage error and nonzero exit. Valid input produces the exact summary. Empty input produces four zero counts. Missing/unreadable input and malformed records fail with a safe category and line number. Output is published only after successful analysis; partial temporary output is removed on failure. An existing output is not silently overwritten unless an explicit replacement policy was chosen and tested. Close every file handle.
 
@@ -28,7 +28,7 @@ Each nonblank line is a JSON object with exactly `level` (`info`, `warn` or `err
 
 ## N-02 — Incremental bytes, framing and pressure
 
-**Scope:** stream input with at most 64 KiB chunks, 8 KiB per physical record, 10,000 nonblank records and 2 MiB total input. Validate the domain fields after parsing. Keep counters rather than an array of all records; apply limits before unbounded accumulation. Define LF/CRLF, blank-line and final-line policy explicitly, consistent with the textbook parser you select.
+<span class="notes-section-label">**Scope:**</span> stream input with these maxima: 64 KiB per chunk, 8 KiB per physical record, 10,000 nonblank records and 2 MiB total. Validate business fields after parsing. Keep counters instead of every record, and apply limits before accumulating large data. Define handling for LF, CRLF, blank lines and the last line, matching the textbook parser you choose.
 
 **Acceptance:** the same UTF-8 data split at every byte boundary gives identical results. Invalid UTF-8, null/array/primitive records, unknown fields, invalid level/message, excessive record/chunk/count/total bytes reject. Include a slow consumer and demonstrate that production/pulls are governed by demand rather than an unbounded promise list. Do not report `highWaterMark` as a total memory ceiling.
 
@@ -52,7 +52,7 @@ Create an outbound client against an owned local server that sends headers promp
 
 **Scope:** add a batch of a few independent local-file analyses, with at most two active tasks and a declared item cap. Preserve input order. On first failure stop assigning new items, abort cooperative active work, wait for it to drain and preserve the original rejection. SIGINT requests cancellation through the entry-point owner.
 
-**Acceptance:** controllable promises prove two active tasks maximum, correct result order, zero calls for pre-abort/invalid/over-budget input and no new task after observed failure. Rejection with `undefined` is still failure. A successful output cannot be reported while a failed operation's peer is still writing. A noncooperative adapter needs its own deadline; abort is not rollback.
+<span class="notes-section-label">**Acceptance:**</span> use controllable promises to prove at most two tasks run, results keep input order, and invalid, over-limit or pre-aborted input starts no calls. After an observed failure, no new task starts. **Rejecting with `undefined` is still failure.** Do not report completion while another active task is still writing. An adapter that ignores cancellation needs its own deadline; abort does not undo completed effects.
 
 **Failure cases:** one mapper fails while another is held, abort before launch and during read, and cleanup failure accompanying a primary error. Preserve both causes deliberately without exposing raw private data.
 
@@ -62,7 +62,7 @@ Create an outbound client against an owned local server that sends headers promp
 
 **Scope:** verify the previous increments with focused pure checks, real temporary-file/HTTP integration and one deliberately broken baseline. Use the existing project runner. For an Autocode task retain its Jest/build scripts and restricted test directory; place independent practice checks only in an authorized location.
 
-**Acceptance:** an intentionally broken chunk parser, forgotten await or ignored failure makes a relevant check fail. Test a real open/read/write failure as well as adapter doubles. Diagnose one controlled event-loop stall using delay/utilization and a short CPU capture where justified; compare the same workload after bounding/removing the work. Diagnose an intentionally unclosed interval/server and remove the owner leak without forced successful exit.
+<span class="notes-section-label">**Acceptance:**</span> deliberately break chunk parsing, omit an `await` or ignore a failure, and confirm a relevant test fails. Test real open/read/write failures as well as test doubles. Diagnose one controlled event-loop stall using delay/utilization and, where useful, a short CPU capture. Limit or remove the work, then compare the same workload. Also leave an interval or server open deliberately and find the missing cleanup. **Do not hide an open-resource bug by forcing a successful exit.**
 
 **Failure cases:** test passes alone but not together, unobserved rejection, timer left running and misleading average latency. Define a small workload and retain latency/error/memory observations without claiming production gains.
 
@@ -70,7 +70,7 @@ Create an outbound client against an owned local server that sends headers promp
 
 ## N-06 — Shutdown and the continuation decision
 
-**Scope:** mark the HTTP service unready, stop admission, drain or cancel bounded active analyses, release streams/files/clients, and finish before an external process deadline. Share one shutdown outcome across repeated calls. Test forced termination only in a disposable child process.
+<span class="notes-section-label">**Scope:**</span> mark the service unready and stop accepting work. Finish or cancel active analyses within limits, close streams, files and clients, and exit before an external process deadline. Repeated shutdown calls must share one outcome. Test forced termination only in a disposable child process.
 
 **Acceptance:** held work has an explicit completion/cancellation policy; new work is denied; resource close occurs after its last user; cleanup failure yields a nonzero outcome. A stuck owner reaches the final deadline rather than a fabricated successful exit. Inspector/profiling ports are never exposed publicly.
 

@@ -339,7 +339,7 @@ void start().catch(() => {
 
 <<< ../workbench/node-js/runtime/operations/listen-ready.ts
 
-A listen callback is not an error callback. EADDRINUSE arrives through the server error event after listen returns. The helper owns startup listeners until one outcome and removes them; a separate runtime error owner remains for the running server. connectDatabase must close its partially-created pool if connection itself rejects. The composition-root catch owns resources only after that factory successfully hands them over.
+The listen callback reports successful startup, not errors. `EADDRINUSE` arrives through the server's `error` event after `listen()` returns. The helper observes one startup outcome and removes its startup listeners; separate error handling remains for the running server. **A factory must clean up resources it opens before failing.** For example, if `connectDatabase` rejects, it closes its partly created pool. The main setup's catch can close only resources that the factory successfully returned.
 
 Apply a startup deadline and real driver connect/query limits too; a caught rejection does not bound a never-settling operation. The abbreviated composition snippet needs the real readiness/jobs/config adapter from section9, not an unrelated second shutdown implementation.
 
@@ -436,7 +436,7 @@ try {
 }
 ```
 
-**What it does:** records bounded application-owned stack frames and stable code/message, recursively projects at most three owned causes, and replaces untrusted strings/objects/driver Errors with a fixed safe category. Unknown driver details are deliberately absent. This is a small allowlist, not a generic secret-removal algorithm. Add reviewed domain codes as needed; never choose them from request text. Do not mistake a preserved cause category for the complete original driver error.
+<span class="notes-section-label">**What it does:**</span> selects a limited number of application-controlled stack frames and stable code/message fields. It follows at most three application-controlled causes. Untrusted strings, objects and driver errors become a fixed safe category, without their unknown details. **This is an allowlist, not a universal secret remover.** Add reviewed domain codes where needed, never codes taken from request text. A saved cause category is not the complete original driver error.
 
 **When to use it:** log at the layer owning recovery/error translation; avoid duplicate logs at every layer. If restricted diagnostics require raw driver detail, use a separately reviewed adapter/sink and retention/access policy. Stack frames reveal application paths and source positions: keep this server log sink access-controlled; build paths must not contain credentials or personal data. Public responses never include these frames. The WeakMap snapshot prevents later error.message/stack/custom-field mutation from changing the logged projection. A schema/logger boundary remains necessary to prevent unrelated callers from logging raw fields.
 
@@ -636,7 +636,7 @@ router.get('/health/ready', async (_req, res) => {
 });
 ```
 
-**What it does:** bounds the HTTP wait and shares one underlying operation across concurrent probes. A deadline does not cancel database work. The slot stays occupied until that work settles; a permanently stuck driver therefore keeps readiness false without spawning more pings. This is bounded concurrency and fail-closed behavior, not proof of cancellation. Configure actual connection/acquisition/server-query timeouts in the ping adapter so work also has a finite lifetime.
+<span class="notes-section-label">**What it does:**</span> limits the HTTP wait and shares one database check among concurrent probes. **The deadline does not cancel database work.** The active slot stays occupied until that work finishes. A permanently stuck check therefore keeps readiness false instead of starting more checks. This limits concurrency and denies readiness safely, but does not prove cancellation. Configure connection, acquisition and server-query timeouts in the actual adapter so the work itself has a finite lifetime.
 
 **When to use it:** include only dependencies required for nearly every request. Optional or feature-specific downstream services should usually have separate metrics rather than control whole-instance readiness.
 
@@ -703,7 +703,7 @@ Modern supported Node.js releases close idle keep-alive connections as part of `
 
 **When to use it:** every long-running service needs an ownership list for pools, consumers, schedulers, telemetry exporters, workers, sockets, and timers that must stop.
 
-The jobs adapter stops intake synchronously, then drain settles only after all owned work has stopped using the database. A rejected drain must still mean its workers have stopped; if they cannot stop, keep the drain pending for the final deadline rather than falsely claim release. Cover schedulers, retries, detached promises and upgraded sockets in the ownership inventory. The small example's final forced exit is process-wide; test it only in a child process.
+The jobs adapter stops accepting work synchronously. Its drain promise finishes only after all its work has stopped using the database. **A rejected drain must still mean the workers stopped.** If they cannot stop, leave drain pending for the final deadline instead of claiming resources are free. Include schedulers, retries, detached promises and upgraded sockets in the resource inventory. The example's forced exit stops the whole process; test that path only in a child process.
 
 Do not inject process.exit into an ordinary test runner. Validate timeoutMs at startup (positive finite integer shorter than platform grace). Readiness/logger adapters are trusted synchronous nonthrowing operations. Failures are counted and produce a nonzero exit without logging raw error objects; add reviewed diagnostic codes when needed. Cleanup does not report completed when any attempt failed.
 
@@ -791,7 +791,7 @@ process.setUncaughtExceptionCaptureCallback(() => {
 
 **What it does:** an unhandled rejection starts bounded fatal shutdown with a nonzero exit status. An uncaught exception records only a fixed category and immediately terminates. The synchronous sink accepts no arbitrary error content.
 
-**Why replace the default uncaught reporter here?** Node's default reporter prints the error message/stack. `uncaughtExceptionMonitor` observes an exception but does not suppress that output, so an otherwise safe logger would still leak a credential embedded in an error message. This executable deliberately installs a capture callback to own reporting and exit. Coordinate this process-wide choice with crash-reporting integrations; a second capture callback cannot be installed concurrently. The callback must never resume service. An external supervisor performs replacement.
+<span class="notes-section-label">**Why replace the default uncaught reporter here?**</span> Node's default reporter prints the error message and stack. `uncaughtExceptionMonitor` observes that exception but does not suppress the output, so a credential inside the message could still leak. This executable installs a capture callback to control reporting and exit. It is a process-wide choice: coordinate it with crash-reporting tools because a second capture callback cannot be installed at the same time. **The callback must never resume service.** An external supervisor replaces the process.
 
 A stable category alone provides limited diagnosis. At an earlier, controlled operation boundary, capture a reviewed diagnostic code and bounded application-owned frames using the serializer in section 6; never fall back to raw exception text at process level. The runnable application uses the same fixed-code fatal boundary and tests it with a secret sentinel. Fatal events can lose output when stderr itself is unavailable; termination remains mandatory.
 

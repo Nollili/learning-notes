@@ -1,6 +1,6 @@
 # Node.js prerequisites and topic boundaries
 
-Node.js supplies a host for JavaScript. Language behavior such as closures, promises and object identity is shared with browser JavaScript; filesystem authority, process ownership and libuv scheduling are host-specific.
+Node provides an environment for running JavaScript. Closures, promises and object identity follow the same language rules as in a browser. **The available APIs and permissions depend on the environment.** Node adds filesystem access, processes and scheduling through libuv; browser JavaScript has different host APIs.
 
 ## Shared language references
 
@@ -28,12 +28,12 @@ flowchart TD
     Backend --> Delivery[Deployment and durable jobs]
 ```
 
-HTTP and streams can be learned without a framework. Express adds middleware/routing conventions; it does not provide application authorization. Database transactions and query plans belong to persistence, although their clients must still obey Node cancellation and resource ownership. Deployment controls process replacement and traffic; it does not make unowned timers, unfinished writes or in-memory jobs durable.
+You can learn HTTP and streams without a framework. Express adds routing and middleware, but your application still checks permissions. Database lessons explain transactions and query plans; their Node clients must also handle cancellation and close connections. Deployment controls traffic and process replacement. **It does not make unfinished writes or in-memory jobs survive a restart**, or clean up timers your code forgot to close.
 
-Worker threads execute JavaScript in separate isolates in one process. Browser Web Workers are a different host API; libuv's native worker pool is a third mechanism. Neither a thread nor `async` is a filesystem, network or authorization sandbox.
+Worker threads run JavaScript in separate execution environments inside one process. Browser Web Workers use a different API. libuv's native worker pool is a third mechanism used by selected Node operations. **Neither `async` nor a thread creates a security sandbox.** File, network and application permissions still need explicit controls.
 
 ## Essential depth and extensions
 
-The core target is to explain runtime behavior and independently implement/debug a small bounded CLI/HTTP program. Readiness, shutdown and diagnostics complete that program's lifecycle. Add the authenticated PostgreSQL service when backend integration is the goal; add deployment and durable jobs when persistence/recovery needs justify them.
+First, learn to explain runtime behavior and independently build and debug a small CLI or HTTP program with clear limits on input, time and work. Add readiness checks, diagnostics and clean shutdown. Continue to an authenticated PostgreSQL service when you need backend integration. Add deployment and durable jobs when the work must survive restarts and support recovery.
 
-A complete worker-pool framework, multiple databases, a learned agent, a general-purpose file parser and cloud/cluster administration are outside the core completion gate. Their existing introductory/continuation material stays available without becoming a prerequisite to learn Node.js.
+You do not need a complete worker-pool framework, several databases, a learned agent, a general-purpose file parser or cloud/cluster administration to complete the core runtime course. Those introductory and follow-on lessons remain available when you need them.

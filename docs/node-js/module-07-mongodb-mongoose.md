@@ -389,7 +389,7 @@ Mongoose includes TypeScript declarations; a separate `@types/mongoose` package 
 
 ## Mongoose schemas and models {#_8-mongoose-schemas-and-models}
 
-A **schema** declares document shape and behavior. A **model** is the query and construction API connected to a collection. A **document** is a hydrated instance returned or created by a model.
+A **schema describes document fields and behavior**. A model provides methods to create and query documents in a collection. A document is a model instance with Mongoose behavior added—often called a hydrated document.
 
 ```ts
 // users/user.model.ts
@@ -534,7 +534,7 @@ bootstrap().catch(error => {
 });
 ```
 
-The HTTP close callback is not async: its result becomes a promise and database cleanup is awaited outside it. A rejection cannot escape as an unobserved callback promise. Repeated signals share one cleanup promise, errors from both resources are retained and a failed listener startup releases an already-connected database.
+The HTTP close callback is synchronous. Its result is converted to a promise, and database cleanup is awaited outside the callback so a rejected cleanup promise cannot go unnoticed. Repeated signals reuse one cleanup promise. Errors from both resources are retained, and a server that fails to start releases the database connection it already opened.
 
 This is a focused lifecycle example: production readiness/drain deadlines, forced upgraded-socket handling, bounded database shutdown and removal of process listeners for reusable test fixtures belong to the full lifecycle lesson. An external supervisor still needs an ultimate process deadline; do not infer this helper bounds a stuck disconnect call.
 
@@ -909,7 +909,7 @@ const postSchema = new Schema(
 );
 ```
 
-The author is shared and referenced; comments are a bounded **recent100 snapshot**, not the full historical comment collection. If all comments must be retained, store them in a separate referenced/paginated comments collection and optionally keep this recent snapshot. String/array limits reduce growth but do not replace the BSON document-size limit. Query validators on $push do not guarantee the whole-array length rule runs; the atomic $slice update below enforces the retention policy for that write path. Database-level validation is needed when other writers can bypass Mongoose.
+The author is shared through a reference. Comments here are **only a snapshot of the most recent 100**, not the full history. To retain all comments, use a separate referenced collection with pagination and optionally keep this recent snapshot. String and array limits reduce growth but do not replace the BSON document-size limit. `$push` validators do not guarantee the whole-array length check runs; the atomic `$slice` update below enforces this write path's retention rule. Add database validation when other writers can bypass Mongoose.
 
 ### Atomic embedded updates
 
@@ -1302,13 +1302,13 @@ export async function backfillDisplayNames({ signal, batchSize = 500, maxBatches
 }
 ```
 
-This historical firstName/lastName→stored displayName exercise uses **legacy_users**, not the main User schema's name field and computed displayName virtual. The migration schema declares every filter/read/write field and uses strict:'throw' to expose undeclared update fields rather than strip the update into a no-op. Do not combine a stored path and a same-named virtual in one schema. Test the exact model/collection mapping before running a migration.
+This older migration converts `firstName` and `lastName` into a stored `displayName` in **`legacy_users`**. It is separate from the main User model's `name` and computed `displayName` virtual. Declare every field the migration reads, filters or writes. `strict: 'throw'` exposes undeclared update fields instead of silently removing them until nothing changes. Do not define a stored field and a virtual with the same name. Test the exact model-to-collection mapping before migrating.
 
 The operation is idempotent for already-filled records, bounds work per run and detects a no-progress batch rather than looping forever. Conditional updates preserve a displayName another writer already set. Under a single migration owner, zero progress is suspicious; concurrent workers can also finish a selected batch first, so inspect/retry a bounded run rather than assume corruption.
 
 Invalid legacy names stop before issuing that batch: quarantine/fix them deliberately, do not write literal undefined into a display name. Partial unordered bulk failure may leave some records updated; retain safe checkpoint/error details and resume from the missing-field predicate after diagnosis.
 
-Cancellation is checked between database calls; it does not promise to cancel an in-flight bulkWrite. Configure supported driver/connection timeouts and an operational stop policy for the chosen version. maxTimeMS bounds the query's server execution, not all connection/queue/network waiting. Add measured pacing and metrics for modified/remaining rows; completed:false is not successful migration completion. Close the migration connection in finally, including when validation/DB errors occur. Actual strict-casting, resumability and partial-failure behavior require tests against a real isolated MongoDB deployment.
+Cancellation is checked between calls; it does not promise to stop a `bulkWrite` already running. Configure supported driver/connection timeouts and the chosen version's stop policy. **`maxTimeMS` limits server query execution, not all queue, connection and network waiting.** Measure progress and remaining rows, and pace the migration as needed. `completed: false` does not mean success. Close the connection in `finally`, including after validation or database failures. Test casting, resumption and partial failure against an isolated real MongoDB deployment.
 
 Build new indexes before code depends on them. Watch index-build impact and storage usage.
 

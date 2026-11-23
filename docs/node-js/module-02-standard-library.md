@@ -397,11 +397,11 @@ try {
 }
 ```
 
-A read can return **fewer bytes than requested**, including zero at EOF. A partial read is not a complete binary record; a protocol reader must accumulate bytes under a limit. This short text preview does not promise to preserve a character split at its final byte.
+A read can return **fewer bytes than requested**, or zero at end of file. A partial read may not contain a complete binary record, so keep collecting bytes up to a defined limit. The short preview here can end in the middle of a text character; it does not guarantee a complete final character.
 
 Serialize writes to the same file/handle instead of starting overlapping `writeFile()` operations. With `open(path, 'wx')`, creation fails if the entry already exists; that is useful for an application-owned new output. A successful exclusive create does not validate untrusted ancestor directories or make a multi-file transaction.
 
-For replacement, a temporary file in the same owned directory followed by rename can separate incomplete output from the published filename. **Atomic visibility and crash durability are different requirements**: filesystem/platform semantics, flushing data and directory metadata, concurrent writers and recovery still need an explicit policy. Rename across filesystems can fail; do not treat it as a general copy operation. Aborting a filesystem write is best effort and can leave partial data.
+To replace a file, write a temporary file in the same controlled directory and rename it after completion. This can keep readers from seeing partial output. **Seeing a complete file and surviving a crash are separate guarantees.** Check the filesystem's behavior, data and directory flushing, concurrent writers and recovery rules. Rename can fail across filesystems; it is not a general copy operation. Aborting a write is best effort and can leave partial data.
 
 [Node 24 file handles and write contracts](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html).
 
@@ -450,7 +450,7 @@ function isNodeError(error: unknown): error is Error & { code: string } {
 }
 ```
 
-The guard proves only Error plus a string code; it does not promise path, syscall or every errno field. Check each additional property before using it. instanceof Error can fail across realms or for serialized/plain error records; parse those transport schemas separately. A type assertion or non-null assertion removes a checker complaint, not an invalid runtime value. Narrow environment values explicitly as in the HMAC example below.
+The guard checks only that the value is an `Error` with a string `code`. Check `path`, `syscall` and other fields separately before using them. Errors from another JavaScript environment, or errors sent as plain data, may not pass `instanceof Error`; validate their message format separately. **A TypeScript assertion does not repair an invalid runtime value.** Explicitly check environment values, as the HMAC example does below.
 
 Prefer attempting the real operation and handling failure. A separate “exists?” check can become stale before the next operation, creating a time-of-check/time-of-use race.
 
@@ -581,7 +581,7 @@ export async function resolveExistingInside(baseDir: string, userName: string): 
 }
 ```
 
-This helper is for an **existing path in an application-owned tree that untrusted actors cannot mutate**. It permits the base itself; a file-only operation must additionally open/check a regular file. It rejects lexical and already-present symlink escapes, but realpath-then-open is **not atomic**. If an attacker can swap a directory/link after the check, a TOCTOU race remains. lstat-then-open has the same issue; checking only the final component with O_NOFOLLOW does not constrain ancestor symlinks and is platform-dependent. Portable Node path APIs do not turn this helper into a race-proof filesystem sandbox.
+Use this helper only for an **existing path inside an application-controlled directory tree that untrusted callers cannot change**. The base directory itself is allowed; a file-only operation must also check for a regular file. The helper rejects path-string escapes and symlinks already pointing outside the tree. **Checking with `realpath` and then opening is not atomic.** An attacker able to replace a directory or link between those steps can still win a time-of-check/time-of-use race (TOCTOU). `lstat` followed by open has the same problem. `O_NOFOLLOW` applies only to the final component, not ancestor links, and varies by platform. Portable path helpers do not create a race-proof filesystem sandbox.
 
 For public uploads, prefer server-generated opaque filenames under a private service-owned directory, exclusive creation where appropriate, least-privilege OS permissions and a storage service/OS containment boundary designed for the threat model. Keep user display names as metadata, not paths. Creation of a missing target needs a separate design: realpath cannot resolve a nonexistent file, and checking its parent still does not eliminate hostile-parent races. URL decoding/Windows separators/case and alternate volumes require platform tests; do not assume a POSIX test proves Windows safety.
 
@@ -960,9 +960,9 @@ Use `new URL('./worker.mjs', import.meta.url)` so the worker path is relative to
 
 <<< ../workbench/node-js/runtime/worker.ts
 
-Node24 baseline. This is a **one-result, owned worker** protocol: the first valid result ends the task and the worker is terminated before the caller settles. A worker that exits without a result rejects even for code0; startup/worker/message-deserialization/parser errors, timeout and caller abort also reject. The timer remains referenced so the deadline cannot silently disappear while the task is pending.
+This Node 24 helper manages **one worker and one result**. It accepts the first valid result, stops the worker and waits for termination before finishing the caller's promise. Exiting without a result is failure even with exit code 0. Startup, worker, message-decoding and parser errors also reject, as do timeout and caller cancellation. The deadline timer stays referenced so it cannot quietly stop keeping the process alive while the task is pending.
 
-Terminal races select one outcome, clear the timer/abort listener, retain error handling during termination and release worker listeners afterward. Termination failure is surfaced, not swallowed. Cancellation is forceful worker termination, not a transactional rollback of effects the worker may already have performed.
+The first final outcome wins. The helper clears its timer and abort listener, keeps error handling active while termination runs, then removes worker listeners. It reports termination failures instead of hiding them. **Cancellation stops the worker; it does not undo effects the worker already performed.**
 
 The parser is a real runtime boundary rather than `message as TResult`: worker messages are structured-cloned values. For the sum example, use `(value: unknown) => { if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Invalid sum'); return value; }`. Do not send progress messages on this result channel; a pool needs task IDs and a separate result/error/progress protocol. Deadline latency includes event-loop scheduling and termination; it is not a hard real-time guarantee.
 
@@ -1062,7 +1062,7 @@ An error notification and resource closure are separate events. In particular, a
 
 <<< ../workbench/node-js/runtime/child.ts
 
-This one-child helper records the first error, then settles at **`close`**, after the child's stdio closes. A pre-aborted signal starts no child. Cancellation uses a forceful kill for this bounded, disposable child; it is not graceful application shutdown or a rollback of effects. The caller must provide a deadline as well as any external cancellation. An argument array avoids shell expansion but does not make arbitrary executables or their options safe: allowlist the executable and validate its own argument grammar.
+The helper remembers the first error but finishes the promise at **`close`**, after the child's standard I/O streams close. An already aborted signal starts no child. Cancellation forcefully kills this disposable child; it is not graceful shutdown or rollback. Supply a deadline as well as any caller cancellation. An argument array avoids shell expansion, but you must still allow only intended executables and validate the arguments those programs interpret.
 
 The helper owns only the direct child. Descendants, platform signal differences and uninterruptible OS work require a separate process-group/container/supervisor policy; a local timeout cannot prove every external effect stopped. For actual services, request graceful termination first and enforce an external hard deadline.
 

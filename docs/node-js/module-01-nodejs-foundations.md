@@ -21,7 +21,7 @@ Compatibility baseline: Node.js 22.7+; examples below also checked on Node.js 24
 
 ## What Node.js is {#_1-what-node-js-is}
 
-Node.js is an open-source, cross-platform runtime for executing JavaScript outside a web browser. It combines the V8 JavaScript engine with native APIs for files, networking, processes, timers, and other operating-system capabilities.
+Node.js is an open-source environment for running JavaScript outside a browser, on several operating systems. **V8 runs JavaScript; Node adds APIs** for files, networking, processes, timers and other operating-system features.
 
 Node.js is:
 
@@ -245,7 +245,7 @@ Node.js loads the entry file, evaluates it, performs pending work, and exits whe
 
 Fences marked `js` can run as JavaScript with the indicated `.mjs` or `.cjs` extension. Fences marked `ts` use TypeScript annotations for contracts. For the course application, compile them with its existing TypeScript configuration and run the emitted JavaScript; do not paste a typed function into a `.js` file.
 
-Node 24 can also strip **erasable** TypeScript syntax when running supported `.ts` files. That does not type-check, read `tsconfig.json`, resolve path aliases or transform every TypeScript feature. Parameter properties and some other constructs in these notes require compilation. Runtime validation is still needed for unknown input even after a successful type check.
+Node 24 can run supported `.ts` files by removing **erasable TypeScript syntax**: annotations that can disappear without changing how the code runs. This does not check types, read `tsconfig.json`, resolve path aliases or transform every TypeScript feature. Constructs such as parameter properties still need compilation. **Unknown input still needs runtime validation**, even if a type check passes.
 
 Use the fixture's pinned runtime and lockfile for reproduction. A compatibility example on Node 22 and a checked fixture on Node 24 are distinct baselines, not an instruction to change an Autocode template. [Node 24 TypeScript support](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html).
 
@@ -535,7 +535,7 @@ Node 22.7+ enables syntax detection by default (also backported to 20.19). An am
 | `.js` without type | Inspect syntax and runtime version; declare the intended type |
 | `node --input-type=module --eval '...'` | Explicit ESM for string input |
 
-A missing ESM relative extension can produce `ERR_MODULE_NOT_FOUND`; an unexported package subpath can produce `ERR_PACKAGE_PATH_NOT_EXPORTED`. Check the nearest manifest, exact filename/case, package `exports`, and installed version before changing the compiler configuration. `createRequire(import.meta.url)` is an explicit bridge to a CJS-only interface. Prefer `import()` when a CJS caller needs asynchronous ESM loading; synchronous `require(esm)` support depends on Node version and cannot load a graph with top-level await.
+A missing extension in a relative ESM import can cause `ERR_MODULE_NOT_FOUND`. Importing a package subpath that is not public can cause `ERR_PACKAGE_PATH_NOT_EXPORTED`. Check the nearest `package.json`, filename and letter case, `exports` and installed version before changing compiler settings. `createRequire(import.meta.url)` gives ESM code access to a CommonJS interface. Use `import()` when CommonJS needs asynchronous ESM loading. Whether `require(esm)` works depends on Node's version; it cannot load a dependency chain containing top-level `await`.
 
 ESM imports are live bindings, not copied values:
 
@@ -552,7 +552,7 @@ increment();
 console.log(count); // 1; importing code cannot assign to count
 ```
 
-Cycles have different failure modes. ESM can access an uninitialized imported binding and throw a ReferenceError; CJS can observe partially initialized exports. Move shared contracts into an independent module or inject dependencies. A module singleton is shared only within its module graph/process; it is unsuitable as an implicit per-request user store.
+Circular imports can fail differently in the two module systems. ESM can throw a `ReferenceError` when code reads an imported variable before initialization. CommonJS can expose exports that are only partly initialized. Move shared definitions into an independent module or pass dependencies explicitly. **A module singleton is not a safe place for the current request's user**: requests in that module instance can share its state.
 
 [Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
@@ -853,7 +853,7 @@ readFile('config.json', 'utf8', (configError, configText) => {
 });
 ```
 
-This partial callback sketch assumes imported I/O functions and an application-owned error boundary. Parsing must be caught inside the callback; an outer synchronous try/catch cannot catch a later callback throw. Application data/path validation is still required. This “callback pyramid” makes branching, cleanup, and error propagation harder. Promises flatten the sequence.
+This incomplete callback example assumes the I/O functions have been imported and the application has error handling. Catch parsing errors inside the callback: an outer synchronous `try/catch` cannot catch an exception thrown when that callback runs later. Validate data and paths too. Deeply nested callbacks make branches, cleanup and error handling harder to follow; promises let you express the same sequence more directly.
 
 ### Convert a callback API with `promisify()`
 
@@ -880,7 +880,7 @@ stateDiagram-v2
     Rejected --> [*]
 ```
 
-A promise settles once. Resolving with a pending promise adopts its outcome and can leave the outer promise pending; resolution is not necessarily immediate fulfillment. Later resolve/reject calls cannot change the adopted outcome.
+**A promise settles only once.** Resolving it with another pending promise makes it follow that promise's eventual outcome, so it may remain pending. Calling `resolve` does not always mean immediate fulfillment. Later calls to `resolve` or `reject` cannot replace the chosen outcome.
 
 ### Promise chains
 
@@ -1230,7 +1230,7 @@ Do not automatically set it to the CPU count. The best value depends on workload
 
 ### Event-loop phases
 
-The following diagram lists the conceptual phases, not a fixed starting point for every iteration. Since libuv 1.45 / Node 20, recurring timer processing occurs after poll rather than on both sides of poll; a compatibility timer pass can occur before entering the loop. Read the timers box as the iteration boundary, not a guarantee that timers always beat immediates. The image above is a conceptual illustration with this version qualification:
+This diagram shows the loop's conceptual phases, not where every program starts. Since libuv 1.45 / Node 20, recurring timer processing runs after poll rather than both before and after it. A compatibility timer pass can also run before entering the loop. **The timers box does not mean timers always run before immediates.** Read the illustration with those version and execution-context limits:
 
 ```text
 ┌───────────────┐
@@ -1279,7 +1279,7 @@ Node.js has two especially important high-priority queues:
 1. `process.nextTick()` callbacks.
 2. Promise reactions and other standard microtasks, including `queueMicrotask()`.
 
-When returning from ordinary callbacks to Node, next ticks are drained before regular microtasks. Top-level ESM evaluation is already processing a microtask, so its queued promise reactions and queueMicrotask callbacks run before its next ticks. Context matters; do not apply a CJS top-level ordering rule inside a promise continuation.
+After an ordinary Node callback, Node processes next-tick callbacks before standard microtasks. Top-level ESM evaluation is already running as microtask work, so its queued promise and `queueMicrotask` callbacks run before its next ticks. **Queue order depends on where the code is executing.** Do not apply a top-level CommonJS example to code already inside a promise continuation.
 
 ```ts
 console.log('sync start');
@@ -1445,7 +1445,7 @@ try {
 }
 ```
 
-**What it does:** budgets both headers and body reading for two seconds. A fetch promise can fulfill after headers while its body is still arriving; clearing the timer then would leave the body unbounded in time. The caller must handle rejection. `finally` releases the timer on every path. A deadline does not limit payload size or interrupt synchronous JSON parsing: use bounded streaming for large or untrusted responses.
+<span class="notes-section-label">**What it does:**</span> keeps a two-second deadline active while receiving both headers and the body. A fetch promise can fulfill before the body finishes, so clearing the timer at headers would leave the remaining read without that time limit. The caller handles rejection, and `finally` clears the timer on every path. **A deadline does not limit response size or interrupt synchronous JSON parsing.** For large or untrusted responses, also enforce byte limits while streaming.
 
 [Related practice](../practice/node-js/module-01-nodejs-foundations.md).
 
@@ -1498,9 +1498,9 @@ That is safe only when the collection is known to be small and the downstream sy
 
 **When to use it:** bound bulk API calls, file operations, database work, and other repeated asynchronous tasks.
 
-A shared failure flag stops new assignments once a worker observes failure. The first failure aborts cooperative in-flight operations; the function drains all workers before rejecting with the original reason. `Promise.all` alone would reject early while the other workers continued consuming the queue. The mapper must honor its signal and have a finite deadline: cancellation cannot force an arbitrary promise to settle. Side effects completed before abort are not rolled back.
+After the first observed failure, a shared flag stops workers from taking new items. The function requests cancellation of active operations, waits for every worker to finish, then rejects with the original reason. `Promise.all` alone would reject earlier while other workers kept taking items. **The mapper must support the signal and have a finite deadline.** Cancellation cannot force an arbitrary promise to finish, and it does not undo effects already committed.
 
-**Trade-offs:** draining prevents detached work but delays rejection until active work settles. Collect-all mode would store a result union for each input and continue intentionally; fail-fast mode suits batches whose remaining results are useless. This array implementation retains all inputs/results but rejects above its explicit maxItems budget (default10,000, configurable lower). That bounds the batch waiting population, not bytes per input/result. It does not implement streaming admission or per-tenant fairness.
+<span class="notes-section-label">**Trade-offs:**</span> waiting for active work avoids leaving it running unnoticed, but delays rejection. A collect-all design would deliberately continue and store either success or failure for each input. Fail-fast suits a batch whose remaining results are no longer useful. This implementation keeps all inputs and results in arrays and rejects batches above `maxItems` (default 10,000; you can choose less). **The item limit does not limit bytes per item.** It also does not provide streaming input control or fairness between tenants.
 
 Dense application-owned inputs are required; sparse arrays reject rather than passing an undeclared undefined value. For huge sources, use a bounded producer queue or async iterator and stream results.
 

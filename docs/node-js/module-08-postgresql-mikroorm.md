@@ -53,7 +53,7 @@ The relational model provides:
 - transactions for atomic multi-step work;
 - indexes and query planning for efficient access.
 
-The database is an active guardian of integrity, not merely a place to store objects. Application validation improves errors and user experience; database constraints protect the final shared state even when several applications or concurrent requests write to it.
+**Database constraints protect rules shared by every writer.** Application validation gives useful errors, but several requests or applications can write concurrently. The database must protect the final stored state too; it is more than a place to save application objects.
 
 ### SQL command families
 
@@ -241,7 +241,7 @@ CREATE TRIGGER products_updated_at BEFORE UPDATE ON products
 FOR EACH ROW EXECUTE FUNCTION set_product_updated_at();
 ```
 
-statement_timestamp uses the statement start, while NOW()/CURRENT_TIMESTAMP uses transaction start. A no-op UPDATE still invokes this trigger. MikroORM onUpdate callbacks operate through the ORM path, not arbitrary external SQL; do not mistake them for a database trigger. Pick and test the actual timestamp policy. Choose types from domain meaning, range, precision, query needs, and portability—not only current sample data.
+`statement_timestamp` uses the statement's start time; `NOW()` and `CURRENT_TIMESTAMP` use the transaction's start time. Even an update that leaves values unchanged runs this trigger. MikroORM's `onUpdate` callback runs through the ORM, not through arbitrary SQL from another writer. **Choose and test one timestamp policy across all writers.** Select data types for their meaning, range, precision, queries and portability, rather than only for the current example values.
 
 ---
 
@@ -638,7 +638,7 @@ For the B-tree index above:
 
 For `(user_id, status, created_at DESC, id DESC)`, fixing user and status allows a time range such as `created_at >= ...` to bound the next part of the scan. Further conditions can filter candidate entries without necessarily narrowing that scan as much.
 
-Start with equality filters that define the useful prefix, then consider range and ordering requirements together. “Put the most selective column first” is not a universal rule: compare the whole workload, including queries that omit some predicates. Swapping equality columns may preserve one fully constrained query while changing which prefix-only queries are efficient.
+Start with equality filters that give useful leading index columns, then consider range filters and required ordering together. **“Most selective column first” is not a universal rule.** Compare all important queries, including those that omit filters. Swapping equality columns may leave one fully filtered query efficient while changing which partial-prefix queries work well.
 
 A backward B-tree scan reverses all its key directions. Mixed ordering, such as `created_at DESC, id ASC`, needs a matching design or a sort; it is not the same as reversing `DESC, DESC`. See [indexes and ordering](https://www.postgresql.org/docs/16/indexes-ordering.html).
 
@@ -900,7 +900,7 @@ Commit the resolved lockfile and use npm ci; pin the chosen Node patch/container
 }
 ```
 
-The primary path compiles with tsc so design metadata is emitted. A fast TS transpiler that omits that metadata is not an equivalent reflection setup. Standard decorators from @mikro-orm/decorators/es and defineEntity are alternatives with different metadata contracts; they are not additional mastery requirements. MikroORM 6 imported decorators from core; keep that only as explicitly versioned migration context.
+This path compiles with `tsc` so it emits the design metadata reflection needs. A fast transpiler that omits that metadata is not equivalent. Standard decorators from `@mikro-orm/decorators/es` and `defineEntity` are alternatives with different metadata rules; learning all of them is not required. Older MikroORM 6 examples imported decorators from core. Keep that as explicitly versioned migration context, not instructions for this setup.
 
 ### Configuration
 
@@ -968,7 +968,7 @@ export async function openDatabase() {
 // The composition root calls openDatabase before listen, then owns orm.close(true).
 ```
 
-MikroORM 7 initializes metadata before it opens a connection. Successful `init()` alone does not prove that the server is reachable. Connect and execute a bounded lightweight query before accepting traffic; configure driver acquisition/statement timeouts as explained in Module 10. Close after success in the owning script/server and close on startup failure here. Never print the raw connection error: it may contain connection details.
+**Successful MikroORM 7 initialization does not prove the database is reachable.** It prepares metadata before connecting. Connect explicitly and run a small query with a deadline before accepting traffic; configure acquisition and statement timeouts as Module 10 explains. The script or server that creates the ORM must close it on completion and startup failure. Do not print raw connection errors because they can reveal connection details.
 
 [Related practice](../practice/node-js/module-08-postgresql-mikroorm.md).
 
@@ -1033,7 +1033,7 @@ user.name = 'Updated name';
 await em.persist(user).flush();
 ```
 
-No explicit SQL UPDATE method is needed. This example explicitly marks the managed entity for persistence before flushing. MikroORM 7 changed automatic flush-mode scalar change detection; do not assume every subsequent query auto-flushes an unmarked scalar assignment. Explicit persist+flush makes the intended write boundary visible. flush synchronizes scheduled changes and groups them transactionally by default.
+You do not need a separate SQL UPDATE call here. The example explicitly marks the managed entity for persistence before calling `flush()`. MikroORM 7 changed automatic scalar-change detection for flush modes, so do not assume a later query flushes an unmarked assignment. **Explicit `persist` plus `flush` makes the intended write clear.** By default, flush synchronizes scheduled changes together in a transaction.
 
 ### Repository
 
@@ -1167,7 +1167,7 @@ Express request
   → PostgreSQL
 ```
 
-Pass the scoped EntityManager through a unit-of-work boundary when several repository calls must share one transaction. Forking separately inside every repository call prevents them from naturally participating in the same transaction unless carefully coordinated.
+When several repository calls must share one transaction, pass the transaction-scoped EntityManager to all of them. **Creating a new fork inside every call does not automatically give one shared transaction.** That requires deliberate coordination.
 
 ---
 
@@ -1358,7 +1358,7 @@ npm run orm -- migration:pending
 npm run orm -- migration:list
 ```
 
-The CLI uses dist/mikro-orm.config.js. The create command explicitly writes TS source into src/migrations (verified against7.2.5 CLI), then tsc emits the JS that migration:up discovers under dist/migrations. Do not generate an unreviewed file only in dist and lose it on a clean build. In a disposable fixture, test migration:down only when its data-loss implications are understood; do not make rollback a universal production command. Running an ORM schema generator/drop/create command is for an explicitly disposable test database, not production migration policy.
+The CLI loads `dist/mikro-orm.config.js`, but the create command writes TypeScript source into `src/migrations` (checked with CLI 7.2.5). `tsc` then emits JavaScript into `dist/migrations` for `migration:up`. **Keep reviewed migration source; generated `dist` output can disappear on a clean build.** Test `migration:down` only in a disposable environment when you understand possible data loss. Schema drop/create commands are for explicitly disposable test databases, not a production migration policy.
 
 Migrations are transactional by default where PostgreSQL operations permit it. A `down()` method is not automatically safe; destructive schema changes can lose data even if the DDL itself is reversible.
 

@@ -1,6 +1,6 @@
 # PostgreSQL Backup, Restore and Recovery
 
-A successful backup command is not proof of recoverability. A recovery plan needs a protected artifact, all required dependencies/keys/WAL, a known target, a tested restore procedure and application-level checks. Replication improves availability but also replicates accidental deletes; it is not an independent historical backup.
+**A backup command succeeding does not prove you can recover the service.** Protect the backup and required keys, dependencies and write-ahead log (WAL). Choose an isolated target, test restoration and verify application behavior. Replication helps availability but also copies accidental deletes; it is not an independent historical backup.
 
 The executable baseline here is PostgreSQL16.13. The primary application remains Express/MikroORM; recovery is an operational boundary outside the request path. Related prerequisites are [transactions and migrations](./module-08-postgresql-mikroorm.md) and [production lifecycle](./module-10-production-ready-applications.md).
 
@@ -15,7 +15,7 @@ The executable baseline here is PostgreSQL16.13. The primary application remains
 
 Do not copy a running data directory with an ordinary file-copy command and call it a valid backup. Use PostgreSQL's backup facilities or an explicitly supported snapshot protocol. A physical backup is not an upgrade mechanism across arbitrary major versions; plan pg_upgrade/logical migration separately.
 
-**RPO (Recovery Point Objective)** is the maximum acceptable loss of committed work measured backward from the incident. **RTO (Recovery Time Objective)** is the allowed time until the required service is restored. Define the start/end points: detection, decision, provisioning, download/decrypt, replay, validation, application deployment and traffic switch all consume time. A five-second SQL restore on a laptop does not establish a five-second service RTO.
+**RPO is how much committed work you can afford to lose**, measured back from the incident. **RTO is how long the required service may remain unavailable.** Define where those measurements start and finish. Detection, decisions, provisioning, transfer/decryption, log replay, validation, deployment and traffic switching all take time. A five-second SQL restore on a laptop does not prove a five-second service recovery.
 
 ## Logical dump and clean restore
 
@@ -40,7 +40,7 @@ The fixture table is shown below. Creation fails if the destination database alr
 
 A custom archive is restored with pg_restore; a plain SQL dump is executed with psql. Review the tool/server version matrix for an upgrade. A dump can contain executable functions/schema code: restore only trusted, reviewed sources in an appropriately isolated environment. A listable archive and a nonzero file size are useful checks but do not replace an actual restore and domain verification.
 
-Validate schema versions, constraints/indexes, representative counts, known markers, sequence behavior, required extensions, grants and application reads/writes using the intended app role. Row counts alone can miss wrong values. Never enable restored webhooks/payment/email workers during a rehearsal: a restored outbox can replay real external effects unless isolated.
+Check schema version, constraints, indexes, sample counts, known marker values, sequences, extensions and grants. Then test reads and writes using the intended application role. **Row counts alone can miss incorrect values.** Keep restored webhook, payment and email workers disabled during rehearsal; a restored outbox could otherwise repeat real external effects.
 
 ## Physical backup and a named recovery target
 
@@ -82,7 +82,7 @@ SELECT pg_walfile_name(pg_current_wal_lsn()) AS segment_to_confirm_archived;
 SELECT pg_switch_wal();
 ```
 
-Before recovery, confirm the required segment and all preceding required WAL are archived and readable. pg_switch_wal requests a switch, not confirmation that remote archiving has finished. Poll archive status with a deadline; do not sleep an arbitrary second and assume success. Keep the unmodified base backup, copy it to a new empty recovery directory and preserve ownership/modes. Do not overlay a live data directory. Review inherited connection/archive settings so the clone cannot contact or archive into a production topology.
+Before starting recovery, verify that every required WAL segment through the target is archived and readable. `pg_switch_wal` requests a switch; it does not confirm remote archive completion. Poll archive status with a deadline instead of sleeping for an arbitrary second. Preserve the original base backup and copy it into a new empty directory with correct ownership and permissions. **Never overlay a live data directory.** Review inherited connection and archive settings so the clone cannot join or write into production infrastructure.
 
 ```bash
 test ! -e "$task_recovery_dir/recovered"
@@ -111,7 +111,7 @@ pg_ctl -D "$task_recovery_dir/recovered" \
 
 The clone has no TCP listener in this local fixture. Its private socket directory must already exist and be accessible only to the owner; use a distinct port/path from the source. The recovery options must already have been installed before starting. archive_mode=off prevents this promoted demonstration clone from writing into the source's archive; real cutover needs an explicit new timeline/archive strategy.
 
-Do not treat pg_ctl -w returning as proof that the recovery target was reached. The server may first accept read-only connections during recovery. With the deliberately selected promote action, poll pg_is_in_recovery until false with a bounded deadline, inspect logs for the named target, and verify the data before permitting writes or traffic. In production a pause action can support inspection before a separately authorized promotion; define that decision in the incident runbook. If a target cannot be reached, fail the rehearsal rather than silently restore to some other time.
+**`pg_ctl -w` returning does not prove the recovery target was reached.** The server may accept read-only connections while recovery continues. For this example's promotion policy, poll `pg_is_in_recovery` until false within a deadline, check logs for the named target and verify data before allowing writes or traffic. Production may instead pause for inspection before separately approved promotion; document that decision. If the target cannot be reached, fail the rehearsal rather than quietly restore to another time.
 
 Expected recovered rows are IDs1 and2, with their original labels; ID3 must be absent. This proves replay recovered a committed post-base-backup insert and stopped before the bad change. Merely seeing ID1 would only prove a base backup could start. A timestamp/LSN/transaction target is an alternative to a named restore point, with its own inclusivity/timeline selection rules. Choose it from incident evidence and verify business effects, not from an approximate wall-clock guess.
 
@@ -119,7 +119,7 @@ Expected recovered rows are IDs1 and2, with their original labels; ID3 must be a
 
 Store encrypted backups and WAL in a separate failure/security boundary, with integrity verification, tightly scoped access, tested key recovery and suitable immutability/versioning. Separate backup administration from ordinary app write permissions. Protect database configuration, extension binaries, TLS material and deployment metadata needed to rebuild the service; do not assume the database archive contains the whole application.
 
-Define base-backup cadence, WAL archival lag target, retention periods, restore-test frequency and alert ownership. Retention must preserve every base backup plus the continuous WAL needed for the supported recovery window and desired timelines. A recent successful base does not justify deleting all older WAL while an older retained base is still part of the policy. Monitor actual restore tests and missing/corrupt artifacts, not only the last successful upload time. Managed database PITR can own much of the machinery, but you still own target selection, permissions, application validation and rehearsed cutover.
+Define how often base backups run, maximum WAL archive lag, retention, restore-test frequency and alert responsibility. **A retained base backup needs its continuous required WAL and timelines.** A newer successful backup does not justify deleting WAL still needed by an older retained one. Monitor missing/corrupt files and actual restore tests, not just upload timestamps. Managed PITR handles some machinery, but your team still chooses the target, controls access, verifies the application and rehearses traffic switching.
 
 Example product policy, to negotiate rather than assume: RPO at most5 minutes; service RTO at most60 minutes; encrypted daily bases plus continuous archived WAL;30-day recovery window; monthly isolated restore and quarterly timed incident rehearsal. These are illustrative goals, not measured guarantees or legal retention advice. Compare measured archive lag and full service recovery with them. If the recovery window or staffing cannot meet the targets, record that gap and change the system/policy deliberately.
 

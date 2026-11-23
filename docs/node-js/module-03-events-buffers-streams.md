@@ -240,7 +240,7 @@ job.on('error', (error) => console.error('Failed:', error));
 await job.run();
 ```
 
-This historical Job example chooses **event-reported task failure**: if performJob fails and the error listener returns normally, run resolves after emitting error. A thrown complete listener is caught in the same block and reported as an error too; a thrown start listener occurs before that try and rejects run. A throwing/missing error listener can also reject. That mixed behavior is important when maintaining this exact example: await job.run alone is not evidence of job success.
+This example has an unusual failure policy. If `performJob` fails and the error listener returns normally, `run` emits the error and then resolves. A throwing completion listener is caught and reported as an error too. A throwing start listener runs before the `try` and rejects `run`; a missing or throwing error listener can also reject. **Awaiting `job.run()` alone does not prove the job succeeded.** Keep these distinctions when maintaining this exact example.
 
 For a new API prefer a promise that rejects on job failure and define notification-listener failures separately, or expose a discriminated result; do not silently combine promise-success and event-failure contracts. Test each outcome and document which layer logs it.
 
@@ -346,7 +346,7 @@ for await (const [message] of on(emitter, 'message', {
 }
 ```
 
-Provide cancellation, such as an AbortSignal, so the loop has a defined end and its listener is cleaned up. This illustrative controller must be connected to an owner timeout/shutdown action; merely constructing it does not stop the loop. Async iteration serializes the consumer body but does not stop a plain EventEmitter producing events: events.on can queue while the consumer awaits.
+Provide an `AbortSignal` so the loop can stop and remove its listener. Connect the controller to a real deadline or shutdown action; creating it alone does nothing. **Async iteration slows the consumer, not necessarily the producer.** A plain `EventEmitter` can continue emitting while the consumer awaits, and `events.on` may queue those events.
 
 Node24 highWaterMark/lowWaterMark can pause/resume an emitter that actually implements those methods; a plain emitter has no such backpressure. For a non-pausable source choose bounded admission/drop/disconnect policy at the producer/adapter or a real stream/queue rather than allow an unlimited event backlog. Catch expected AbortError at the owner boundary and verify listeners are removed after abort/break.
 
@@ -881,7 +881,7 @@ export async function countErrorLines(input: Readable): Promise<number> {
 // const count = await countErrorLines(createReadStream('large.log'));
 ```
 
-`crlfDelay: Infinity` treats `\r\n` as one line break even when chunk timing would otherwise separate them. The function owns both interface and source, including open/read errors; closing readline alone does not necessarily close the file stream. This is a trusted-log demonstration with synchronous line work, not a hostile-input frame limiter. readline may queue lines and has no per-line byte cap here; use the bounded parser below for constrained untrusted ingestion or slow per-record work.
+`crlfDelay: Infinity` treats `\r\n` as one line ending even if its parts arrive at different times. This function manages both readline and its source, including open/read errors. **Closing readline does not necessarily close the source stream.** This example processes trusted log lines synchronously. It has no per-line byte limit, and readline can queue lines. Use the bounded parser below for untrusted input or slow per-record work.
 
 ### `Readable.from()`
 
@@ -972,7 +972,7 @@ output.end(finalChunk);
 await finished(output, { cleanup: true });
 ```
 
-`finished()` fulfills when the stream reaches the relevant completion and rejects on failure or premature close. It is more robust than assembling several event listeners by hand. Node24 defaults leave listeners attached to guard unexpected late errors; cleanup:true removes those installed by finished after settlement. Use it when this owner guarantees the stream will not be reused/emitting unhandled late errors. It does not close a resource or drive an unread readable to completion by itself.
+`finished()` resolves at the relevant stream completion and rejects on failure or early closure. This avoids manually combining several event listeners. Node 24 normally leaves its listeners attached to handle unexpected late errors. `cleanup: true` removes them after settlement; use it when your code guarantees the stream will not later emit an unhandled error or be reused in an unsafe way. **`finished()` observes completion; it does not close the resource or consume an unread stream.**
 
 ### `cork()` and `_writev()`
 
@@ -1687,13 +1687,13 @@ One TCP chunk may contain:
 
 <<< ../workbench/node-js/runtime/json-lines.ts
 
-**Contract:** JSON Lines here contains nonnull objects, not every JSON value. JSON null is valid JSON, but `Readable.push(null)` is stream EOF even in object mode. The generator therefore rejects null, arrays and primitives before producing records, and yields one object at a time instead of pushing an entire chunk's fanout. A generic JSON-value protocol could wrap values (`{value:null}`) instead. The assertion at the return is limited to the checked object shape; it does not claim any domain fields are validated. Add a schema/projection stage for those.
+<span class="notes-section-label">**Contract:**</span> this JSON Lines format accepts non-null objects, not all JSON values. `null` is valid JSON, but `Readable.push(null)` means end of stream even in object mode. The generator rejects null, arrays and primitives, then yields one object at a time instead of pushing all records from a chunk at once. A generic JSON format could wrap a value as `{value:null}`. The final assertion checks only the object shape; **business fields still need schema validation and explicit selection** in another stage.
 
 **Bounds:** at most1MiB bytes per physical record (LF excluded, optional CR included),64KiB per input chunk and100,000 nonblank records by default. Fixed frame storage is allocated per active parser; choose smaller bounds where appropriate and budget concurrency. Each parsed object can occupy more heap than its UTF-8 bytes. Limits are configurable but the application must choose trusted operational maxima, not let a peer request unlimited allocation. Upstream/source queues and downstream object queues still contribute memory. Configure createReadStream with a compatible chunk bound; highWaterMark alone does not constrain arbitrary externally supplied chunks.
 
 The generator suspends at each yield, so downstream demand controls how quickly it parses more records from one input chunk. UTF-8 decoding happens after a complete bounded frame has accumulated, preserving multibyte characters split across chunks; fatal decoding rejects malformed bytes instead of silently replacing them. ignoreBOM:true preserves a BOM in decoded text, so this JSON protocol rejects a BOM rather than silently stripping it. Blank lines are ignored; LF/CRLF and a final non-newline record are supported. Newlines inside JSON strings must be escaped in the JSON source.
 
-A signal is checked while consuming/producing records; pipeline must also own/destroy a source blocked in I/O. Cancellation cannot roll back writes already committed by a destination. Synchronous parsing of a bounded frame still consumes main-thread CPU. A custom Transform alternative must hold its write callback until fanout is managed and resume readable production on demand; a for-loop that ignores push(false) is not a bounded implementation.
+The signal is checked while reading and producing records. `pipeline` must also stop and destroy a source that is waiting on I/O. **Cancellation does not undo writes already committed by the destination.** Parsing a size-limited frame still uses main-thread CPU. A custom Transform must keep its write callback pending until it has managed the generated output, then resume readable output when requested. A loop that ignores `push(false)` does not provide bounded flow.
 
 For arbitrary binary protocols, use a documented length prefix, delimiter with escaping, or another framing scheme and reject excessive declared sizes before allocating. StringDecoder/setEncoding are appropriate for many tolerant text streams; this strict byte-framed JSON example uses fatal TextDecoder on each complete frame.
 
@@ -1780,7 +1780,7 @@ Backpressure keeps producer speed aligned with consumer capacity, and custom str
 
 ### Iterable, iterator and delegated cleanup
 
-An iterable supplies Symbol.iterator; the iterator has next returning `{value,done}`. A generator supplies both protocols and maintains suspended execution state. Async equivalents use Symbol.asyncIterator and promise-returning operations. A for-of/for-await break normally invokes the iterator's return method, allowing finally cleanup; manually abandoning an iterator without return can leak its owned resource. A final generator return value is not an ordinary yielded item consumed by for-of.
+An iterable supplies `Symbol.iterator`; its iterator has `next()` returning `{value,done}`. A generator supplies both and remembers where execution paused. Async versions use `Symbol.asyncIterator` and promise-returning operations. **Breaking a `for...of` or `for await...of` loop normally calls the iterator's `return()`**, allowing `finally` cleanup. Simply abandoning an iterator without `return()` can leave a resource open. A generator's final return value is not an ordinary item yielded to `for...of`.
 
 ```ts
 export function* rows(log: string[]): Generator<number, void, unknown> {

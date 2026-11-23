@@ -1,6 +1,6 @@
 # A Minimal AWS Service Slice: Topology, IAM and Cost
 
-This intermediate full-stack lesson selects one deployment path: private S3/CloudFront for built frontend assets, HTTPS ALB→ECS Fargate for a Node API, and private RDS PostgreSQL. It is a design and locally linted **API service slice**, not a completed cloud deployment. No account credentials, resources, spending or notifications were changed. Kubernetes is awareness-only here; do not learn several orchestrators before one reproducible service path.
+This lesson chooses one cloud design: private S3/CloudFront for frontend files, an HTTPS load balancer and ECS Fargate for the Node API, and private RDS PostgreSQL. It is a design and locally checked **API service slice, not a completed cloud deployment**. Writing or checking it changed no account credentials, resources, costs or notifications. Kubernetes is background knowledge here; learn one repeatable deployment path before several orchestrators.
 
 ## Topology and prerequisites
 
@@ -30,13 +30,13 @@ Frontend bucket access through CloudFront requires its own reviewed origin-acces
 | ECS execution role | Pull one ECR repository, emit to this log group's streams, read exactly one database secret | Not provided to application SDK code as its ordinary task role |
 | Application task role | GetObject under one configured tenant reports prefix | No bucket listing/deletion, other tenant prefix, IAM administration or general secret reads |
 
-The unavoidable resource wildcard for ecr:GetAuthorizationToken is isolated to that action; repository download operations are scoped. The task role's prefix wildcard permits objects within the one configured tenant prefix, not every tenant. This is a per-tenant workload example. A shared multi-tenant service cannot make one global task role a substitute for per-request authorization; use the application's current scope and an appropriately designed storage access boundary.
+The wildcard resource for `ecr:GetAuthorizationToken` applies only to that required action; repository download permissions remain scoped. The task role permits objects within one configured tenant prefix, not every tenant. This example runs a workload for one tenant. **A shared multi-tenant service still needs current per-request authorization.** One broad task role cannot replace application checks and a deliberately scoped storage interface.
 
 Effective AWS permissions also depend on other identity/resource policies, boundaries, SCPs, explicit denies, KMS and network controls. A local JSON shape test is not the IAM policy simulator or proof of effective denial in an account. Use Access Analyzer/policy simulation where applicable and actual allowed/denied integration checks with the approved deployment identity before accepting the design. Do not embed access keys or secret values in templates, image layers, outputs or logs.
 
 ## Versioned CloudFormation definition
 
-The template creates a cluster, task/execution roles, retained log group, task security group, narrow ingress rules into the existing owned DB/endpoint groups, a Fargate task and rolling service. It does not provision the whole VPC/frontend/database/ALB. Review that modification of shared security groups is within the stack operator's authority. AssignPublicIp is disabled; desired2 tasks and maximum200% can temporarily require4 tasks, available addresses and extra capacity/cost during rollout.
+The template creates the cluster, execution/task roles, retained log group, task security group, selected ingress rules, Fargate task and rolling service. It does not build the entire VPC, frontend, database or load balancer. Confirm that the operator may modify the shared database/endpoint security groups. Tasks have no public IP. **Two desired tasks with a 200% rollout maximum can temporarily mean four tasks**, requiring enough addresses, capacity and budget.
 
 <<< ./aws-service-slice.json
 
@@ -62,7 +62,7 @@ To practice arithmetic only, use fictitious rates USD0.05/vCPUh,0.006/memory-GiB
 
 For the actual region/OS/architecture/database availability mode and current price tier, enter the workload into the official calculator and retain the dated estimate. Include ALB capacity units, endpoint AZ-hours/data, NAT if selected, public IPv4 where applicable, CloudFront/S3 storage/requests, ECR, logs/metrics/alarms, backups/snapshots, database I/O/extra storage, transfer paths, support/taxes and discounts. Unknown components remain unpriced, not zero. Database Multi-AZ and endpoint-per-AZ choices materially change the estimate; do not reuse a single-instance figure for a different topology.
 
-Tag resources by environment/owner/project and compare forecast/actual cost by service and usage unit after an approved deployment. Define example actual80%/100% and forecast100% notifications to a real owner/channel under the organization's policy; no notification was sent here. Budgets/alerts have billing delays and do not provide an instantaneous hard spending stop. Monitor capacity, request/DB/egress/log volume and orphaned resources; review anomalies and revise the workload estimate. A retained log group/snapshot can keep costing after stack removal. Validate teardown and retained-data policy rather than promise “delete stack means zero bill.”
+Tag resources by environment, owner and project, then compare expected and actual usage after an approved deployment. Under the organization's policy, configure example alerts for actual cost at 80%/100% and forecast cost at 100%; no notification was sent here. **Billing alerts are delayed notifications, not an instant spending stop.** Monitor unexpected growth and abandoned resources. Retained logs and snapshots can still cost money after stack removal. Verify teardown and retention instead of assuming deletion means a zero bill.
 
 ## Shared responsibility and alternatives
 

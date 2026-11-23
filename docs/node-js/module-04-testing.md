@@ -285,7 +285,7 @@ Important options:
 | `coverageReporters`   | Coverage output formats                             | Text/HTML for people; LCOV or Cobertura for CI tooling                     |
 | `coverageThreshold`   | Minimum accepted metrics                            | Set by project risk and quality policy                                    |
 
-Keep the transformer, module format, and TypeScript settings aligned. A mismatch can make valid application code fail before any test runs. A TypeScript Jest config also needs the supported config loader for the selected Jest/Node versions; installing a test-source transformer alone does not configure that loader. Prefer the shown jest.config.cjs until the typed-config loader is deliberately set up. Pin a compatible Jest/transformer/TypeScript combination and record its peer constraints and lockfile rather than assuming unpinned latest packages interoperate.
+The transformer, module format and TypeScript settings must agree; a mismatch can stop tests before application code runs. A TypeScript Jest configuration also needs a supported config loader for the chosen Jest/Node versions. Installing a transformer for test source does not install that loader automatically. Keep the shown `jest.config.cjs` unless you deliberately configure the typed loader. **Pin a compatible Jest, transformer and TypeScript combination**, including peer-dependency requirements and the lockfile, rather than assuming every newest version works together.
 
 ### TypeScript support
 
@@ -1123,7 +1123,7 @@ describe('UserService with UserRepository', () => {
 });
 ```
 
-A negative-only password assertion would also pass for undefined, so require persistence, a nonempty stored string and verification with the real production password-hasher adapter. Align argument order with that adapter (this example defines verify(plaintext, storedHash)); do not replace it with a mock returning true in this integration boundary. Public response projection and password storage are separate assertions. Use the actual password/passwordHash column name in the service.
+Checking only that the stored password differs from the input would also pass if it were `undefined`. **Require a persisted, nonempty encoded value and verify it with the real password-hasher adapter.** Match that adapter's argument order; this example uses `verify(plaintext, storedHash)`. A mock that always returns true cannot prove password storage works. Separately check which fields the public response exposes, and use the service's actual `password` or `passwordHash` column name.
 
 Use reserved test domains such as `.test` and unique generated values to prevent collisions.
 
@@ -1648,7 +1648,7 @@ Example scripts:
 
 **Autocode Module4 acceptance:** use `jest --coverage --coverageReporters=cobertura --coverageDirectory=.` unless that task template explicitly says otherwise. The root output location is part of the supplied contract; a generic text/HTML reporter example must not replace it. Other modules require build and test, not an invented mandatory coverage stage. Preserve the template build/test configuration and normal test script `jest`.
 
-Autocode replaces src/tests with predefined tests. Never edit/add fixtures/helpers there, import it from production, or rely on local test edits. All implementations must pass the submitted production-code requirements against hidden tests. The organization examples in this lesson are for a separate practice repository, not permission to modify Autocode's test directory. Close every owned handle and finish each stage within the five-minute limit. In this notes repository, only docs:build exists as the relevant project validation; no application build/test/coverage result is implied.
+Autocode replaces `src/tests` with predefined tests. Never edit or add files, fixtures or helpers there, import them into production code, or rely on local test edits. Implement the production requirements for the supplied and hidden tests. The folder examples here belong to a separate practice repository. Close every resource your code opens and keep each stage within five minutes. In this notes repository, the relevant project command is `docs:build`; these notes do not imply an application build, test or coverage run.
 
 ### CI reliability rules
 
@@ -1817,7 +1817,7 @@ A review should follow a concrete contract through production code and the test 
 | REG-4 malformed input does not persist | Input boundary | Invalid API request,400 schema, no repository side effect | Mocking validation itself |
 | REG-5 checks terminate and fail correctly | False CI success/hanging submission | Clean locked install, build/test and Module4 coverage root artifact; no open handles | Locally edited predefined tests or ignored exit status |
 
-Review the actual diff: confirm the changed route reaches the validation/service/repository/DTO path in that order, the hasher argument contract matches the implementation, and failures are translated once. A missing await on hasher verification is a defect because the assertion can outlive the test. A spy returning true cannot demonstrate a real password encoding. An untested transaction/unique constraint needs a real adapter test, not a larger unit mock.
+Follow the actual change through route, validation, service, repository and public response, in that order. Check that the hasher's argument order matches its implementation and that each failure is translated once. A missing `await` can let password verification finish after the test has ended. A spy returning true cannot prove a real password encoding works. **Transactions and unique constraints need real-adapter tests**, not a larger unit-test mock.
 
 A concise review finding should name the trigger, observed consequence and smallest repair. Example: “When persistence returns an object without password, the negative-only assertion still passes, so registration can appear correct while login is impossible. Assert a persisted nonempty encoded value and verify correct/wrong passwords with the production hasher.” Link the exact changed line and acceptance ID in a real PR; do not invent repository line numbers for this hypothetical case.
 

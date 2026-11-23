@@ -4,7 +4,7 @@ This senior delivery/intermediate backend lab turns the [release compatibility m
 
 ## Separate job state from shared artifacts
 
-CI jobs normally have separate filesystems/process state. A previous job's npm install or build directory does not implicitly exist in the next. Each consumer checks out the required source/config and installs its own tooling from the reviewed lockfile when needed, or downloads the explicit immutable artifact it consumes. npm ci needs the matching lockfile/package manifest and fails rather than update a mismatched lock. A cache accelerates installation; it is not the authoritative release artifact or a substitute for required installation.
+**Separate CI jobs do not automatically share installed packages or build files.** Each consuming job checks out required source/configuration and installs its tools from the reviewed lockfile, or downloads the specific release package it needs. `npm ci` requires matching `package.json` and lockfile contents and fails instead of rewriting a mismatch. A cache can speed installation; it is not the authoritative release package or a substitute for setup.
 
 | Stage | Required inputs and output | Gate |
 |---|---|---|
@@ -14,7 +14,7 @@ CI jobs normally have separate filesystems/process state. A previous job's npm i
 | Staging/promotion | Exact verified artifact identity plus environment configuration/secrets | Smoke/health/load/security gates and appropriate approval; promote the same bytes |
 | Recovery | Known compatible artifact allowlist and current data/migration state | Roll back only within the verified window; otherwise forward repair/reconciliation |
 
-Do not deploy a freshly rebuilt “same version” after testing another archive: time/dependency/build differences can change bytes. A SHA256 binds bytes, not authorship or permission; the expected identity must come from a trusted build/provenance channel. Do not extract arbitrary user archives because a digest string exists. The fixture's fixed archive allowlist contains only manifest.json/storage.mjs, with no path traversal or dependency installation.
+Deploy the tested archive, not a fresh rebuild labelled with the same version. Dependencies, build inputs or timing can change its bytes. **A SHA-256 checksum identifies bytes, not authorship or approval.** Obtain the expected checksum through a trusted build/provenance channel. Do not extract arbitrary user archives just because they have a digest. This example allows only `manifest.json` and `storage.mjs`, with no path traversal or dependency installation.
 
 ## Four real storage contracts
 
@@ -115,9 +115,9 @@ try{
 
 The private fixture initializes PostgreSQL with TCP disabled, an owned Unix socket directory and short connection/statement timeouts, then always stops it. Its trust-auth role is appropriate only inside that disposable private local directory; do not copy that authentication configuration to a shared database. The test imports the packaged artifacts and exercises actual SQL semantics rather than only mutate a JavaScript object.
 
-The key findings are: an old-only writer makes the new shadow stale; V2 still reads the canonical name correctly. A privilege revocation rejects new old-role update statements before the final reconciliation, but a real rollout must also drain/block in-flight/background writers and prevent old identities from returning. A captured stale backfill value with a guarded WHERE changes zero rows after a newer write; current-state backfill then reconciles.
+An old-only writer can leave the new shadow column stale, while V2 still reads the correct original `name`. Revoking the old role blocks new update statements before final reconciliation. A real rollout must also stop active and background old writers and prevent those identities from returning. **A guarded stale backfill must not overwrite a newer write.** Here it changes zero rows; a later backfill using current state reconciles the fields.
 
-During V3 dual writes, V2 rollback reads the correct value. Once V4-only writes begin, V2 becomes stale **before** the old column is dropped. After contract, V1 reads and V3 dual writes fail, while V4 continues.
+While V3 writes both columns, rolling back to V2 reads the correct value. Once V4 writes only the new column, **V2 becomes stale before the old column is dropped**. After that column is removed, V1 reads and V3 dual writes fail, while V4 continues. The rollback limit therefore depends on writes as well as schema shape.
 
 This fixture models one field/row and a controlled interleaving; larger backfills need bounded resumable batches, current invariants and tested concurrency/version ownership. Role revocation is not a complete deployment orchestrator, and statement timeouts do not prove all lock/drain behavior under production load. A snapshot restore may lose later valid writes and needs an isolated recovery point/reconciliation drill. No down migration or traffic switch can undo arbitrary committed external effects.
 
