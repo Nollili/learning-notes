@@ -22,7 +22,9 @@ Source mapping: [R023](./requirements.md#r023), [R065](./requirements.md#r065).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Scripts expose repeatable project commands; CI runs them in a clean environment and stops on failure. **A passing source test is not proof that the packaged application starts.** Build, verify the artifact and keep release identity through promotion.
+Package scripts provide repeatable project commands. CI runs the required checks in a clean environment and must report failures correctly. Build the application, then check the packaged files or image that will actually run.
+
+**Tests against source code do not prove the packaged application starts.** It may be missing dependencies, templates or other runtime files. **Keep the identity of the verified release through later stages**, so the deployed package is the one that passed the checks.
 
 </div>
 
@@ -52,7 +54,9 @@ Source mapping: [R065](./requirements.md#r065).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Produce one artifact with a source/runtime/dependency identity, verify those exact bytes in an isolated consumer and promote the same artifact. **A checksum proves byte identity only when the expected value comes from a trusted channel.** It does not establish authorship or release permission.
+Build one release package or image and record its source revision, runtime and dependency identity. **Test that exact package in a separate, clean environment, then use the same package for release.** Rebuilding later can produce different content even from the same source revision.
+
+A checksum lets you compare bytes against an expected value. **The expected checksum must come from a trusted source.** A matching hash supplied alongside an untrusted download does not establish who made it, whether it is safe or whether it is approved for release.
 
 </div>
 
@@ -109,7 +113,9 @@ Source mapping: [R066](./requirements.md#r066), [R142](./requirements.md#r142).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Separate the immutable application artifact from environment-specific configuration and secrets. Validate required values before readiness and use a controlled management identity. **A successful SSH connection is not a deployment procedure or an audit trail.**
+Keep the fixed application package separate from settings and secrets that vary by environment. **Validate required configuration before marking the service ready.** Use a limited, controlled identity to manage the target environment, and keep secrets out of source, packaged files and logs.
+
+**An SSH connection only gives access to a machine; it is not a repeatable deployment process.** Document the target, exact release, commands, permissions, checks and failure handling, and retain a safe record of what happened.
 
 </div>
 
@@ -141,7 +147,9 @@ Source mapping: [R112](./requirements.md#r112), [R143](./requirements.md#r143).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Readiness indicates whether an instance should receive work; liveness indicates whether its process needs replacement. On shutdown, stop admission, drain bounded work and close owned resources within the platform budget. **Dependency failure should not automatically restart every healthy API process.**
+**Readiness asks whether an instance should receive work; liveness asks whether its process needs replacement.** A failed database can make an API temporarily unready even while its own process is functioning correctly. Restarting every healthy API process may add pressure without fixing the dependency.
+
+**During shutdown, stop accepting new work, allow active work a limited time to finish, and close resources.** Fit this within the platform's shutdown deadline and define what happens when the deadline is exceeded. Observe actual closure rather than treating an abandoned promise as completed cleanup.
 
 </div>
 
@@ -173,7 +181,9 @@ Source mapping: [R104](./requirements.md#r104), [R144](./requirements.md#r144).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Release compatible schema and application changes in stages, promote a known artifact and observe business behavior before completing the rollout. **Rolling back code does not roll back committed data or make an old schema contract valid again.**
+Release database and application changes in compatible stages. Use a known, tested package, and observe important business operations before completing the rollout. Old and new instances may run together, so the schema must support both during that period.
+
+**Rolling back code does not roll back committed data.** An older version may also stop working after a destructive schema change. Plan the compatibility window and recovery steps before release; keeping an old image alone is not a complete rollback plan.
 
 </div>
 
@@ -208,7 +218,9 @@ Source mapping: [R065](./requirements.md#r065), [R147](./requirements.md#r147).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A handoff identifies what was built, what was actually checked, what will change, how failure is detected and who owns recovery. **Preparation, registry publication and deployment are distinct actions.** This repository's work stops before any remote Git push.
+A delivery handoff explains which release was built, which checks actually ran, what the release changes, how failures will be noticed and who handles recovery. Include remaining limitations and a usable rollback or repair plan, not only successful check results.
+
+**Preparing a release, publishing it to a registry and deploying it are separate actions.** State which actions were actually completed. For this repository, prepare the work locally; remote Git pushes remain for the user to perform.
 
 </div>
 

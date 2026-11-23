@@ -33,9 +33,11 @@ console.log(JSON.stringify({
 
 <p class="notes-core-answer__title">Core answer</p>
 
-The node executable starts the runtime; an entry file supplies the program. **Runtime flags normally precede that file**, and **arguments after it belong to the script**. process.argv contains executable path, entry path and script arguments, while process.execArgv contains Node options such as --trace-warnings. **Values arrive as strings and need validation**.
+Run a file with `node app.mjs`. **Node options usually go before the filename; your program's arguments go after it.** For example, in `node --trace-warnings app.mjs hello`, Node uses `--trace-warnings` and your script receives `hello`.
 
-Useful commands include --version, --help, --check for syntax, and --eval/--print for short expressions. A shell can transform quotes/globs before Node sees the arguments, so **shell parsing and application parsing are separate boundaries**.
+`process.argv` contains the Node executable path, the script path and the script's arguments. `process.execArgv` contains Node options. **Command-line argument values are strings**, so check and convert them before using them as numbers or booleans.
+
+Use `--version` for the Node version, `--help` for help and `--check` to check syntax. `--eval` runs a short piece of code; `--print` also prints its result. Your shell processes quotes and wildcards before Node receives the arguments.
 
 </div>
 
@@ -100,11 +102,9 @@ What is wrong with `const enabled = Boolean(process.env.FEATURE_ENABLED)` when t
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Environment variables provide settings such as a port number or a feature flag. **Their values are strings, so validate and convert them once at startup.** Apply a default when a value is missing; reject a supplied value that is invalid. Pass the checked settings to the rest of the application in an object that cannot be changed accidentally.
 
-
-**Environment variables supply string configuration, not typed application state**. **Validate them once at startup**, **apply defaults only for genuinely absent values**, convert deliberately and pass a small immutable configuration object to the application. **The string false is truthy**, and truthy defaults can hide invalid or meaningful values.
-
-A .env file is a loading mechanism, not a secret vault. Node 24 supports --env-file; **an existing process environment value takes precedence over the file**. Keep credentials out of logs, argv and client bundles, and fail startup safely for invalid essential settings.
+**`'false'` is a nonempty string, so `Boolean('false')` is `true`.** Parse boolean settings explicitly. A `.env` file is a way to load settings, not a secure place by itself. With Node 24's `--env-file`, an existing environment value takes priority over the file. Keep secrets out of logs, command-line arguments and browser code.
 
 </div>
 
@@ -177,9 +177,9 @@ Source mapping: [R067](./requirements.md#r067).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-The REPL is an interactive Read–Eval–Print Loop started by running node without a script in an interactive terminal, or explicitly with --interactive. It reads JavaScript, evaluates it, displays the result and **keeps context for the next input**. It is useful for checking a small language/API hypothesis, inspecting values and trying await.
+The REPL is Node's interactive JavaScript prompt. REPL means Read–Eval–Print Loop: it reads your code, runs it, prints the result and waits for more. Start it with `node` in an interactive terminal, or with `node --interactive`. **It remembers values between inputs**, which makes it useful for quick experiments, including trying `await`.
 
-It is **not a substitute for a reproducible module or test**: its state, top-level bindings, printing and input mode differ from an ordinary file. It also **runs code with the process's real privileges**, so it is not a sandbox.
+**Code that works in the REPL may behave differently in a file.** Earlier inputs can affect the result, and top-level variables and displayed output follow REPL rules. Save important experiments as a file or test so you can repeat them. The REPL has your process's permissions; it is not a sandbox.
 
 </div>
 
@@ -249,9 +249,9 @@ Source mapping: [R112](./requirements.md#r112).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Standard input is the process's input stream; standard output carries its normal result; standard error carries diagnostics. Their conventional OS descriptors are 0, 1 and 2. They can be a terminal, pipe or file, so do not assume interactive prompts or synchronous writes.
+A CLI has three standard streams: `stdin` reads input, `stdout` writes normal results and `stderr` writes error messages and other diagnostics. Their operating-system numbers are 0, 1 and 2. A stream may connect to a terminal, another program or a file.
 
-A composable CLI keeps **machine-readable output on stdout**, **sends fixed diagnostics to stderr** and **reports failure through its exit status**. It must also respect stream errors/backpressure and close owned interfaces. The OS descriptor identifies an I/O channel, **not a guarantee about the order of two separate output channels**.
+**Put machine-readable results on `stdout` and diagnostics on `stderr`.** This lets another program use the result without accidentally reading an error message as data. **Use a nonzero exit status to report failure.** Handle stream errors, wait when output cannot accept more data and close interfaces you create. Messages written to two separate streams may appear in a different order.
 
 </div>
 
@@ -336,9 +336,11 @@ process.exitCode = 2;
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Node normally exits when no referenced runtime work keeps its event loop alive. A server, timer, active I/O or IPC channel can keep it running; **an arbitrary unresolved promise alone is not a general keep-alive mechanism**. **process.exitCode selects the eventual status without immediately stopping cleanup**. **process.exit forces termination** and can cut off asynchronous output/work.
+Node normally exits when nothing keeps its event loop active. A listening server, a referenced timer or active I/O can keep it running. **A promise that never settles does not, by itself, keep Node alive.**
 
-**The exit event permits synchronous final actions, not awaited cleanup**. beforeExit can schedule more work during natural draining but is not a universal shutdown hook. A service needs an explicit signal-driven stop-admission/drain/close policy.
+**`process.exitCode` sets the status for when Node finishes naturally.** This leaves time for cleanup and pending output. `process.exit()` stops the process immediately and may cut that work short.
+
+The `exit` event allows only synchronous final work. `beforeExit` can add work when Node is about to finish naturally, but it does not run for every kind of shutdown. A service should handle shutdown signals by stopping new work, finishing or limiting current work, and closing resources.
 
 </div>
 
@@ -411,9 +413,9 @@ Source mapping: [R073](./requirements.md#r073).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-process exposes the current process's identity, environment, arguments, working directory, streams, lifecycle events and resource measurements. **Use cwd for launch-relative paths**, execPath for the selected executable, and runtime/platform metadata to reproduce a problem.
+The `process` object gives information about the running Node program: its ID, arguments, environment, working directory and resource use. **`process.cwd()` is the directory the program is currently running from**, which can differ from the script's directory. `process.execPath` tells you which Node executable is running.
 
-For measurement distinguish **elapsed monotonic time from CPU time** and **process RSS from JavaScript heap/external allocations**. getActiveResourcesInfo can identify resource types that keep work alive, but it is not a close-everything API. Project only necessary diagnostic fields; **environment/report dumps can contain secrets**.
+**Elapsed time, CPU time and memory use measure different things.** Elapsed time includes waiting; CPU time measures processor work. RSS measures memory currently held in physical RAM by the process, while the JavaScript heap is only part of its memory. `getActiveResourcesInfo()` lists types of resources keeping Node active; it does not close them. Log only the fields you need because environment values and reports can contain secrets.
 
 </div>
 
@@ -490,11 +492,9 @@ Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Use `spawn()` to start a program and read its output as it arrives. `execFile()` also starts an executable directly and normally collects its output for a callback. **`exec()` runs a command through a shell** and collects its output. A shell interprets special characters, so **prefer direct execution when shell features are unnecessary**, especially with user input.
 
-
-**spawn starts an executable with argument boundaries** and exposes streams, making it useful for incremental output. execFile runs a selected executable directly and usually buffers its callback output; **exec runs a command through a shell** and also buffers output. **Avoid a shell when you do not need shell features**, especially with untrusted text.
-
-**Bound time/output/concurrency**, scope the child environment and distinguish launch errors, nonzero exit, signals and stream completion. A child is another process, not automatically a sandbox or a worker thread.
+Set limits on execution time, collected output and the number of children running at once. Pass only the environment settings the child needs. Handle a failure to start separately from a program that starts and then exits unsuccessfully. Also wait for its output streams to finish. A child process is a separate program, not automatically a secure sandbox.
 
 </div>
 
@@ -578,9 +578,9 @@ Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-child_process.fork starts **another Node process with an IPC channel**; it **does not clone the parent's JavaScript heap or create a worker thread**. IPC sends serialized messages between processes, so design a validated protocol with correlation, bounded payloads, deadlines and failure ownership.
+**`child_process.fork()` starts another Node process and gives it a messaging channel.** This channel is called IPC: inter-process communication. The child has its own JavaScript memory; it is not a worker thread or a copy of the parent's live objects.
 
-A send callback means a transport-stage outcome, **not confirmed business completion**. **Observe a valid result and actual child closure**, distinguish missing/invalid results from success and close or disconnect unused channels. For repeated work a bounded pool is often better than per-item process creation, depending on workload.
+Check messages, keep them small, give requests IDs so replies can be matched, and set a deadline. **A successful send does not prove the child finished the task.** Wait for a valid result and confirm that the child closes as expected. Handle errors and close unused channels. For repeated tasks, a limited set of reusable processes may be cheaper than starting one for every task.
 
 </div>
 

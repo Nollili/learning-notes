@@ -26,7 +26,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Interpreter represents a grammar and defines how its expressions are evaluated. **A small explicit language is different from evaluating arbitrary JavaScript.** Bound its syntax, depth and work, and separate syntax validity from record validation.
+Interpreter represents the rules of a small language and defines how its expressions produce a result. For example, it can evaluate a limited filter expression against a record.
+
+**A deliberately limited language is different from running arbitrary JavaScript.** Allow only the intended syntax, and limit nesting depth and evaluation work. An expression can be syntactically valid while the record it examines is invalid, so check those separately.
 
 </div>
 
@@ -145,7 +147,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Iterator provides sequential traversal without exposing a collection’s representation. **Exhaustion, early return and failure need cleanup semantics.** A generator can express the protocol, but merely creating an iterator must not silently leak an eagerly opened resource.
+Iterator lets callers visit values one at a time without knowing how the collection stores them. A generator is one way to implement this traversal protocol.
+
+**Define cleanup when traversal finishes, stops early or fails.** If traversal opens a file or cursor, decide which code closes it. Simply creating an iterator should not quietly leave an eagerly opened resource without a clear cleanup path.
 
 </div>
 
@@ -262,7 +266,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Memento lets an originator capture/restores its state through snapshots held by a caretaker. **The caretaker need not inspect or mutate the snapshot.** Restoration is scoped to that originator’s owned state, not a guarantee that external effects can be undone.
+Memento lets an object, called the originator, save its own state and restore it later. Another component, called the caretaker, holds the saved snapshots without needing to understand or change their contents.
+
+**A snapshot restores only the state covered by that object's design.** It does not automatically undo an external effect. Define what is saved and how restoration works; holding a snapshot is not the same as having a general rollback mechanism.
 
 </div>
 
@@ -362,7 +368,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Visitor separates operations from a stable family of node types. Each node dispatches to the appropriate visitor method. **New operations become easier, while new node types require updating visitors.** This trade-off is the reason to choose it, not the accept method name.
+Visitor puts operations on a family of node types into separate visitor objects. Each node calls the visitor method intended for its type. This is useful when the node types are fairly stable but you often need new operations over them.
+
+**Adding an operation is easier, but adding a node type means updating the visitors.** Choose the pattern for that trade-off, not merely because a method is named `accept()`. Define how missing visitor methods or unsupported node types fail.
 
 </div>
 

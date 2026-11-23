@@ -22,7 +22,9 @@ Source mapping: [R140](./requirements.md#r140), [R141](./requirements.md#r141), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A VM gives you a guest operating system; a container packages a process environment; a managed service delegates selected operating tasks to a provider. **Managed does not mean someone else owns your application, data policy or access controls.**
+A virtual machine gives you a guest operating system to configure and maintain. A container packages the environment for a process; who runs its hosts depends on the chosen platform. A managed service hands specified operating tasks to the provider, such as parts of database maintenance.
+
+**“Managed” does not transfer responsibility for your application's behavior, data rules or access permissions.** Identify what the provider handles and what your team must still configure, monitor and recover.
 
 </div>
 
@@ -59,7 +61,9 @@ Source mapping: [R140](./requirements.md#r140), [R147](./requirements.md#r147).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Treat a VM as a reproducible configuration of image, CPU/memory, identity, network interfaces and storage. Create a tested recovery path before storing important data there. **A snapshot is useful backup input, not proof that the application restores consistently.**
+Save a repeatable specification for the VM's base image, CPU, memory, identity, networking and storage. This lets you rebuild it rather than rely on undocumented manual setup. **Test how you will recover before storing important data there.**
+
+A snapshot saves storage state at a point in time, but the application or database may need coordinated writes for that state to be usable. **A completed snapshot is not proof of a successful application restore.** Restore to an isolated target, verify the data and measure how long recovery actually takes.
 
 </div>
 
@@ -93,7 +97,9 @@ Source mapping: [R140](./requirements.md#r140).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Object storage exposes keys and object APIs, block storage exposes disk-like blocks and file storage exposes a shared filesystem interface. **Choose the interface and consistency boundary the workload needs**, rather than treating all storage as a mounted folder.
+Object storage keeps objects under keys and exposes APIs for reading and writing them. Block storage provides disk-like blocks, usually used through a filesystem or database. File storage exposes files and directories through a shared filesystem interface.
+
+**Choose the storage interface and guarantees your workload needs.** Consider how data is read, updated and shared, and what must remain consistent. These services are not interchangeable folders; saving an object and committing a database row are separate operations that need a coordinated failure policy.
 
 </div>
 
@@ -148,7 +154,9 @@ Source mapping: [R145](./requirements.md#r145).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Provision an allowed network path, a least-privilege database identity and verified TLS, then budget pools across all replicas. **An IAM permission or private subnet alone does not make a SQL connection correct or secure.**
+The application needs an allowed network route to the database, database credentials with limited privileges and a TLS connection that verifies the intended server. **Networking, identity and encryption solve different parts of the connection problem.** Configure all of them.
+
+**An IAM permission or a private subnet alone is not enough.** The database still needs the correct SQL permissions, endpoint, credentials and certificate checks. Limit the combined connection pools across all replicas so a secure connection setup does not become an overload problem.
 
 </div>
 
@@ -180,7 +188,9 @@ Source mapping: [R142](./requirements.md#r142), [R147](./requirements.md#r147).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Separate deployment authority, platform execution authority and application runtime authority. Give each only its required actions/resources. **A compromised runtime should not inherit the ability to redeploy the account or read every secret.**
+Use separate identities for deploying the system, running the platform's setup tasks and performing the application's runtime actions. **Give each identity only the actions and resources it needs.** For example, permission to fetch a startup secret differs from permission to deploy a new service.
+
+**A compromised application should not inherit administrator access to deployment or all secrets.** Network boundaries restrict which systems can connect; application authentication and authorization still control what callers may do. Configure those protections separately.
 
 </div>
 
@@ -213,7 +223,9 @@ Source mapping: [R144](./requirements.md#r144), [R147](./requirements.md#r147).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A complete exercise includes a reviewed change, working application path, denied access, observed health/failure behavior, cost controls and cleanup. **A template that parses locally is preparation, not a successful deployment.**
+A complete cloud exercise tests a reviewed change in the intended environment. **Show both that allowed work succeeds and that forbidden access fails.** Observe health checks, failures and recovery, control costs, and remove or explicitly retain the resources afterward.
+
+**A template that parses locally is only preparation.** It does not prove that the deployed application can reach its database, enforce permissions or recover from a failure. Keep evidence of what actually ran, its results and cleanup.
 
 </div>
 

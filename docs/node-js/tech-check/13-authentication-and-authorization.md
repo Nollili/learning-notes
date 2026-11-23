@@ -22,7 +22,9 @@ Source mapping: [R051](./requirements.md#r051).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Authentication establishes a trusted identity. Authorization decides whether that identity may perform this action on this resource. **A valid login is not permission to access every object.** Check tenant, ownership, operation and relevant state at the server boundary.
+**Authentication checks who the caller is; authorization checks what that caller may do.** For example, a valid login can establish Alice's identity, but it does not allow her to edit Bob's product.
+
+**Check permission for each action and resource on the server.** Consider the tenant or organization, resource owner, requested operation and relevant state. A hidden UI button or a known resource ID is not a permission check.
 
 </div>
 
@@ -74,7 +76,9 @@ Source mapping: [R019](./requirements.md#r019).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An opaque server-side session is a practical default for this browser application. A signed token is useful for separately verifiable API credentials. **Choose from revocation, client and trust-boundary requirements**, rather than assuming tokens are always more scalable or secure.
+With a server-side session, the browser holds a random session ID and the server stores the associated login state. **This guide uses sessions as the practical default for its browser application.** A signed token can be useful when an API needs credentials that another service can verify independently.
+
+**Choose based on the client, who must trust whom, and how access can be revoked.** Do not assume that JWTs are automatically more secure or easier to scale. Either approach still needs secure credential handling and a deliberate expiry and logout policy.
 
 </div>
 
@@ -110,7 +114,9 @@ Source mapping: [R019](./requirements.md#r019).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Verify a signature with trusted keys and an explicit algorithm policy, then validate issuer, audience, time and application claims. **Decoding a JWT is not verification; a signed JWT is not encrypted.** A valid token still needs resource authorization.
+**Check the JWT signature with trusted keys and explicitly allowed algorithms.** Then check its issuer, intended audience, expiry and other time rules, and the claims your application requires. The issuer is who created it; the audience identifies who it is intended for.
+
+**Decoding a JWT only reads its contents; it does not prove they are trustworthy.** A signature protects against unauthorized changes but does not hide the contents through encryption. Even a correctly verified token must pass a separate permission check for the requested resource and action.
 
 </div>
 
@@ -193,7 +199,9 @@ Source mapping: [R050](./requirements.md#r050), [R083](./requirements.md#r083), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Middleware verifies a credential and attaches a narrow trusted principal. Passport delegates a particular credential mechanism to a strategy. **Passport authentication does not replace application authorization**, session-store ownership or secure strategy configuration.
+Authentication middleware verifies credentials and adds a small amount of trusted caller information to the request. This caller information is often called a principal. Passport uses a strategy to handle a particular authentication method, such as a password or bearer token.
+
+**Passport authentication does not decide all application permissions.** Your application still checks which resources and actions the caller may access. It must also configure each strategy securely and manage session storage, expiry and cleanup where sessions are used.
 
 </div>
 
@@ -237,7 +245,9 @@ Source mapping: [R084](./requirements.md#r084), [R085](./requirements.md#r085), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use OpenID Connect for federated login and OAuth access tokens for delegated API access. Independently deployed services verify the credential intended for them and enforce local permissions. **Trust an explicit issuer and audience, not a caller-supplied identity header.**
+OpenID Connect lets an application use an external identity provider for login. OAuth access tokens allow specified API access. **Each receiving service must verify a credential intended for that service**, then apply its own permission rules.
+
+Configure which issuer you trust and which audience you accept. **A caller-supplied identity header is not proof of identity.** A trusted provider's login also does not automatically grant membership or administrator rights inside your application. Services need an explicit, trusted way to pass identity and limit authority between them.
 
 </div>
 
@@ -271,7 +281,9 @@ Source mapping: [R084](./requirements.md#r084), [R186](./requirements.md#r186).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Keep a short-lived, single-use login transaction bound to the initiating browser and configured issuer/redirect. Let a maintained OIDC client validate the protocol. **A callback with a code is not yet an authenticated application session.**
+When login starts, save a short-lived login attempt that belongs to that browser, the configured identity provider and the expected callback address. **The attempt must be usable only once.** Store the protocol values needed to match and verify the later response.
+
+**A callback containing a code is not yet a logged-in application session.** Use a maintained OIDC client to check the response and exchange the code according to the protocol. Only after successful verification and local account checks should the application create its own session. A response from another browser, provider or login attempt must not be accepted as this one.
 
 </div>
 
@@ -340,7 +352,9 @@ Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Bind accepted keys to a configured issuer and token profile, validate recipient/time/application claims and plan a bounded rotation window. **A token's kid is a selector within trusted keys, not permission to fetch arbitrary keys.** Unknown authenticity fails closed.
+Configure which issuer, token purpose and keys the service trusts. A token profile defines the kind of token and the claims it must contain. Check its intended recipient, time limits and application-specific claims as well as its signature.
+
+**The token's `kid` chooses among trusted keys; it does not authorize arbitrary key downloads.** Plan how old and new keys overlap during rotation, and limit that overlap and key-refresh work. **If authenticity cannot be established, deny access.** Do not trust an unknown key just because the identity provider is unavailable.
 
 </div>
 
@@ -419,7 +433,9 @@ Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Persist refresh-family state and serialize its transitions; make reuse handling and account-version checks explicit. **A successful signature check cannot detect every later account or credential change.** Revocation affects subsequent checks, not already committed effects.
+Refresh rotation replaces a refresh credential with a new one. A refresh family links credentials descended from the same login. **Save that family state durably and coordinate updates so concurrent requests cannot both use the same credential successfully.** Define what happens when an already used credential reappears.
+
+For sensitive actions, explicitly check current account or credential versions where required. **A valid signature does not prove the account's permissions are still current.** Revocation affects later checks; it does not undo a change that already committed. Coordinate these checks with the business write when correctness depends on their happening together.
 
 </div>
 

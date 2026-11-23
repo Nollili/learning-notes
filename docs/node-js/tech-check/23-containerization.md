@@ -22,7 +22,9 @@ Source mapping: [R060](./requirements.md#r060).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An image is packaged filesystem content and runtime metadata. A container is a running or stopped instance with its own writable layer. A registry distributes images; volumes hold data outside replaceable container layers. **A container is not a separate virtual machine or a durable backup.**
+An image packages application files, dependencies and information about how to run them. A container is a running or stopped instance of an image, with its own writable layer. A registry stores and distributes images.
+
+**A volume keeps data outside a container's replaceable writable layer.** Replacing a container does not have to remove that volume's data. **A container is not a separate virtual machine, and a volume is not a backup.** Plan and test backup recovery separately.
 
 </div>
 
@@ -54,7 +56,9 @@ Source mapping: [R061](./requirements.md#r061), [R103](./requirements.md#r103), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Build from a reviewed base, copy a narrow context, install the locked dependency tree and run with a non-root identity. Separate build tools from runtime files. **A reproducible image must also be updated and retested for security fixes.**
+Start from a reviewed base image, send only the needed files to the build, and install dependencies from the lockfile. **Keep build tools separate from the files needed to run the application.** Run the service as a non-root user with the permissions it actually needs.
+
+These choices make the image smaller and easier to reproduce and inspect. **A pinned, reproducible image still needs security updates and retesting.** Rebuilding the same old content forever also preserves its old vulnerabilities.
 
 </div>
 
@@ -90,7 +94,9 @@ Source mapping: [R061](./requirements.md#r061), [R178](./requirements.md#r178).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Compose describes a local multi-container application, including service DNS, mounts, ports and initial dependencies. **A running dependency is not necessarily ready**, and initial health ordering does not replace runtime reconnection or failure handling.
+Compose describes a local application made of several containers. It configures how services find each other by name, which ports are published, which files are mounted and which dependencies start first. Supply secrets only to the services that need them.
+
+**A started container is not necessarily a ready dependency.** A database process may be running before it can handle the application's queries. Initial health-based startup ordering helps, but the application must still handle later connection failures, reconnect when appropriate and report readiness accurately.
 
 </div>
 
@@ -126,7 +132,9 @@ Source mapping: [R098](./requirements.md#r098), [R103](./requirements.md#r103).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Tags are mutable names; digests identify immutable content at a particular artifact level. Build and test one image, then deploy the reviewed digest for the target architecture. **A digest identifies content, not its safety or suitability.**
+**A tag is a name that can point to different image content later.** A digest identifies fixed content, such as a platform image or a multi-platform image index. Build and test one image, record its digest and target architecture, then deploy that reviewed content.
+
+**A digest proves which content you selected, not that it is safe or suitable.** An orchestrator manages running instances and rollouts, but you still need correct health checks, resource limits, state management and shutdown rules.
 
 </div>
 
@@ -159,7 +167,9 @@ Source mapping: [R060](./requirements.md#r060).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Locate the failing boundary: daemon, image build, process startup, health, network, filesystem or dependency. **Inspect evidence before changing privileges or rebuilding randomly.** Use narrowly scoped commands against only your owned project.
+**Find the stage that failed before changing the setup.** Is Docker's daemon unavailable, did the image build fail, did the process exit, did a health check fail, or can the service not reach a file or dependency?
+
+Inspect the relevant status, logs, network settings, file ownership and runtime configuration. **Do not randomly rebuild or grant broad privileges to hide the symptom.** Use narrowly targeted commands against your own project and make the smallest change supported by the evidence.
 
 </div>
 

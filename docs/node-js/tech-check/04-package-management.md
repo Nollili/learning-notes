@@ -22,11 +22,9 @@ Source mapping: [R007](./requirements.md#r007), [R151](./requirements.md#r151).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+`package.json` describes a package: its name, version, module format, entry points, dependencies and scripts. **The package manager installs dependencies; Node loads them when the program runs.** These are separate steps. The package manager uses dependency declarations and a lockfile to decide what to install.
 
-
-**package.json declares package metadata and contracts**: identity/version, runtime module type/entry exports, dependencies, scripts and compatibility hints. **A package manager uses the dependency declarations and lockfile** to prepare a dependency tree; **Node's loader later resolves and evaluates imports** from that tree.
-
-The manifest does not execute the whole application, install itself merely because it was imported, or prove a dependency is safe. Distinguish source, generated artifacts, dependencies, package metadata and the lockfile. For an application, private:true prevents accidental npm publication, but is **not a privacy or filesystem permission mechanism**.
+The file does not run the entire application or prove that a dependency is safe. Source files, built output, installed packages and the lockfile each have different jobs. **`"private": true` prevents accidental npm publication**, but does not make your files confidential or restrict filesystem access.
 
 </div>
 
@@ -100,11 +98,9 @@ Source mapping: [R114](./requirements.md#r114).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+`npm install` installs the requested dependencies and may change `package.json` or the lockfile. **`npm ci` installs from an existing, compatible lockfile without rewriting it.** It fails if the dependency declarations and lockfile disagree. It also removes the existing `node_modules` directory before installing.
 
-
-**npm install resolves the declared installation request and can update the manifest/lockfile**; npm ci recreates a project installation from a compatible existing lockfile and **fails on incompatible manifest/lock input instead of rewriting that contract**. **ci removes the existing node_modules tree** before its installation.
-
-Commit/review the lockfile and use the same relevant installation configuration in CI. Runtime-only installation can omit dev packages, but **build tools may be needed earlier in the build stage**. Reproducibility still depends on runtime/platform, lifecycle scripts, environment and retained artifact identities.
+Commit and review the lockfile, and keep relevant install settings consistent between local work and CI. Runtime dependencies belong in `dependencies`; development tools usually belong in `devDependencies`. **A build may need development tools even if the finished application does not.** Matching the lockfile helps repeat an installation, but Node versions, platforms, scripts and environment settings can still affect the result.
 
 </div>
 
@@ -188,9 +184,9 @@ Source mapping: [R006](./requirements.md#r006), [R029](./requirements.md#r029).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Start by identifying the selected node/npm versions, project/workspace directory and the failed command. npm combines command-line flags, environment settings and project/user/global configuration with documented precedence; **a visible project .npmrc is not necessarily the whole effective setup**. **Inspect only the needed nonsecret settings**.
+Check the Node and npm versions, the project or workspace directory, and the exact command that failed. npm reads settings from flags, environment variables and project, user and global configuration files. **The project's `.npmrc` may show only part of the configuration.** Inspect the relevant settings without printing tokens or passwords.
 
-Use ls/explain to investigate the installed graph, then distinguish **resolution, authentication, network/TLS, peer compatibility and lifecycle failures**. An error does not authorize dumping tokens or switching to an untrusted registry.
+Use `npm ls` to inspect installed packages and `npm explain` to learn why a package is present. **Find the kind of failure before changing settings**: package lookup, login, networking/TLS, incompatible peer dependencies or an install script can each fail for different reasons. Do not solve an authentication error by exposing tokens or switching blindly to another registry.
 
 </div>
 
@@ -265,9 +261,9 @@ An application defines `"inspect-args":"node args.mjs"`. What does `npm run insp
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An npm script is a named command in package.json. npm run selects that command, prepares its script environment including local binary lookup, and executes it through the configured script shell. The separator -- forwards following arguments to the selected script under npm's contract. **Script names such as build have no automatic compiler implementation**.
+An npm script is a named command in `package.json`, run with `npm run NAME`. npm makes locally installed command-line tools available to that command and runs it through a shell. Use `--` to pass following arguments to the selected script.
 
-**Lifecycle hooks can run additional commands**, so inspect pre/post/install/prepare behavior as well as the visible command. **A script must propagate failures and finish owned work**; a green wrapper is not proof its child operation succeeded.
+**A script named `build` does only what its configured command says.** npm does not supply a compiler just because you use that name. **Hooks can run extra commands before or after the main command**, including during installation. Check those too. A script must report failures correctly and wait for its work to finish; otherwise it can appear successful even when a child command failed.
 
 </div>
 
@@ -333,9 +329,9 @@ A manifest requests ^1.2.3 and its lock resolves 1.2.3. The registry later offer
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Semantic Versioning communicates changes to a declared public API through major/minor/patch versions. **A range declares acceptable versions**; **a lockfile records a particular resolved installation**. npm ci does not mean “upgrade to the newest acceptable release.” Caret and tilde ranges have defined upper bounds, with **narrower caret behavior for zero-major versions**.
+Semantic Versioning uses `major.minor.patch`. For a stable public API, a major change indicates incompatibility, a minor change adds compatible functionality and a patch fixes a compatible bug. **A version range allows several versions; a lockfile records a specific installation.** `npm ci` uses that recorded installation rather than upgrading to the newest allowed version.
 
-**Prereleases have special matching rules** and are not automatically admitted by an ordinary stable range. Version compatibility remains a maintainer promise and selection rule, **not proof the new code is correct or secure**.
+Caret (`^`) and tilde (`~`) ranges allow different sets of updates. **Caret ranges are more restrictive before version 1.0**, and prerelease versions have special matching rules. A version number expresses the maintainer's compatibility promise; it does not prove the code is correct or secure.
 
 </div>
 
@@ -404,9 +400,9 @@ Source mapping: [R069](./requirements.md#r069).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A package registry serves package metadata and versioned artifacts, with authentication/access rules where applicable. A package name, scope, version, tag and tarball are different identifiers: **a tag such as latest is a movable selection pointer**, while the lock can retain an exact artifact/integrity.
+A registry stores package information and downloadable package files. Public and private registries may require different access settings and credentials. A scope groups package names, a version identifies a release, and a tarball is its downloadable archive.
 
-Public and private registry routes need deliberate scope and credential policy. **Inspect the actual packed files and installed artifact**; the source repository can contain files that are absent from a package, or secrets that must never be shipped. **Integrity verifies expected bytes, not benevolent code**.
+**A tag such as `latest` can point to a different version later.** A lockfile can record an exact download and an integrity value used to check its bytes. **Inspect what the package actually contains**, because its files can differ from the source repository. Exclude secrets before publishing. An integrity check confirms that the downloaded bytes match the expected bytes; it does not prove the code is trustworthy.
 
 </div>
 
@@ -468,9 +464,9 @@ Source mapping: [R028](./requirements.md#r028).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-npm scripts can orchestrate build/check/test tasks and provide local tool lookup, but **npm does not itself supply an arbitrary compiler**, bundler or dependency-aware incremental build graph. The selected commands do that work. Define inputs, outputs, ordering and failure propagation, then **test the artifact the next stage actually consumes**.
+You can use npm scripts to run a compiler, bundler, tests and other build steps. npm makes local tools available, but **the configured tools do the actual building**. Define which files go in, which files should come out, what order the steps run in and how failures are reported.
 
-**A source-only test or a stale output directory can pass** while deployment receives missing or incorrect files. For complex caching/workspaces, make dependencies and cache keys explicit rather than assume a script name creates them.
+**Check the built files that will actually be deployed or used next.** Tests against source code can pass while the built output is missing, outdated or wrong. In larger projects, configure build dependencies and cache keys explicitly; a script name alone does not tell npm which changes require rebuilding.
 
 </div>
 
@@ -589,11 +585,9 @@ A release job runs ci with --omit=dev, then build. It fails because the compiler
 
 <p class="notes-core-answer__title">Core answer</p>
 
+First identify where the failure happens: choosing package versions, downloading them, checking compatibility, running install/build scripts or loading code at runtime. Check the actual environment, configuration, `package.json`, lockfile and built files before changing them.
 
-
-**Identify whether failure occurred** in resolution, fetching/authentication, tree compatibility, lifecycle/build or runtime loading. Preserve the reviewed identity and inspect the manifest/lock, effective settings, selected environment and actual emitted artifact.
-
-A missing dev-only compiler after omit=dev is a build-stage/category problem, **not evidence that the lock must be deleted**. A newer allowed registry version does not make a successful locked recreation incorrect. **Make one justified change at a time**, **retain the failure and rerun the relevant clean install/build/runtime checks**.
+**Fix the cause instead of deleting the lockfile or forcing an upgrade.** For example, if `--omit=dev` removed the compiler, make the build tools available during the build stage. A newer version being available does not mean the locked installation is wrong. **Change one thing at a time and rerun the failing check**, including a clean install, build or runtime check as appropriate. Keep enough of the original error to confirm what the change fixed.
 
 </div>
 

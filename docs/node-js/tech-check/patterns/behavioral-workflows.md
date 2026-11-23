@@ -26,7 +26,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Chain of Responsibility passes a request through candidate handlers. **Define what means handled, delegated or failed.** Ordering and termination are observable behavior; an error is not automatically permission to try another handler.
+Chain of Responsibility passes a request through handlers that may deal with it or pass it on. **Define how a handler reports “handled,” “pass on” and “failed.”** Also define what happens when no handler accepts the request.
+
+Order matters: an earlier handler can prevent later ones from running. A failure is not automatically a reason to try the next handler; doing so could hide an error or repeat an effect. Make stopping and error behavior part of the agreement.
 
 </div>
 
@@ -125,7 +127,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Command represents an operation so an invoker can trigger it without knowing its receiver’s details. **Execution, retry and undo need separate contracts.** Undoing owned local state is not automatic rollback of an external effect.
+Command represents an operation separately from the code that triggers it. The caller can ask for the operation without knowing the details of the component that performs it.
+
+**Define execution, retry and undo separately.** A command object does not prove the caller has permission, make repeated execution safe or guarantee reversal. Restoring a local value you own is different from undoing an external effect, such as a payment, which may require a separate action that can also fail.
 
 </div>
 
@@ -226,7 +230,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Mediator centralizes a set of collaborating peers so they need not call one another directly. **Coordination needs explicit ordering, concurrency and failure policy.** A mediator should own one cohesive interaction, not every application event.
+Mediator coordinates a group of components so they do not all need to call each other directly. It gives one interaction a clear place for deciding which component acts next.
+
+**Define operation order, overlapping work and failure handling explicitly.** Centralizing calls does not answer those questions automatically. Keep a mediator focused on one coherent interaction; a global object that handles every event can become difficult to understand and change.
 
 </div>
 
@@ -340,7 +346,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-State delegates behavior according to the current lifecycle state and permitted transitions. **A status field alone is not the State pattern.** Encapsulate state-specific behavior and prevent invalid transitions from partially changing the object.
+State gives different lifecycle states their own behavior. An object delegates an operation to its current state, and defined transitions determine which state can come next. For example, a draft and a published item may permit different actions.
+
+**A `status` field alone is not the State pattern.** The pattern organizes state-specific behavior. Check that a transition is allowed before changing the object, so a rejected action does not leave it partly modified.
 
 </div>
 
@@ -442,7 +450,9 @@ Source mapping: [R063](../requirements.md#r063), [R164](../requirements.md#r164)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Template Method fixes a workflow skeleton and lets subclasses provide selected steps. **The allowed extension hooks must preserve the overall contract.** JavaScript does not make a method final, so contract tests still protect intended invariants.
+Template Method defines a workflow in a base class and lets subclasses customize selected steps. **The overall sequence stays fixed while designated steps vary.** Specify what each overridable step may do and what the complete workflow must still guarantee.
+
+JavaScript does not make the template method unchangeable through a `final` keyword. Use clear conventions and contract tests to protect required behavior, such as validation order and cleanup, when subclasses add their own steps.
 
 </div>
 

@@ -24,7 +24,9 @@ Source mapping: [R132](./requirements.md#r132), [R135](./requirements.md#r135), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose from invariants, access patterns, failure guarantees and operating constraints. **SQL versus NoSQL does not mean transactions versus no transactions.** For this Products API, related records, constraints and multi-row updates make PostgreSQL the primary store.
+**Choose a database from the rules the data must obey and the operations you need.** Consider related records, common queries and updates, behavior during failures, and the work needed to run and recover it.
+
+**SQL versus NoSQL does not mean “has transactions” versus “has none.”** Check the actual database's guarantees. This Products API uses PostgreSQL because its related records, database constraints and updates spanning several rows fit a relational store.
 
 </div>
 
@@ -62,7 +64,9 @@ Source mapping: [R133](./requirements.md#r133), [R137](./requirements.md#r137).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Create a bounded pool per application role/process, reuse it and close it during owned shutdown. Configure deadlines, least-privilege credentials and verified TLS. **Every replica and separate ORM/session pool contributes to the database connection budget.**
+Create a connection pool with a maximum size, reuse it for the intended application role and process, and close it during shutdown. Use deadlines, verified TLS and database credentials with only the required permissions. Release connections you check out, including after errors.
+
+**Count connections across every process, replica and separate pool.** An ORM pool and a session-store pool both contribute to the database's total. A safe-looking limit in one process can still exceed capacity when many copies of the application run.
 
 </div>
 
@@ -119,7 +123,9 @@ Source mapping: [R134](./requirements.md#r134), [R136](./requirements.md#r136).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Validate input for useful errors, bind values through the driver's parameter API and enforce shared invariants with database constraints. **Parameters bind values, not SQL identifiers or authorization policy.** Scope writes to the caller's tenant and inspect affected rows.
+Validate input to give callers useful errors, then pass values through the driver's query-parameter API instead of inserting them into SQL text. Use database constraints to enforce rules for all writers, such as unique IDs or nonnegative stock.
+
+**Query parameters represent values, not table or column names.** Choose dynamic identifiers from an explicit allowed list. **Parameters also do not enforce permissions.** Restrict queries and writes to the caller's trusted tenant or ownership context, and check how many rows were affected.
 
 </div>
 
@@ -193,7 +199,9 @@ Source mapping: [R136](./requirements.md#r136).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A JOIN combines related columns; UNION combines compatible result rows; an upsert or MERGE changes stored data. **“Merge tables” is ambiguous**, so name the intended operation and its key/conflict policy before writing SQL.
+A `JOIN` combines related rows so a result can include columns from both sides. `UNION` combines compatible result sets into one set of rows. Neither operation, by itself, changes stored data. An upsert inserts or updates according to a conflict rule; `MERGE` changes data according to its matching rules. A migration changes database structure through a recorded, versioned step.
+
+**“Merge tables” is too ambiguous to choose SQL from it.** First say whether you want to combine query results, update existing data or change the schema. Define the matching keys and how conflicts should be handled.
 
 </div>
 
@@ -249,7 +257,9 @@ Source mapping: [R138](./requirements.md#r138).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A transaction groups database changes atomically, but correctness also depends on isolation, constraints and the actual statement. **Use the same checked-out client for the whole transaction**, and retry the complete unit only for a classified safe transient failure.
+A transaction groups database changes so they commit together or roll back together. **A transaction alone does not guarantee that concurrent orders cannot oversell stock.** The statements, constraints and isolation rules must protect that business rule too, for example through a conditional stock update.
+
+**Use the same checked-out database client for the entire transaction.** On a failure that is known to be temporary and safe to retry, repeat the complete transaction within a limit. Do not blindly repeat a write when a lost connection leaves you unsure whether it committed.
 
 </div>
 
@@ -329,7 +339,9 @@ Source mapping: [R136](./requirements.md#r136), [R139](./requirements.md#r139).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An ORM maps entities/relations and tracks a unit of work; an ODM maps documents; a query builder composes SQL more directly. **MikroORM's identity map is request-scoped state**, not a shared cache, authorization boundary or substitute for SQL knowledge.
+An ORM maps application objects and relationships to database data and tracks changes as a unit of work. An ODM does similar mapping for documents. A query builder helps construct SQL more directly.
+
+**MikroORM's identity map tracks entity objects within a request context.** It helps represent the same entity consistently in that context; it is not a shared application cache. Give separate requests and background jobs appropriate separate contexts. The ORM does not replace permission checks or the need to understand transactions, generated queries and SQL performance.
 
 </div>
 
@@ -374,7 +386,9 @@ Source mapping: [R136](./requirements.md#r136).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Separate pool wait, lock wait, server execution, transfer and application mapping. Inspect the real query and plan with representative data. **An index is a workload-specific access path with write and storage cost**, not a universal speed switch.
+**Measure where the time goes before changing the query.** The delay may be waiting for a pool connection, waiting for a lock, executing SQL, transferring rows or converting them into application objects.
+
+Inspect the actual SQL and query plan using representative data. **An index helps particular access patterns and costs storage and write work.** It is not a switch that makes every query faster. Compare correct results and measured performance before and after a targeted change.
 
 </div>
 
@@ -406,7 +420,9 @@ Source mapping: [R137](./requirements.md#r137).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Bound admission, connections, statement time and retries; classify failures and preserve recovery ownership. **More replicas can make a database outage worse** if every instance multiplies connections and retries at once.
+**Limit accepted work, database connections, statement duration and retries.** Classify failures so a conflict, a broken connection and an overloaded pool do not all trigger the same response. Keep clear responsibility for recovery, including checking uncertain outcomes before repeating effects.
+
+**Adding API replicas can worsen a database outage.** Each new instance may add connections and retries to a database that is already struggling. Return controlled failures, retain safe diagnostics and verify recovery without duplicate effects or leaked connections.
 
 </div>
 
@@ -438,7 +454,9 @@ Source mapping: [R138](./requirements.md#r138).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Write the business invariant, construct an interleaving that can violate it and test with independent transactions. **Snapshot stability alone does not prevent write skew across different rows.** Serializable can reject an unsafe interleaving; the application must own whole-transaction retry.
+An invariant is a business rule that must stay true, such as “at least one doctor remains on call.” **Test how separate transactions can overlap and break that rule.** Use controlled interleaving with independent database clients, not only a test that runs operations one after another.
+
+**A stable snapshot does not prevent write skew:** two transactions can each make a reasonable decision from the same snapshot, update different rows and jointly break the rule. Serializable isolation can reject an unsafe combination. The application must then handle a bounded retry of the entire transaction, including fresh reads and a new decision.
 
 </div>
 
@@ -556,7 +574,9 @@ Source mapping: [R136](./requirements.md#r136).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose a stable total ordering, scope it to the authorized tenant and align an index with the filter/range/order. Inspect actual plans and result semantics. **An index that looks plausible still needs representative execution evidence.**
+Keyset pagination asks for rows after the last ordering values from the previous page. **Use a stable, unambiguous order**, including a unique tie-breaker when values such as timestamps can be equal. Apply the caller's tenant restriction to every page; a cursor is not permission to read data.
+
+Choose an index that matches the query's filter, range and ordering. **Verify the actual plan and results with representative data.** A plausible-looking index does not prove faster execution or correct pagination when rows change between requests.
 
 </div>
 
@@ -624,7 +644,9 @@ Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Separate client acquisition wait, server lock wait, query execution and transaction lifetime before changing pool size. Coordinate compatible migrations with bounded locks and an explicit recovery window. **Adding connections can increase contention rather than solve it.**
+**Identify what is waiting before increasing the connection pool.** A request may be waiting to obtain a client, waiting for a database lock, running a query or holding a transaction open for too long. Measure those stages separately.
+
+**More connections can increase competition instead of solving the delay.** For migrations, coordinate one clear execution owner, limit lock waits and keep old and new application versions compatible during the transition. Define how long rollback remains safe and what repair is needed afterward.
 
 </div>
 

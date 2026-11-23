@@ -67,9 +67,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-node:net exposes TCP byte streams and local IPC connections; HTTP adds a standardized application message protocol over a transport. **TCP preserves byte order, not application message boundaries**. **Define framing, maximum bytes, completion and deadlines before parsing**.
+`node:net` provides TCP connections and local inter-process connections. TCP carries an ordered stream of bytes; HTTP adds rules for requests and responses. **TCP does not preserve your application's message boundaries.** One write can arrive in several chunks, or several writes can arrive together. Define how to recognize a complete message, how large it may be and how long to wait before parsing it.
 
-Own connect/read/write errors and close every accepted/client socket. socket.end finishes the writable side; destroy aborts the connection. **A socket timeout event does not close it automatically**, and **closing a listening server does not automatically terminate all existing TCP connections**.
+Handle connection, read and write failures, and close both client and accepted server sockets. `socket.end()` finishes sending; `destroy()` aborts the connection. **A socket timeout only emits an event unless your code closes the socket.** Closing the listening server also does not automatically terminate existing TCP connections.
 
 </div>
 
@@ -167,9 +167,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-IP addresses identify network interfaces/endpoints, and transport ports distinguish application endpoints. TCP offers an ordered reliable byte stream; **UDP exposes individual datagrams without guaranteeing delivery, ordering or uniqueness**. node:dgram handles UDP, while node:net handles TCP/local IPC.
+An IP address identifies a network interface or destination; a port identifies an application endpoint there. TCP provides a reliable, ordered byte stream. **UDP sends separate messages called datagrams, without guaranteeing arrival, order or freedom from duplicates.** Use `node:dgram` for UDP and `node:net` for TCP or local connections.
 
-Choose IPv4/IPv6 binding intentionally; **loopback and wildcard binding have different exposure**. **A UDP send callback reports local send completion, not remote receipt or processing**. Reliability, authentication, size limits and congestion behaviour need a protocol above UDP when required.
+Choose the address family and binding deliberately. Loopback restricts access to the local machine; a wildcard address can accept connections on multiple interfaces. **A successful UDP send callback does not prove the receiver got or processed the message.** If needed, the application protocol must add delivery checks, authentication, size limits and rules that avoid overwhelming the network.
 
 </div>
 
@@ -265,9 +265,9 @@ export async function getSmallHttps(input, ca, timeoutMs = 1000) {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-HTTPS carries HTTP over TLS. **Validate certificate trust, validity and the intended hostname/IP**; never disable rejection to hide a certificate failure. TLS protects the channel and certificate identity, **not user authorization or application correctness**.
+HTTPS is HTTP protected by TLS. **Check that the certificate is trusted, valid and issued for the intended host or IP address.** Do not disable certificate checks to make a failing request succeed. TLS protects the connection and verifies certificate identity; the application still needs its own user permissions and input rules.
 
-An HTTPS client must also handle connection/TLS errors, HTTP status, bounded body consumption and cancellation/deadline cleanup. **Headers are not the end of the response lifetime**. Redirect and retry policies are explicit application decisions, and **completed writes may require reconciliation before retry**.
+**Receiving response headers does not mean the response is complete.** Handle connection and TLS errors, check the HTTP status, read the body with a size limit and apply a deadline covering the whole operation. Clean up after cancellation or failure. Decide explicitly whether to follow redirects or retry. Before retrying a request that changes data, determine whether the first attempt may already have succeeded.
 
 </div>
 
@@ -344,9 +344,9 @@ console.log(JSON.stringify(await addressCandidates('127.0.0.1')));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**lookup uses OS name-resolution facilities**, which can include hosts/system policy rather than a DNS packet. resolve4/resolve6 and other **resolve methods query DNS records through a resolver path** with different behaviour and results. DNS supplies mutable naming information, **not proof of reachability, TLS identity or permission to connect**.
+**`dns.lookup()` uses the operating system's name lookup rules**, which may include a hosts file as well as DNS. `dns.resolve4()`, `resolve6()` and related methods ask for DNS records through a DNS resolver. Their behavior and returned data differ.
 
-Handle multiple families, ordering, TTL/cache policy and resolver errors. Use scoped Resolver instances for custom servers rather than changing unrelated global settings, and **bound the owning connection/request lifetime separately**.
+**A DNS answer gives naming information, not permission or proof that a connection will work.** It does not establish reachability or verify a TLS certificate. Handle lookup errors, multiple IPv4/IPv6 addresses, address order and cache lifetimes. Use a separate `Resolver` when you need custom DNS servers. Also set a deadline for the connection or request itself; finishing DNS lookup does not finish the network operation.
 
 </div>
 
@@ -421,9 +421,11 @@ A product has a job-progress dashboard that changes every few seconds, an admini
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Start from direction, latency, delivery and operational requirements. **Conditional polling uses ordinary HTTP and is often enough for infrequent changes**. **SSE supplies a one-way UTF-8 event stream** to browsers; commands can still use HTTP. **WebSocket supports bidirectional messages** but requires explicit connection, recovery and flow-control contracts.
+Choose based on who sends updates, how quickly they are needed and what must happen after a failure. **Polling is often enough for occasional changes**: the client checks with ordinary HTTP, using conditional requests to avoid downloading unchanged data.
 
-Socket.IO is a separate event protocol/library with reconnection, acknowledgements and grouping conveniences, **not a wire-compatible WebSocket replacement**. **None supplies durable business delivery merely by staying connected**. Keep HTTP/HTTPS as the primary API unless another interaction justifies its cost.
+**SSE sends text events from server to client in one direction.** The client can still send commands through ordinary HTTP. **WebSocket carries messages in both directions** over a persistent connection, but your application must handle reconnects, overload and missed updates.
+
+Socket.IO adds event messages, reconnection, acknowledgements and groups. It uses its own protocol, so a plain WebSocket client cannot talk to it directly. None of these choices automatically saves and redelivers business messages. Keep ordinary HTTP/HTTPS as the main API unless a specific interaction needs more.
 
 </div>
 
@@ -527,9 +529,11 @@ export function createEcho() {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A WebSocket connection provides framed bidirectional messages after protocol negotiation, **not a complete application session**. Own admission/authentication, browser Origin validation where relevant, **per-action authorization, schema/payload/rate limits**, outbound queues, heartbeat, closure and recovery.
+A successful WebSocket handshake opens a connection for messages in both directions. **It does not establish all the rules for an application session.** Authenticate the connection, check browser Origin where relevant, and verify permission for each action. Validate message fields and limit message size, rate, pending work and outgoing queues.
 
-Node 24 has a built-in WebSocket client, while a server needs a library/framework such as ws. Use WSS outside controlled local development. **Backpressure is not implicit in async message listeners**; bound pending work and define a slow-consumer policy. **Reconnection alone cannot recover missed business messages**.
+Also detect unresponsive peers, close connections and plan recovery. Node 24 provides a WebSocket client; a server needs a library or framework such as `ws`. Use encrypted WSS outside controlled local development.
+
+**An async message listener does not automatically slow incoming messages.** Limit how much work can accumulate and decide what to do with slow clients. Reconnecting restores a connection, but recovering missed business messages needs a separate design.
 
 </div>
 
@@ -621,11 +625,11 @@ A compatible client sends with `socket.timeout(1000).emit('double', {id:'a',valu
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Socket.IO is an event-oriented protocol/library above its selected transport, with compatible server/client implementations, reconnection, acknowledgements, rooms and namespaces. It is **not directly compatible with plain WebSocket clients**.
+Socket.IO adds an event protocol with matching clients and servers, automatic reconnection, acknowledgements, rooms and namespaces. **Plain WebSocket clients are not directly compatible with Socket.IO.** Rooms group recipients; namespaces separate logical channels. Neither grants access permission by itself.
 
-Ordering is guaranteed for events that arrive, but **default arrival semantics are at most once**; reconnection does not make missed server events durable. **Acknowledgements carry an application-chosen response**. Retry/ack options can repeat an event, so **side-effecting commands need stable IDs and durable idempotency/reconciliation**.
+Delivered events retain their order, but **the default delivery guarantee is at most once**: an event may be lost, and reconnecting does not automatically recover it. An acknowledgement means whatever your handler defines it to mean; it does not inherently prove a database change committed.
 
-**Rooms and namespaces organize delivery, not authorization** by themselves.
+Retries can send the same command again. Give commands stable IDs and durably record their outcomes when duplicate effects matter. This supports idempotency: repeating the same command does not repeat its effect, and uncertain outcomes can be checked.
 
 </div>
 
@@ -706,11 +710,11 @@ console.log(acceptEvent(first.state, { id: 7, completed: 13 }).action);
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Select a transport from direction, latency, fan-out, durability, client and infrastructure requirements, then test the real failure path. **Budget connections, message bytes, rate, active work, send queues, reconnect attempts and replay history**.
+Choose a real-time transport by its required update direction, latency, number of recipients, delivery guarantees, clients and hosting environment. **Set limits before accepting traffic**: connections, message sizes, message rates, active work, send queues, reconnect attempts and saved history all consume resources.
 
-Authenticate and authorize resource subscriptions, propagate lifecycle cancellation, and **define snapshot/cursor recovery**. Deployments need suitable proxy timeouts, cross-instance distribution and bounded shutdown.
+Check permission to subscribe to each resource and stop related work when its session ends. **Define how a client recovers missed updates**, for example using a saved cursor to replay events or fetching a fresh snapshot. Configure proxy timeouts, delivery across server instances and shutdown deadlines.
 
-Measure handshake failures, active connections, queue depth, lag and reconnect storms; **a successful local echo is not a production capacity or delivery guarantee**.
+Measure connection failures, active connections, queue sizes, update delay and large bursts of reconnects. A local echo test proves a small exchange works; it does not establish production capacity or reliable delivery.
 
 </div>
 
@@ -827,7 +831,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Inspect the method and target, request headers and body, then response status, headers and body. **A connection can succeed while HTTP reports an error**; **an HTTP success can still contain invalid application data**. **Fetch normally resolves for a 404 or 500**, so check the expected status explicitly. **Receiving headers does not prove the body completed or satisfies the endpoint's schema**.
+Inspect an HTTP exchange in order: request method and URL, request headers and body, then response status, headers and body. **A working connection can still return an HTTP error.** A successful HTTP status can also carry data that is invalid for your application.
+
+**`fetch()` normally resolves even for a 404 or 500**, so check whether the status matches what the endpoint promises. Receiving headers is only one step: read the body, handle failures during that read, and check the data's expected shape and values.
 
 </div>
 
@@ -916,7 +922,9 @@ Source mapping: [R159](./requirements.md#r159).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-HTTP describes request/response messages; it does not require blocking the browser's JavaScript thread. **Fetch lets the UI continue while a request and its body are awaited.** Navigation/form submission and in-page fetch are different interaction styles, not “HTTP versus asynchronous networking.” **Cancellation stops a local wait, not a remote committed effect; stale results also need an explicit UI ownership rule.**
+HTTP defines request and response messages. It does not require the browser to freeze while waiting. **With `fetch()`, the page can stay responsive while a request is in progress.** Awaiting the response or its body pauses the async function, not all browser JavaScript.
+
+A navigation or form submission may load a new page; an in-page fetch can update the current page. Both use HTTP. **Cancelling the browser's request does not undo a change already committed by the server.** Also prevent an older response from overwriting newer UI state, for example when a user changes a search query before the previous search finishes.
 
 </div>
 
@@ -1112,7 +1120,9 @@ Source mapping: [R046](./requirements.md#r046).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Reuse avoids repeating suitable connection setup for every request. A client pool owns reusable connections and schedules work onto them. **A socket limit is not a request-admission or queue limit.** Bound application work, keep deadlines through queued/connect/body phases, consume or cancel responses, and dispose of the owner. **Connection reuse does not make an uncertain write safe to retry.**
+Connection reuse avoids repeating connection setup for every request. A client pool manages reusable connections and assigns requests to them. **Limiting sockets does not limit the number of waiting requests.** Add a separate limit on accepted work and queued requests so memory and waiting time cannot grow without control.
+
+Keep a deadline that covers queueing, connecting and reading the body. Consume or cancel each response and close the pool when its owner is finished. **Reusing a connection does not make a data-changing request safe to retry** when you do not know whether its first attempt succeeded.
 
 </div>
 

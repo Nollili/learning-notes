@@ -48,9 +48,9 @@ console.log(jobs.listenerCount('completed'));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Event-driven code reacts to occurrences through subscriptions rather than one caller awaiting one return value. EventEmitter is an in-process notification mechanism: **emit calls listeners synchronously in registration order**, with prepend changing that order. It returns whether listeners existed, **not their results or completion**.
+Event-driven code registers functions, called listeners, to respond when something happens. `EventEmitter` sends these notifications inside one process. **`emit()` calls listeners immediately, in registration order.** `prependListener()` can put a listener first. **`emit()` returns whether listeners existed**, not whether their work succeeded or finished.
 
-Use once for a one-time notification and off with the original function reference to release subscriptions. **The special error event throws when no error listener handles it**. **Events are not a durable queue, replay log or transaction**.
+Use `once()` for a listener that should run only once. To remove a listener with `off()`, pass the same function you registered. **Emitting `'error'` without an error listener throws an exception.** Remove subscriptions when you no longer need them. An emitter does not save events for replay, deliver them to another process or make a group of changes transactional.
 
 </div>
 
@@ -132,9 +132,9 @@ console.log(source.listenerCount('ready'), source.listenerCount('done'),
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**EventEmitter does not buffer past notifications**. **Register every required wait before an operation can emit them**, including synchronous emissions in the same callback. Node's events.once returns a promise of the event argument array and normally rejects if error is emitted while waiting for another event.
+**An emitter does not save past events for future listeners.** Register all the listeners you need before starting code that might emit those events. If you wait for one event before registering for the next, the second event may already be gone.
 
-**Give waits an AbortSignal** so their owner can stop waiting and remove listeners. Observe every promise promptly; **sequential awaits can miss a second notification** emitted before its listener is registered.
+`events.once()` returns a promise that resolves with an array of the event's arguments. When waiting for an ordinary event, it normally rejects if the emitter emits `'error'`. **Use an `AbortSignal` to cancel waits you no longer need and remove their listeners.** Attach rejection handling promptly to every promise; cancelling a wait does not necessarily stop the producer.
 
 </div>
 
@@ -205,9 +205,9 @@ console.log('sync');
 
 <p class="notes-core-answer__title">Core answer</p>
 
-The event loop coordinates ready callbacks on a JavaScript thread while OS facilities or native workers perform eligible external work. Its conceptual phases include timers, pending callbacks, internal idle/prepare work, poll, check and close callbacks. setImmediate runs in check; **timers become eligible after a delay rather than executing at an exact deadline**.
+The event loop decides when ready JavaScript callbacks can run. Meanwhile, the operating system and native workers can handle supported work such as network or file operations. The loop has phases for timers, pending callbacks, internal preparation, I/O polling, `setImmediate()` callbacks and close callbacks.
 
-**In this I/O callback example, the scheduled immediate runs before its zero-delay timer**. **At top-level startup, do not assume the same relative timer/immediate order**.
+**A timer's delay is a minimum wait, not an exact execution time.** `setImmediate()` runs in the check phase. In the file-read callback below, an immediate scheduled alongside a zero-delay timer runs first. **Do not assume that same order at the top of a program**: the context in which you schedule them matters.
 
 </div>
 
@@ -280,9 +280,11 @@ console.log('end');
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**process.nextTick is a Node-specific queue, not an event-loop phase**. Promise reactions and queueMicrotask share the standard microtask queue. **At ordinary Node callback boundaries, next ticks drain before standard microtasks**.
+`process.nextTick()` schedules work in a Node-specific queue; it is not an event-loop phase. Promise handlers and `queueMicrotask()` use the standard microtask queue. **After an ordinary Node callback, next-tick callbacks run before standard microtasks.**
 
-**Top-level ESM evaluation already runs as microtask work**, so the top-level promise/microtask callbacks in this example precede its nextTick callback. **Recursive scheduling in either high-priority queue can starve timers and I/O**. State module mode and callback context before predicting output.
+**Top-level ES Module code runs in a different context.** It is already being evaluated as microtask work, so this example's top-level promise and microtask handlers run before its next-tick callback. State whether the code is CommonJS or ESM, and where it runs, before predicting the order.
+
+Continually adding work to either queue can prevent timers and I/O callbacks from running. This is called starvation.
 
 </div>
 
@@ -368,9 +370,9 @@ console.log('uv', process.versions.uv);
 
 <p class="notes-core-answer__title">Core answer</p>
 
-libuv supplies Node with cross-platform event-loop, I/O, timer and native worker-pool facilities. **Socket I/O commonly uses OS readiness/completion notification**; many filesystem operations, **system DNS lookup and selected crypto/compression operations use the native pool**. Their completion returns to the owning loop, where JavaScript runs.
+libuv is the library Node uses for its event loop and many operating-system operations. **Network sockets commonly rely on operating-system notifications** that say when data or a connection is ready. Many file operations, system DNS lookups and some crypto or compression operations instead use libuv's native worker pool.
 
-**The pool is distinct from worker_threads**, which execute JavaScript on separate threads. Async syntax does not identify which native mechanism an API uses or prove that an application callback runs on a pool thread.
+When that work finishes, JavaScript handles the result on its own event-loop thread. **The native worker pool is different from `worker_threads`**, which lets you run JavaScript on additional threads. Seeing `async` or `await` in code does not tell you which mechanism the API uses or mean its JavaScript callback runs in the native pool.
 
 </div>
 
@@ -466,9 +468,9 @@ console.log('ready');
 
 <p class="notes-core-answer__title">Core answer</p>
 
-SIGTERM and SIGINT are cooperative termination signals that Node can expose through process listeners. A handler should start one supervised shutdown: **stop admission, drain owned work, close resources**, set an exit status and normally let the loop finish.
+`SIGTERM` and `SIGINT` ask a process to stop. On supported platforms, Node lets you listen for them. **Start shutdown once: stop accepting new work, finish active work within a limit, and close resources.** Set the exit status, then normally let Node exit naturally.
 
-**Installing a listener changes default termination behaviour** on supported platforms, so the application must finish shutdown itself. Use a final bounded fallback and an external supervisor deadline. **SIGKILL cannot be caught**, and **a blocked JavaScript thread cannot run its signal callback or deadline timer on time**.
+**Adding a signal listener replaces Node's normal exit behavior for that signal**, so your code must complete the shutdown. Set a final fallback deadline and use an external supervisor for a deadline the process cannot enforce itself. `SIGKILL` cannot be caught. If synchronous JavaScript blocks the thread, neither its signal callback nor its shutdown timer can run on time.
 
 </div>
 
@@ -555,9 +557,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-monitorEventLoopDelay samples scheduling delay using a timer-based histogram; **its duration values are nanoseconds**, so convert for millisecond dashboards. eventLoopUtilization reports the fraction of measured loop time active rather than idle, **not process CPU percentage**. **Measure interval deltas and percentiles with sample count and workload context**.
+`monitorEventLoopDelay()` measures how late scheduled timer-based checks run. **Its time values are in nanoseconds**, so convert them before displaying milliseconds. `eventLoopUtilization()` measures how much of the observed loop time was active rather than idle. **It is not the process's CPU percentage.**
 
-Correlate them with CPU, request latency, native-worker waits, GC and dependency timings. **Neither metric alone identifies the responsible function or proves a service is healthy**.
+Measure a specific interval rather than relying only on totals since startup. Report percentiles, such as p95, along with sample count and workload. Compare these measurements with CPU use, request times, garbage collection, native-worker waits and dependency times. A high value suggests where to investigate; neither metric identifies the faulty function or proves the whole service is healthy.
 
 </div>
 
@@ -646,9 +648,9 @@ await secondProbe;
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A callback can starve other work by never returning or continually refilling nextTick/microtask queues. **Repeated await Promise.resolve is not an I/O fairness yield**. Bounded chunks separated by an awaited immediate allow loop phases to progress between chunks; **each chunk still blocks while running**.
+Starvation means some ready work cannot get a turn. A long callback can cause it, as can a chain that keeps adding next-tick callbacks or microtasks. **Repeatedly awaiting `Promise.resolve()` does not reliably give I/O callbacks a turn.**
 
-Reduce work first, choose a chunk budget from responsiveness measurements, and use worker threads or a service when sustained CPU work needs isolation. **Test infinite starvation only in an externally bounded child process**.
+Split suitable calculations into small chunks and await `setImmediate()` between them so the event loop can progress. **Each chunk still blocks while it runs.** Reduce unnecessary work first and measure how large a chunk can be without harming responsiveness. Sustained CPU-heavy work may need worker threads or a separate service. Run deliberately infinite examples only in a child process with an externally enforced time limit.
 
 </div>
 

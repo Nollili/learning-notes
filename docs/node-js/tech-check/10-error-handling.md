@@ -52,7 +52,9 @@ for (const input of ['3', '{', '"3"', '0']) {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An `Error` represents a failure and usually provides a name, human-readable message and stack for diagnosis. Choose a built-in subtype for a meaningful category: `TypeError` for an invalid type/operation, `RangeError` for a value outside its accepted bounds, and `SyntaxError` for invalid syntax. **Use documented codes or application-owned classes for handling decisions**; **do not depend on the wording of messages**.
+An `Error` object describes a failure. It usually contains a name, a readable message and a stack trace to help locate the problem. Choose a type that describes the problem: `TypeError` for an invalid type or operation, `RangeError` for a value outside the allowed range, and `SyntaxError` for invalid syntax.
+
+**Use stable error codes or your own error classes when code must decide how to respond.** Do not base that decision on message wording, which may change. The message helps a person diagnose the failure; a documented code gives the program a reliable category.
 
 </div>
 
@@ -185,7 +187,9 @@ for (const findById of [
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Create a custom error when callers need a meaningful application category beyond a generic built-in exception. Extend Error, set an explicit name and stable code, and **retain an earlier failure with `cause` when adding context**. **Keep internal diagnostic information separate from a deliberately projected public response**. A code or custom class describes a failure; it **does not automatically make it recoverable, retryable or safe to expose**.
+Create a custom error when callers need to recognize a specific application failure, such as a product conflict. Extend `Error`, set a clear name and give it a stable code. **When adding context to an earlier failure, keep the original error in `cause`.** This preserves useful diagnostic information.
+
+**Choose public error fields explicitly instead of sending the internal error object.** Stack traces, database details and other internal values may reveal sensitive information. A custom class or code identifies a failure; it does not automatically mean the operation can be retried, recovered or safely explained to a client in full.
 
 </div>
 
@@ -309,7 +313,9 @@ console.log('listeners', emitter.listenerCount('ready'), emitter.listenerCount('
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A synchronous throw is caught while the relevant call stack is executing. **A rejected promise is handled by its returned/awaited chain**. **A later callback must report through its callback contract** or explicitly convert its own failures into a rejection. An EventEmitter has its own error delivery contract. **Register the appropriate observer before starting work** and keep an owner for the operation's whole lifetime.
+Different APIs report failure in different ways. A synchronous throw can be caught by a `try/catch` around the running call. **A rejected promise needs a returned, awaited or caught promise chain.** A callback that runs later must report errors through its own callback rules, or explicitly turn them into a promise rejection. An `EventEmitter` has separate rules for error events and listener failures.
+
+**Set up error handling before starting the work.** Keep some part of the application responsible for the result and any cleanup until the operation actually finishes. A surrounding `try/catch` does not automatically cover unrelated work scheduled for later.
 
 </div>
 
@@ -506,7 +512,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Capture the failure's operation, phase, reproducible conditions** and reviewed diagnostic fields. Read the stack and cause in the matching build, distinguish the observed symptom from the underlying failure, and **test one hypothesis at a time**. Reduce the problem to an owned example, make **the smallest justified correction**, then add **a regression check that fails before the correction and passes afterward**.
+**Record what operation failed, at which step, and under which reproducible conditions.** Keep useful diagnostic fields, while excluding secrets and private data. Read the stack and original cause against the build that actually ran. The visible symptom may be different from the underlying cause.
+
+**Test one explanation at a time.** Reproduce the problem in a small, controlled example, make the smallest change supported by the evidence, and add a regression check. That check should fail with the original defect and pass with the correction.
 
 </div>
 
@@ -606,7 +614,11 @@ Classify these failures before reading the policy: an invalid quantity, an unava
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An error criticality matrix is an application-specific recovery policy, not a Node API or universal grading system. Consider the failure's scope, user impact, state safety, dependency role, repeatability and remaining budget. **Separate the response to one operation from service health and human escalation**. **Retry only when the operation is safe to replay**, **the failure is classified as transient**, and **bounded attempt/time budgets permit it**.
+An error criticality matrix is a table of application-specific decisions about failures; it is not a built-in Node feature. Consider how many operations are affected, the impact on users, whether state is still trustworthy, which dependency failed and how much time remains.
+
+**Decide separately what happens to this request, the service and any human alert.** A single request failure does not always require stopping the service; unsafe shared state may require stopping it.
+
+**Retry only if the failure is temporary, repeating the operation is safe, and attempt and time limits allow it.** Otherwise return an appropriate failure, report it to the responsible person or stop the process when continued operation is unsafe.
 
 </div>
 
@@ -826,7 +838,9 @@ This file exports an application, not a listening server. Use the owned HTTP ser
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Register a four-argument error middleware after parsers, routes and the terminal not-found handler**. Translate known application/parser failures into deliberate status codes and fixed public fields. **Return a generic 500 for unknown failures**. In Express 5, **a route's returned/rejected promise enters the error pipeline automatically**. **When headers are already sent, delegate with `next(error)`** instead of attempting another JSON response.
+Express error middleware has four parameters: `(error, req, res, next)`. **Register it after parsers, routes and the final not-found handler.** Map recognized application or parser errors to chosen HTTP statuses and safe public fields. For an unknown failure, return a generic 500 response without internal details.
+
+**Express 5 forwards a rejection from a route's returned promise to error handling automatically.** Detached work still needs its own handling. **If response headers have already been sent, call `next(error)`** instead of trying to send another JSON response.
 
 </div>
 
@@ -909,7 +923,11 @@ A product write fails with a unique-constraint violation. Another transaction lo
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Classify database errors using documented driver/server fields at the persistence boundary. A constraint violation, transaction conflict, cancellation and connection failure have different meanings. **For a known retryable transaction abort**, roll back, release the client and **repeat the whole business transaction, including its reads and decisions**, under a finite attempt policy. **Do not blindly replay a write whose commit outcome is unknown**.
+Use documented database driver or server fields to classify failures where the application accesses storage. A violated constraint, a transaction conflict, cancellation and a broken connection need different responses.
+
+**When the database confirms a retryable transaction abort, retry the whole transaction.** Roll back, release the client and repeat its reads, decisions and writes under a finite retry policy. Retrying just the last statement can reuse decisions based on outdated data.
+
+**Do not blindly repeat a write if you do not know whether it committed.** First determine its outcome or use a durable idempotency design that prevents a repeated command from producing duplicate effects.
 
 </div>
 

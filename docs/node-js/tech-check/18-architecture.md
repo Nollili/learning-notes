@@ -22,7 +22,9 @@ Source mapping: [R062](./requirements.md#r062), [R172](./requirements.md#r172).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Organize modules around business capabilities; separate transport, application policy and persistence inside each capability. **Dependency direction matters more than directory names.** A service should receive the capabilities it needs rather than import an HTTP request or construct its own database connection.
+Group code by business feature, such as products or orders. Within a feature, separate HTTP handling, business operations and storage access. **Layers describe responsibilities; feature modules group related work.** You can use both together.
+
+**What each module depends on matters more than its folder name.** Give a business service the repository or other components it needs. It should not need an Express request object or create its own database connection just to perform a business operation.
 
 </div>
 
@@ -109,7 +111,9 @@ Source mapping: [R129](./requirements.md#r129), [R175](./requirements.md#r175).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A module is maintainable when its public contract is small, its ownership is clear and changes remain local. **Reuse should preserve a coherent responsibility**, not gather unrelated functions into a shared folder.
+A maintainable module exposes a small, clear interface, has an identifiable owner and lets most changes stay inside the module. Explain not only its method names, but also its results, errors, shared state and cleanup rules.
+
+**Reusable code should have one coherent responsibility.** Putting unrelated helpers in a `shared` folder does not automatically make them a useful abstraction. Share code when its callers need the same behavior and change rules, rather than only because the code looks similar.
 
 </div>
 
@@ -149,7 +153,9 @@ Source mapping: [R064](./requirements.md#r064), [R173](./requirements.md#r173), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Start with a modular monolith when one deployment and local transactions meet the requirements. Split a capability when independent ownership, isolation or scaling justifies the operating cost. **A network boundary creates partial failures and contract obligations.**
+A modular monolith keeps clear internal modules but deploys them together. **Keep one deployment when it meets the requirements** and lets local database transactions protect the needed rules.
+
+Consider a separate service when a feature needs independent team ownership, failure isolation or scaling enough to justify the extra operating work. **A remote call can fail while the other service keeps running.** You must handle timeouts, uncertain results and compatible request and response formats across independently released versions. Splitting folders into services is not a benefit by itself.
 
 </div>
 
@@ -194,7 +200,11 @@ Source mapping: [R099](./requirements.md#r099), [R100](./requirements.md#r100).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Commit the business change and an outbox record in one local transaction; publish asynchronously and make consumers idempotent. **The outbox closes the local dual-write gap, not every duplicate-delivery gap.** A saga coordinates several local transactions and explicit compensations.
+An outbox is a database record saying that an event needs to be published. **Save the business change and its outbox record in the same local transaction.** A separate publisher sends the event later. This prevents a crash from leaving a committed change with no saved publication intent.
+
+**Delivery can still repeat.** Make consumers idempotent: processing the same event again must not repeat its business effect. Record the event's identity with the consumer's local change when appropriate.
+
+A saga coordinates a workflow across several local transactions. If a later step fails, it runs explicit compensating actions, such as releasing reserved stock. Compensation is a new business action, not an automatic rollback of everything across services.
 
 </div>
 
@@ -236,7 +246,11 @@ Source mapping: [R102](./requirements.md#r102).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-During a network partition, a distributed system cannot simultaneously guarantee linearizable results and a successful response to every request at non-failing nodes. **CAP is about partition behavior**, not a menu where every application permanently chooses any two letters.
+A network partition means parts of a distributed system cannot communicate. During that split, **the system cannot guarantee both linearizable results and a successful response to every request at every non-failing node**.
+
+Linearizable means operations behave like they use one shared copy, with each taking effect at a single point between its call and response. A read starting after a completed write must respect that write. To preserve this guarantee during a partition, some requests may need to wait or fail. Responding everywhere may instead require allowing stale or conflicting data.
+
+**CAP describes behavior during a partition**, not a permanent choice of any two letters. Its definition of availability is also different from an ordinary monthly uptime target.
 
 </div>
 
@@ -273,7 +287,9 @@ Source mapping: [R101](./requirements.md#r101), [R145](./requirements.md#r145).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define a workload and latency/error objective, measure the limiting resource, then change one bottleneck. **Scaling adds capacity only when the constrained resource can use it.** Bounded admission and backpressure protect dependencies as well as the Node process.
+Define realistic traffic and acceptable response times and error rates. Measure which resource limits the system, then change one bottleneck and compare the same workload again.
+
+**Adding instances helps only if the bottleneck can benefit from them.** More API instances can increase pressure on an already saturated database rather than fix it. Limit how much work you accept, and use backpressure to slow producers when consumers cannot keep up. These controls protect both the Node process and its dependencies.
 
 </div>
 

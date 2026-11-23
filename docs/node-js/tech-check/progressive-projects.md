@@ -4,23 +4,23 @@ outline: [2, 3]
 
 # Five progressive Node.js learning projects
 
-These projects turn the five Tech Check sections into **one evolving Learning Progress service with five releasable milestones**. Each milestone can be kept as a Git tag or copied into a separate folder, so it is both a complete project state and the starting point for the next one.
+Build **one Learning Progress service in five stages**, following the five Tech Check sections. Each stage should leave you with a working version. Save that version as a Git tag or a copy in a separate folder before extending it in the next stage.
 
-The domain stays intentionally simple: a learner creates study items, records sessions, marks work complete and exports a progress report. **The domain should not consume the learning time; Node.js decisions should.**
+The application is deliberately simple: create study items, record sessions, mark work complete and export a progress report. **Spend your learning time on Node.js decisions**, rather than inventing complicated business rules.
 
 | Milestone | You build | Main question it answers |
 |---|---|---|
-| [1. Node.js Foundations](#project-1-foundations-cli) | A dependency-free CLI and file-backed library | How does a Node program own modules, I/O, configuration and process lifetime? |
-| [2. Building Node.js Applications](#project-2-http-application) | A tested Express HTTP application with a basic browser UI | How do requests, UI actions, events, errors, tests and framework boundaries fit together? |
+| [1. Node.js Foundations](#project-1-foundations-cli) | A dependency-free CLI and file-backed library | How does a Node program load modules, handle input/output and settings, and finish cleanly? |
+| [2. Building Node.js Applications](#project-2-http-application) | A tested Express HTTP application with a basic browser UI | How do browser actions, HTTP requests, events, errors and tests work together? |
 | [3. Designing Node.js Services](#project-3-deployable-service) | The same UI over a PostgreSQL-backed, authenticated, containerized service with a worker | How do architecture, data, concurrency and deployment decisions interact? |
-| [4. Hardening and Optimizing](#project-4-hardened-service) | The same service with verified security, identity, performance and data hardening | How do you improve a measured risk without breaking the service contract? |
-| [5. Specialized Node.js Systems](#project-5-operated-specialized-service) | The same service with brokered work, live status and observable operations | How do you operate and evolve asynchronous/specialized Node systems? |
+| [4. Hardening and Optimizing](#project-4-hardened-service) | The same service with verified security, identity, performance and data hardening | How do you fix a demonstrated risk or bottleneck while preserving the promised behavior? |
+| [5. Specialized Node.js Systems](#project-5-operated-specialized-service) | The same service with brokered work, live status and observable operations | How do you run, troubleshoot and extend a service with background work and specialist tools? |
 
-This is **not fifteen unrelated exercises per chapter**. Each project has four build increments and one release check. Do not start the next increment while the current one cannot build, test or shut down cleanly.
+Each stage has **four small build steps and one release check**. The stages build on each other. Finish the current step's build, tests and cleanup before moving on.
 
 ## One repository, five cumulative milestones
 
-**Project 2 is not a new project beside Project 1, and Project 3 is not a rewrite of Project 2.** Use one repository and evolve the same application:
+**Extend the same application in one repository.** Project 2 starts from the working Project 1 code; Project 3 starts from the working Project 2 code:
 
 ```text
 Project 1: domain + application use cases + CLI + JSONL repository
@@ -38,7 +38,7 @@ Project 4: previous code + security + advanced identity + performance/data harde
 Project 5: previous code + broker + live status + logs/metrics/traces + specialist adapter
 ```
 
-Tags make each releasable state easy to revisit. Branch names are optional; the important rule is that the next milestone begins from the previous passing release.
+Tags let you return to each working version. Branch names are optional. **Begin each stage from the previous version that passed its release checks.**
 
 ```bash
 # After Project 1 release checks pass
@@ -64,7 +64,7 @@ git switch -c project-5-operated-service
 | Project 3 → Project 4 | Every public behavior, database migration history, deployment path and regression test | Add controls and measurements around existing boundaries; change code only for a demonstrated risk/bottleneck | Call a scanner result proof of security, optimize without a baseline or duplicate the service in another framework |
 | Project 4 → Project 5 | Hardened API/UI, identity, database, worker contract, telemetry vocabulary and release process | Replace local job dispatch with a broker adapter, add live status/observability and one specialist computation adapter | Claim exactly-once delivery, put user IDs in metric labels or adopt every broker/APM/native technology |
 
-The JSONL repository remains the default in Project 2. In Project 3, PostgreSQL becomes the production default while JSONL can remain a small compatibility/test adapter until you deliberately retire it. **Changing an adapter should not require rewriting the use case that depends on its contract.**
+The JSONL repository remains the default in Project 2. In Project 3, PostgreSQL becomes the production default while JSONL can remain a small compatibility/test adapter until you deliberately retire it. **Replacing a storage adapter should preserve the business operation that uses it.** The new adapter must keep the results, errors and other behavior that operation expects.
 
 ### Cumulative behavior matrix
 
@@ -80,6 +80,14 @@ The JSONL repository remains the default in Project 2. In Project 3, PostgreSQL 
 | Logs, metrics and traces | Basic diagnostics in Projects 2–3 | Project 4 uses them for security/performance evidence; Project 5 adds operational dashboards/alerts |
 
 ## Working baseline and scope
+
+A few terms used in the instructions:
+
+- A use case is one application operation, such as completing a study item.
+- An adapter connects that operation to something outside the business rules, such as HTTP, a file or a database.
+- A contract describes the inputs, results, errors and other behavior callers can rely on.
+- **Bounded work has explicit limits** on size, time or how many operations run at once.
+- **Owning a resource means being responsible for closing it.** Owning an asynchronous operation means waiting for its outcome, handling errors and arranging cleanup.
 
 - Use **Node.js 24 LTS** and ES Modules. The official Node 24 documentation showed v24.22.2 when this plan was checked on 2026-11-05; use the current supported patch in that release line rather than depending on a patch-specific accident.
 - Use **plain JavaScript** for this sequence. TypeScript is valuable, but it is outside the current Tech Check checklist and would add another learning variable.
@@ -112,17 +120,17 @@ node-learning-progress/
 └── package-lock.json
 ```
 
-You do not need every directory on day one. **Add a boundary when it has a responsibility, not because the final tree shows one.**
+You do not need every directory on day one. **Create a separate module when it has a clear job**, rather than copying the final folder structure before you need it.
 
 ## The learning method: build, break, explain, recall
 
-Finishing code once is weak evidence that you will remember it. For every increment, keep one short entry in `docs/learning-log.md`:
+Getting code to work once does not show that you will remember the decisions. For each build step, add a short entry to `docs/learning-log.md`:
 
-1. **Build:** state the behavior you added and the command that proves it.
-2. **Why:** name why this Node API, boundary or pattern is appropriate here.
-3. **Break:** introduce one listed failure deliberately and capture the observed symptom.
-4. **Repair:** make the smallest correction and rerun the proof.
-5. **Recall:** on the next day, explain the decision without opening the notes, then check what you missed.
+1. **Build:** describe the behavior you added and the command that checks it.
+2. **Why:** explain why you chose this Node API, module separation or pattern.
+3. **Break:** deliberately cause one of the listed failures and record what you observe.
+4. **Repair:** make a small, focused fix and rerun the check.
+5. **Recall:** the next day, explain the decision without the notes. Then check what you forgot.
 
 Use this compact decision template:
 
@@ -138,7 +146,7 @@ Use this compact decision template:
 - What would make me revisit this choice:
 ```
 
-**Do not count an increment complete from a screenshot or from “it works on my machine.”** Keep the command, expected observable result and one failure-path result.
+**Keep repeatable checks, not just a screenshot or a claim that it works.** Record the command, what you expected, what actually happened and one tested failure case.
 
 <!-- tech-check-level: 1 -->
 
@@ -149,11 +157,11 @@ Use this compact decision template:
 Level Up: L1 — Junior\
 Tech Check level: ⭐
 
-The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
+The stars show this project's stage in the learning path. The linked lessons keep the source references for each individual topic.
 
 ### Outcome
 
-Build a dependency-free command-line application named `study-log`. It stores study items and sessions in an append-only JSON Lines file, prints summaries and exports a compressed report with a checksum.
+Build `study-log`, a command-line application with no third-party packages. Store study items and sessions in a JSON Lines file: one JSON record per line, with new records added at the end. Print summaries and export a compressed report with a checksum for checking its bytes.
 
 Example user flow:
 
@@ -165,7 +173,7 @@ node src/cli/main.mjs list --status done
 node src/cli/main.mjs report --output progress.jsonl.gz
 ```
 
-The CLI uses only Node built-ins. **That forces the runtime and host APIs to remain visible** before a framework starts managing them.
+The CLI uses only Node built-ins. **This lets you learn Node's APIs directly** before a framework manages some of the work.
 
 ### What you learn and why it belongs here
 
@@ -173,31 +181,31 @@ The CLI uses only Node built-ins. **That forces the runtime and host APIs to rem
 |---|---|---|
 | Runtime, CLI and process | Parse arguments, read environment configuration, write stdout/stderr and set exit codes | A CLI has an input, output and lifecycle contract just like a server |
 | Packages and modules | Define scripts/engines, keep a lockfile and separate domain, storage and CLI modules | Package metadata and module boundaries determine how code is loaded and released |
-| Callbacks, promises and async/await | Use promise filesystem APIs; adapt one callback API once; propagate failures to the CLI boundary | Syntax is less important than who owns completion and rejection |
-| Files, paths, URLs and OS | Resolve an application data directory and validate an optional resource URL | Host paths and permissions vary; string concatenation is not a portable filesystem policy |
+| Callbacks, promises and async/await | Use promise filesystem APIs; adapt one callback API once; propagate failures to the CLI boundary | The important question is which code waits for completion and handles failure |
+| Files, paths, URLs and OS | Resolve an application data directory and validate an optional resource URL | Paths and permissions differ across systems; joining strings alone does not handle those differences |
 | Buffer, streams, compression and crypto | Enforce byte limits, stream the report through gzip and calculate a SHA-256 digest | Whole-file convenience APIs are not suitable for every data size; integrity is not encryption |
-| Timers, readline and console | Add a bounded confirmation prompt and a timeout-aware import | Active handles affect process exit; interactive input needs an explicit cancellation policy |
-| Framework foundations | Record why the first milestone does not need Express | Choosing no framework for a bounded CLI is an engineering decision, not missing technology |
+| Timers, readline and console | Add a bounded confirmation prompt and a timeout-aware import | Open timers and interfaces can keep Node running; define how a prompt can be cancelled |
+| Framework foundations | Record why the first milestone does not need Express | A small CLI can work well without a web framework; explain that choice |
 
 ### Increment 1 — executable package and pure domain {#increment-1-—-executable-package-and-pure-domain}
 
-Create `package.json` with an explicit Node engine, `start`, `test` and `check` scripts. Add a small `StudyItem` domain function that validates a title, positive minute estimate and allowed state. Generate IDs with `crypto.randomUUID()` and inject the clock into domain operations.
+Create `package.json` with a Node engine requirement and `start`, `test` and `check` scripts. Add a `StudyItem` function for the business rules: check the title, positive estimate in minutes and allowed state. Generate IDs with `crypto.randomUUID()`. Pass a clock into operations that need time so tests can supply a predictable value.
 
-The CLI should support `help`, `add` and `list`. Keep parsing in the CLI adapter; **domain functions must not read `process.argv`, environment variables or files directly**.
+The CLI should support `help`, `add` and `list`. Keep parsing in the CLI adapter; **business-rule functions must not read `process.argv`, environment variables or files directly**. Pass the values they need as arguments.
 
 Failure drill: pass an unknown command, a blank title and a non-integer duration. The program must write a useful message to stderr, set a nonzero exit code and avoid creating a partial record.
 
 ### Increment 2 — owned asynchronous persistence {#increment-2-—-owned-asynchronous-persistence}
 
-Add a `StudyItemRepository` contract and a JSONL implementation using `node:fs/promises`, `node:path` and a configured data directory. Reconstruct current state by replaying validated events such as `item-added` and `item-finished`.
+Define a `StudyItemRepository` interface: the operations, results and errors storage must provide. Implement it with JSONL using `node:fs/promises`, `node:path` and a configured data directory. Rebuild the current state by reading and applying validated events such as `item-added` and `item-finished` in order.
 
-Use one process as the writer in this milestone. Document that `appendFile` does not make a multi-process transactional database. Reject malformed or oversized lines with the line number; do not silently skip corrupt state.
+Use only one writing process at this stage. Document that `appendFile` does not provide database transactions across processes. Reject invalid or oversized lines and report the line number. Do not silently skip damaged data.
 
 Failure drill: remove directory permission, truncate the last line and run two writers intentionally. Record which failures the implementation detects and which concurrency guarantee it **does not** provide.
 
 ### Increment 3 — bounded import and streaming export {#increment-3-—-bounded-import-and-streaming-export}
 
-Add `import` and `report` commands. Read imported JSONL through `readline`; cap line bytes, item count and total bytes. Export through a stream pipeline to gzip and compute a SHA-256 digest over the published bytes. Write to a temporary file and rename only after the pipeline succeeds.
+Add `import` and `report` commands. Read imported JSONL through `readline`, with limits on bytes per line, item count and total bytes. Stream the export through gzip and calculate a SHA-256 checksum of the published bytes. Write to a temporary file and rename it only after the pipeline succeeds.
 
 Validate optional `https:` resource links with `URL`. A syntactically valid URL is not authorization to fetch it; Project 1 stores the link but performs no outbound request.
 
@@ -205,7 +213,7 @@ Failure drill: exceed each bound, cancel during import and make the output path 
 
 ### Increment 4 — lifecycle, diagnostics and release contract {#increment-4-—-lifecycle-diagnostics-and-release-contract}
 
-Add signal handling only at the composition root. Stop accepting new interactive work, let the current owned operation settle within a deadline and then set an appropriate exit code. Ensure no timer, readline interface or file handle keeps the process alive after completion.
+Handle shutdown signals only in the program's main setup code, often called the composition root. Stop accepting new interactive work, give the active operation a deadline to finish, then set the exit code. Close every timer, readline interface and file handle your program opened so it can exit.
 
 Create smoke tests with `node:test` for a successful command, invalid input, corrupted storage and an interrupted export. Test the domain without spawning a process; use one process-level test for the real CLI contract.
 
@@ -218,7 +226,7 @@ Project 1 is releasable when all of these are true:
 - [ ] A clean checkout installs reproducibly and `npm run check && npm test` exits successfully.
 - [ ] Add/start/finish/list work against an owned temporary data directory; invalid input leaves no partial event.
 - [ ] Import limits and corrupt-line errors include useful context without leaking file contents unnecessarily.
-- [ ] A report round-trips through gunzip, its recorded checksum matches and failed publication preserves the previous report.
+- [ ] A compressed report can be read back through gunzip, its recorded checksum matches and a failed export leaves the previous report intact.
 - [ ] SIGINT during an owned operation exits within the documented deadline and leaves no open handles.
 - [ ] You can explain from memory: Node versus V8, sync versus async I/O, promise ownership, ESM loading, stream backpressure and why a framework was not needed.
 
@@ -233,11 +241,11 @@ Save this state as the `foundations-cli` release or tag before continuing.
 Level Up: L2 — Software Engineer\
 Tech Check level: ⭐⭐
 
-The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
+The stars show this project's stage in the learning path. The linked lessons keep the source references for each individual topic.
 
 ### Outcome
 
-Start from the passing `project-1-foundations-cli` state—**do not initialize another application**. Keep its domain, use cases, repository contract, JSONL implementation and CLI working. Add an Express 5 application that exposes those same operations over HTTP, streams the existing report and has an intentional error and test strategy. Serve a **very small same-origin browser UI** from `src/http/public/`; it is a usable face for the API, not a separate frontend course.
+Start from the passing `project-1-foundations-cli` version and **extend the existing application**. Keep its business rules, operations, storage interface, JSONL implementation and CLI working. Add Express 5 to expose the same operations over HTTP and stream the existing report. Define error handling and tests. Serve a **small browser UI from the same origin** using `src/http/public/`; it should exercise this API without becoming a separate frontend project.
 
 ```text
 POST   /items
@@ -250,7 +258,7 @@ GET    /health/live
 GET    /health/ready
 ```
 
-The CLI remains usable. **Two adapters now exercise the same application behavior**, revealing whether the first milestone accidentally coupled business rules to terminal input.
+The CLI remains usable. **The CLI and HTTP API use the same business operations.** This checks that the business rules do not depend on terminal input.
 
 The page needs only:
 
@@ -277,11 +285,11 @@ Use a real `<form>`, labeled controls, buttons, a list/table appropriate to the 
 | Events and event loop | Observe request lifetime, delay and aborted responses; keep CPU work bounded | Async handlers still execute JavaScript on an event-loop thread |
 | Networking | Use HTTP methods/status/headers, DNS/TLS-aware outbound client policy and streamed bodies | An API contract includes protocol behavior, not only JSON shapes |
 | Browser/API integration | Submit forms with `fetch`, render returned state, cancel stale requests and download the streamed report | A UI makes request lifetime, validation and public error contracts observable |
-| Development workflow | Separate build/check/test/start, use inspector and source evidence, verify shutdown | Repeatable diagnosis is part of delivering an application |
+| Development workflow | Separate build/check/test/start, use inspector and source evidence, verify shutdown | Troubleshooting should use commands and steps you can repeat |
 | Errors | Translate domain/input/not-found/conflict/dependency failures once | Clients need stable public errors; logs need richer private causes |
-| Testing | Unit, HTTP integration, contract and one bounded load observation | Different risks need different boundaries; coverage alone is not confidence |
-| Frameworks | Express routing/middleware/composition; map concepts to NestJS | Framework mechanics should remain outside the application rules |
-| Patterns | Use only patterns that solve an observed variation or workflow | Pattern names are tools for reasoning, not a checklist to force into code |
+| Testing | Unit, HTTP integration, contract and one bounded load observation | Use different test scopes for different risks; coverage alone does not prove correctness |
+| Frameworks | Express routing/middleware/composition; map concepts to NestJS | Keep framework-specific code separate from business rules |
+| Patterns | Use only patterns that solve an observed variation or workflow | Use a pattern to solve a real problem, not to tick off its name |
 
 ### Increment 1 — Express boundary over the existing application {#increment-1-—-express-boundary-over-the-existing-application}
 
@@ -291,13 +299,13 @@ Serve `index.html`, `styles.css` and `app.js` as static files. The initial UI lo
 
 Use the repository contract from Project 1. Add an in-memory implementation for tests and retain the file implementation for local execution. This is a Strategy/Adapter boundary only if it actually permits the application to use either implementation without transport changes.
 
-Failure drill: occupy the configured port, send malformed/oversized JSON and request an unknown item. Verify startup failure ownership and distinct 400, 404 and 413 contracts. Return an item title containing HTML-like text and prove the UI displays text rather than executing markup.
+Failure drill: occupy the configured port, send invalid or oversized JSON and request an unknown item. Check which code handles startup failure, and verify the distinct 400, 404 and 413 responses. Return an item title containing HTML-like text and prove the UI displays text rather than executing markup.
 
 ### Increment 2 — request lifetime, events and networking {#increment-2-—-request-lifetime-events-and-networking}
 
-Add a request ID, structured request-completion event and elapsed duration. Use `EventEmitter` only for notifications whose listener failure policy is explicit; do not use it as an invisible command bus. Stream the progress report with `pipeline()` and stop upstream work when the client disconnects.
+Add a request ID and a structured event recording completion and elapsed time. If you use `EventEmitter`, define how listener failures are handled; do not hide required business operations inside notifications. Stream the report with `pipeline()` and stop its source work when the client disconnects.
 
-Add one bounded outbound metadata adapter to a local fake HTTPS service or an owned test server. Configure deadline, response-size cap, expected content type and allowed destination. Explain DNS resolution, TLS identity and HTTP status separately; do not disable certificate verification to make a test pass.
+Add one metadata client that calls a local fake HTTPS service or your own test server. Limit its total time and response size, and configure the expected content type and allowed destination. Explain address lookup (DNS), certificate identity (TLS) and HTTP status separately. Keep certificate verification enabled in the test.
 
 In the browser, use `AbortController` to cancel a superseded list request and to stop a report request when the user cancels it. Disable only the control whose operation is in flight; keep a failure visible and retryable. Download the report through the API rather than duplicating its construction in browser code.
 
@@ -305,7 +313,7 @@ Failure drill: delay the dependency, abort the client, emit a listener error and
 
 ### Increment 3 — errors, tests and developer workflow {#increment-3-—-errors-tests-and-developer-workflow}
 
-Define domain/application error types with public codes and causes. One final Express error middleware maps expected failures and hides unexpected internals. A rejected Express 5 async handler reaches error middleware, but background work still needs its own owner.
+Define business and application errors with stable public codes, keeping original errors in `cause`. Use one final Express error middleware to translate expected failures and hide unexpected internal details. Express 5 forwards rejected handler promises to that middleware; code must separately handle failures from background work.
 
 Use Jest and Supertest for the same baseline as the existing testing notes. Add:
 
@@ -316,20 +324,20 @@ Use Jest and Supertest for the same baseline as the existing testing notes. Add:
 - one browser smoke test covering add → visible in list → complete → filtered as done;
 - a bounded concurrency observation that records latency and failures without claiming production capacity.
 
-Failure drill: make an async route start but not return/await a rejecting promise. Observe the test or process symptom, then restore explicit ownership. Introduce one boundary mutation that the relevant test must catch.
+Failure drill: start a rejecting promise in an async route without returning or awaiting it. Observe what happens, then restore the code that waits for it and handles failure. Deliberately break one promised behavior and check that the relevant test fails.
 
 ### Increment 4 — deliberate patterns and framework comparison {#increment-4-—-deliberate-patterns-and-framework-comparison}
 
-Refactor only after the earlier increments expose real pressure. A reasonable final selection is:
+Refactor when the earlier steps reveal a concrete need. These patterns may fit:
 
-- **Factory/composition root:** construct production or test dependencies once;
-- **Repository/Adapter:** isolate persistence mechanics from use cases;
-- **Strategy:** choose report formatting without branching through every route;
-- **Observer:** publish a non-critical completion notification with a stated failure policy.
+- <span class="notes-section-label">**Factory/composition root:**</span> create and connect production or test dependencies in one setup location;
+- <span class="notes-section-label">**Repository/Adapter:**</span> keep storage details separate from business operations;
+- <span class="notes-section-label">**Strategy:**</span> select report formatting without repeating choices in every route;
+- <span class="notes-section-label">**Observer:**</span> send an optional completion notification with defined error handling.
 
 Write `docs/decisions/framework.md` comparing the current Express implementation with NestJS. Map route → controller, dependency construction → provider/module, validation middleware → pipe, authorization middleware → guard and error middleware → exception filter. **Do not port the application merely to demonstrate the vocabulary.**
 
-Failure drill: identify one pattern that would add indirection without a current variation. Record why you rejected it. Being able to avoid a pattern is part of pattern knowledge.
+Failure drill: identify a pattern that would add extra layers without solving a current problem. Record why you rejected it. Knowing when a pattern is unnecessary is part of understanding it.
 
 ### Project 2 release check {#project-2-release-check}
 
@@ -355,11 +363,11 @@ Save this state as the `http-application` release or tag.
 Level Up: L3 — Senior\
 Tech Check level: ⭐⭐⭐
 
-The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
+The stars show this project's stage in the learning path. The linked lessons keep the source references for each individual topic.
 
 ### Outcome
 
-Start from the passing `project-2-http-application` state—**do not create a replacement API or UI**. Keep its domain, use cases, CLI, Express routes, public contracts, browser UI and applicable tests. Replace the production persistence adapter with PostgreSQL/MikroORM, add authenticated ownership, move a CPU-heavy report calculation behind the existing report use case into a bounded worker pool and package the complete service for a controlled deployment. The UI now shows the current user, only that user's items and report-job progress; **it remains intentionally plain**.
+Start from the passing `project-2-http-application` version and **keep the existing API and UI working**. Preserve business rules, application operations, CLI, routes, public responses and applicable tests. Replace production storage with PostgreSQL/MikroORM. Verify user identity and enforce item ownership. Run a CPU-heavy report calculation through a worker pool with fixed limits, behind the existing report operation. Package the whole service for controlled deployment. The UI shows the current user, only that user's items and report progress; **keep it simple**.
 
 Project 3 is still one service. **A worker, a database and a container do not automatically make it a microservice system.** Keep the deployment simple enough that you can reason about failure and recovery.
 
@@ -367,18 +375,18 @@ Project 3 is still one service. **A worker, a database and a container do not au
 
 | Knowledge | Use in the project | Why it matters |
 |---|---|---|
-| Concurrency | Bounded worker pool for a measured CPU-heavy report; copy/transfer policy and cancellation | Workers help CPU work only when lifecycle, queue and failure ownership are designed |
-| Architecture | Domain/application/adapters plus one composition root and dependency direction | Boundaries make transport, database and framework replaceable for a reason |
+| Concurrency | Bounded worker pool for a measured CPU-heavy report; copy/transfer policy and cancellation | Workers need limits on queued work and clear startup, failure and shutdown handling |
+| Architecture | Domain/application/adapters plus one composition root and dependency direction | Clear interfaces let you replace HTTP, storage or framework code when a requirement calls for it |
 | Authentication/authorization | Verify a signed token, derive a principal and enforce resource ownership in use cases/queries | Authentication identifies; authorization decides each operation |
 | Authenticated UI boundary | Keep production tokens out of persistent browser storage; use a same-origin session/BFF boundary or a deliberately isolated development identity adapter | A basic UI still needs an explicit browser threat and session model |
-| Relational database/ORM | Constraints, indexes, transactions, migrations, pooling and query inspection | Durable invariants and concurrency cannot live only in route validation |
+| Relational database/ORM | Constraints, indexes, transactions, migrations, pooling and query inspection | The database must also enforce rules that must survive restarts and concurrent writes |
 | Docker | Reproducible non-root image, Compose integration, health and graceful stop | Deployment changes filesystem, network, signals and resource limits |
-| Cloud and deployment | One container target, managed database design, release/rollback evidence | A runnable image is not yet a safe release process |
+| Cloud and deployment | One container target, managed database design, release/rollback evidence | An image starting successfully does not prove the release and recovery process is safe |
 | Serverless | Extract one scheduled-report handler and compare constraints | Serverless is a deployment/execution model, not a reason to rewrite every route |
 
 ### Increment 1 — architecture and relational data {#increment-1-—-architecture-and-relational-data}
 
-Move use cases into `application/`, domain invariants into `domain/` and implementations into `adapters/`. Keep Express and CLI as inbound adapters. The dependency direction points inward; the composition root creates concrete objects.
+Put application operations in `application/`, business rules in `domain/` and external-system implementations in `adapters/`. Keep Express and the CLI as entry points to the same operations. Business code should not depend on those entry points. The main setup code creates and connects the actual implementations.
 
 Model `users`, `study_items` and `study_sessions` in PostgreSQL. Use primary/foreign keys, check constraints, unique rules and tenant/owner-aware indexes. Add a reviewed MikroORM migration and a separate test database. Use a transaction for a completion operation that writes the final session and changes item state together.
 
@@ -386,9 +394,9 @@ Failure drill: violate each database constraint, race two completion requests an
 
 ### Increment 2 — identity and authorization {#increment-2-—-identity-and-authorization}
 
-Use a local test issuer to create signed access tokens with issuer, audience, subject, expiry and a stable key ID. Verify the algorithm and trusted key set; do not merely decode tokens. Build the principal at the HTTP boundary and pass it explicitly to use cases.
+Use a local test issuer to create signed access tokens. Include who issued the token, its intended recipient, the user's ID, expiry and a stable key ID. Verify the allowed algorithm and trusted keys; decoding alone is not verification. Build trusted caller information at the HTTP entry point and pass it into application operations.
 
-Scope every read/write to the principal's owner or tenant ID. Add a small permission policy for `item:read`, `item:write` and `report:run`. Keep authentication middleware thin: **the use case or repository query must not trust an item owner supplied by the request body**.
+Restrict every read and write to the trusted caller's owner or tenant ID. Add a small permission policy for `item:read`, `item:write` and `report:run`. Keep authentication middleware thin: **the use case or repository query must not trust an item owner supplied by the request body**.
 
 For the local UI, add a development-only test sign-in adapter that exchanges a local test identity for a same-origin, `HttpOnly` session cookie. The production configuration must not expose this route. Protect state-changing cookie-authenticated requests with an explicit CSRF strategy. Keep service-to-service/API bearer-token tests separate. Do not put access or refresh tokens in `localStorage` merely to make the demo convenient.
 
@@ -396,9 +404,9 @@ Failure drill: expired token, wrong audience, unknown key, valid token for anoth
 
 ### Increment 3 — bounded worker report {#increment-3-—-bounded-worker-report}
 
-First profile a report calculation large enough to block the loop in a controlled test. If it is genuinely CPU-heavy, create a fixed-size `worker_threads` pool. Queue only a bounded number of jobs, validate messages, define copy versus transfer ownership and reject overload quickly.
+First profile a report calculation that is large enough to block the event loop in a controlled test. If CPU work is the problem, create a fixed-size `worker_threads` pool. Limit waiting jobs, validate messages, define whether data is copied or transferred, and reject excess work promptly.
 
-Propagate deadline/cancellation from HTTP to the queue and worker. Define what happens if a worker errors, exits after replying or is terminated during shutdown. The database transaction and worker result have different atomicity boundaries; do not claim exactly-once execution.
+Pass the HTTP operation's deadline and cancellation through to the queue and worker. Define what happens if a worker fails, exits after replying or is stopped during shutdown. A database commit and a worker result are separate outcomes; they do not automatically form one all-or-nothing operation. Do not claim exactly-once execution.
 
 Let the UI start one report job, show `queued`, `running`, `completed` or `failed`, cancel an owned job and download only a completed artifact. Polling a bounded status endpoint is enough; WebSockets are unnecessary for this small interface.
 
@@ -410,7 +418,7 @@ Build a multi-stage or otherwise minimal reviewed Node image, install the locked
 
 Package the three static UI files in the same reviewed image and serve them from the same origin. Inject only non-secret public runtime configuration; secrets remain server-side. When readiness is false, the UI should preserve entered form values and present a retryable unavailable state rather than pretending a write succeeded.
 
-Expose separate liveness and readiness. On termination, become unready, stop accepting work, drain HTTP within a deadline, stop workers and close ORM/database resources. Apply migrations as a controlled release step, not independently in every replica.
+Expose separate liveness and readiness. On termination, mark the service unready and stop accepting work. Give active HTTP requests a deadline to finish, stop workers and close ORM/database resources. Apply migrations as a controlled release step, not independently in every replica.
 
 Choose one primary cloud design—for example, an ECS/Fargate-style container service plus a managed PostgreSQL database—and write the deployment contract even if you do not spend money deploying it: image digest, configuration/secrets, network boundary, health, resource limits, migration order, backward compatibility, rollback and backup/restore owner.
 
@@ -442,11 +450,11 @@ Save this state as the `deployable-service` release or tag.
 Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐
 
-The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
+The stars show this project's stage in the learning path. The linked lessons keep the source references for each individual topic.
 
 ### Outcome
 
-Begin from the passing `project-3-deployable-service` state. Keep its UI, API contracts, identity, data, worker and deployment behavior. **Project 4 changes the service from “designed to work” to “supported by bounded security and performance evidence.”** It maps directly to Section 4 without creating another product.
+Begin from the passing `project-3-deployable-service` state. Keep its UI, API contracts, identity, data, worker and deployment behavior. **Project 4 adds tested security controls and measured performance evidence.** State the limits of what each check proves. It maps directly to Section 4 without creating another product.
 
 ### What this continuation covers
 
@@ -478,7 +486,7 @@ Failure drill: wrong browser/state, replayed callback, unknown/retired key, wron
 
 Choose a representative mixed workload: item reads/writes plus report generation. Record environment, data size, concurrency, latency distribution, throughput, errors, CPU, event-loop delay/utilization and memory. Capture a CPU profile for a CPU case and a heap/allocation comparison for a controlled retention case.
 
-Make **one evidence-led improvement**: query shape/index, serialization, bounded cache, Buffer ownership or worker message transfer. Preserve output/auth/error behavior and rerun the same workload. A local result is an observation, not a production capacity promise.
+Make **one improvement supported by measurements**: change a query or index, JSON conversion, a size-limited cache, Buffer sharing or worker message transfer. Preserve output, permission checks and error behavior, then rerun the same workload. A local result does not establish production capacity.
 
 Failure drill: synchronous CPU in a handler, unbounded cache key, retained object, slow dependency and saturated worker queue. Diagnose each before changing code; distinguish performance from scalability and dependency wait from loop blocking.
 
@@ -486,7 +494,7 @@ Failure drill: synchronous CPU in a handler, unbounded cache key, retained objec
 
 Reproduce a two-client isolation anomaly and protect the chosen invariant with the appropriate transaction/constraint/retry policy. Add keyset pagination with a stable unique order, inspect the real plan and diagnose lock, statement and pool-acquisition timeouts. Rehearse an expand/backfill/contract migration and rollback/restore decision on owned data.
 
-For advanced API scope, harden one streamed report path: byte/row bounds, disconnect cancellation, authenticated plaintext publication, no-replace file semantics and cleanup ownership. Compare the existing Express path with one equivalent Nest adapter or focused candidate only if behavior remains identical; framework replacement is not the optimization goal.
+For advanced API practice, protect one streamed report path: limit bytes and rows, stop work on disconnect, verify decrypted content before making it available, prevent replacement of existing output where required, and close each resource the operation opened. Compare the existing Express path with one equivalent Nest adapter or focused candidate only if behavior remains identical; framework replacement is not the optimization goal.
 
 Failure drill: serialization retry, mutable pagination boundary, blocked lock, exhausted pool, mid-stream disconnect, existing output target and crash between temporary write/publication. State which outcomes are known, unknown or safe to retry.
 
@@ -511,7 +519,7 @@ Save this state as `project-4-hardened-service`.
 Level Up: L4 — Lead\
 Tech Check level: ⭐⭐⭐⭐⭐
 
-The star is this project’s curriculum milestone. Its individual topics retain their explicit or related source mappings in the linked lessons.
+The stars show this project's stage in the learning path. The linked lessons keep the source references for each individual topic.
 
 ### Outcome
 
@@ -533,7 +541,7 @@ RabbitMQ is the primary broker for this exercise because a work queue fits repor
 
 Keep the existing `ReportJobDispatcher` contract and add a RabbitMQ adapter. Publish a versioned job envelope with stable job/tenant IDs, validate on consumption, set bounded prefetch and acknowledge only after the durable result/status transition succeeds. Use publisher confirms for publisher-to-broker evidence and manual consumer acknowledgements for consumer processing; neither proves the other side's outcome.
 
-Resolve the database-commit/message-publish gap with a transactional outbox and an idempotent consumer keyed by job/effect. Define retry classification, delay/backoff, maximum attempts, poison-message parking and operator replay. Do not claim exactly-once delivery.
+Save the database change and a pending message in the same transaction: the transactional outbox pattern. Make the consumer recognize repeated job/effect IDs so it does not repeat a durable effect. Define retryable failures, delays, maximum attempts, storage for permanently failing messages and controlled replay by an operator. Do not claim exactly-once delivery.
 
 Failure drill: broker unavailable before/after commit, publisher-confirm uncertainty, consumer crash before/after durable effect, duplicate/redelivered message and poison payload. Verify no duplicate report effect and no unbounded retry loop.
 
@@ -555,9 +563,9 @@ Failure drill: inject database latency, stuck consumer, poison retry storm and d
 
 ### Increment 4 — one specialist computation adapter and operational release {#increment-4-—-one-specialist-computation-adapter-and-operational-release}
 
-Extract a deterministic report-score calculation behind `ScoreEngine`. Keep the JavaScript implementation as the correctness oracle and add one WebAssembly implementation only after profiling justifies the experiment. Test identical inputs/outputs, numeric/encoding boundaries, initialization failure, memory limits and fallback policy; compare end-to-end cost including data conversion.
+Extract a deterministic report-score calculation behind `ScoreEngine`. Keep the JavaScript implementation as the reference for expected results and add one WebAssembly implementation only after profiling justifies the experiment. Test identical inputs/outputs, numeric/encoding boundaries, initialization failure, memory limits and fallback policy; compare total operation cost, including data conversion.
 
-Write a decision record for **not** adding a C++ addon unless native library access or measured performance requires it. Explain Node-API/ABI/platform/build/signing/container implications and worker compatibility. Packaging a native addon is a different operational commitment from loading Wasm.
+Write a decision record for **not** adding a C++ addon unless native library access or measured performance requires it. Explain Node-API/ABI/platform/build/signing/container implications and worker compatibility. Packaging a native addon adds different build and deployment work from loading Wasm.
 
 Extend Compose/deployment/runbooks for broker and telemetry dependencies, backup/restore ownership, rolling compatibility and failure-safe shutdown. Rehearse a release/rollback with old/new message versions and consumers.
 
@@ -578,7 +586,7 @@ Save this state as `project-5-operated-service`.
 
 ## Coverage map for all five sections
 
-The map keeps the project small while ensuring no sidebar chapter disappears. “Used” means you implement it; “decision” means you must reason about it but should not force an unnecessary technology into the code.
+This map shows where each sidebar chapter is practised. “Used” means you implement it. “Decision” means you explain whether it fits; you do not need to add a technology the application does not need.
 
 | Tech Check chapter | Primary project evidence |
 |---|---|
@@ -619,7 +627,7 @@ The full GoF catalogue remains study material. **This project demonstrates patte
 
 ## Personal progress scorecard
 
-Material availability is not learner completion. Update this only from your own repository evidence.
+Reading available material does not complete the practice. Update this table only after doing the work and recording its results.
 
 | Milestone | Not started | Building | Release checks pass | Explained from memory |
 |---|---:|---:|---:|---:|
@@ -632,12 +640,12 @@ Material availability is not learner completion. Update this only from your own 
 After each release, wait at least one day and answer these without the code:
 
 1. Where does this program wait, and what can still make progress while it waits?
-2. Who owns every resource and every asynchronous failure?
-3. Which invariant is enforced in the domain, transport and database, and why at that boundary?
+2. Which code closes each resource and handles each asynchronous failure?
+3. Which business rule must stay true? Where is it checked—in business code, HTTP handling or the database—and why there?
 4. What evidence distinguishes a code defect from dependency wait, overload or configuration failure?
-5. Which current abstraction would you remove if the requirement disappeared?
+5. Which interface or extra layer could you remove if the requirement it serves disappeared?
 
-If an answer is vague, return to the corresponding failure drill. **Recall improves when you reconstruct the decision and symptom, not when you reread a finished solution.**
+If an answer is vague, repeat the related failure exercise. **Practise recalling the decision and the symptom from memory**, then use the finished solution to check your explanation.
 
 ## Official references
 

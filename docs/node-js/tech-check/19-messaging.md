@@ -22,7 +22,9 @@ Source mapping: [R059](./requirements.md#r059).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define the producer, consumer, schema/version, operation identity, ordering and recovery policy before selecting a broker. A command requests work; an event reports a fact. **Delivery identity and business-operation identity are not necessarily the same.**
+Before choosing a broker, define who sends the message, who handles it, its fields and version, its operation ID, ordering rules and failure recovery. **A command asks for work; an event reports something that happened.** The broker transports messages, but your application decides what successful processing means.
+
+**A delivery ID may differ from the business operation's ID.** Two delivery attempts can request the same export or payment. Keep a stable operation identity when repeated delivery must not repeat the effect, and define how duplicates and uncertain outcomes are handled.
 
 </div>
 
@@ -89,7 +91,9 @@ Source mapping: [R059](./requirements.md#r059), [R189](./requirements.md#r189).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Commit business state and an outbox intent locally, confirm publication, then acknowledge consumption only after the effect or a durable recovery handoff. **Publisher confirms and consumer acknowledgements protect different boundaries.** Neither removes every duplicate window.
+Save the business change and an outbox record in one local database transaction. The outbox records that a message needs to be published. A publisher sends it and waits for the broker's confirmation. A consumer acknowledges its delivery only after completing the effect or handing recovery to durable storage under an explicit agreement.
+
+**A publisher confirm means broker acceptance; a consumer acknowledgement means the consumer permits that delivery to be removed.** Neither proves every later business step succeeded. A crash between publishing and marking the outbox, or between committing an effect and acknowledging, can cause repeats. Handle those duplicates deliberately.
 
 </div>
 
@@ -127,7 +131,9 @@ Source mapping: [R097](./requirements.md#r097).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Classify failures, cap retries with delay/jitter, preserve durable recovery ownership and test the actual failover topology. **An immediate nack/requeue loop can amplify a failure.** Dead-letter storage needs an operator/replay policy, not just a queue name.
+Separate permanent failures, such as invalid messages, from temporary failures that may succeed later. **Limit retries and spread them out with delays and random variation**, often called jitter, so recovering clients do not all retry at once.
+
+**Immediately rejecting and requeueing the same message can worsen an outage.** Dead-letter storage holds messages that need another recovery path; it also needs a responsible operator and rules for inspecting or replaying them. Keep recovery state durable, and test how the actual broker setup handles server loss and reconnection. Reconnecting one client does not prove a multi-server failover design works.
 
 </div>
 
@@ -161,7 +167,9 @@ Source mapping: [R059](./requirements.md#r059), [R190](./requirements.md#r190).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Kafka retains records in partitioned logs; a consumer group tracks its position. Ordering is within a partition, and ownership changes during rebalancing. **Committing an offset before a durable effect can lose that effect; committing after can repeat it.**
+Kafka stores records in retained logs split into partitions. Reading a record does not remove it. A consumer group tracks its position in each partition using offsets. **Ordering applies within a partition**, and a rebalance can move responsibility for that partition to another consumer.
+
+**Saving an offset before the business effect is durable can skip unfinished work after a restart.** Saving it afterward can cause the work to run again if the process crashes between those steps. Preserve a stable operation ID and durable duplicate handling where required; an offset is a log position, not automatically a business-operation identity.
 
 </div>
 
@@ -212,7 +220,9 @@ Source mapping: [R059](./requirements.md#r059).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-SQS supplies managed queues for workers; SNS distributes notifications to subscriptions. Combining SNS with separate SQS subscriptions can give each consumer its own backlog. **A notification subscription is not the same as a durable application effect.**
+**SQS provides managed queues for workers; SNS distributes notifications to subscribers.** With SNS sending to separate SQS queues, independent consumers can each build and process their own backlog.
+
+**Receiving a notification does not prove its business effect completed.** Configure delivery, retry, visibility and acknowledgement rules for the actual trigger or client. Repeated delivery still needs safe duplicate handling, and each consumer needs clear responsibility for durable completion and recovery.
 
 </div>
 
@@ -247,7 +257,9 @@ Source mapping: [R059](./requirements.md#r059).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Identify the actual broker product/version, wire protocol, destination model and client guarantees before integrating it. **ActiveMQ Classic and Apache Artemis are distinct implementations**, and a Java/JMS concept is not automatically a Node client's API.
+**ActiveMQ Classic and Apache Artemis are different broker implementations.** Identify the exact product and version before selecting configuration or client code. Check its supported wire protocol—the rules clients use to exchange messages—and how queues, topics or addresses route those messages.
+
+**A Java/JMS example is not automatically a Node client's API.** Verify the chosen Node client's authentication, delivery acknowledgement, flow-control and failure behavior. Similar product or protocol names do not guarantee compatible message handling.
 
 </div>
 

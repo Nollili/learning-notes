@@ -22,9 +22,9 @@ Source mapping: [R105](./requirements.md#r105).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Node.js is a JavaScript runtime: it provides an engine and host facilities to execute JavaScript outside a browser. **V8 executes JavaScript, while Node adds APIs** for files, processes, networking and other operating-system resources. That makes it useful for command-line programs, build tools and network services.
+Node.js lets you run JavaScript outside a browser. It is a runtime: the environment that runs your program and provides the tools it can use. **V8 runs the JavaScript; Node adds APIs** for working with files, starting processes and communicating over a network. You can use Node for command-line tools, build tools and web servers.
 
-JavaScript language rules still apply, but the host is different: **ordinary Node programs have no page DOM**, and **code runs with the process's operating-system permissions**. Some web-compatible APIs exist in both environments, but identical names do not make browser security or lifecycle rules apply to Node.
+The JavaScript language stays the same, but the available tools change. **Node has no browser page or DOM by default.** A Node program can access only the operating-system resources its process is allowed to use. Some APIs, such as `fetch`, also exist in browsers, but the surrounding security rules differ.
 
 </div>
 
@@ -113,9 +113,9 @@ console.log(result instanceof Promise);
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Event-driven execution reacts to events such as incoming requests, completed I/O or timers. A nonblocking I/O API lets JavaScript initiate work and **return without waiting synchronously for completion**; the result is handled later. That lets a process serve other work while I/O is pending. It does not make all computation parallel or free.
+Event-driven code responds to things that happen, such as a request arriving, a file read finishing or a timer becoming ready. I/O means input/output: for example, reading a file or waiting for a network response. **Nonblocking I/O lets Node handle other work while it waits.**
 
-JavaScript callbacks run on their execution thread, and **an async function runs synchronously until it yields**. **CPU-heavy work can therefore block unrelated requests** unless it is bounded, split appropriately or moved to a suitable worker/process.
+**Adding `async` does not move a calculation to another thread.** An async function starts running immediately and keeps running until it pauses, for example at `await`. A long calculation can still delay other requests. Expensive calculations may need a worker thread or a separate process.
 
 </div>
 
@@ -182,9 +182,9 @@ Source mapping: [R118](./requirements.md#r118).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A synchronous API keeps the current JavaScript thread waiting until it returns or throws. An asynchronous API returns control and reports completion later through its documented callback/promise contract. **Prefer asynchronous I/O on a request-serving path** so other callbacks can run while it is pending.
+A synchronous file operation makes the current JavaScript thread wait until it finishes. An asynchronous operation reports its result later through a callback or promise. **Use asynchronous file operations in request handlers** so other requests can make progress during the wait.
 
-**A bounded synchronous operation can be reasonable** in a short-lived CLI or before a service accepts traffic. **Async does not guarantee faster completion** of one operation; it mainly changes scheduling and resource use. Both approaches still need errors, input limits and sensible concurrency.
+**A small synchronous operation can be reasonable during startup or in a command-line tool.** For example, a tool may read one small configuration file before doing anything else. Async does not necessarily make that single read faster. Either approach still needs error handling and limits on file size and the amount of work started at once.
 
 </div>
 
@@ -263,9 +263,9 @@ Source mapping: [R107](./requirements.md#r107), [R110](./requirements.md#r110).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Core modules ship with Node and expose host capabilities through imports such as node:fs/promises, node:path and node:http; **they do not need an npm installation**. A CLI usually reads arguments, performs a bounded task, writes results/errors and exits. **A service owns long-lived resources** such as a listening socket and keeps accepting work until shutdown.
+Core modules are built into Node. Examples include `node:fs/promises` for files, `node:path` for file paths and `node:http` for HTTP. **You can import them without installing an npm package.**
 
-**Both need validation, error handling and cleanup**. A framework can compose these primitives, but it is not required to start a small Node program.
+A command-line tool usually performs a task, prints a result and exits. **A service keeps running to accept new work**, such as HTTP requests. Both can use the same core modules. Both must check input, handle errors and close resources they open, such as files or servers. A framework can help organize the code, but you do not need one to start.
 
 </div>
 

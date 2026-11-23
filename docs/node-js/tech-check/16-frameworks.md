@@ -28,7 +28,9 @@ A service receives `GET /products/42` and returns JSON. Another service renders 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A web framework supplies reusable HTTP application mechanics: routing, middleware, request/response helpers and error flow. **Node supplies the underlying runtime and networking facilities**. **MVC separates models, views and controllers**; an API application commonly returns data rather than rendering a view. A full-stack framework supplies or integrates broader application conventions. These are **overlapping architectural descriptions, not mutually exclusive runtime types**.
+A web framework helps build HTTP applications. It handles common tasks such as matching routes, running middleware, creating responses and passing errors to handlers. **Node runs the program and provides the underlying networking APIs.**
+
+**MVC separates data and its behavior (model), presentation (view) and request handling (controller).** An API commonly returns data such as JSON instead of rendering an HTML view. A full-stack framework provides or connects more parts of the application, such as routing, rendering and data access. These categories can overlap: one framework can support both MVC pages and an API.
 
 </div>
 
@@ -98,9 +100,9 @@ An existing team maintains an Express service. A new internal endpoint needs two
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**Choose a framework that fits the application and the team.** Consider where it must run, what the team knows, which integrations it needs, and how startup, requests and shutdown work. Measure any performance problem before choosing a tool to fix it.
 
-
-**Start from requirements and the existing system**: runtime/deployment constraints, team knowledge, lifecycle conventions, integration needs and measured bottlenecks. **Select one primary framework and learn its contracts well**. Compare alternatives where their design solves a real problem; **a synthetic throughput ranking is not enough to justify migration**.
+**Learn one main framework well**, including how it handles errors and application structure. Compare alternatives when they solve a specific problem. A framework being faster in a simple benchmark is not enough reason to rewrite an existing service; consider real workloads and the cost of migration and maintenance.
 
 </div>
 
@@ -241,7 +243,9 @@ Run `node server.mjs` and request `http://127.0.0.1:3000/health` in another term
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Install the framework as a runtime dependency, **construct the application without opening a socket**, and let a separate entry point own listening and shutdown. An Express app is a request handler; **the HTTP server owns the port and connections**. **Startup succeeds when listening is confirmed**, not when the app object is created.
+Install Express as a runtime dependency because the running server needs it. **Keep creating the Express app separate from starting the server.** The app defines how requests are handled; a separate startup file creates the HTTP server, starts listening and handles shutdown.
+
+**The HTTP server manages the port and connections.** Creating an Express app does not prove that a port is available. Report startup success only after the server confirms it is listening. This separation also lets tests import the app without unexpectedly starting a server.
 
 </div>
 
@@ -302,9 +306,9 @@ What should happen if `PORT` is `3000garbage`, `0`, an empty string, or missing?
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**Read and validate settings once at startup, before opening servers or database connections.** Convert environment strings into the numbers, booleans and other values the application expects. A value can be present and still be invalid, and it may contain a secret that must not be logged.
 
-
-**Read and validate configuration at the startup boundary, before acquiring resources**. Convert strings to intentional application values, then **pass those values and explicit dependencies into the application**. Keep infrastructure construction and cleanup in one composition point. Environment variables are strings; **their existence does not make them valid or safe to log**.
+**Pass checked settings and needed services into the application.** For example, pass a configured product service to a route instead of creating a database connection inside every request. Keep the code that creates these resources together, and make that code responsible for closing them when startup fails or the application stops.
 
 </div>
 
@@ -463,7 +467,9 @@ Mount it with `app.use('/products', createProductRouter(controllers))`. For a ro
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A route matches an HTTP method and a path pattern within its mount point. Use a Router to organize a feature, **register specific paths before overlapping parameter paths**, and **validate decoded parameters/query/body values separately**. **Matching an endpoint does not validate or authorize its input**.
+An Express route matches an HTTP method and a path pattern, including any prefix where its router is mounted. Use a `Router` to group related routes. **Register specific paths before overlapping parameter routes**: for example, `/stats` before `/:id`, so `stats` is not mistaken for an ID.
+
+**A route match does not make its input valid or authorized.** Check decoded path parameters, query values and body fields separately, and verify that the caller may perform the requested action.
 
 </div>
 
@@ -564,9 +570,9 @@ For routing-only tests, pass an explicit fixture authenticator that calls `next(
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**Express middleware runs in registration order.** Each path through a middleware function must send or finish a response, pass control with `next()`, or report an error. If it does none of these, the request can hang.
 
-
-**Middleware forms an ordered chain**. A path must **either end the response, pass control, or report a failure**; otherwise it hangs. Register policies before the routes they govern, **keep error middleware last**, and do not call `next()` after already sending a response. **Express `next()` is control transfer, not a promise that all downstream asynchronous work completed**.
+Register checks before the routes they protect and keep error middleware last. **Do not call `next()` after sending the response.** Also, `next()` does not return a promise for all later work. Writing `await next()` does not make Express wait for downstream handlers as Koa does.
 
 </div>
 
@@ -676,9 +682,9 @@ export function createProductControllers(service) {
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**A controller translates between HTTP and an application operation.** It reads request values, calls a service, then chooses the response data, status and headers. Interpreting a query or setting a `Location` header is real controller work; a small controller need not be empty.
 
-
-**A controller adapts transport input into a use-case call** and adapts its outcome into an HTTP response. **A service owns business rules and operation boundaries**; **a repository owns storage interaction**. **Keep `req`, `res` and HTTP status decisions out of reusable business/storage code**. Thin does not mean empty: query interpretation, status and Location are real controller responsibilities.
+**A service implements business rules; a repository accesses storage.** Keep Express `req`, `res` and HTTP status choices out of reusable service and repository code. This lets other callers use the same rules without pretending to be HTTP requests.
 
 </div>
 
@@ -733,7 +739,9 @@ The client disconnects while a service is awaiting a database reply. Is the serv
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A request has several related lifetimes: transport input, response output, application work and any durable operation. **Disconnect does not automatically cancel service work or undo a committed effect**. A response finish event is **local output completion, not proof of remote business processing**. **Give active work its own completion/cancellation owner** and **delegate late response failures instead of sending again**.
+Reading the request, finishing the response, completing application work and committing a database change are separate events. **A disconnected client does not automatically stop service work or undo a committed change.** The response's `finish` event means local output finished; it does not prove the remote application received and processed it.
+
+**Track active work until it actually finishes, even if the client leaves.** Pass cancellation to operations that support it and handle their final outcome. If a late failure happens after response headers were sent, pass it to error handling instead of sending a second response.
 
 </div>
 
@@ -911,7 +919,9 @@ export function createCatalogService(repository, { newId = randomUUID } = {}) {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define the resource contract, validate allowed inputs, generate identities server-side, **enforce business permission/ownership** and return deliberate public DTOs. Use POST/GET/PATCH/DELETE with documented status/body semantics. An HTML page can call the same service but **must render untrusted text with context-appropriate escaping**. **Storage and deployment guarantees must match the actual adapter**.
+CRUD means create, read, update and delete. Define which fields clients may send, how IDs are generated, and which status and response body each operation returns. **Check the caller's permission and resource ownership in the shared business service.** Return deliberately selected public data objects, often called DTOs, rather than raw storage records.
+
+An HTML page can call the same service as a JSON API. **Escape untrusted text for the place where it appears in HTML** so product names and other data cannot become executable markup. Be honest about storage guarantees: an in-memory adapter does not provide durable or shared storage just because the endpoints work.
 
 </div>
 
@@ -1043,7 +1053,9 @@ export function createCatalogApp({ verifyAccessToken, observe, repository = crea
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Authenticate credentials into trusted server context**, validate transport/business input and **authorize the use case/resource independently**. Compose these policies in a deliberate order and translate only known errors at the HTTP boundary. **Unknown verifier/dependency failures remain server failures**; **they must not become proof that the user supplied an invalid credential**.
+Authentication establishes who the caller is by verifying credentials. Validation checks whether input has the required shape and values. Authorization checks whether that caller may perform this action on this resource. **A valid login does not grant permission to every operation.** Build trusted caller information on the server rather than accepting a submitted user ID or role as proof.
+
+Apply these checks in a deliberate order, and translate recognized errors into safe HTTP responses. **An authentication dependency failing is not evidence that the user's credentials were invalid.** Unexpected verifier or dependency failures remain server failures and need appropriate diagnostics.
 
 </div>
 
@@ -1099,7 +1111,9 @@ If a service is a singleton, can it store `currentUser` for every request? Does 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Compose reusable capabilities at one application boundary.** Services receive explicit repositories/configuration; controllers receive services. Modules group and expose capabilities, while injection connects their owners. **Keep request-specific identity out of a shared singleton.** Neither routers nor dependency containers supply transactions or resource authorization automatically.
+**Connect the application's components in one clear setup location.** Give repositories and configuration to services, then give services to controllers. A module groups related components and exposes what others need. Dependency injection means supplying those components instead of having each consumer create or find them itself.
+
+**Do not store the current request's user in a shared singleton.** Another request could overwrite it; pass request-specific identity explicitly. Routers and dependency containers organize code, but they do not automatically enforce resource permissions or make operations transactional.
 
 </div>
 
@@ -1291,7 +1305,9 @@ Should authorization run in a success-only response interceptor? Does an initial
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose the extension point whose **scope and timing match the responsibility**. Middleware/guards/pipes/interceptors/filters shape request behavior; application/provider lifecycle hooks own initialization and disposal. **Hooks do not guarantee deadlines or crash cleanup.** They also do not supply distributed coordination. Resource ownership and partial-startup cleanup remain explicit design work.
+**Choose a hook based on when it runs and what it controls.** Request middleware, guards, pipes, interceptors and filters handle different parts of a request, such as permissions, input checks, observation and error responses. Application or provider lifecycle hooks handle setup and disposal of resources.
+
+**A lifecycle hook does not guarantee cleanup after a crash or within a deadline.** You still need explicit resource closing, time limits and cleanup when startup succeeds only partly. Hooks also do not coordinate independent server instances by themselves.
 
 </div>
 
@@ -1360,7 +1376,11 @@ The server binds successfully, but its template was not copied into the artifact
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Deploy a **reproducible artifact** with the intended runtime/dependencies/assets and validated configuration. **Listening, liveness and readiness are distinct**; keep credentials and proxy trust deliberate. Give the executable one bounded shutdown owner. Match persistence/session state and background work to the multi-instance topology: **this process-local Map is neither shared nor durable**.
+**Deploy a build that can be reproduced**, with the intended Node version, dependencies, templates and other assets. Validate configuration before accepting traffic. Manage credentials securely, and trust proxy-provided information only under an explicit configuration.
+
+**Listening, liveness and readiness answer different questions.** Listening means the port is open; liveness checks whether the process responds; readiness checks whether it can handle its required work. Give startup and shutdown one clear owner, with a time limit for stopping.
+
+Plan storage, sessions and background jobs for the number of server instances. **A process-local `Map` is neither shared across instances nor preserved after restart.** Use appropriate shared, durable storage when those properties are required.
 
 </div>
 

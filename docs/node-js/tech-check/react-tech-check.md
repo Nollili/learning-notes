@@ -4,6 +4,8 @@ outline: [2, 3]
 
 # React tech-check
 
+Use these interview questions to practise clear explanations of React. This page contains questions, not model answers. Missing snippets and unclear points are marked below. Version-specific questions reflect the interview; check the version used by your project when answering them.
+
 
 ## Coding task: recursive navigation menu
 
@@ -11,10 +13,10 @@ outline: [2, 3]
 ## Build a navigation component from an array of menu items:
 
    - Each item has an id, a label, and optional nestedItems.
-   - Support arbitrary nesting depth.
+   - Support nested items at any depth.
    - Allow submenus to expand and collapse.
    - Keep submenus hidden initially.
-   - Receive the data through props; fetching and styling are unnecessary.
+   - Receive the menu data through props. You do not need to fetch it or add styling.
 
 - Optional extension: How would you support additional item properties, such as onClick or a link?
 
@@ -22,29 +24,29 @@ outline: [2, 3]
 
 - Do nested mapped items also need keys?
 
-- Will each recursively rendered navigation item have its own independent state?
+- Does each navigation item created by the recursive component have separate state?
 
 ## JSX and component return values
 
 
-- What JavaScript can you write inside JSX curly braces? What restrictions apply?
+- Which JavaScript expressions can you put inside JSX braces, and which kinds of code cannot go there directly?
 
-- Snippet question: Can you put the demonstrated statements directly inside JSX? If not, how could you restructure them?
+- Snippet question: Can the shown statements go directly inside JSX? If not, how would you rewrite the code?
 
 - What can a function component return?
 
-- Snippet comparison: What is the difference between rendering a component with JSX and invoking it as a function?
+- Snippet comparison: How does rendering a component with JSX differ from calling its function yourself?
 
-  *The exact expressions are unavailable. The discussion later connects this question to render props, so its intended scope is somewhat ambiguous.*
+  *The exact expressions are missing from the transcript. The speakers later discuss render props, so the intended comparison is unclear.*
 
 ## State, initialization, and batching
 
 
 - How does useState work internally?
 
-- What is the difference between direct initialization and lazy initialization?
+- How does passing an initial value to `useState` differ from passing a function that calculates it?
 
-- When does a lazy initializer execute?
+- When does React call the function used to calculate the initial state?
 
 - What happens if you call a state setter several times inside one event handler?
 
@@ -52,37 +54,37 @@ outline: [2, 3]
 
 - What is batching?
 
-- How do you update state repeatedly when each update depends on the previous result?
+- How do you queue several state updates when each needs the result of the previous one?
 
-- Can you force synchronous updates instead of relying on batching?
+- Can you make React apply updates synchronously instead of waiting for its normal batching?
 
-  *flushSync is introduced as a hint. Functional updater functions are also discussed; they are a separate mechanism.*
+  *The interviewer gives `flushSync` as a hint. The discussion also covers functional state updaters, which solve a different problem.*
 
 - How does useReducer work, and how does it differ from useState?
 
-- Why should state be treated as immutable?
+- Why should you replace state values rather than change existing state objects directly?
 
-- How would you manage updates to deeply nested state?
+- How would you update a value inside several levels of nested state?
 
 ## Rendering lifecycle and error boundaries
 
 
-- Explain the lifecycle of a function component, focusing on render, pre-commit, and commit.
+- Explain what happens during a function component's render, pre-commit and commit stages.
 
-- Can hooks reproduce all the lifecycle functionality available in class components?
+- Can hooks provide every lifecycle capability available in class components?
 
-- What functionality cannot be implemented directly with existing function-component hooks?
+- Which class-component capabilities do the hooks discussed here not provide directly?
 
-  *Error boundaries are the example discussed.*
+  *The speakers discuss error boundaries as the example. Treat this as the transcript's question, rather than a claim about every React version.*
 
 - What happens if a component throws an unhandled error during rendering?
 
 ## Effects
 
 
-- Coding/discussion task: Add a useEffect containing a fetch operation and explain when it executes.
+- Coding task: Add a `useEffect` that starts a fetch request. Explain when the effect runs.
 
-- How does the dependency array control effect execution?
+- How does the dependency array affect when an effect runs again?
 
 - What happens if you remove the dependency array?
 
@@ -91,30 +93,30 @@ outline: [2, 3]
 ## Hook categories and custom hooks
 
 
-- How would you group React hooks by purpose? Give examples beyond useState and useReducer.
+- What jobs do different hooks do? Group them by purpose and include examples beyond `useState` and `useReducer`.
 
 - Do you use custom hooks? How do you design and create them?
 
-- What rules apply when extracting reusable logic into a custom hook?
+- Which hook rules must you preserve when moving shared logic into a custom hook?
 
-- Why can’t you call ordinary hooks conditionally?
+- Why must ordinary hooks be called in a consistent order rather than inside conditions?
 
-- How does hook call order allow React to associate state with the correct hook?
+- How does the order of hook calls help React match stored state to each hook?
 
 ## Reusing logic and component composition
 
 
-- Besides custom hooks, what patterns can you use to reuse logic in React?
+- Besides custom hooks, how can React components share behavior?
 
-- Coding task: Write a simple higher-order component.
+- Coding task: Write a simple higher-order component: a function that takes a component and returns a component with added behavior.
 
-- Does your HOC return a component function, or an already-created element?
+- Does your higher-order component return a component function or an element that has already been created?
 
-  *This is a corrective follow-up to the implementation.*
+  *The interviewer asks this to correct the candidate's implementation.*
 
 - What other reuse patterns do you know?
 
-  *Render props and composition through children are explained and demonstrated.*
+  *The speakers demonstrate render props and composing components through `children`.*
 
 ## React DOM APIs
 
@@ -127,21 +129,21 @@ outline: [2, 3]
 ## Keys, reconciliation, and performance
 
 
-- What is the purpose of key, and how does it affect React’s handling of a list?
+- What does `key` tell React about an item in a list, and why does that matter when the list changes?
 
 - What happens if you omit a key?
 
 - What happens if two sibling elements have the same key?
 
-- How does React compare successive element trees?
+- How does React compare a new element tree with the previous one?
 
 - Which hooks and APIs can you use to improve component performance?
 
 - What performance-related improvements have you heard about in React 19?
 
-- Is the claim that you no longer need manual memoization accurate?
+- Is it always true that developers no longer need to add memoization themselves?
 
-  *This is an exploratory discussion, not a deeply assessed topic.*
+  *The speakers explore this claim briefly; they do not assess it in depth.*
 
 - How do you measure React performance in practice?
 
@@ -149,7 +151,7 @@ outline: [2, 3]
 
 - Is memoization the only way to prevent an expensive component from rendering unnecessarily?
 
-- Composition exercise: If an expensive component is passed through children from a parent, instead of being instantiated inside a component with changing local state, can that help avoid unnecessary renders? Why?
+- Composition exercise: A component has local state that changes often. Could receiving an expensive child through `children`, rather than creating that child itself, avoid some renders? Explain why.
 
 ## Redux fundamentals
 
@@ -158,7 +160,7 @@ outline: [2, 3]
 
 - What are its main building blocks?
 
-  *The interviewer moves between “principles” and “building blocks”; the latter discussion concerns store, actions, and reducers.*
+  *The interviewer uses both “principles” and “building blocks.” The building-block discussion covers the store, actions and reducers.*
 
 - Where does Redux state live?
 
@@ -177,15 +179,15 @@ outline: [2, 3]
 ## Redux normalization and asynchronous operations
 
 
-- What is state normalization in Redux?
+- What does it mean to normalize Redux state: for example, store related records by ID instead of repeating nested copies?
 
-- What does a poorly structured state shape look like, and how would you improve it?
+- What makes a state structure difficult to read or update, and how would you improve it?
 
-- Data-shape exercise: How difficult is it to read the supplied nested orders/items data? How could you normalize it?
+- Data exercise: What is difficult about reading the supplied nested orders and items? How would you reorganize it into normalized state?
 
 - How do you handle asynchronous operations in a Redux application?
 
-  *Redux Thunk, Redux Saga, and loading/success/failure actions are discussed.*
+  *The discussion includes Redux Thunk, Redux Saga and actions representing loading, success and failure.*
 
 ## React Router
 
@@ -196,7 +198,7 @@ outline: [2, 3]
 
 - Which router types are commonly used?
 
-- Which browser API does routing use to navigate?
+- Which browser API can a router use to change navigation without reloading the page?
 
   *The discussion includes browser, hash, memory, and static routers, plus the History API.*
 
@@ -207,7 +209,7 @@ outline: [2, 3]
 
 - What is the difference between shallow rendering and full rendering?
 
-- When would you use one approach over the other?
+- When would shallow rendering be useful, and when would you need full rendering?
 
 - How do you test components that make API calls?
 
@@ -215,24 +217,24 @@ outline: [2, 3]
 
 - Which React Testing Library queries do you know?
 
-- What is the Arrange–Act–Assert pattern?
+- What are the Arrange, Act and Assert steps in a test?
 
-- How do you simulate user events in a component test? Which two approaches/APIs do you know?
+- How can a component test simulate a user's action? Name two approaches or APIs you know.
 
-  *The transcript does not clearly capture both intended API names; fireEvent is discussed.*
+  *The transcript does not clearly identify both APIs the interviewer expects. It does mention `fireEvent`.*
 
 - After rendering a component containing a button, how would you find that button?
 
-  *The interviewer introduces screen and role-based queries.*
+  *The interviewer introduces `screen` and queries that find elements by their accessible role.*
 
 ## Rendering strategies and Next.js
 
 
 - Which rendering strategies do you know and use?
 
-- What benefits does server-side rendering provide?
+- What benefits can rendering HTML on the server provide?
 
-- Explain the SSR request lifecycle:
+- Explain the steps of a server-side-rendered request:
     - What does the client request?
     - What does the server do?
     - What does it return?
@@ -240,7 +242,7 @@ outline: [2, 3]
 
 - Do you use Next.js App Router, Pages Router, or both?
 
-- How do you implement static generation and incremental regeneration/revalidation with App Router?
+- With App Router, how do you generate pages statically and later regenerate or revalidate their data or content?
 
 - How does that differ from the Pages Router approach?
 
@@ -249,9 +251,9 @@ outline: [2, 3]
 
 - What is the difference between a transpiler and a compiler?
 
-- What role does Babel play when building a React application?
+- What does Babel do in a React build?
 
-- What differs between development and production builds?
+- How do development and production builds differ?
 
 - How does React’s performance differ between those builds?
 
@@ -259,6 +261,6 @@ outline: [2, 3]
 
 - What is tree shaking?
 
-- Example discussion: If a module exports two functions but the application uses only one, what can happen to the unused function during bundling?
+- Example: A module exports two functions, but the app uses only one. What might the bundler do with the unused function?
 
-Explicitly skipped or not fully explored: forms, Context as a standalone topic, and type checking. They should not be counted as assessed questions.
+Forms, Context as its own topic, and type checking were skipped or not explored fully. Do not count them as assessed topics.

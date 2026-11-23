@@ -22,7 +22,9 @@ Source mapping: [R057](./requirements.md#r057), [R182](./requirements.md#r182).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A function runs application code in response to a platform trigger while the provider manages execution infrastructure. It suits bounded event work and variable traffic. **Serverless moves operating responsibilities; it does not remove state, retries, security or cost.**
+A serverless function runs code when the platform receives a trigger, such as an HTTP request, queue message or scheduled event. The provider manages the execution infrastructure. **Functions can suit limited-duration event work and changing traffic.** Compare the trigger, job duration and resource needs before choosing one over a long-running service.
+
+**Serverless changes who operates the infrastructure; it does not remove state, retries, security or cost.** Your code still needs durable data where required, permission checks and safe handling of repeated or failed invocations.
 
 </div>
 
@@ -54,7 +56,9 @@ Source mapping: [R056](./requirements.md#r056), [R182](./requirements.md#r182).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Validate the trigger envelope, derive identity from its configured trusted authorizer and return the trigger's response contract. Await owned work before completion. **A handler export is the entry point; you do not open your own HTTP listener for an API Gateway proxy invocation.**
+Check that the incoming event matches the trigger's expected format. Obtain caller identity from the configured trusted authorizer, validate the request and return the response format that trigger expects. **Await work the invocation is responsible for before reporting completion.**
+
+For an API Gateway proxy invocation, the platform calls your exported handler. **You do not start your own HTTP listener inside that handler.** Test the event-to-response behavior locally, and distinguish those checks from testing the real provider's routing and authentication.
 
 </div>
 
@@ -158,7 +162,9 @@ Source mapping: [R056](./requirements.md#r056).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Queue delivery can repeat. Commit a durable deduplication receipt with the local business effect, then acknowledge according to the trigger contract. **An in-memory Set is not durable idempotency**, and a batch success response must not hide failed records.
+**A queue can deliver the same business event more than once.** Save a durable receipt identifying the processed event in the same local transaction as its business change. A later delivery can check that receipt and avoid repeating the effect. Then acknowledge according to the trigger's rules.
+
+**An in-memory `Set` cannot provide durable duplicate protection**, because it is lost on restart and is not shared across instances. For batches, report failed records correctly; an overall success must not conceal work that failed. External effects need their own safe-retry and outcome-checking design.
 
 </div>
 
@@ -220,7 +226,9 @@ Source mapping: [R057](./requirements.md#r057), [R093](./requirements.md#r093).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Set runtime, memory, timeout, concurrency, IAM, trigger permissions, networking and observability deliberately. **Function concurrency multiplies downstream connections and side effects.** A higher timeout does not solve a stuck dependency or missing idempotency.
+Configure the runtime, memory, timeout and concurrency, plus execution permissions, trigger access, networking, logs and metrics. **More concurrent function invocations can multiply database connections and external effects.** Set limits based on what those dependencies can handle.
+
+**Increasing the timeout does not fix a stuck dependency or duplicate writes.** Apply appropriate downstream deadlines, safe retries and durable duplicate protection separately. Make failures visible without logging credentials or sensitive payloads.
 
 </div>
 
@@ -255,7 +263,9 @@ Source mapping: [R057](./requirements.md#r057), [R181](./requirements.md#r181).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-All three platforms adapt triggers into managed code execution, but registration, identity, concurrency and retry contracts differ. **Port business logic; rewrite and test the platform adapter.** The named alternatives remain in scope without requiring three production implementations.
+AWS Lambda, Azure Functions and Google Cloud's function platform all run code in response to triggers. Their registration APIs, event formats, identities, concurrency and retry rules differ.
+
+**Reuse the business logic, but adapt and test the platform-specific entry point.** Do not assume that one provider's HTTP response or queue acknowledgement works on another. You can explain these differences without building three production implementations; this guide keeps AWS as its primary implementation.
 
 </div>
 

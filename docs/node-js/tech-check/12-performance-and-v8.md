@@ -22,7 +22,9 @@ Source mapping: [R077](./requirements.md#r077), [R160](./requirements.md#r160).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-V8 executes JavaScript using interpreter/compiler tiers and garbage collection; optimizations depend on observed behavior and engine version. `node:v8` exposes selected diagnostics/serialization APIs. **Engine internals and the public Node diagnostic API are different contracts.**
+V8 runs JavaScript using an interpreter and several compiler stages, and reclaims unused memory through garbage collection. It can optimize frequently used code based on observed behavior. Those decisions depend on the engine version and workload.
+
+**`node:v8` provides selected diagnostic and serialization APIs; it does not expose every engine detail as a stable application interface.** Use profiles to find a real bottleneck before relying on engine-specific optimization tricks. Internal implementation details can change between versions.
 
 </div>
 
@@ -68,7 +70,9 @@ Source mapping: [R048](./requirements.md#r048), [R079](./requirements.md#r079).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A load test measures externally observed service behavior; a CPU profile samples where execution time is spent. Correlate both with dependency and resource metrics. **A wide CPU frame is not proof of a slow database**, and an idle CPU does not prove the service is healthy.
+**A load test shows how the service behaves under traffic**, including response times, throughput and errors. **A CPU profile samples where execution time is spent**, helping identify expensive code. Use both alongside database, network and resource measurements.
+
+A wide frame in a CPU flame graph indicates substantial sampled work in that call path; it does not prove that a database is slow. Low CPU use can also coexist with poor service performance if requests are waiting on connections, locks or another dependency. Match the evidence to the question you are investigating.
 
 </div>
 
@@ -120,7 +124,9 @@ Source mapping: [R078](./requirements.md#r078).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Request latency includes queueing and dependencies; loop delay measures scheduling delay; loop utilization describes active versus idle loop time. **None is interchangeable with process CPU utilization.** Observe them together over the same interval.
+**Request latency is the full time a request takes**, including queues and dependency waits. Event-loop delay measures how late scheduled work gets a turn. Event-loop utilization measures the fraction of observed loop time active rather than idle.
+
+**These measurements are different from process CPU utilization.** None alone identifies the cause of slow requests. Compare them over the same interval with CPU, memory and dependency timings to distinguish time spent executing from time spent waiting.
 
 </div>
 
@@ -180,7 +186,9 @@ Source mapping: [R082](./requirements.md#r082), [R118](./requirements.md#r118).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A leak retains objects no longer needed by the application; GC only reclaims unreachable memory. Inspect heap, external allocations and RSS separately. **A small Buffer view can retain a large backing allocation**, and a copy changes ownership as well as cost.
+A memory leak can happen when the application keeps references to objects it no longer needs. **Garbage collection cannot reclaim data that is still reachable.** Compare JavaScript heap use, externally allocated memory and RSS—the memory currently resident for the whole process—rather than treating them as one measurement.
+
+**A small `Buffer` view can keep a much larger underlying allocation alive.** A view also shares its bytes with the original. Copying can let the data live and change independently, but costs allocation and copying work. Compare both retained memory and execution cost for the actual lifetime involved.
 
 </div>
 
@@ -247,7 +255,9 @@ Source mapping: [R118](./requirements.md#r118), [R176](./requirements.md#r176).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Async I/O can avoid blocking while waiting; synchronous JavaScript computation still occupies its executing thread. Scale the measured bottleneck and bound admission. **Wrapping CPU work in a Promise does not move it to another core.**
+Async I/O lets other work proceed while an operation waits. A synchronous JavaScript calculation still occupies its thread, even inside an async function. **Wrapping CPU work in a promise does not move it to another CPU core.**
+
+**Address the measured bottleneck and limit how much work starts.** CPU work may need smaller chunks or a bounded worker pool; a slow database needs a different investigation. More accepted requests can simply create larger queues, longer waits and higher memory use instead of more useful throughput.
 
 </div>
 
@@ -281,7 +291,9 @@ Source mapping: [R101](./requirements.md#r101).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define the authoritative source, key scope, freshness/invalidation, capacity and failure policy before caching. **A faster stale or cross-tenant answer is a regression.** Bound entries and work triggered by misses.
+Before adding a cache, identify the source of truth, what each key represents, how long data may be stale, when entries are updated or removed, and what happens if the cache fails. Include tenant and permission context where the result depends on them.
+
+**A faster answer is still wrong if it exposes another tenant's data or violates freshness requirements.** Limit both cached data and the work started when an entry is missing. Many simultaneous misses can otherwise overload the source the cache was meant to protect.
 
 </div>
 
@@ -392,7 +404,9 @@ Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Profile the complete request path, fix repeated/oversized work and compare the same business operation before changing frameworks. **Framework overhead may be smaller than serialization, logging, queries or dependency wait.** Preserve guards, validation and cleanup while optimizing.
+**Measure the complete request path before replacing the framework.** Look for repeated queries, oversized data, unnecessary conversions and expensive logging. Compare the same business operation with the same inputs and requirements.
+
+**Framework overhead may be smaller than database waits, serialization or logging.** Serialization means converting application data into a response format such as JSON. Keep permission checks, validation, error handling and cleanup intact while reducing the work that measurements show is unnecessary.
 
 </div>
 

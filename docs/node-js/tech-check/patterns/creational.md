@@ -26,7 +26,9 @@ Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A creator defines a workflow and delegates creation through an overridable method. **Factory Method changes the created collaborator while the creator’s workflow stays stable.** A standalone selection function is a simple factory, not automatically this pattern.
+Factory Method keeps a workflow in a creator class and lets a subclass override the method that creates a needed component. **The workflow stays the same while the created component changes.** For example, an import workflow can keep its reading and validation steps while a subclass chooses the parser.
+
+A standalone function that selects and returns an object is a useful simple factory, but it is not automatically the classic Factory Method pattern. Choose based on whether you actually need that overridable creation step.
 
 </div>
 
@@ -120,7 +122,9 @@ Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An Abstract Factory supplies a related family of products behind agreed interfaces. **The useful guarantee is coherent collaborators, not merely several create methods.** It does not supply transactions or make unlike backends semantically identical.
+An Abstract Factory creates a related set of components through agreed interfaces. For example, one factory might supply readers and writers that use the same storage backend. **The components must work together as a compatible family**, rather than merely coming from several methods named `create...`.
+
+This arrangement does not make different storage backends behave identically. Transactions, errors and other behavior still need explicit rules and tests.
 
 </div>
 
@@ -213,7 +217,9 @@ Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Builder collects meaningful construction steps before producing a validated product. **A built result needs its own ownership policy.** Returning the builder’s mutable internal object lets later steps change an earlier product.
+A Builder collects the steps or options needed to create a complex object, then produces a validated result. Use it when those steps make construction clearer than a simple options object would.
+
+**A finished result should not change when the builder is used again**, unless that sharing is explicitly intended. Returning the builder's mutable internal object can let later builder calls accidentally alter a previously built result. Decide whether `build()` makes an independent copy or transfers the result once.
 
 </div>
 
@@ -305,7 +311,9 @@ Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Prototype creates a new product from an existing exemplar through a defined cloning operation. **Copy policy must preserve the intended behavior and isolate owned mutable state.** Object.create delegates property lookup; it is not an independent snapshot.
+Prototype creates a new object by cloning an existing example. Define which data is copied, which data may be shared and which behavior the clone must preserve. **Mutable data that the new object should own needs an independent copy.** A shallow copy can still share nested objects.
+
+**`Object.create(source)` creates delegation, not a snapshot.** Property lookup can reach the original object through the prototype chain. That is different from copying its current data into an independent object.
 
 </div>
 
@@ -394,7 +402,9 @@ Source mapping: [R063](../requirements.md#r063), [R162](../requirements.md#r162)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Singleton restricts access to one instance within a defined owner/scope. **One loaded module is not one distributed instance.** Shared mutable request identity or unbounded caches can make this convenience unsafe and hard to test.
+A Singleton provides one instance within a defined scope and a way to access it. Be precise about that scope: one application context or loaded module does not mean one instance across all processes and server replicas.
+
+**A singleton's mutable state is shared by its callers.** Storing the current user there can mix data between requests, and an unlimited cache can keep growing. Explicitly creating and passing an application-owned object often makes its lifetime, cleanup and tests easier to understand.
 
 </div>
 

@@ -98,7 +98,9 @@ Run `npm test -- --runInBand pricing.test.js`. The three threshold neighbors sho
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A unit test isolates a cohesive behavior and **asserts its observable contract**. Choose meaningful input partitions: **normal cases, boundaries, invalid values and relevant collaborator failures**. **Make expected results independent of the implementation**, control nondeterminism and **use the smallest boundary capable of detecting the defect**.
+A useful unit test checks one coherent behavior in isolation. **Assert what a caller can observe**, such as the returned value, an error or an important effect. Avoid tying the test to private implementation steps unless those steps are part of the requirement.
+
+**Cover normal inputs, boundary values, invalid inputs and relevant dependency failures.** Work out the expected result independently of the code under test; copying its calculation can copy its bug too. Control randomness, time and other changing inputs. Use the smallest test scope that can reliably detect the problem.
 
 </div>
 
@@ -194,7 +196,9 @@ Run `npm test -- --runInBand contract.test.js`. All six cases should pass becaus
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A contract test verifies an agreement at a boundary: payload shape/types, status/media semantics, required behavior and compatibility rules. **Consumer-driven testing records what a consumer actually needs and verifies the provider against it**. **A shared fake or two independently passing unit suites cannot establish that the real participants agree**.
+A contract test checks the agreement between two parts of a system. For an HTTP API, this includes input and output shapes, types, status codes, content types and required behavior.
+
+**Consumer-driven contract testing records what the client needs and checks the provider against it.** This catches cases where each side passes its own unit tests but they disagree when used together. **A shared fake does not prove the real client and provider agree.** The test must verify the relevant agreement against the real participant it claims to check.
 
 </div>
 
@@ -361,7 +365,9 @@ Run `npm test -- --runInBand integration.test.js`. The last test intentionally n
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**An integration test verifies a declared set of real collaborators**. **Create isolated configuration/state**, seed representative data, exercise the real interaction and assert both results and important effects. **Await setup and cleanup even after failure**. **Replace only collaborators outside the boundary** whose real behavior you are claiming to test.
+**An integration test checks how a chosen set of real components works together.** State which components are real, then create separate configuration and data for the test. Seed the data it needs, run the interaction, and check both the result and important effects, such as a stored record.
+
+**Await setup and cleanup, including when the test fails.** This prevents leftover connections or data from affecting later tests. Use fakes only for components outside the real interaction you claim to verify. For example, a fake database cannot prove that actual database queries work.
 
 </div>
 
@@ -590,7 +596,9 @@ Run `npm test -- --runInBand e2e.test.js` in an environment allowing owned loopb
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An E2E test follows a critical behavior through the system's external boundary, **using its real composition and controlled infrastructure**. Cover a few high-value journeys and failure paths; use smaller tests for detailed partitions. **Own startup readiness, bounded waits, clean data, clients and teardown**. **A test using a repository stub must not claim real persistence coverage**.
+An end-to-end test follows an important user or client action through the assembled system, starting at an external entry point such as HTTP. **Use the real application setup and controlled infrastructure.** Test a few valuable journeys and failure paths; use smaller tests for detailed input cases.
+
+**Wait for startup, limit waits, isolate data and close clients and servers afterward.** Cleanup must also run after failures. Be precise about coverage: a test with a fake repository can check the HTTP journey through that fake, but it cannot prove that real persistence works.
 
 </div>
 
@@ -684,7 +692,9 @@ Re-run the same tests. Refactor the implementation or naming while keeping the b
 
 <p class="notes-core-answer__title">Core answer</p>
 
-TDD develops behavior through red → green → refactor: **observe a meaningful failing test**, implement enough to satisfy it, then **improve the design while preserving evidence**. **BDD uses concrete behavior examples and shared language** to clarify requirements, often Given/When/Then. BDD is not a synonym for installing Cucumber, and **TDD is not satisfied by writing tests after a finished implementation**.
+TDD means test-driven development: **write a meaningful failing test, make it pass, then improve the code while keeping tests passing.** These stages are often called red, green and refactor. Writing tests only after finishing the implementation does not follow that cycle.
+
+BDD means behavior-driven development. **Use concrete examples and shared language to agree on expected behavior.** Given/When/Then is one way to write those examples: the starting situation, the action and the expected result. BDD does not require a particular tool such as Cucumber.
 
 </div>
 
@@ -825,17 +835,19 @@ Run `node load-lab.js`. Inspect every counter. The ramp is deliberately tiny and
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Load testing asks whether the system meets its contract under expected traffic**. **Stress testing investigates behavior beyond normal load or a resource limit**: rejection, queuing, errors and recovery matter as well as speed. Define workload, duration, resource bounds, **success criteria and a stop condition before generating traffic**. Start small on owned infrastructure.
+**Load testing checks behavior under expected traffic.** It asks whether response times, error rates and other requirements are met. **Stress testing explores what happens beyond normal load or a resource limit**, including rejected work, growing queues, errors and recovery.
+
+Before generating traffic, define the workload, duration, resource limits, pass criteria and a stop condition. Start with a small test on infrastructure you control.
 
 | Test shape | Main question |
 |---|---|
-| Smoke | Does the test and service work with minimal traffic? |
-| Expected load | Can representative traffic meet its latency/error goals? |
-| Stress/breakpoint | How does saturation appear and how is excess work handled? |
-| Spike | How does a sudden increase affect admission and recovery? |
-| Soak | Do resources leak or degrade over a sustained period? |
+| Smoke | Do the service and test work with minimal traffic? |
+| Expected load | Does realistic traffic meet response-time and error-rate goals? |
+| Stress/breakpoint | What happens when capacity is reached or exceeded? |
+| Spike | What happens after a sudden burst of traffic? |
+| Soak | Do memory, connections or performance get worse over a long run? |
 
-This script is a smoke plus bounded local ramp, not a full soak, production capacity study or destructive stress campaign. Realistic data volume, request mix, dependencies, instance counts and the deployment path change the result. Tools such as k6 can express arrival-rate models, thresholds and longer controlled scenarios; mastering every load tool is not required here.
+The script below performs a smoke check and a limited local increase in load. It does not establish production capacity or long-term stability. Real data, request mix, dependencies, server count and deployment infrastructure can change the outcome. Tools such as k6 support more detailed traffic models and thresholds; you do not need to learn every tool to understand the method.
 
 </div>
 
@@ -922,7 +934,9 @@ Run `node benchmark.js`. Inspect the raw sample distribution as well as the medi
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define a representative workload and performance goal, **verify correctness**, control important inputs/environment, warm up where appropriate and collect repeated observations. Separate wall latency, CPU, memory, event-loop responsiveness and throughput. **Compare equivalent builds and report variation/limitations**. **A microbenchmark cannot establish end-to-end service capacity**, and **a hard-coded laptop timing threshold often creates a flaky CI gate**.
+First choose a realistic workload and a performance goal, then **verify that the measured code produces correct results**. Keep important inputs and environment settings controlled. Warm up the code where appropriate and repeat measurements rather than trusting one run.
+
+**Response time, CPU use, memory, event-loop responsiveness and throughput measure different things.** Compare equivalent builds and report variation and limitations. A tiny function benchmark cannot prove the capacity of a whole service. A fixed time limit based on one laptop can make CI fail unpredictably because shared runners have different performance.
 
 </div>
 
@@ -1118,7 +1132,9 @@ Run `npm test -- --runInBand framework.test.js`. Each HTTP request has a respons
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Test framework behavior through a real request pipeline**. Assert status, headers, public body and meaningful side effects; **use application/service doubles only at declared boundaries**. Export the app separately from listening, create isolated fixtures, **await every request and close owned servers**. **Keep a smaller real-composition suite to detect wiring and provider-contract drift**.
+**Send requests through the real Express request-handling chain** when testing routes, middleware, parsing or error responses. Check status, headers, public response data and important side effects. Replace a service or dependency with a test double only where you clearly define that boundary.
+
+Export the app separately from starting its server, use isolated fixtures, await each request and close any servers you create. **Also keep a smaller suite with real application components connected together.** It can catch setup mistakes or changes in dependency behavior that mocked tests miss.
 
 </div>
 

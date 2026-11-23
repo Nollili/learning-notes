@@ -22,7 +22,9 @@ Source mapping: [R037](./requirements.md#r037), [R073](./requirements.md#r073).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Define admission, readiness, protocol completion, drain, forced-stop and recovery separately. **A result message, IPC disconnect and actual process closure are different events.** Scaling processes also multiplies resource pools and failure owners.
+Define separately when new tasks may start, when workers are ready, what counts as a completed job, and how shutdown and recovery work. Stop accepting new work before waiting for active tasks, and set limits for graceful and forced stopping.
+
+**A result message, an IPC disconnect and actual process closure prove different things.** A reply may arrive while the child still runs; a lost reply may leave a committed effect uncertain. Observe the outcome your protocol requires. Adding processes also adds connection pools and other resources, so budget and clean them up across the whole service.
 
 </div>
 
@@ -56,7 +58,9 @@ Source mapping: [R012](./requirements.md#r012).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Write a private temporary file, finish/sync/close it, then publish through an operation matching the filesystem contract. Track ownership and whether publication already happened. **Atomic visibility, overwrite policy and crash durability are separate properties.**
+Write the complete result to a private temporary file first. Finish writing, sync and close it, then make it available through a filesystem operation with the required publication behavior. Track which temporary files you own and whether the final result has already become visible.
+
+**Complete visibility, overwrite prevention and crash durability are separate guarantees.** Readers should not see partial content; an existing result may need protection from replacement; surviving a crash may require additional steps. Choose and test a publication method that provides the required guarantees on the actual filesystem. A cleanup failure after publication does not mean publication never happened.
 
 </div>
 
@@ -172,7 +176,9 @@ Source mapping: [R042](./requirements.md#r042).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Connect owned stages through `pipeline`, respect backpressure and bound bytes/work in the relevant representation. Validate before publishing a response whose headers cannot be retracted. **Stopping a caller's wait is not cancellation of the source or sink.**
+Use `pipeline()` to connect the stream stages your operation manages. Respect backpressure so a fast source slows down for a slower destination. **Limit data and work at each relevant stage**, including encoded or decompressed sizes; one limit does not cover every representation.
+
+Validate what you can before sending an HTTP response, because sent headers cannot be taken back. **Stopping the caller's wait does not automatically stop the source or destination.** Pass cancellation to the real adapters, handle their final errors and verify that resources such as cursors and sockets actually close.
 
 </div>
 
@@ -271,7 +277,11 @@ Source mapping: [R038](./requirements.md#r038).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose the primitive for the goal and authenticate all required context before trusting output. **Do not release unauthenticated decrypted chunks merely because update() produced bytes.** Key management and external-effect ownership remain part of the protocol.
+Choose the cryptographic tool for the goal: secrecy, tamper detection, sender authenticity or password storage require different designs. Check all required authenticated context before trusting the output.
+
+**Decrypted bytes from `update()` are not necessarily authenticated yet.** With GCM, the final tag check can still fail. Do not let downstream consumers act on those bytes before verification succeeds; keep them private until then or use a reviewed authenticated streaming format.
+
+Key access, rotation and cleanup remain part of the design. A later authentication or pipeline error cannot automatically undo a database write or other external effect that consumed the bytes too early.
 
 </div>
 
@@ -306,7 +316,9 @@ Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Keep routing, validation, authorization and response contracts fixed; isolate one changed cost and compare repeated realistic requests. **Moving invariant work out of a request can help, but a service-work improvement is not proof that one framework is faster.**
+**Compare the same behavior before and after one targeted change.** Preserve route matching, validation, permission checks and the response format. Use repeated realistic requests and measure the cost you intended to change, including variation between runs.
+
+**Doing fixed work once instead of on every request can help**, provided that work truly does not vary with the request and is refreshed when needed. That improvement shows the benefit of avoiding repeated service work. It does not, by itself, prove that one framework is faster than another.
 
 </div>
 

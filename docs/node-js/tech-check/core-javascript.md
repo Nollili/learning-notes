@@ -22,7 +22,9 @@ Source mapping: [R148](./requirements.md#r148).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Assigning an object to another variable shares the same object.** Object spread creates a new outer object and copies its own enumerable properties. **Nested object values still refer to the original nested objects.**
+**Assigning an object to another variable does not copy it.** Both variables point to the same object, so a change through one variable is visible through the other.
+
+Object spread, such as `{ ...original }`, creates a new outer object. It copies the object's own enumerable properties: roughly, the properties included when JavaScript lists that object's own values. **Nested objects are still shared** unless you copy them too.
 
 </div>
 
@@ -53,7 +55,9 @@ Source mapping: [R149](./requirements.md#r149).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-For an ordinary method call, **the receiver at the call site determines `this`**. Extracting the function drops that receiver. **An arrow function captures `this` from its enclosing scope.**
+For an ordinary method call such as `counter.read()`, **`this` is the object before the dot**: here, `counter`. If you store the method in another variable and call it on its own, it loses that connection. Use `bind()` or a wrapper function when you need to preserve it.
+
+**An arrow function uses `this` from the surrounding code**, rather than choosing it from the way the arrow is called.
 
 </div>
 
@@ -87,7 +91,9 @@ Source mapping: [R150](./requirements.md#r150).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**A closure can read and update bindings from the scope where it was created**, even after the outer function returns. Closures created in one call can share those bindings. **Each new call creates its own local bindings.**
+A closure is a function that can still access variables from the place where it was created, even after the outer function has finished. **It remembers access to the variables, not just a copy of their values.**
+
+Functions created during the same outer call can share a variable. **Each new call to the outer function creates separate local variables.** For example, two calls to `makeCounter()` can create two independent counters.
 
 </div>
 

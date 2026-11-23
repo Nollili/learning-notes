@@ -22,7 +22,9 @@ Source mapping: [R095](./requirements.md#r095), [R146](./requirements.md#r146).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Start with user outcomes and use signals to explain them. Metrics summarize populations over time, logs describe events, traces connect operations, and profiles attribute resource cost. **A running process or green dashboard does not prove successful user requests.**
+**Start by checking whether users' operations succeed**, then use diagnostic signals to explain the result. Metrics summarize measurements over time. Logs describe individual events. Traces connect the steps of an operation. Profiles show where execution or memory costs arise.
+
+**A running process or green dashboard does not prove requests are succeeding.** Check traffic, errors, response times and resource pressure together. Also distinguish missing measurements from zero failures: a broken monitoring path can hide an unhealthy service.
 
 </div>
 
@@ -56,7 +58,9 @@ Source mapping: [R096](./requirements.md#r096).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use a counter for cumulative events, a gauge for current state and a histogram for a distribution. Observe a request exactly once, with consistent units and bounded labels. **Instrumentation must not leak active-request gauges or turn private input into series names.**
+Use a counter for accumulated events, a gauge for a current value and a histogram for the distribution of measurements, such as response times. **Count each completed request once and use consistent units.** If you increment an active-request gauge, decrement it on every completion or failure path.
+
+**Keep metric labels to a small, controlled set.** Every different combination creates another time series. Raw URLs, request IDs and private user data can create huge numbers of series, expose information and exhaust monitoring resources. Use bounded route names or outcome categories instead.
 
 </div>
 
@@ -176,7 +180,9 @@ Source mapping: [R096](./requirements.md#r096), [R146](./requirements.md#r146).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Prometheus scrapes targets, stores labelled samples and evaluates queries/rules. Alertmanager handles grouping and notification routing. **An alert expression must distinguish user failure, insufficient traffic and a broken measurement path.**
+Prometheus periodically fetches metrics from configured targets; this is called scraping. It stores labelled samples and uses PromQL queries and rules to evaluate them. Alertmanager groups alerts and routes notifications to the intended destination.
+
+**Distinguish real user failures, too little traffic to judge, and missing measurements.** A failed scrape or absent error series is not automatically a zero error rate. Test alert expressions and the notification path, and give each alert a clear owner and response procedure.
 
 </div>
 
@@ -251,7 +257,9 @@ Source mapping: [R096](./requirements.md#r096), [R191](./requirements.md#r191), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Grafana queries configured data sources to visualize signals; Kibana explores and visualizes Elasticsearch data. **A visualization is only as trustworthy as its query, time range, permissions and underlying data.**
+Grafana queries configured data sources to build dashboards of metrics and other signals. Kibana searches and visualizes data stored in Elasticsearch. Choose based on the data and investigation you need, and configure collection and storage separately.
+
+**Check the query, time range, access permissions and underlying data before trusting a graph.** A blank panel can mean a bad query or missing ingestion rather than no events. Neither tool makes incomplete or incorrectly collected data reliable simply by displaying it.
 
 </div>
 
@@ -284,7 +292,9 @@ Source mapping: [R096](./requirements.md#r096), [R193](./requirements.md#r193).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose alternatives for a concrete integration or operating need. Graphite collects time-series metrics, Zabbix combines host/service monitoring with checks and triggers, and New Relic provides a managed observability/APM platform. **Naming a product is not the same as configuring its collection and failure behavior.**
+Graphite collects time-series metrics. Zabbix monitors hosts and services through measured items, checks and triggers. New Relic provides a managed observability platform, including application performance monitoring, or APM.
+
+**Choose an alternative to meet a concrete integration or operating need.** Naming or installing the product is not enough: configure data collection, access, retention and failure detection, then verify the measurements actually arrive. You do not need to operate every product to understand their different roles.
 
 </div>
 

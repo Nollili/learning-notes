@@ -22,11 +22,9 @@ Source mapping: [R003](./requirements.md#r003), [R107](./requirements.md#r107).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**Built-in modules come with Node**, such as `node:fs` and `node:http`. Third-party packages are installed separately, usually into `node_modules`. The `node:` prefix makes it clear that you want a built-in module.
 
-
-**A built-in module ships with Node**, such as node:fs or node:http. A third-party package is a separately installed/versioned dependency, commonly resolved through package metadata and node_modules. **A relative specifier points from the importing module**, not the launch working directory.
-
-An import name selects code through a resolution contract; it **does not grant authority or guarantee initialization succeeds**. The node: prefix clearly identifies a built-in API and avoids confusing it with an application/package name. ESM and CommonJS have related but different resolution/loading rules.
+An import specifier is the name or path written in an import, such as `'express'` or `'./helper.mjs'`. **A relative import starts from the file doing the importing**, not the directory where you ran the command. Node uses its module-loading rules to find and run the selected code. Finding a file does not guarantee that running it will succeed or that it has permission to access a resource. CommonJS and ES Modules use partly different loading rules.
 
 </div>
 
@@ -88,13 +86,11 @@ Source mapping: [R004](./requirements.md#r004), [R108](./requirements.md#r108).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Node supports two module systems. **CommonJS uses `require()` and `module.exports`; ES Modules use `import` and `export`.** CommonJS normally loads dependencies synchronously. ESM connects imports to exports before running module code and can use top-level `await` during initialization.
 
+**Use `.cjs` for CommonJS and `.mjs` for ESM.** For `.js`, Node considers the nearest `package.json` and its `type`, as well as applicable syntax-detection rules. Make the intended format explicit.
 
-**CommonJS exposes require and module.exports**, and normally loads dependencies synchronously. **ES Modules declare import/export bindings**, separate dependency linking from evaluation and support asynchronous initialization through top-level await.
-
-In Node, **.cjs explicitly selects CommonJS and .mjs selects ESM**; .js depends on its nearest package/type and applicable detection rules. Use explicit metadata rather than guessing from extensionless examples.
-
-ESM can import CommonJS through its defined interop, and **modern Node can require eligible synchronous ESM graphs**; the old claim that require can never load ESM is incomplete.
+ESM can import CommonJS. Modern Node can also `require()` ESM when the loaded module and its dependencies do not use top-level `await`; saying that `require()` can never load ESM is outdated.
 
 </div>
 
@@ -195,9 +191,9 @@ console.log(first.next(), second.next());
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A module's ordinary **top-level variables are module-scoped**, not automatically properties of globalThis. CommonJS wraps each module with local exports/require/module metadata; ESM has its own module scope and bindings.
+**Variables declared at the top of a module belong to that module.** They do not automatically become global variables or properties of `globalThis`. This applies to both CommonJS and ESM.
 
-Requiring the same resolved CommonJS module normally reuses its cached exports, so **callers in the same process can share the module’s mutable state**. Separate Node.js processes have their own module caches. Copies of a package that resolve to different files normally have separate state. **A module-level variable holding per-user data can leak one user’s data into another request** because both requests can use the same module instance.
+Node normally caches a CommonJS module after loading it. **Code that requires the same resolved file shares its exported values**, including mutable objects. Separate processes have separate caches, and separate installed copies of a package can have separate state. Be careful with module-level user data: two requests may use the same module, so one user's data could become visible to another.
 
 </div>
 
@@ -272,9 +268,11 @@ Source mapping: [R027](./requirements.md#r027).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-The CommonJS module object represents the current module, including its exported value and loading metadata. **exports begins as a local alias of module.exports**. Adding a property through that alias affects the same initial object; **reassigning exports only changes the local variable**, so consumers still receive the old module.exports.
+In CommonJS, `module` describes the current module. **`module.exports` is the value other files receive from `require()`.** At first, `exports` points to that same object, so `exports.name = value` adds an exported property.
 
-**Assign module.exports when replacing the public value**. The separate node:module API exposes documented loader utilities such as createRequire/isBuiltin; it is not the current file's module object and does not require constructing a custom loader for ordinary code.
+**`exports = value` only changes the local variable.** It does not replace what other files receive. To replace the exported value, assign `module.exports = value`.
+
+The built-in `node:module` module is a different thing: it provides tools such as `createRequire()` and `isBuiltin()`. Ordinary application modules do not need a custom loader.
 
 </div>
 
@@ -349,9 +347,9 @@ Source mapping: [R026](./requirements.md#r026), [R108](./requirements.md#r108).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-main declares a package's traditional root entry. **exports defines its public root/subpath entry contracts and takes precedence** for supported Node resolution; **unlisted subpaths can be rejected even when the file exists**.
+In `package.json`, `main` gives the traditional starting file for a package. **`exports` takes priority over `main`** in Node's supported package resolution. It lists the package entry points other code may import. A file can exist inside a package and still be unavailable through a package subpath if it is not exported.
 
-Conditional exports can select **different targets for import and require**, so one package name is not necessarily one implementation/state instance. The private imports field maps # names inside a package scope. These are runtime resolution contracts, not installation instructions, TypeScript type checking or a security sandbox against all filesystem access.
+Conditional exports can choose **different files for `import` and `require`**, which may create separate copies of package state. The `imports` field defines private shortcuts beginning with `#` for use inside that package. These fields control module lookup; they do not install packages, check TypeScript types or prevent all direct filesystem access.
 
 </div>
 
@@ -459,11 +457,11 @@ export const mode = await Promise.resolve('study');
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**There is no Node API named “Global Async.”** Here, that phrase is interpreted as loading or initializing modules asynchronously; its exact meaning in the source is unclear.
 
+**`import(...)` loads a module and returns a promise** for an object exposing its exports. You can call it conditionally from either CommonJS or ESM. Top-level `await` lets an ES module wait for asynchronous setup before modules depending on it continue.
 
-**There is no Node API called Global Async**. I interpret that wording as asynchronous module initialization, dynamic import and ESM top-level await, while making that ambiguity explicit. **import(...) returns a promise for a module namespace** and can be called conditionally from ESM or CommonJS.
-
-Top-level await lets an ESM evaluation depend on asynchronous work; dependents wait for it. **A synchronous require cannot finish an ESM graph containing top-level await** and Node 24 reports ERR_REQUIRE_ASYNC_MODULE. Async initialization still needs bounded work and **an explicit startup failure/cleanup policy**.
+A synchronous `require()` cannot load a module dependency chain containing top-level `await`; Node 24 reports `ERR_REQUIRE_ASYNC_MODULE`. Keep startup work limited in time, handle setup failures and close anything already opened if setup fails.
 
 </div>
 
@@ -541,11 +539,11 @@ Source mapping: [R026](./requirements.md#r026), [R116](./requirements.md#r116).
 
 <p class="notes-core-answer__title">Core answer</p>
 
+First check which Node version and file are actually running. Is Node executing your source or a built file? Check the nearest `package.json`, the module format and the import that fails.
 
+**Separate “Node cannot find the module” from “Node found it, but running it failed.”** A failure can happen while finding a file, choosing its format, connecting imports to exports or executing its code. Read the exact missing name and the file importing it: the missing package may be a dependency of your dependency.
 
-**Identify the actual runtime, executed entry/build artifact**, package scope/type and import form first. Then distinguish resolution (which target?), loading/format, dependency linking and evaluation (what code ran?). Inspect the exact missing name and importer: **a transitive dependency can be missing even when your entry exists**.
-
-Use the appropriate resolver and a minimal reproduction, but remember **resolution/syntax checking does not execute the graph**. Fix metadata/path/version/contracts instead of blindly adding packages, weakening checks or enabling experimental loaders.
+**Finding a path or passing a syntax check does not prove the program runs.** Make a small example that reproduces the error, then fix the relevant path, metadata, version or export. Avoid installing unrelated packages or weakening checks just to hide the error.
 
 </div>
 
@@ -646,9 +644,9 @@ What does a separate entry print for `JSON.stringify(require('./a.cjs'))`? Would
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A circular dependency can expose initialization order. **CommonJS can return an unfinished cached exports object** while a module is evaluating, so consumers may observe partial values. ESM links live bindings but **accessing a lexical export before it initializes can throw** a temporal-dead-zone ReferenceError.
+A circular dependency happens when modules depend on each other, directly or indirectly. **CommonJS may return exports before the module has finished initializing**, so some values may still be missing. ESM uses live connections to exported variables, but reading a `let` or `const` export before it is initialized can throw a `ReferenceError`.
 
-Neither behavior is a useful business synchronization protocol. Prefer breaking the dependency cycle or explicit composition. Deleting a require cache entry or changing an import URL **does not close old pools/timers, revoke permissions or update existing references**; **resource lifecycle is separate from loader caching**.
+Prefer removing the cycle or putting shared setup in a separate place. **Reloading a module does not clean up its previous resources.** Deleting a CommonJS cache entry or changing an import URL does not close old database pools or timers, remove permissions or update references held by other code. Close resources explicitly.
 
 </div>
 

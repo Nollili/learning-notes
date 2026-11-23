@@ -22,7 +22,9 @@ Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Identify assets, callers, entry points, trust boundaries and abuse cases; assign a control and a verification method to each risk. **Security is enforced at every authoritative boundary**, including jobs and internal routes, not only the public controller.
+A threat model describes what you need to protect, who can reach it and how it could be misused. Identify valuable data and actions, entry points and places where data crosses between systems with different levels of trust. **For each realistic risk, name a protection and a test that proves it works.**
+
+**Enforce security wherever the application actually reads or changes protected resources.** Public controllers, internal routes and background jobs all need appropriate checks. Protecting only the visible HTTP route leaves other ways to reach the same data.
 
 </div>
 
@@ -59,7 +61,14 @@ Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Validate the input contract, bind SQL values, encode output for its destination and protect browser mutations against forged requests. **There is no universal “sanitize everything” function.** Each defense addresses a different boundary.
+These defenses solve different problems:
+
+- **Validation checks whether input has the allowed shape and values**, including types, lengths and business rules.
+- **SQL parameters keep supplied values separate from SQL instructions.** They do not enforce resource permissions.
+- **Output encoding makes data safe for its destination**, such as displaying text in HTML. HTML and JavaScript contexts need different handling.
+- CSRF protection stops another site from making an unwanted change using the browser's automatically attached credentials. Apply the appropriate token and origin checks to cookie-authenticated changes.
+
+**There is no single “sanitize everything” function.** Use the defense for the specific place where data is interpreted or an action is authorized.
 
 </div>
 
@@ -121,7 +130,9 @@ Source mapping: [R051](./requirements.md#r051), [R187](./requirements.md#r187).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Prefer server-selected destinations over arbitrary user URLs, and enforce the destination policy at the actual connection boundary. **Parsing an HTTPS URL does not prove it reaches an allowed public service.** Redirects, DNS changes and alternate address forms matter.
+SSRF means server-side request forgery: an attacker tricks your server into making a request to an unintended destination, such as an internal service. **Prefer a server-controlled list of destinations over arbitrary user-supplied URLs.** For example, accept a provider ID and map it to a reviewed address.
+
+**An HTTPS URL that parses correctly is not automatically an allowed destination.** Check where the actual connection goes, including relevant IP addresses, redirects and DNS changes. Different ways of writing an address can reach the same forbidden host. Enforce the destination policy through connection handling and network controls, not just a few URL string checks.
 
 </div>
 
@@ -173,7 +184,9 @@ Source mapping: [R038](./requirements.md#r038), [R184](./requirements.md#r184), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-TLS authenticates and encrypts a channel when certificate verification is correct. Secret management controls key/credential access and rotation. Authenticated encryption protects stored ciphertext integrity and confidentiality. **Encryption does not authorize the caller or repair leaked keys.**
+**TLS protects a connection when certificates are verified correctly.** It encrypts traffic and verifies the identity covered by the certificate. Secret management controls who can obtain keys and credentials, how they are stored and how they are replaced.
+
+Authenticated encryption protects encrypted data's secrecy and detects unauthorized changes, including when that data is stored. **Encryption does not decide who is allowed to use the data.** It also cannot fix a leaked key: revoke or replace the key and investigate the exposure.
 
 </div>
 
@@ -232,7 +245,9 @@ Source mapping: [R051](./requirements.md#r051).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use a maintained password-hashing implementation with a unique salt and reviewed cost, then bound verification concurrency and abuse attempts. **Fast hashes and reversible encryption are unsuitable password storage.** Recovery, enumeration and credential stuffing belong to the same threat model.
+**Store passwords using a maintained password-hashing library, a unique salt and a deliberately expensive configuration.** A salt is random data stored with the hash so identical passwords do not produce identical stored hashes. Choose the hashing cost using reviewed guidance and measured server capacity.
+
+**Fast general-purpose hashes and reversible encryption are unsuitable password storage.** Also limit simultaneous verification work and repeated login attempts. Protect password recovery, avoid revealing whether an account exists, and address credential stuffing: automated attempts using passwords stolen from other services.
 
 </div>
 
@@ -283,7 +298,9 @@ Source mapping: [R086](./requirements.md#r086), [R089](./requirements.md#r089).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use dependency, static, secret and dynamic checks for different evidence; triage findings by reachability, impact and fix risk. **A clean scanner result does not prove security**, and an automatic breaking upgrade is not a reviewed remediation.
+Different scanners provide different evidence. Dependency scanners look for known package vulnerabilities; static checks examine code; secret scanners detect exposed credentials; dynamic checks exercise a running application.
+
+**Review each finding for whether the vulnerable behavior can be reached, its impact and the risk of the fix.** Make a focused correction and run the relevant compatibility checks. **A clean scan does not prove the application is secure.** Automatically forcing a breaking upgrade is also not a reviewed fix, even if it removes the warning.
 
 </div>
 
@@ -315,7 +332,9 @@ Source mapping: [R087](./requirements.md#r087).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Helmet supplies browser-facing response-header defenses; configure them for the actual document/API and deployment. **Headers do not validate input, authenticate callers or authorize records.** Express security also includes parsing, proxy trust, cookies, errors and resource limits.
+Helmet adds HTTP response headers that help browsers apply protections. Configure those headers for the actual pages, API and deployment, then test the effective responses rather than assuming installation is enough.
+
+**Security headers do not validate input, verify login credentials or enforce access to records.** Express hardening also needs deliberate body parsing, trusted-proxy configuration, cookie settings, safe errors and resource limits. These controls must work together.
 
 </div>
 
@@ -367,7 +386,9 @@ Source mapping: [R088](./requirements.md#r088).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-`node:vm` is not a security boundary for hostile code. Workers and child processes also need an explicit authority/resource isolation design. **A separate JavaScript context or PID is not sufficient containment.** Prefer avoiding arbitrary execution or using a reviewed dedicated isolation service.
+**`node:vm` is not a security boundary for hostile code.** A worker thread or child process also needs an explicit design for permissions and resource isolation. Starting a separate JavaScript context or process does not automatically prevent access to files, networks or inherited credentials.
+
+**Avoid arbitrary code execution when a limited data language can meet the need.** If executing hostile code is required, use a reviewed isolation service or environment with deliberately restricted access, resource limits and external cleanup. A container also needs such controls; its name alone is not a sandbox guarantee.
 
 </div>
 

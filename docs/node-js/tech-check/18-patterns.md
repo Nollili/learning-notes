@@ -60,7 +60,13 @@ Source mapping: [R063](./requirements.md#r063), [R162](./requirements.md#r162), 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A design pattern names a recurring design problem, the roles that solve it and its trade-offs. **Creational patterns organize construction, structural patterns organize composition, and behavioral patterns organize collaboration.** Choose one for an actual variation or ownership problem. **A pattern name does not prove the implementation preserves its contract.**
+A design pattern is a named approach to a problem that appears repeatedly. It explains which parts take which roles and the costs of arranging them that way.
+
+- **Creational patterns organize how objects are created.**
+- **Structural patterns organize how parts fit together.**
+- **Behavioral patterns organize how parts communicate and act.**
+
+Choose a pattern to solve a concrete problem, such as replacing one algorithm independently of its caller. A pattern name does not prove the code behaves correctly. Check that it preserves the results, errors and other behavior callers rely on.
 
 </div>
 
@@ -130,7 +136,9 @@ Source mapping: [R063](./requirements.md#r063), [R162](./requirements.md#r162).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use a factory to construct a coherent capability and make its dependencies/lifetime explicit. **Creating an object does not establish ownership of everything it references.** A builder helps with meaningful construction steps; a singleton deliberately shares one instance within a defined scope. **Neither a singleton nor module caching creates shared state across processes.**
+A factory creates an object or component and connects the dependencies it needs. A builder assembles something complex through meaningful steps. A singleton provides one shared instance within a defined scope, such as one application instance.
+
+**Creating an object does not automatically make it responsible for every resource it receives.** Decide who owns shared data and who closes connections. **A singleton is not shared across separate processes.** Module caching also does not create one shared instance across server replicas. Choose the intended lifetime and sharing rules explicitly.
 
 </div>
 
@@ -229,7 +237,9 @@ Source mapping: [R063](./requirements.md#r063), [R163](./requirements.md#r163).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An Adapter translates an incompatible interface or representation into the contract a consumer expects. A Decorator adds behavior around a capability while **preserving its promised observable contract**. **Matching method names is insufficient:** results, missing values, failures, side effects and resource ownership must also agree. Wrappers do not automatically forward every method or identity.
+**An Adapter makes an incompatible interface fit what the caller expects.** For example, it can translate a legacy product's field names into the application's product format. **A Decorator adds behavior around an existing component while preserving its promised behavior**, such as recording read metrics without changing read results.
+
+Matching method names is not enough. Preserve the expected results, missing-value behavior, errors, effects and resource cleanup rules. A wrapper does not automatically forward every method or preserve the original object's identity; promise only what it actually supports.
 
 </div>
 
@@ -343,7 +353,9 @@ Source mapping: [R063](./requirements.md#r063), [R164](./requirements.md#r164).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Strategy makes an algorithm interchangeable; Observer notifies registered collaborators; Command represents an operation as a separate request. **Each changes collaboration, not the underlying correctness obligations.** Strategies must share behavioral contracts, subscriptions need owners, and commands still need validation/authorization and outcome handling. **Local notification is not durable delivery, and representing a command does not make a write reversible.**
+**Strategy lets a caller choose between algorithms for the same job**, such as shipping-price rules. They must accept compatible inputs and return results with the same meaning. **Observer notifies registered listeners when something happens.** Manage each subscription and handle listener failures; a local notification is not automatically saved for reliable later delivery.
+
+**Command represents an operation separately from the code that triggers it.** The operation still needs input checks, permission checks and a clear result or failure. Representing a write as a command does not automatically make it safe to retry or possible to undo.
 
 </div>
 

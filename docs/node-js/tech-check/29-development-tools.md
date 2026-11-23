@@ -94,9 +94,9 @@ if (!/^\d{1,5}$(?![\s\S])/.test(rawPort) || Number(rawPort) > 65535) {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Package scripts name separate lifecycle stages. **Build creates the artifact, test verifies its behaviour**, and serve/start opens the long-lived process that uses it. In this fixture npm start first runs prestart: **build must succeed, then test must succeed before the server launches**.
+Package scripts name commands for different stages. **Build produces the files to run; tests check behavior; start launches the service.** In this example, `npm start` runs `prestart` first: the build must pass, then the tests must pass, before the server starts.
 
-The server **prints readiness only after binding successfully**; it keeps running until its owned resources close. Use a bounded smoke check to verify the live endpoint and shutdown. A successful build, spawned process or ready line is **not the same as a completed service run or deployment readiness**.
+**Print a readiness message only after the server is listening.** The service then keeps running until its active resources close. Use a smoke check with a time limit to request an endpoint and confirm shutdown. A build passing or a process starting does not, by itself, prove that the service is ready for deployment or will shut down correctly.
 
 </div>
 
@@ -170,7 +170,9 @@ Source mapping: [R165](./requirements.md#r165).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Linting applies configured static rules to selected files. **A useful rule change must affect the intended files and fail for the intended defect.** Inspect the installed version, configuration mode, file matching and severity; prove both a failing example and its repair. **Disabling a rule or ignoring a file is a policy change, not a behavioral fix.**
+Linting checks selected files against configured code rules without running the application. **A rule change must check the intended files and catch the intended problem.** Check the installed tool version, configuration format, file patterns and whether a violation is a warning or an error.
+
+Try an example that should fail, then fix it and confirm it passes. **Disabling a rule changes what you check; it does not fix the code's behavior.** Ignoring a file also changes the checking policy, so make that choice deliberately.
 
 </div>
 
@@ -245,7 +247,9 @@ Source mapping: [R165](./requirements.md#r165), [R166](./requirements.md#r166).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Formatting makes source presentation consistent; linting checks configured static policies; typechecking checks the modeled type contract; tests check selected behavior. **Passing one does not imply passing the others.** Keep these commands independently reproducible, and **keep formatting fixes separate from behavioral fixes** so their effects can be reviewed.
+Each tool checks a different aspect of the code. A formatter keeps spacing and layout consistent. A linter checks configured code rules. A type checker checks whether values and operations fit the declared types. Tests run selected examples and check their results.
+
+**Passing one check does not mean the others will pass.** Make each command easy to run on its own. **Keep formatting changes separate from behavior changes** so a reviewer can see what actually changes the program.
 
 </div>
 
@@ -334,7 +338,9 @@ Source mapping: [R028](./requirements.md#r028), [R165](./requirements.md#r165).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A tool change is a small behavior change to the development workflow. **Inspect the effective command, working directory, file scope, tool version and output artifact before editing configuration.** Change one cause at a time, preserve required template behavior, and **prove a failing case becomes passing without bypassing its gate**.
+A tool configuration change changes the development workflow, so check what the tool actually runs before editing its settings. **Identify the command, working directory, included files, tool version and generated output.** A check can pass simply because it never examined the intended file.
+
+Change one cause at a time and preserve the task template's required behavior. **Show that the intended problem fails the check before the fix and passes afterward.** Fix the cause rather than skipping or weakening the check that found it.
 
 </div>
 
@@ -415,7 +421,9 @@ Source mapping: [R018](./requirements.md#r018), [R049](./requirements.md#r049).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use navigation to find the actual caller/implementation, refactoring tools to propose coordinated edits, and a debugger to inspect a paused execution. **A breakpoint is evidence about one actual runtime path, not proof that every path works.** Preserve behavior with tests, verify the process/artifact/source mapping, and **treat inspected values and debugger access as sensitive**.
+Use Go to Definition and Find References to locate an implementation and its callers. Refactoring tools can update related uses together, but review the proposed edits. A debugger lets you pause a real run, inspect variables and follow calls.
+
+**A breakpoint shows what happened on one execution path.** It does not prove every path works. Check that you are debugging the intended process and built files, with matching source maps when needed. Run tests after the fix and verify it without the debugger too. Debugger access is powerful, and inspected values may contain secrets.
 
 </div>
 
@@ -506,7 +514,9 @@ Source mapping: [R081](./requirements.md#r081).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Use logs and deployment metadata to identify the affected process and artifact.** Reproduce the problem on an isolated staging replica before pausing execution. **Keep the Inspector on loopback and use an authenticated private connection** if you need to attach from your workstation.
+**First identify the failing process and the exact build it runs.** Use logs and deployment information, then reproduce the issue on an isolated staging copy before pausing it with a debugger.
+
+Node's Inspector is its debugging interface. **Bind Inspector to loopback and connect through an authenticated private connection** when attaching from your computer. This prevents exposing a powerful debugging endpoint publicly. Check that the loaded source matches the deployed build, avoid recording secrets, and close the debugging connection when finished.
 
 </div>
 
@@ -532,7 +542,9 @@ Source mapping: [R082](./requirements.md#r082).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Follow one request through its async boundaries using a request ID and the original error cause.** A stack identifies where an error surfaced. The request ID connects that error to the work that led to it.
+**Use the same request ID to follow one request through the service and its dependency calls.** Include it in relevant logs so you can connect events that happen at different times.
+
+A stack trace shows where an error was thrown or reported. Preserve the original error with `cause` when adding context, such as which service operation failed. The request ID connects the records; the cause helps explain the underlying failure. Keep detailed diagnostics in controlled logs and return a stable, safe public error.
 
 </div>
 
@@ -578,7 +590,9 @@ Source mapping: [R127](./requirements.md#r127).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**Find the last startup step that succeeded.** Check module loading, configuration, dependency initialization and listening in order. Each step needs different evidence.
+**Find the last startup step that succeeded**, then inspect the next step. Check module loading, configuration validation, dependency setup and opening the listening port in that order.
+
+Use the same command and built files as the service. A missing module needs path or dependency checks; invalid settings need validation checks; `EADDRINUSE` means something already uses the address or port. Once listening succeeds, a readiness check must still confirm the service can do its required work.
 
 </div>
 
@@ -604,7 +618,9 @@ Source mapping: [R021](./requirements.md#r021).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**JSDoc describes the function contract alongside its implementation.** Use `@param` and `@returns` to document types, explain units in the descriptions, and use `@throws` for expected errors. Static checks can use those annotations. The implementation still validates values at runtime.
+JSDoc is a structured comment beside a JavaScript function. **Describe what the function accepts, returns and may throw.** Use `@param` for parameter types and meanings, `@returns` for the result, and `@throws` for expected errors. Explain units too, such as milliseconds rather than just “number.”
+
+Editors and configured static checks can use these annotations to spot mistakes. **JSDoc does not validate incoming values at runtime.** The function still needs checks for invalid input when its callers cannot be trusted to supply valid values.
 
 </div>
 
@@ -648,7 +664,9 @@ Source mapping: [R055](./requirements.md#r055), [R177](./requirements.md#r177).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**OpenAPI describes the operations, inputs and outputs an HTTP client can rely on.** Swagger UI renders that description as browsable documentation. **A contract test checks that the implementation still matches the document.**
+**OpenAPI describes an HTTP API's methods, paths, inputs and possible responses.** It tells clients what they can send and what they should expect back. Swagger UI displays that description as browsable documentation.
+
+**A contract test checks that the running implementation matches the documented agreement.** For example, it can check a response's status, content type and body shape. Documentation alone does not enforce the API's behavior or verify credentials; the application must implement those rules.
 
 </div>
 

@@ -76,9 +76,11 @@ console.log(original.value, result.value, result.pid === process.pid, result.thr
 
 <p class="notes-core-answer__title">Core answer</p>
 
-**A child process is a separate OS process with its own JavaScript runtime/heap**. child_process.fork starts another Node module and supplies IPC; **it does not create a JavaScript thread**. cluster manages multiple Node worker processes, commonly for copies of a network service sharing a listening port. worker_threads executes JavaScript in separate isolates/threads within one OS process.
+**A child process is a separate operating-system process with its own JavaScript memory.** `child_process.fork()` starts another Node program and adds IPC, a channel for sending messages between processes. It does not create a thread inside the parent process.
 
-Ordinary objects are cloned across worker messages; explicit transfers or shared memory have different ownership rules. Choose from workload, isolation and lifecycle needs, not the generic word worker.
+`cluster` manages several Node processes, often running copies of a server that share a listening port. **`worker_threads` runs JavaScript on separate threads inside one process**, with separate ordinary JavaScript heaps.
+
+Ordinary objects sent to a worker are copied using structured cloning. Transferred buffers and shared memory follow different rules. Choose based on the work, required separation, communication cost and cleanup needs; the word “worker” alone does not tell you which mechanism is used.
 
 </div>
 
@@ -207,11 +209,11 @@ Does the first call time out because its worker retains an interval? Does aborti
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A worker task needs a defined terminal protocol and one owner for result, error, exit, deadline and caller cancellation. Validate messages at runtime before accepting success.
+**Define what counts as a finished task and which code handles every outcome.** A result, error, worker exit, timeout or cancellation can each end the wait. Validate incoming messages before accepting one as a successful result.
 
-**The reused helper selects the first terminal outcome**, removes its deadline/abort subscription, awaits worker termination, releases its listeners and only then settles the caller's promise. **A clean exit without a valid result rejects**. An already aborted signal prevents startup; later abort requests termination of this owned worker.
+The helper used here accepts the first final outcome, removes its deadline and abort listener, stops the worker and waits for termination. It then removes its worker listeners and resolves or rejects the caller's promise. **Exiting successfully without a valid result still counts as failure.** An already aborted signal prevents startup; a later abort requests termination of this task's worker.
 
-**Termination is not rollback** and a parent timer is not a hard real-time execution limit.
+**Stopping a worker does not undo changes it already made.** A timer in the parent can also run late, so it cannot enforce an exact real-time execution limit.
 
 </div>
 
@@ -295,7 +297,11 @@ Source mapping: [R080](./requirements.md#r080).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Copying gives each side independent supported data. Transferring an owned ArrayBuffer moves its backing storage and **detaches every sender-side view of that buffer**. SharedArrayBuffer permits access to the same bytes; **sharing requires an explicit synchronization and lifetime protocol**. None of these choices provides validation, cancellation rollback or distributed persistence.
+**Copying gives each side independent data.** Worker messages use structured cloning for supported values; not every function, class or resource can be copied this way.
+
+**Transferring an `ArrayBuffer` gives its storage to the receiver.** The sender loses access through every view of that buffer, not just the view mentioned in the message. With `SharedArrayBuffer`, both sides access the same bytes instead.
+
+**Shared memory needs rules for coordinating reads, writes and cleanup.** Sharing does not validate messages, undo effects after cancellation or save data durably across service instances.
 
 </div>
 
@@ -468,7 +474,9 @@ Source mapping: [R080](./requirements.md#r080).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A pool reuses a bounded set of workers instead of creating one per request. **Worker count, waiting-queue capacity and payload size are separate limits.** Match replies to task IDs and retain ownership until the assigned work actually finishes. **Cancelling the caller does not automatically free a running worker slot.** Stop admission, drain under a budget, then terminate leftovers and await cleanup.
+A worker pool reuses a limited number of workers instead of creating a new one for every request. **Limit worker count, waiting tasks and message size separately.** A small worker count alone does not stop a waiting queue from filling memory.
+
+Give tasks IDs so replies reach the correct caller, and track assigned work until it actually finishes. **A caller cancelling its wait does not automatically make the worker available.** During shutdown, stop accepting tasks, allow active work a limited time to finish, then stop remaining workers and wait for cleanup.
 
 </div>
 
@@ -726,7 +734,9 @@ Source mapping: [R037](./requirements.md#r037), [R080](./requirements.md#r080).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Cluster runs separate Node service processes that can share a listening endpoint. **A shared port does not mean shared application memory or one global session/cache.** The primary owns worker startup, readiness, failure and drain policy; workers own their service resources. **Disconnect, process exit and successful request completion are distinct observations.**
+`cluster` runs several separate Node server processes that can accept connections through a shared listening endpoint. **Sharing a port does not share application memory.** Each process has its own sessions and caches unless you deliberately use an external shared store.
+
+The primary process coordinates starting workers, checking readiness, handling failures and stopping new work during shutdown. Each worker closes its own server resources. **An IPC disconnect, a process exit and a completed request are different events.** Observe the event that actually proves the outcome your protocol requires.
 
 </div>
 
@@ -857,7 +867,9 @@ Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A forked Node process has its own heap and an IPC channel. **Own the child’s authority, inputs, outputs, failure and lifetime independently.** An application result can finish one job while the child intentionally remains reusable. **A stopped acknowledgement is not actual process closure; the owner must observe both under its chosen protocol.**
+A forked Node child has its own JavaScript memory and an IPC messaging channel. **Explicitly control its permissions, inputs, output, errors and lifetime.** Starting a separate process does not automatically make it a secure sandbox.
+
+A child may return a job result and remain available for more jobs. That result does not mean the process has ended. **A “stopped” reply is also not proof that the child has closed.** The parent must follow the agreed shutdown messages and observe actual process and output-stream closure before reporting cleanup complete.
 
 </div>
 
@@ -999,7 +1011,9 @@ Source mapping: [R117](./requirements.md#r117).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-IPC is a transport for a defined application protocol. **Validate message version, kind, ID, payload and lifecycle phase.** A send callback is transport progress, not business completion. **A bounded application window must remain separate from transport buffering**, and every result/failure/close path needs one owner.
+IPC carries messages; your application defines what they mean. **Check the message version, type, request ID, payload and whether it is valid at the current stage.** Match each reply to its request so a late or duplicate reply cannot complete another task.
+
+**A send callback does not prove the task finished.** It reports progress in sending the message. Limit how many application requests may be active independently of the channel's internal buffering. Assign clear responsibility for each result, failure and shutdown path, so every pending operation finishes exactly as the protocol promises.
 
 </div>
 
@@ -1200,7 +1214,11 @@ Source mapping: [R119](./requirements.md#r119), [R101](./requirements.md#r101).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose from the work, isolation, authority, consistency and lifecycle requirements. **Async I/O, CPU threads, subprocesses and service replicas solve different bottlenecks.** Bound admission and retention across every replica, measure the phase that is actually slow, and **preserve business outcomes when cancellation or crashes make replies uncertain**.
+**Choose the mechanism that addresses the measured bottleneck.** Async I/O lets Node do other work while waiting. Worker threads can run CPU-heavy JavaScript in parallel. Child processes run separate programs or provide process separation. Service replicas distribute independent requests across instances.
+
+Also consider permissions, shared-state correctness, failure handling and shutdown. Limit accepted work and retained data across all instances, not just one process. Measure where time goes: queueing, calculation, message copying or waiting for a dependency.
+
+**A timeout or crash can leave a business outcome unknown.** Keep a way to identify the operation and check whether its effect happened before retrying it.
 
 </div>
 
@@ -1293,7 +1311,9 @@ The supplied chart names “Event Splitting” without defining it. This lesson 
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Partition work so that a callback performs a bounded chunk, then schedules the continuation with a mechanism such as `setImmediate`. **Partitioning improves opportunities for other work to run; it does not create CPU parallelism.** Bound the total input and concurrent jobs as well as the chunk size. Move sufficiently expensive CPU work to an owned worker pool when measurements justify it.
+Here, “Event Splitting” means dividing a long operation into small chunks. Run one chunk, then schedule the next with a mechanism such as `setImmediate()` so the event loop can handle other callbacks in between.
+
+**Chunking creates opportunities for other work to run; it does not create parallel CPU execution.** Each chunk still blocks its thread while running. Limit the total input, chunk size and number of active jobs. If measurements show sustained CPU-heavy work needs a separate thread, use a limited worker pool with explicit task and cleanup handling.
 
 </div>
 

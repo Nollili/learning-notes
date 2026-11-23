@@ -4,19 +4,21 @@ outline: [2, 3]
 
 # JavaScript tech-check
 
+Use these interview questions to practise explaining JavaScript in your own words. This page lists questions, not model answers. Some code questions refer to snippets that are missing from the transcript; use the original snippet if you have it, rather than guessing its output.
+
 
 ## Data types
 
 
-- What data types exist in JavaScript? How many are there?
+- Which data types does JavaScript have? How many are there?
 
-- What is the difference between primitive and non-primitive values?
+- How do primitive values, such as numbers and strings, differ from objects?
 
-- Besides how they are referenced, what other differences exist—for example, mutability?
+- Besides how variables refer to them, how do these values differ? For example, can you change the value itself?
 
-- What does “reference type” mean? Explain how object references work.
+- What does it mean for a variable to hold a reference to an object? Explain what happens when two variables refer to the same object.
 
-- You mentioned objects being stored in the heap. Where are primitive values stored?
+- If objects are stored in heap memory, what can you say about where primitive values are stored?
 
 ## Symbols
 
@@ -25,80 +27,80 @@ outline: [2, 3]
 
 - When would you use Symbol() versus Symbol.for()?
 
-- When is reusing a globally registered symbol useful?
+- When is it useful to retrieve and reuse the same symbol from the global symbol registry?
 
-- Can you retrieve the key/name associated with a symbol?
+- Can you retrieve a symbol's description or its global registry key? How do those differ?
 
-  *The last question is ambiguous in the transcript. The discussion moves toward Symbol.keyFor(), but the on-screen reference is unavailable.*
+  *The original question is unclear. The speakers discuss `Symbol.keyFor()`, but the example shown on screen is missing from the transcript.*
 
 ## Variables, scope, and hoisting
 
 
 - What are the differences between var, let, and const?
 
-- What kinds of scope exist in JavaScript?
+- Which kinds of scope determine where a variable can be used in JavaScript?
 
 - What is hoisting?
 
 - Does hoisting apply to let and const, or only to var?
 
-- At what stage does JavaScript discover variable and function declarations?
+- When does JavaScript identify variable and function declarations, relative to running the code?
 
-- Code exercise: What will the supplied snippet print when declarations using the same name include var and a function declaration?
+- Code exercise: A `var` declaration and a function declaration use the same name. What does the supplied code print, and why?
 
 ## Object copying
 
 
-- How can you clone the supplied object?
+- How can you make a copy of the supplied object?
 
 - What is the difference between a shallow copy and a deep copy?
 
-- What options exist for creating a deep clone?
+- Which methods can you use to make a deep copy, including nested objects?
 
-- Is JSON.parse(JSON.stringify(obj)) a good cloning approach? What limitations does it have?
+- When does `JSON.parse(JSON.stringify(obj))` work as a copying method, and which values or behaviors does it fail to preserve?
 
 - What happens when the object contains getters and setters?
 
-- Does copying an object using spread syntax preserve property descriptors?
+- Does `{ ...obj }` preserve settings such as whether a property can be written or reconfigured?
 
-  *The speakers say “destructuring,” but the context appears to concern object spread copying.*
+  *The speakers say “destructuring,” but they appear to mean copying with object spread.*
 
 ## Property descriptors and object restrictions
 
 
-- What are property descriptors, and what flags do they have?
+- What settings describe an object property? Explain the flags in its property descriptor.
 
 - Have you used property descriptors in practice?
 
-- Which static Object methods modify descriptor flags implicitly?
+- Which methods on `Object` change property-descriptor flags as part of their work?
 
-  *Object.freeze() is supplied as a hint; Object.seal() is discussed in the answer.*
+  *The interviewer gives `Object.freeze()` as a hint. The answer also discusses `Object.seal()`.*
 
 ## Object iteration and collections
 
 
-- How can you iterate over an object’s properties?
+- How can you go through an object's properties one by one?
 
 - Can you use for...of with an ordinary object?
 
 - Compare Map and Object. When would you choose each?
 
-- How would you count entries in an object versus a Map?
+- How would you find the number of entries in an object and in a `Map`?
 
-- Can you iterate over a WeakMap’s entries?
+- Can you list or loop over the entries in a `WeakMap`?
 
-  *The candidate also discusses weak references and garbage collection, but a separate interviewer question about those is not clearly captured.*
+  *The candidate also explains weak references and garbage collection. The transcript does not clearly show a separate question about them.*
 
 ## Getters and setters — coding exercise
 
 
 - Given an object with name and surname, implement:
-    - A fullName getter that derives the full name without storing another data field.
-    - A fullName setter that updates name and surname.
+    - A `fullName` getter that combines `name` and `surname` without storing a separate full-name value.
+    - A `fullName` setter that splits the supplied full name and updates `name` and `surname`.
 
 - How does JavaScript distinguish a getter from an ordinary method?
 
-- Can you rewrite the setter’s multi-line assignment in one line using destructuring?
+- Can you use destructuring to replace the setter's separate assignments with one line?
 
 ## Arrays
 
@@ -107,15 +109,15 @@ outline: [2, 3]
 
 - Code exercise: What does the supplied Array.from() call return? How many elements does it produce?
 
-- Which array methods mutate the original array, and which do not?
+- Which array methods change the original array, and which leave it unchanged?
 
 - Code exercise: What does the supplied snippet involving push() and splice() print?
 
 - What changes if the second argument to splice() is changed?
 
-- Code exercise: How does the supplied numeric array sort without a comparator?
+- Code exercise: In what order does the supplied numeric array sort when no comparison function is passed?
 
-- Code exercise: What happens to an array and its length when an element is assigned at a distant index?
+- Code exercise: What happens to an array and its `length` when you assign a value at an index far beyond its current end?
 
 - Can you assign directly to an array’s length? Does it throw an error?
 
@@ -128,11 +130,11 @@ outline: [2, 3]
 
 - What kinds of functions do you know in JavaScript?
 
-- When would you use an immediately invoked function expression—an IIFE?
+- When would you use an IIFE: a function expression that is called immediately after it is created?
 
 - What are the differences between ordinary functions and arrow functions?
 
-- How can you invoke a function with a different this value?
+- How can you call a function with a chosen `this` value?
 
 - Can call(), apply(), or bind() change an arrow function’s this?
 
@@ -143,15 +145,15 @@ outline: [2, 3]
 
 - What states can a promise have?
 
-- Code exercise: Explain the execution order/output of a snippet containing synchronous logging, timers, promise construction, rejection, and chained handlers.
+- Code exercise: Predict the output order of the supplied code. Explain its synchronous logs, timers, promise executor, rejection and chained handlers.
 
-- Are promise handlers microtasks or macrotasks?
+- Which queue runs promise handlers: the microtask queue or a task queue?
 
-  *The spoken question says “Is the promise a macrotask or microtask?” This wording is normalized to distinguish the promise from its scheduled handlers.*
+  *The speaker asks whether “the promise” is a microtask or macrotask. Here, the question refers to its scheduled handlers; the promise object itself is not a queued task.*
 
 - Why do the logs labelled 4 and 5 not appear in that snippet?
 
-- Besides then() and catch(), what other promise handler method exists?
+- Besides `then()` and `catch()`, which method can you use to run cleanup after a promise settles?
 
 - Does setTimeout(callback, 10) guarantee that the callback executes in exactly 10 milliseconds?
 
@@ -166,25 +168,25 @@ outline: [2, 3]
 
 - How do you handle errors when using async/`await`?
 
-- What kinds of errors will a surrounding try...catch fail to catch?
+- Which errors can escape a `try...catch` around code that starts asynchronous work?
 
-  *The example discussed is an error thrown later inside a timer callback.*
+  *The example is an exception thrown later, when a timer callback runs.*
 
 ## Browser APIs
 
 
-- How can browser JavaScript access information or capabilities such as device memory, Bluetooth, or geolocation?
+- Which browser APIs provide information or features such as device memory, Bluetooth or location?
 
-  *The ensuing discussion includes window, navigator, location, history, and screen.*
+  *The discussion includes `window`, `navigator`, `location`, `history` and `screen`.*
 
 ## DOM events
 
 
-- What ways exist to register an event handler?
+- How can you attach a function to handle a DOM event?
 
-- What differences or pitfalls exist between onclick and addEventListener()?
+- How do `onclick` and `addEventListener()` differ, and what mistakes should you watch for?
 
-- Does an event listener registered with default options use capturing or bubbling?
+- By default, does an event listener run during the capture phase or the bubble phase?
 
 - What other options can you pass to addEventListener()?
 
@@ -192,42 +194,42 @@ outline: [2, 3]
 
 - What arguments must you supply to removeEventListener()?
 
-- What does preventDefault() do?
+- What default browser action can `preventDefault()` stop?
 
-- How can you stop an event from propagating?
+- How can you stop an event from continuing through the DOM event path?
 
 - Can you create your own event?
 
-  *The custom-event exercise includes creating a CustomEvent, supplying options/data, registering a listener, and dispatching it.*
+  *The exercise asks you to create a `CustomEvent`, supply options and data, attach a listener and dispatch the event.*
 
 ## Cookies
 
 
 - What are cookies, why are they needed, and how are they used?
 
-- Which cookie flags/attributes do you know?
+- Which cookie attributes do you know, and what does each control?
 
 - If a cookie is set over HTTPS without the Secure attribute, can it also be sent over HTTP?
 
 - What does the SameSite attribute do?
 
-- How do you create a session cookie?
+- How do you create a cookie that has no persistent expiry date, often called a session cookie?
 
   *The candidate asks to skip the session-cookie question.*
 
 ## Web Storage
 
 
-- Could you store the information discussed for cookies in localStorage instead? Why or why not?
+- Could `localStorage` replace the cookie in this example? Explain the differences that matter for this use.
 
 - What is localStorage used for?
 
 - If you copy a URL into a new tab and close the original tab, what happens to its sessionStorage data?
 
-- How could you preserve that information across this tab transition?
+- How could you keep that information available when moving to the new tab?
 
-In the audience Q&A, someone asked whether L2 uses the same topics. The response was:
+An audience member asks whether L2 covers the same topics. The speaker says:
 - The topic areas are broadly the same.
-- L2 focuses on basic and intermediate coverage.
-- Advanced topics are generally unnecessary unless the candidate volunteers deeper knowledge.
-- Questions can differ in depth.
+- L2 focuses on basic and intermediate understanding.
+- Advanced details are usually unnecessary unless the candidate chooses to discuss them.
+- The same topic can be explored at different levels of detail.

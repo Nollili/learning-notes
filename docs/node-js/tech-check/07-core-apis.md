@@ -38,9 +38,9 @@ console.error(JSON.stringify({ event: 'completed', elapsedMs: elapsed }));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Console supplies formatting and diagnostic helpers around output streams. **log and info use stdout; warn and error use stderr**. Keep a CLI's machine-readable result separate from diagnostics. Node's **console.assert reports a failed assertion rather than throwing**, so use node:assert or explicit validation when failure must stop the operation.
+The console helps you print values, error messages and timing information. **`console.log()` and `console.info()` write to `stdout`; `warn()` and `error()` write to `stderr`.** Keep a CLI's normal data output separate from its diagnostic messages.
 
-Console writes are not uniformly synchronous or asynchronous: **behaviour depends on destination and platform**. Logging can add latency, expose sensitive data and distort measurements; use deliberate fields, volume limits and appropriate production logging ownership.
+**`console.assert()` prints a message when an assertion fails; it does not throw.** Use `node:assert` or explicit validation when a failure must interrupt the operation. Console writes may be synchronous or asynchronous depending on the platform and destination. Too much logging can slow the program, change timing measurements or reveal secrets, so choose what and how much to log.
 
 </div>
 
@@ -131,9 +131,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Callback fs APIs deliver error/result arguments, while fs/promises returns promises suitable for await and try/catch. Both perform asynchronous operations; use native promises for new promise-based code rather than wrapping an already asynchronous promise API again. **readFile returns a Buffer without an encoding and text with one**.
+Both callback-based file APIs and `node:fs/promises` can perform asynchronous file operations. The first reports the result through callback arguments; the second returns a promise you can await inside `try/catch`. Prefer the built-in promise API for new promise-based code. **`readFile()` returns bytes as a `Buffer` unless you specify a text encoding.**
 
-**Await each write before reusing the same target**, handle operation errors directly and release owned resources. Default writeFile can truncate existing content; **exclusive wx creation instead rejects an existing target**. **Neither successful completion nor cancellation automatically establishes transactional durability**.
+**Wait for a write to finish before starting another write to the same target.** Handle failures and close any file handles you opened. By default, `writeFile()` can replace existing content. The `wx` flag creates a new file and fails if the target already exists. A completed write is not automatically a transaction or a guarantee that data will survive a system crash. Cancellation does not guarantee that nothing was written.
 
 </div>
 
@@ -206,11 +206,9 @@ console.log(lexicallyWithin(posix, '/srv/data', '/srv/data-other/file'));
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**`node:path` works with path strings; it does not inspect files.** `join()` combines path parts and cleans up separators and `..` segments. `resolve()` creates an absolute path; an absolute part farther to the right can replace the earlier parts. Helpers such as `basename()`, `dirname()` and `extname()` extract parts of the string.
 
-
-**path manipulates path strings, not filesystem objects**. join combines and normalizes segments; resolve produces an absolute path and **later absolute segments can replace earlier ones**. relative, dirname, basename, parse and extname inspect lexical structure. Defaults follow the host platform; explicit posix/win32 parses that syntax deliberately.
-
-**Normalization does not prove a path exists, is authorized** or remains inside a directory after symlinks resolve. Treat lexical containment as one check, **not a race-proof filesystem sandbox**.
+The default rules follow the current operating system. Use `path.posix` or `path.win32` when you need one specific path format. **A cleaned-up path is not proof that access is safe.** The file may not exist, the caller may lack permission, or a symbolic link may point outside the intended directory. String checks alone cannot prevent every filesystem race.
 
 </div>
 
@@ -285,9 +283,9 @@ console.log(JSON.stringify({
 
 <p class="notes-core-answer__title">Core answer</p>
 
-node:os exposes environment facts such as platform, binary architecture, memory, temporary directory and a parallelism estimate. **Values are observations with scope and units, not universal capacity limits**.
+`node:os` reports facts such as the platform, architecture, system memory and temporary directory. **System information is a starting point, not a guarantee of what your application can use.** Check each value's meaning and units.
 
-Prefer availableParallelism over cpus().length as a starting estimate for CPU work, then **apply deployment budgets and measurements**. **totalmem/freemem describe system memory and are not the process heap budget**. Use temporary-directory APIs with unique owned creation, and avoid publishing identifying host/user/network information as casual diagnostics.
+For CPU work, start with `availableParallelism()` rather than simply counting `cpus()`, then choose a worker limit based on deployment restrictions and measurements. **System memory is not the same as the process's JavaScript heap limit.** Create unique temporary resources and clean them up. Avoid casually logging hostnames, user details or network addresses.
 
 </div>
 
@@ -371,9 +369,9 @@ console.log(record.toString('hex'), record.readUInt32BE(0));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Buffer is a fixed-length byte view extending Uint8Array. Strings describe text through UTF-16 code units, so **string length is not encoded byte length**. Buffer.from(string) encodes text; **Buffer.from(buffer) copies bytes**; **subarray and Buffer.slice share storage**. Buffer.from(arrayBuffer, offset, length) can share memory too.
+A `Buffer` holds a fixed number of bytes and is a type of `Uint8Array`. A JavaScript string represents text using UTF-16 code units. **A string's `.length` is not its encoded byte size.** `Buffer.from(text)` encodes text into bytes.
 
-Choose views for cheap access when lifetime/mutation is controlled, and copies for isolation or releasing a large retained backing allocation. Prefer initialized Buffer.alloc; **never expose uninitialized allocation contents**.
+**`Buffer.from(buffer)` copies bytes; `subarray()` and `Buffer.slice()` share the original storage.** Changing a shared view can therefore change the original buffer. `Buffer.from(arrayBuffer, offset, length)` can also share storage. Use a copy when data needs to change independently or when a small view would keep a large allocation in memory. Prefer initialized `Buffer.alloc()`; never expose uninitialized memory.
 
 </div>
 
@@ -449,11 +447,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Data arriving in chunks can split a UTF-8 character between two chunks. **Decoding each chunk separately can damage the text.** `StringDecoder` keeps an incomplete character's bytes and combines them with bytes from the next `write()`. Call `end()` when the stream finishes, and use a separate decoder for each text stream.
 
-
-**Byte chunks do not necessarily end at character boundaries**. Decoding each chunk independently can replace split UTF-8 sequences and corrupt otherwise valid text. **StringDecoder carries incomplete character bytes between write calls** and flushes them at end; use one decoder per logical byte stream.
-
-It is **tolerant rather than a strict validator**: incomplete/invalid sequences can become replacement characters. For strict UTF-8 validation, TextDecoder with fatal:true and correct streaming/final-flush usage is an alternative. **Character decoding does not supply record framing or size limits**.
+**`StringDecoder` tolerates invalid input rather than rejecting all of it.** Invalid or unfinished characters may become replacement characters. For strict UTF-8 checks, use `TextDecoder` with `fatal: true` and handle streaming and the final flush correctly. Decoding characters does not identify complete application messages or limit their size.
 
 </div>
 
@@ -531,11 +527,9 @@ console.log('peak', peak, 'active', active);
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**A timer's delay is the earliest time its callback may become ready, not a guaranteed execution time.** Other work can delay it. Cancel callback timers with `clearTimeout()` or `clearInterval()`. Promise-based timers can be awaited and cancelled using an `AbortSignal`.
 
-
-**A timer schedules eligibility after a delay, not execution at a guaranteed timestamp**. Callback timers return handles cleared with clearTimeout/clearInterval; promise timers can be awaited and cancelled with AbortSignal.
-
-Referenced timers keep a process alive; **unref removes that keepalive contribution but does not cancel the callback**. setInterval does not await an async callback's returned promise, so **asynchronous iterations can overlap**. For fixed-delay nonoverlapping polling, **await each operation and then its delay** under an owned cancellation/error policy.
+Timers normally keep Node running. **`unref()` allows Node to exit without waiting for that timer; it does not cancel it.** `setInterval()` does not wait for an async callback to finish, so several runs can overlap. To avoid overlap, await the operation and then await the delay before starting the next run. Handle errors and provide a way to stop the loop.
 
 </div>
 
@@ -609,9 +603,9 @@ console.log(fileURLToPath(pathToFileURL(ownedName)) === ownedName);
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Use URL for structural parsing/resolution and URLSearchParams for query parameters rather than manual concatenation. Relative resolution depends on the base path and trailing slash; **an absolute input can replace the base origin**. **Encode component data, not an already assembled whole URL**, and decode only according to the input contract.
+Use `URL` to parse a URL or resolve it against a base, and `URLSearchParams` to handle query parameters. This avoids many mistakes from joining strings manually. Relative URLs depend on the base path and its trailing slash. **An absolute URL can replace the base origin**, including its host.
 
-Query form encoding treats plus as space, while a literal plus must be encoded. For filesystem conversion use pathToFileURL/fileURLToPath. **Parsing success proves syntax, not authorization or safety to fetch**.
+**Encode individual values using the rules for where they appear in the URL.** Do not encode a complete URL as if it were one component or decode data repeatedly. In form-style query encoding, `+` means a space; a literal plus must be encoded. Use `pathToFileURL()` and `fileURLToPath()` for file-path conversion. A URL that parses successfully can still point somewhere the application must not access.
 
 </div>
 
@@ -708,9 +702,11 @@ console.log(text, destination.writableFinished);
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Readable produces data, Writable consumes it, Duplex has both sides and Transform derives output from input. **Backpressure asks a producer to slow down when a downstream queue fills**. **A writable.write false means pause further writes until drain or failure**; **it does not mean the chunk was rejected**.
+Streams process data in chunks. A Readable produces data, a Writable receives it, a Duplex does both, and a Transform changes incoming chunks into outgoing chunks. **Backpressure tells a fast producer to slow down for a slower consumer.**
 
-Prefer awaited pipeline for connected stages because it coordinates flow, completion, errors and destruction. **highWaterMark is a threshold, not a hard memory cap**. Bound chunk size, expansion, active asynchronous work and every retained queue too.
+**When `write()` returns `false`, the chunk was accepted, but you must pause further writes.** Wait for `drain` or handle a failure. Prefer awaiting `pipeline()` when connecting streams: it helps coordinate data flow, errors, completion and cleanup.
+
+`highWaterMark` is a queue threshold, not a strict limit on total memory. Also limit chunk sizes, data expansion, active asynchronous work and other queues your application keeps.
 
 </div>
 
@@ -797,9 +793,9 @@ console.log(await countLines(Readable.from(['one\r', '\ntwo\nlast'])));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-readline turns an input stream into lines or an interactive question interface. for await can consume lines, and crlfDelay:Infinity treats a CRLF pair as one separator across chunks. **Close the interface when finished and separately own the underlying stream**; closing readline is not a universal input-resource close.
+`readline` turns an input stream into lines, or provides an interactive question interface. You can read lines with `for await...of`. `crlfDelay: Infinity` makes a Windows-style CRLF pair count as one line ending even when its bytes arrive in separate chunks.
 
-Its async iterator does not promise to forward all input-stream errors, so **observe source completion/error explicitly**. Lines can be buffered and one line can be arbitrarily large: **readline alone is not a hostile-input byte limiter**.
+**Close the readline interface when you finish, and separately manage its input stream.** Closing the interface does not necessarily close that stream. Watch the source stream's errors and completion explicitly because the async iterator does not forward every input error. **`readline` does not limit the size of a line.** It may also buffer lines, so add input limits when processing untrusted data.
 
 </div>
 
@@ -877,11 +873,14 @@ console.log(randomBytes(32).length);
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Choose the tool for the question you need to answer:
 
+- **A hash helps detect whether bytes changed**, but does not prove who supplied them.
+- **An HMAC checks authenticity using a shared secret.** Digital signatures use a private key for signing and a public key for checking.
+- Encryption keeps content secret. Use an established authenticated encryption scheme and follow its key and nonce rules so changes can also be detected.
+- **Passwords need a salted, deliberately expensive password-hashing function**, rather than a fast general-purpose hash.
 
-**A hash fingerprints bytes but does not prove who produced them**. **HMAC authenticates bytes using a shared secret**; signatures use asymmetric keys. Encryption protects secrecy and should use a reviewed authenticated scheme with correct nonce/key handling. **Password storage needs a salted adaptive password function, not a fast content hash**.
-
-Generate secrets with a cryptographic random API, not Math.random. Validate encoded authentication values before constant-time byte comparison and remember that the surrounding protocol, key management and replay rules determine actual security.
+Generate secrets with a cryptographic random API, not `Math.random()`. Validate encoded authentication values before comparing their bytes in constant time. Security also depends on protecting keys and preventing attackers from reusing old valid messages.
 
 </div>
 
@@ -975,9 +974,9 @@ catch (error) { console.log(error.message); }
 
 <p class="notes-core-answer__title">Core answer</p>
 
-node:zlib supplies gzip/deflate and other supported compression codecs through buffer and stream APIs. Match the container/codec to its decoder; **compression is not encryption or authenticity**. Use pipeline to coordinate compression streams and failures, and enforce **both compressed-input and decompressed-output budgets**.
+`node:zlib` can compress and decompress data using formats such as gzip and deflate, through buffer or stream APIs. Choose a decoder that matches the compressed format. **Compression makes data smaller; it does not keep it secret or prove who sent it.** Use `pipeline()` to connect compression streams and handle failures.
 
-A tiny compressed input can expand enormously. **Backpressure limits queued flow but not total expansion**, CPU time or all native allocations. Bound concurrency, cancellation and deadlines separately, and **do not publish partial output as a successful artifact**.
+**Limit both compressed input and decompressed output.** A small compressed file can expand into a huge amount of data. Backpressure slows the flow but does not limit the total amount produced or the CPU time used. Also limit concurrent operations and execution time, support cancellation, and publish the output as successful only after the whole operation succeeds.
 
 </div>
 

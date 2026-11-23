@@ -22,7 +22,9 @@ Source mapping: [R022](./requirements.md#r022).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Record a stable event name, safe context, outcome and useful timing at the boundary that owns the result. Choose a level by operational significance. **Logs should explain an event without becoming a copy of private request or database state.**
+A useful log record says what happened, which operation it belongs to, its outcome and any relevant duration. Use stable event names and fields that are safe to retain. Record the outcome where the code actually knows it, rather than guessing from an earlier step.
+
+**Choose the log level by how significant the event is to operating the service.** An unexpected component failure differs from a routine denied request. **Logs should explain the event without copying private request bodies, credentials or database contents.**
 
 </div>
 
@@ -61,7 +63,9 @@ Source mapping: [R058](./requirements.md#r058).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Configure the level/format/transports once at composition, then emit allowlisted bounded fields. **Projection before logging is stronger than hoping every nested secret gets redacted later.** A transport's local finish event is not proof of remote durable storage.
+Set Winston's levels, record format and destinations once during application setup. A destination is called a transport. Emit only explicitly allowed fields and limit their lengths and sizes.
+
+**Choose safe fields before logging instead of relying only on later secret removal.** This avoids accidentally retaining a nested password or token that a redaction rule missed. Define what happens if the destination blocks or fails, and how shutdown flushes pending records. A local transport's finish event does not prove that a remote service durably stored the logs.
 
 </div>
 
@@ -181,7 +185,9 @@ Source mapping: [R058](./requirements.md#r058).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Establish trusted correlation at the entry point, propagate a narrow context and log each boundary once. **Context propagation does not make request-supplied fields authoritative or permission checks optional.**
+At the entry point, create or validate a correlation ID that links related records. Pass a small, safe context through the request, job or database operation. **Record each important outcome once**, so the same exception does not appear as several independent incidents.
+
+**Passing context along does not make client-supplied identity trustworthy.** Permission checks still apply. Keep unrelated concurrent requests' contexts separate, and explicitly pass safe context across worker, process and queue boundaries where it is not shared automatically.
 
 </div>
 
@@ -237,7 +243,9 @@ Source mapping: [R094](./requirements.md#r094).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Collection transports records; processing parses/enriches/routes them; storage indexes/retains them; a UI queries/visualizes them. Configure identity, capacity, privacy and delivery behavior across the whole path. **A successful local logger call does not guarantee a searchable remote event.**
+A logging system has several stages: collecting and transporting records, processing their fields, storing and indexing them, then searching or displaying them. Logstash handles input, processing and output; it is not the same component as the application logger, storage backend or viewing tool.
+
+**Configure access, privacy, buffering and failure behavior across the whole path.** Decide how long records are retained and what happens when a collector is unreachable. **A successful local log call does not guarantee a searchable remote record.** Verify ingestion and storage, and make lost or rejected records visible under the chosen policy.
 
 </div>
 

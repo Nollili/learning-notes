@@ -55,9 +55,9 @@ console.log('scheduled');
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A callback is a function supplied to another function; **callbacks are not inherently asynchronous**. Node's common completion convention is callback(error, result): null error plus a value on success, an Error on failure. **A one-shot operation should complete exactly once** and document its timing. **Return after delivering failure so success cannot also run**.
+A callback is a function you pass to another function. **A callback is not necessarily asynchronous**: the receiving function may call it immediately or later. Many Node APIs use `callback(error, result)`: on success, the error is `null` and the result contains the value; on failure, the error contains an `Error`.
 
-**An outer synchronous try/catch does not catch an error thrown later** inside an asynchronous callback. Handle that callback's error there, or adapt the API to a promise with a deliberate contract.
+**An operation that promises one result should call its callback exactly once.** After reporting an error, return so the success code cannot run too. Document when the callback can run. A `try/catch` around the original call cannot catch an exception thrown later in an asynchronous callback. Handle errors inside that callback, or use a suitable promise-based API.
 
 </div>
 
@@ -139,9 +139,9 @@ console.log('chain', await next, calls.join(','));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A promise represents one eventual completion: pending, fulfilled or rejected. **then returns a new promise**: returning a value fulfills it, returning another promise adopts its outcome, and throwing rejects it. **A handler runs asynchronously, while a new Promise executor runs immediately**.
+A promise represents one result that may arrive later. It starts pending, then becomes fulfilled with a value or rejected with a reason. **Every `.then()` returns a new promise.** Returning a value supplies the next result; returning a promise makes the chain wait for it; throwing makes the next promise reject.
 
-**Return or await dependent work** so callers can observe completion and failure. Prefer native promise APIs; promisify adapts a compatible error-first callback API, not arbitrary event streams. **A promise is neither cancellation nor a separate execution thread**.
+**Promise handlers run later, but a `new Promise()` executor runs immediately.** Return or await work that the caller needs to wait for, including its errors. Prefer built-in promise APIs when available. `promisify()` can adapt a compatible error-first callback API, but not an arbitrary stream of events. A promise does not create a worker thread or automatically cancel work.
 
 </div>
 
@@ -230,11 +230,9 @@ try {
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**An `async` function always returns a promise.** `await` pauses that function until a value or promise has an outcome, while other JavaScript work can run. If the promise rejects, `await` throws the rejection reason, which a surrounding `try/catch` can handle.
 
-
-**An async function always returns a promise**. **await suspends that function's continuation** until the awaited value settles; it **does not block all JavaScript or move computation off the main thread**. A rejection becomes a throw at await and can be handled with try/catch.
-
-Use finally for resources owned by the operation, **await asynchronous cleanup**, and choose how cleanup failures interact with the original failure. Return await matters inside try/catch/finally when local error handling or resource lifetime must include the returned operation.
+**`await` does not move calculations to another thread.** Long synchronous calculations can still block other requests. Use `finally` to release resources your operation opened, and await cleanup if it is asynchronous. Decide how to report a cleanup error when the main operation has also failed. Inside `try/catch/finally`, `return await` can be necessary to keep local error handling and cleanup active until the returned operation finishes.
 
 </div>
 
@@ -317,11 +315,9 @@ console.log('handled', failures.join(','));
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**`try/catch` catches errors thrown while its code runs, including failures from promises it awaits.** It does not automatically catch errors in a callback that runs later, or a rejection from a promise you started without awaiting or catching it.
 
-
-**try/catch covers the current execution path**, including operations actually awaited there; it is **not a global net around work scheduled for later**. Callback errors need handling at their callback boundary, and promise rejections need an observed return/await/catch chain.
-
-Ordinary EventEmitter emit calls listeners synchronously and returns a boolean, not their completion promises. **An async listener's rejection therefore needs explicit ownership** or a supported captureRejections design. Process-level unhandled-rejection hooks are diagnostic/fatal-policy boundaries, **not a substitute for request-level error handling**.
+Handle a later callback's errors in that callback. Return, await or catch promises so some part of the application handles their failures. **`EventEmitter.emit()` does not wait for async listeners.** Handle their rejected promises explicitly, or use a correctly configured `captureRejections` approach. Process-level error handlers can report serious failures, but they do not replace error handling for an individual request.
 
 </div>
 
@@ -426,11 +422,9 @@ console.log(output.join(','), peak, active);
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**Run operations in sequence when each needs the previous result.** Independent I/O operations can run concurrently: several can be waiting for results during the same period. For a large collection, limit how many operations may run at once.
 
-
-**Use sequential awaits for dependencies** or intentional serialization. **Start independent I/O concurrently when its resource cost is acceptable**. For many inputs, limit how many operations start at once; **Promise.all over already started work is not a concurrency limiter**.
-
-This pool preserves input order, stops assigning after an observed failure and **waits for already active mappers before rejecting**. Concurrency overlaps lifetimes; it does not create parallel JavaScript execution. Choose limits from the constrained dependency and measure rather than maximizing the number blindly.
+**`Promise.all()` does not limit how much work starts.** If you start thousands of reads before passing their promises to it, those reads have already started. The pool below limits active operations, keeps results in input order and stops starting new items after it notices a failure. It waits for active operations to finish before rejecting. Choose a limit your database, filesystem or other dependency can handle; concurrent waiting does not itself mean parallel JavaScript execution.
 
 </div>
 
@@ -500,11 +494,14 @@ catch (error) { console.log(error.name, error.errors.length); }
 
 <p class="notes-core-answer__title">Core answer</p>
 
+Choose according to the result you need:
 
+- **`Promise.all()` needs every input to succeed.** It returns results in input order and rejects as soon as it observes a rejection.
+- **`Promise.allSettled()` waits for every outcome**, then reports which inputs fulfilled or rejected.
+- **`Promise.any()` returns the first successful result.** It rejects with `AggregateError` if every input rejects.
+- **`Promise.race()` returns the first outcome**, whether success or failure.
 
-**Promise.all fulfills with input-ordered results when all fulfill** and rejects on the first observed failure. **allSettled reports every input's final status**. **any fulfills with the first success**, rejecting with AggregateError only when all fail. **race adopts the first settlement, success or failure**. **None cancels losing work**.
-
-Use the required business outcome to choose the combinator, attach handling promptly, and separately bound the number of operations started and the time/resources they own.
+**None of these cancels the remaining work.** Handle failures promptly, limit how many operations you start and separately control their time and resource use.
 
 </div>
 
@@ -597,11 +594,9 @@ catch (error) { console.log(error.name, error.cause?.message); }
 
 <p class="notes-core-answer__title">Core answer</p>
 
+**A timeout says “stop waiting”; cancellation asks the work to stop.** Racing an operation against a timeout with `Promise.race()` chooses which result you receive. It does not stop the other operation.
 
-
-**A timeout limits how long a caller intends to wait**; **cancellation requests that the operation stop**. **Promise.race alone only selects an outcome and leaves losing work running**. AbortController broadcasts a signal to APIs that support it; propagate the signal, check pre-aborted input and release timers/listeners in finally.
-
-**Cancellation is cooperative and does not roll back completed side effects**. Distinguish caller cancellation from deadline expiry and ordinary failures using the API's error/reason contract, not only a guessed message string.
+`AbortController` provides a signal you can pass to APIs that support cancellation. Pass that signal through your functions, handle signals that are already aborted, and remove timers and listeners in `finally`. **Cancellation needs the operation's cooperation and does not undo completed changes.** Use the API's documented error or reason to distinguish a deadline, a caller's cancellation and an ordinary failure.
 
 </div>
 
@@ -689,9 +684,9 @@ console.log(events.join(','));
 
 <p class="notes-core-answer__title">Core answer</p>
 
-An async iterable exposes Symbol.asyncIterator; its iterator's next returns a promise for an iteration result containing value and done. An async generator implements that protocol using async function* and yield. for await...of **requests each next value after its loop body completes**, enabling demand-driven consumption.
+An async iterator provides values through a `next()` method that returns a promise containing `value` and `done`. An async iterable provides that iterator through `Symbol.asyncIterator`. An async generator, written with `async function*`, makes this easier: use `yield` to provide values.
 
-**Breaking the loop calls and awaits an available return method**, which enters this generator's finally and closes its cursor. Explicitly handle cancellation and errors; **pull-based consumption alone does not guarantee every underlying producer has bounded buffering**.
+**`for await...of` finishes the current loop body before asking for the next value.** This lets the consumer control when it requests more data. When you break out, the loop calls and awaits the iterator's `return()` method if it has one. In the example, this runs `finally` and closes the cursor. Still handle errors and cancellation: the underlying data source may buffer values even while your loop is waiting.
 
 </div>
 
@@ -749,7 +744,9 @@ Level Up is the intended career target for this question and answer; the supplie
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Calling a `function*` creates an iterator; **its body starts only when you request a value**. Each `yield` suspends that body, and `next()` resumes it with a result containing `value` and `done`. **A synchronous generator does not give the event loop a turn**: expensive work between yields still runs synchronously on the calling thread.
+Calling a function declared with `function*` creates an iterator. **The function body starts on the first `next()` call.** Each `yield` supplies a value and pauses the function. Another `next()` resumes it. The returned object contains `value` and `done`, which tells you whether the iterator has finished.
+
+**A synchronous generator does not let the event loop run just because it reaches `yield`.** The caller controls what happens next. Expensive work between yields still runs synchronously on the caller's thread.
 
 </div>
 

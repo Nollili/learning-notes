@@ -22,7 +22,9 @@ Source mapping: [R075](./requirements.md#r075), [R085](./requirements.md#r085).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Authenticate connection setup, authorize every protected action/subscription and maintain an explicit revocation policy. Multi-server deployments also need transport affinity where applicable and cross-server delivery. **A connected socket or room membership is not permanent authorization.**
+Verify credentials when a real-time connection starts, then check permission for each protected action and subscription. Define what happens when credentials expire or permissions are revoked while the connection stays open.
+
+**A connected socket or room membership does not grant permanent permission.** Room names must come from authorized server state. With several servers, also arrange delivery between instances and, where the transport requires it, keep related requests on the same server. These deployment mechanisms do not replace application permission checks.
 
 </div>
 
@@ -59,7 +61,9 @@ Source mapping: [R047](./requirements.md#r047).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Bound message sizes, per-client buffers, fan-out work and retained history. Define ordered replay within a specific stream and fall back to an authorized snapshot when history is unavailable. **A gap must trigger recovery rather than silently advancing the cursor.**
+A slow client can accumulate pending updates, so **limit message sizes, each client's buffers, broadcast work and saved history**. Decide whether to combine replaceable updates, resynchronize or disconnect a client that cannot keep up.
+
+A replay cursor records a position in a particular event stream. Use it to recover updates in the defined order. **A missing event must trigger recovery, not silently advance the cursor.** If the needed history has expired, provide a fresh snapshot only after checking the client's current permissions. A cursor is not permission to access the stream.
 
 </div>
 
@@ -162,7 +166,9 @@ Source mapping: [R047](./requirements.md#r047).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Separate liveness detection, reconnect admission and application recovery. Stop accepting work before bounded drain, then close remaining connections under an explicit deadline. **A reconnected transport does not prove missed application state was recovered.**
+Detecting whether a connection is alive, allowing reconnect attempts and recovering missed data are separate tasks. **A reconnected socket does not prove the application has recovered its state.** Check replay or snapshot completion as well as connection success.
+
+For shutdown, stop accepting new work, allow active work a limited time to finish, then close remaining connections by a deadline. Clear heartbeat and reconnect timers and close adapter connections too. Limit reconnect attempts and spread them out so many clients reconnecting together do not overwhelm the recovering service.
 
 </div>
 
@@ -201,7 +207,9 @@ Source mapping: [R170](./requirements.md#r170).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A native addon exposes compiled code to JavaScript. Node-API provides a stable ABI boundary for compatible Node-API versions, whereas direct V8/internal APIs carry different compatibility risks. **Native code executes with the host process's privileges and can crash or corrupt it.**
+A native addon makes compiled code available to JavaScript. Node-API provides a stable binary interface for compatible Node-API versions, called ABI stability. Direct use of V8 or internal Node APIs has different compatibility risks. Even with Node-API, binaries still need the correct operating system, architecture and library compatibility.
+
+**Native code runs with the host process's privileges and can corrupt or crash that process.** It adds build, deployment and cleanup responsibilities. A long synchronous native call can also block its calling thread; compiled code is not automatically asynchronous or isolated.
 
 </div>
 
@@ -299,7 +307,9 @@ Source mapping: [R170](./requirements.md#r170).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-WebAssembly runs a compiled module with explicit imports/exports and linear-memory conventions. Validate JavaScript inputs and model boundary conversions. **Wasm integer behavior and memory views do not automatically match JavaScript Number semantics.**
+A WebAssembly module is compiled code with explicitly declared imports and exports. It exchanges data through function values and, where used, linear memory: a byte-addressed region whose layout the host and module must agree on.
+
+**Define conversions, memory bounds and who owns each allocation.** Strings and arrays need an agreed encoding and pointer/length arrangement. **Wasm integer rules differ from JavaScript `Number` rules**, including overflow behavior. Memory growth can also invalidate existing views, so follow the rules for the specific shared or unshared memory in use rather than assuming old views stay valid.
 
 </div>
 
@@ -374,7 +384,9 @@ Source mapping: [R170](./requirements.md#r170).
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Choose the simplest boundary that meets measured requirements, then validate its failure, deployment and resource contract. **Neither native code nor WebAssembly guarantees faster end-to-end requests or safe execution of hostile input.**
+**Choose the simplest execution option that meets measured requirements.** Compare ordinary JavaScript, worker threads, a native addon, WebAssembly and a separate process or service according to the needed computation, separation and deployment constraints.
+
+**Native code and WebAssembly do not automatically make complete requests faster or hostile inputs safe.** Include data conversion, copying, startup, queues and useful computation in measurements. Test failures, invalid input, cancellation and shutdown, and define limits on time, memory and active work. Keep permissions and cleanup explicit for the chosen option.
 
 </div>
 

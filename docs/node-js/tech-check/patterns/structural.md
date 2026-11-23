@@ -26,7 +26,9 @@ Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Bridge separates an abstraction from its implementation so both can evolve independently. **Compose the two dimensions instead of creating a subclass for every combination.** An Adapter fixes compatibility; Bridge is a deliberate separation of variation axes.
+Bridge separates two aspects of a design that need to change independently. One side exposes the operation the caller uses; the other supplies how that operation is carried out. **Connect the two sides instead of creating a subclass for every possible combination.**
+
+An Adapter makes an existing interface compatible with another interface. Bridge is chosen to let both sides evolve independently from the start, rather than mainly to repair an incompatibility.
 
 </div>
 
@@ -124,7 +126,9 @@ Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Composite represents a part-whole tree so callers can apply the same operation to leaves and groups. **Uniform access does not remove depth, size or cycle constraints.** Keep ownership of children and the aggregate operation explicit.
+Composite represents individual items and groups as a tree. Both provide the same operation, so a caller can use a group much as it uses one item. A group applies the operation to its children and combines their results as defined by the application.
+
+**A common interface does not make every tree safe to process.** Limit depth and size, detect or prevent cycles, and decide who may change the children. Also define how group operations combine results and handle failures.
 
 </div>
 
@@ -227,7 +231,9 @@ Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A Facade offers a focused entry point to a subsystem. **It simplifies the caller’s interaction, not the subsystem’s failure semantics.** Coordination does not automatically establish authorization, transactions or rollback.
+A Facade gives callers one focused, simpler way to use a subsystem with several parts. It hides details the caller does not need to coordinate directly.
+
+**A simpler entry point does not change the underlying failure guarantees.** If its second step fails, the first step may already have changed something. Design authorization, transactions and rollback separately; putting calls behind one method does not automatically provide them.
 
 </div>
 
@@ -316,7 +322,9 @@ Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-Flyweight shares reusable intrinsic state while callers supply changing extrinsic context. **Share what is immutable and common; keep user/task data outside the shared object.** A cache without a retention policy can erase the intended memory benefit.
+Flyweight saves memory by sharing data that many objects have in common. This shared data is called intrinsic state. Data that changes per user, task or use is extrinsic state and is supplied separately.
+
+**Share common immutable data; keep user-specific mutable data separate.** Otherwise one request can affect another. Limit how much shared data is retained too: a cache that grows forever can lose the memory benefit the pattern was intended to provide.
 
 </div>
 
@@ -402,7 +410,9 @@ Source mapping: [R063](../requirements.md#r063), [R163](../requirements.md#r163)
 
 <p class="notes-core-answer__title">Core answer</p>
 
-A Proxy stands in for another capability to control access, loading or remote interaction. **The access decision must run under the intended identity and freshness policy.** A JavaScript Proxy trap is one mechanism, not a complete authorization design.
+A Proxy stands in for another object or component and controls how callers reach it. It may check permission, delay loading or make a remote call while providing the expected reader interface.
+
+**Check access using the correct caller identity and sufficiently current permission data.** Preserve the reader's results and errors, including remote failures. JavaScript's `Proxy` feature can intercept operations, but using a trap does not by itself create a complete or correct authorization system.
 
 </div>
 
