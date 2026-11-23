@@ -117,7 +117,7 @@ Official references: [Node 24 error classes and system codes](https://nodejs.org
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R044](./requirements.md#r044).
 
@@ -255,7 +255,7 @@ Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodej
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R016](./requirements.md#r016).
 
@@ -433,7 +433,7 @@ Official references, checked 2026-11-04: [Node error delivery](https://nodejs.or
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R116](./requirements.md#r116), [R018](./requirements.md#r018).
 
@@ -601,7 +601,7 @@ Official references, checked 2026-11-04: [Node Error stacks, codes and causes](h
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R074](./requirements.md#r074).
 
@@ -909,7 +909,7 @@ Official references, checked 2026-11-04: [Express error handling](https://expres
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐, ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐, ⭐⭐⭐⭐
 
 Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
 

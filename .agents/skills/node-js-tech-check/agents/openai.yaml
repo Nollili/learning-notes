@@ -1,0 +1,4 @@
+interface:
+  display_name: "Node.js Tech Check"
+  short_description: "Practice Node.js interviews with saved progress"
+  default_prompt: "Use $node-js-tech-check to start or resume my Node.js assessment, asking only for undecided settings."

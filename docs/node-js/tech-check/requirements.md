@@ -1,27 +1,12 @@
 ---
-outline: [2, 3]
+layout: false
 ---
 
-# Node.js source requirements and label meanings
-
-The table below preserves all 193 rows of the supplied `node-levelup-tech-check-merged.md`. Requirement IDs follow its row order; original wording and empty career cells are retained. Lesson-to-row correspondence is editorial and appears under each question as Source mapping. It identifies relevant requirements, not proof that reading one answer establishes proficiency.
-
-## How to read a question’s labels
-
-- Study depth describes the written lesson: Foundational introduces a concept and simple use; Intermediate applies it with routine failures and tradeoffs; Advanced analyzes interacting failure, consistency, security or operating constraints. A mixed label describes a progression. These editorial depths are independent of career requirements.
-- Level Up is one editorial career target for the actual question and answer: L1 Junior, L2 Software Engineer, L3 Senior or L4 Lead. It replaces the separate Study audience label. It is a teaching recommendation, not a claim that the supplied table assigns only one career level to the topic. The complete source proficiency cells remain in the matrix below; a dash means no source entry.
-- Tech Check level shows the chart category or categories used for the topic. Several levels can apply across chart contexts; that does not make the current lesson equally deep at every level. Study depth describes the depth of the individual lesson.
-- Curriculum placement and completion IDs are kept as hidden page metadata, independently of the visible career target and source stars. Projects show a curriculum milestone rather than a single official topic rating.
-
-Combined chart rows require interpretation. R153 lists frameworks at levels 1, 2 and 4; R154 combines basic framework concepts (1) with cloud concepts (3). R160/R161 combine Errors (2) and V8 Optimizations (4). R170/R171 combine Generators (3), intermediate databases/API (4), and WebAssembly/native modules (5). Each lesson selects its own category rather than inheriting every level in the combined row.
-
-The source does not define Event Splitting or give detailed criteria for overview-only categories. The linked lessons state their interpretation or limits rather than inventing official requirements. Source hash: `8ea93eecf322e4297e3575ce15410b984cf529e121705938339c26ba2dc0affe`.
+<main class="vp-doc requirements-page">
 
 ## Source matrix
 
 Click a column header to sort; click again to reverse the order. Keyboard users can focus a header and press Enter or Space. Career proficiency sorts from Novice to Intermediate to Advanced, with empty cells last. Tech Check groups sort by star count, comparing multiple levels from left to right.
-
-The matrix scrolls horizontally. Focus its region with the keyboard and use the arrow keys to reach later columns.
 
 <SortableTable label="Node.js source proficiency matrix" :column-types="['text', 'text', 'text', 'text', 'proficiency', 'proficiency', 'proficiency', 'proficiency', 'stars']">
 
@@ -222,3 +207,5 @@ The matrix scrolls horizontally. Focus its region with the keyboard and use the 
 | <span id="r193"></span>R193 | Tech Check / Tools (advanced) | — | New relic (Tools (advanced)) | — | — | — | — | ⭐⭐⭐⭐⭐ |
 
 </SortableTable>
+
+</main>

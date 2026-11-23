@@ -55,7 +55,7 @@ Compare catalogue descriptions, stock reservations and a login session store. St
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R133](./requirements.md#r133), [R137](./requirements.md#r137).
 
@@ -114,7 +114,7 @@ Run two owned application processes with a small pool, observe the combined serv
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R134](./requirements.md#r134), [R136](./requirements.md#r136).
 
@@ -190,7 +190,7 @@ Implement all four operations through the real driver. Test injection-shaped val
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R136](./requirements.md#r136).
 
@@ -248,7 +248,7 @@ Use the [SQL report workbench](../sql-query-workbench.md) to explain report grai
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R138](./requirements.md#r138).
 
@@ -330,7 +330,7 @@ Run two independent clients reserving the last unit: exactly one commits and sto
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R136](./requirements.md#r136), [R139](./requirements.md#r139).
 
@@ -377,7 +377,7 @@ Implement create/read/update/delete and one relation in the existing workbench. 
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R136](./requirements.md#r136).
 
@@ -411,7 +411,7 @@ Load a disposable representative dataset, capture baseline plan/latency and add 
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R137](./requirements.md#r137).
 
@@ -445,7 +445,7 @@ Stop only your owned database fixture during a bounded API/job run, restore it a
 *Study depth: Advanced*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R138](./requirements.md#r138).
 
@@ -565,7 +565,7 @@ Extend the fixture with a bounded retry that re-evaluates the business decision,
 *Study depth: Advanced*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R136](./requirements.md#r136).
 
@@ -634,7 +634,7 @@ Add equal timestamps, inserts between pages, another tenant and a changed filter
 *Study depth: Advanced*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
 

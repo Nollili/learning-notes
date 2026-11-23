@@ -13,7 +13,7 @@ JavaScript examples use Node 24, ES Modules (`.mjs`) and built-in APIs. Shell co
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R001](./requirements.md#r001), [R002](./requirements.md#r002), [R109](./requirements.md#r109).
 
@@ -168,7 +168,7 @@ Parse environment strings into a validated startup contract; defaults, precedenc
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R067](./requirements.md#r067).
 
@@ -240,7 +240,7 @@ Use the REPL to explore, then turn important observations into reproducible file
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R112](./requirements.md#r112).
 
@@ -316,7 +316,7 @@ Separate results from diagnostics, and treat standard streams as real resources 
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R112](./requirements.md#r112).
 

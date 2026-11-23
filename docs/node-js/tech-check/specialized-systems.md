@@ -52,7 +52,7 @@ Run two owned instances behind a local proxy. Test polling and WebSocket-only tr
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R047](./requirements.md#r047).
 
@@ -157,7 +157,7 @@ Extend the feed with bounded history and a deliberately slow client. Accept when
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R047](./requirements.md#r047).
 

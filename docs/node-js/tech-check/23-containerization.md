@@ -13,7 +13,7 @@ Use the [canonical Node/PostgreSQL container lab](../container-deployment-lab.md
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R060](./requirements.md#r060).
 
@@ -123,7 +123,7 @@ Use the lab's owned-copy setup, then `docker compose -p "$lab_project" config --
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R098](./requirements.md#r098), [R103](./requirements.md#r103).
 
@@ -157,7 +157,7 @@ Resolve an owned test image to its digest, inspect its platform and prepare a re
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R060](./requirements.md#r060).
 

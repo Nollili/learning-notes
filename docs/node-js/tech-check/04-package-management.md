@@ -89,7 +89,7 @@ The manifest declares contracts, the manager prepares dependencies, and the runt
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R114](./requirements.md#r114).
 
@@ -175,7 +175,7 @@ A locked clean installation is one reproducibility boundary; runtime, configurat
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R006](./requirements.md#r006), [R029](./requirements.md#r029).
 
@@ -455,7 +455,7 @@ Inspect and test the distributed artifact under its approved registry/identity c
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R028](./requirements.md#r028).
 
@@ -571,7 +571,7 @@ Use package scripts to orchestrate explicit stages and verify the exact emitted 
 *Study depth: Advanced*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R029](./requirements.md#r029), [R116](./requirements.md#r116).
 

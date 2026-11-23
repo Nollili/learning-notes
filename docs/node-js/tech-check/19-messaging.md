@@ -13,7 +13,7 @@ Use PostgreSQL and the existing RabbitMQ job adapter as the primary implementati
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R059](./requirements.md#r059).
 
@@ -122,7 +122,7 @@ Run the canonical lab against owned RabbitMQ/PostgreSQL. Verify duplicate effect
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R097](./requirements.md#r097).
 
@@ -211,7 +211,7 @@ In an owned topic/group, stop after a SQL commit but before offset commit, resta
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R059](./requirements.md#r059).
 
@@ -247,7 +247,7 @@ Prepare a scoped topology/configuration locally; in an authorized sandbox test t
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R059](./requirements.md#r059).
 

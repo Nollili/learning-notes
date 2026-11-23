@@ -316,7 +316,7 @@ Validate the peer and own the entire HTTP exchange, including its body and failu
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐, ⭐⭐⭐⭐
+Tech Check level: ⭐, ⭐⭐⭐⭐
 
 Source mapping: [R072](./requirements.md#r072).
 
@@ -477,7 +477,7 @@ Choose the interaction and recovery contract first; then choose the simplest tra
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R047](./requirements.md#r047).
 
@@ -678,7 +678,7 @@ Library conveniences reduce transport plumbing; delivery semantics and business 
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R047](./requirements.md#r047), [R119](./requirements.md#r119).
 
@@ -1110,7 +1110,7 @@ Run the two-origin lab. Test every selector value, cancel while Loading, and tri
 *Study depth: Intermediate implementation of a foundational optimization*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R046](./requirements.md#r046).
 

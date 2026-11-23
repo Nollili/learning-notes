@@ -13,7 +13,7 @@ This chapter covers event-driven contracts, EventEmitter, waiting for events and
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: ⭐; Related ⭐⭐
+Tech Check level: ⭐, ⭐⭐
 
 Source mapping: [R010](./requirements.md#r010), [R034](./requirements.md#r034).
 
@@ -419,7 +419,7 @@ Separate OS notifications, native worker capacity and JavaScript execution when 
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R035](./requirements.md#r035), [R112](./requirements.md#r112).
 
@@ -519,7 +519,7 @@ A signal initiates a lifecycle protocol; resource owners and an external deadlin
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R078](./requirements.md#r078), [R116](./requirements.md#r116).
 
@@ -608,7 +608,7 @@ Measure scheduling symptoms with units and context, then collect evidence at the
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: ⭐⭐⭐; Related ⭐⭐
+Tech Check level: ⭐⭐, ⭐⭐⭐
 
 Source mapping: [R033](./requirements.md#r033), [R176](./requirements.md#r176).
 

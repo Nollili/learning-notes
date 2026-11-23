@@ -191,7 +191,7 @@ Write an extraction ADR comparing one deployable with two. Include three concret
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R099](./requirements.md#r099), [R100](./requirements.md#r100).
 
@@ -237,7 +237,7 @@ In an owned database/broker fixture, crash after publish but before marking deli
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R102](./requirements.md#r102).
 
@@ -277,7 +277,7 @@ For catalogue, checkout and audit history, specify allowed staleness, conflict p
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R101](./requirements.md#r101), [R145](./requirements.md#r145).
 

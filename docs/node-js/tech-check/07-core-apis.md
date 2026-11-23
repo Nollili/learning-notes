@@ -14,7 +14,7 @@ This chapter covers Console, asynchronous filesystem operations, Path and OS. Ex
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R011](./requirements.md#r011).
 
@@ -257,7 +257,7 @@ Path utilities express names; authorization and filesystem identity are separate
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R040](./requirements.md#r040).
 
@@ -341,7 +341,7 @@ Official references checked 2026-11-04: Node 24.18 [Console](https://nodejs.org/
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R036](./requirements.md#r036), [R118](./requirements.md#r118).
 
@@ -418,7 +418,7 @@ Track byte range, backing-store lifetime and mutation ownership separately from 
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R013](./requirements.md#r013).
 
@@ -574,7 +574,7 @@ Timers control scheduling intent; the owner controls overlap, failure, cancellat
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R015](./requirements.md#r015).
 
@@ -755,7 +755,7 @@ Backpressure is an end-to-end cooperation contract, not a guarantee obtained by 
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R041](./requirements.md#r041).
 
@@ -929,7 +929,7 @@ Choose the primitive for its security property and implement the surrounding byt
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R043](./requirements.md#r043).
 

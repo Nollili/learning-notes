@@ -52,7 +52,7 @@ Compare one VM, Fargate and a function for an API plus a report job. Accept with
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R140](./requirements.md#r140), [R147](./requirements.md#r147).
 
@@ -88,7 +88,7 @@ In a sandbox account, configure one small VM from a saved specification, attach 
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R140](./requirements.md#r140).
 
@@ -145,7 +145,7 @@ In an owned private bucket, upload one authorized report, retrieve it, reject an
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R145](./requirements.md#r145).
 
@@ -179,7 +179,7 @@ In the owned AWS slice, verify task→DB connectivity, denial from an unapproved
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R142](./requirements.md#r142), [R147](./requirements.md#r147).
 
@@ -213,7 +213,7 @@ Write an access matrix for operator, execution role, task role, SQL app role and
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R144](./requirements.md#r144), [R147](./requirements.md#r147).
 

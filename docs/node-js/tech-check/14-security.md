@@ -236,7 +236,7 @@ Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and c
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R051](./requirements.md#r051).
 
@@ -289,7 +289,7 @@ Verify distinct salts, correct/wrong/malformed hashes, controlled rehash, bounde
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R086](./requirements.md#r086), [R089](./requirements.md#r089).
 
@@ -323,7 +323,7 @@ Analyze one advisory's direct/transitive path and write a minimal fix or a justi
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R087](./requirements.md#r087).
 
@@ -376,7 +376,7 @@ Use a real loopback request to check CSP, nosniff, referrer policy and removal o
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R088](./requirements.md#r088).
 

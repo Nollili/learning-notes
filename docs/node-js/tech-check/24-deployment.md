@@ -13,7 +13,7 @@ The primary delivery path packages the existing Express 5/Node.js 24 application
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: ⭐; Related ⭐⭐⭐
+Tech Check level: ⭐, ⭐⭐⭐
 
 Source mapping: [R023](./requirements.md#r023), [R065](./requirements.md#r065).
 
@@ -45,7 +45,7 @@ On the actual application template, run its exact commands in a clean owned chec
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R065](./requirements.md#r065).
 
@@ -104,7 +104,7 @@ Build an owned application image once, save its digest and prepare (without push
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R066](./requirements.md#r066), [R142](./requirements.md#r142).
 
@@ -138,7 +138,7 @@ Prepare a redacted environment inventory and a dry-run management checklist. Sta
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R112](./requirements.md#r112), [R143](./requirements.md#r143).
 
@@ -172,7 +172,7 @@ Start an owned instance with one active request, signal shutdown and verify read
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R104](./requirements.md#r104), [R144](./requirements.md#r144).
 
@@ -208,7 +208,7 @@ Run the compatibility lab locally, interrupt the backfill and recover. Prepare a
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R065](./requirements.md#r065), [R147](./requirements.md#r147).
 

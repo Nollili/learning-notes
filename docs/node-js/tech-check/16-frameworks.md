@@ -293,7 +293,7 @@ Official references: [Express installation](https://expressjs.com/en/starter/ins
 *Study depth: Foundational → Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R126](./requirements.md#r126).
 
@@ -614,7 +614,7 @@ Official references: [Express middleware](https://expressjs.com/en/guide/using-m
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R124](./requirements.md#r124).
 
@@ -726,7 +726,7 @@ Official references: [Express response API](https://expressjs.com/en/5x/api/resp
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R123](./requirements.md#r123), [R131](./requirements.md#r131).
 
@@ -807,7 +807,7 @@ Official references: [Node HTTP response lifecycle](https://nodejs.org/download/
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R124](./requirements.md#r124).
 
@@ -1098,7 +1098,7 @@ Only a trusted verifier establishes actor context; the use case still checks per
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R129](./requirements.md#r129).
 
@@ -1292,7 +1292,7 @@ Make dependency direction and lifetime explicit; framework conventions do not re
 *Study depth: Intermediate, with deeper framework internals optional*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R131](./requirements.md#r131).
 
@@ -1362,7 +1362,7 @@ Use framework hooks as well-placed entry points into explicit owners, not as a r
 *Study depth: Intermediate; advanced operations remain separate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R126](./requirements.md#r126), [R131](./requirements.md#r131).
 

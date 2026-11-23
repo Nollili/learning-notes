@@ -13,7 +13,7 @@ Examples use Node 24 and ES Modules (`.mjs`) unless stated otherwise. Only built
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R105](./requirements.md#r105).
 
@@ -87,7 +87,7 @@ Node runs JavaScript with server/OS host facilities; V8 executes the language, a
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R010](./requirements.md#r010), [R106](./requirements.md#r106).
 
@@ -173,7 +173,7 @@ Nonblocking I/O permits progress while waiting; async syntax alone cannot preven
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R118](./requirements.md#r118).
 

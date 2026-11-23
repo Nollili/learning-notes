@@ -281,7 +281,7 @@ Use await to express completion and ownership, including the error and cleanup p
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R016](./requirements.md#r016).
 
@@ -378,7 +378,7 @@ Official references checked 2026-11-04: Node.js 24.18 [error propagation](https:
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R031](./requirements.md#r031).
 
@@ -546,7 +546,7 @@ Aggregation chooses an outcome; scheduling, cancellation and side-effect safety 
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R031](./requirements.md#r031).
 

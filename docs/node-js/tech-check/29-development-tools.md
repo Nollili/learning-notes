@@ -412,7 +412,7 @@ Make one scoped lint/format/typecheck setting change. Acceptance: state the orig
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R018](./requirements.md#r018), [R049](./requirements.md#r049).
 
@@ -505,7 +505,7 @@ Navigate to the implementation, preview a coordinated rename, run the gates, the
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R081](./requirements.md#r081).
 
@@ -533,7 +533,7 @@ Compare the loaded source with the deployed artifact. A breakpoint in the wrong 
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R082](./requirements.md#r082).
 
@@ -581,7 +581,7 @@ The first line identifies the failed operation. The second identifies the depend
 *Study depth: Intermediate*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R127](./requirements.md#r127).
 

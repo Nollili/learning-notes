@@ -61,7 +61,7 @@ Save the runtime baseline, identify one real hot function and propose a clarity-
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R048](./requirements.md#r048), [R079](./requirements.md#r079).
 
@@ -115,7 +115,7 @@ Acquire a real profile under an owned API workload, identify a candidate bottlen
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R078](./requirements.md#r078).
 
@@ -177,7 +177,7 @@ Compare a CPU-heavy route, a slow database and a slow response consumer under th
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R082](./requirements.md#r082), [R118](./requirements.md#r118).
 
@@ -246,7 +246,7 @@ Create a controlled retained-listener/cache leak in an owned fixture, acquire be
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐, ⭐⭐⭐⭐
 
 Source mapping: [R118](./requirements.md#r118), [R176](./requirements.md#r176).
 
@@ -282,7 +282,7 @@ Implement equivalent bounded CPU work on the main loop, in yielding chunks and i
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐, ⭐⭐⭐
+Tech Check level: ⭐⭐, ⭐⭐⭐
 
 Source mapping: [R101](./requirements.md#r101).
 

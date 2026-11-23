@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "student": "repository-owner",
+  "sessions": [
+    {
+      "id": "session-2026-11-19T19:48:42.201123+00:00",
+      "createdAt": "2026-11-19T19:48:42.201123+00:00",
+      "updatedAt": "2026-11-19T20:01:19.470007+00:00",
+      "status": "in_progress",
+      "settings": {
+        "track": "Tech Check",
+        "initialMaximumTarget": 1,
+        "length": "half",
+        "scope": "all",
+        "frameworks": [],
+        "databases": [
+          "MongoDB",
+          "PostgreSQL"
+        ],
+        "cloudPlatforms": [
+          "AWS"
+        ],
+        "feedbackStyle": "coached",
+        "runtime": {
+          "nodeVersion": "22",
+          "moduleFormat": "CommonJS"
+        }
+      },
+      "coverage": [],
+      "currentQuestion": "q-2026-11-19T20:01:19.470007+00:00",
+      "pendingInteraction": {
+        "type": "answer",
+        "questionId": "q-2026-11-19T20:01:19.470007+00:00",
+        "question": "Question 3 \u2014 Read a JSON file\n\nUse Node.js 22, CommonJS (.cjs). Implement async function readPreferences(filePath). Read the UTF-8 file asynchronously, parse its JSON, and return the parsed value. If reading fails or JSON is invalid, let the returned promise reject with the original error. Do not log or replace errors. Use only built-in Node.js modules. No validation of the parsed value is required.\n\n```js\nasync function readPreferences(filePath) {\n  // Your implementation\n}\n```\n\nExample file contents: {\"theme\":\"dark\",\"fontSize\":16}. await readPreferences(filePath) should return { theme: \"dark\", fontSize: 16 }. Missing files and invalid JSON must reject. You may use an IDE, documentation, and execution. Paste your code here or identify a local solution file."
+      },
+      "remainingWork": [
+        "assessment",
+        "report"
+      ],
+      "report": null,
+      "setupAnswers": [
+        {
+          "field": "scope",
+          "answer": "all",
+          "timestamp": "2026-11-19T19:48:57.064649+00:00"
+        },
+        {
+          "field": "frameworks",
+          "answer": "none yet",
+          "timestamp": "2026-11-19T19:49:21.020405+00:00"
+        },
+        {
+          "field": "databases",
+          "answer": "mongo and postgres",
+          "timestamp": "2026-11-19T19:49:50.460035+00:00"
+        },
+        {
+          "field": "cloudPlatforms",
+          "answer": "aws",
+          "timestamp": "2026-11-19T19:50:05.197383+00:00"
+        },
+        {
+          "field": "feedbackStyle",
+          "answer": "coached",
+          "timestamp": "2026-11-19T19:50:36.623710+00:00"
+        }
+      ],
+      "eligibleRequirements": [
+        "R001",
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R007",
+        "R008",
+        "R009",
+        "R010",
+        "R011",
+        "R012",
+        "R013",
+        "R014",
+        "R015",
+        "R023",
+        "R024",
+        "R025",
+        "R026",
+        "R027",
+        "R028",
+        "R029",
+        "R030",
+        "R031",
+        "R032",
+        "R033",
+        "R034",
+        "R035",
+        "R036",
+        "R039",
+        "R040",
+        "R041",
+        "R042",
+        "R043",
+        "R056",
+        "R057",
+        "R067",
+        "R068",
+        "R069",
+        "R070",
+        "R072",
+        "R093",
+        "R105",
+        "R106",
+        "R107",
+        "R108",
+        "R109",
+        "R110",
+        "R111",
+        "R112",
+        "R113",
+        "R114",
+        "R115",
+        "R116",
+        "R117",
+        "R118",
+        "R119",
+        "R120",
+        "R121",
+        "R122",
+        "R123",
+        "R124",
+        "R125",
+        "R126",
+        "R127",
+        "R128",
+        "R129",
+        "R130",
+        "R131",
+        "R148",
+        "R149",
+        "R150",
+        "R151",
+        "R152",
+        "R153",
+        "R154",
+        "R155"
+      ],
+      "eligibleTopics": [
+        "Core JavaScript",
+        "Node.js runtime and CLI",
+        "Modules",
+        "NPM and package configuration",
+        "Asynchronous programming and generators",
+        "Events and event loop",
+        "Core APIs",
+        "Frameworks",
+        "Serverless"
+      ],
+      "selectedTopics": [
+        "Core JavaScript",
+        "Node.js runtime and CLI",
+        "Modules",
+        "NPM and package configuration",
+        "Asynchronous programming and generators",
+        "Events and event loop",
+        "Core APIs",
+        "Frameworks",
+        "Serverless"
+      ],
+      "coveragePlan": {
+        "approximateMainQuestions": "15\u201320",
+        "approach": "Interleave types and groups; shorter coding tasks; retain broader shared-topic scope; split R153 and R154 categories.",
+        "completed": [
+          {
+            "questionId": "q-2026-11-19T19:50:36.623710+00:00",
+            "primaryTopic": "Core JavaScript",
+            "requirementIds": [
+              "R150"
+            ],
+            "independentScore": 2,
+            "assistedScore": 3
+          },
+          {
+            "questionId": "q-2026-11-19T19:58:38.705254+00:00",
+            "primaryTopic": "NPM and package configuration",
+            "requirementIds": [
+              "R006",
+              "R030",
+              "R114",
+              "R151"
+            ],
+            "independentScore": 4,
+            "assistedScore": null
+          }
+        ]
+      },
+      "rubric": {
+        "0": "no demonstrated understanding",
+        "1": "major gaps",
+        "2": "partially correct with important omissions",
+        "3": "meets requirement",
+        "4": "correct, reasoned and handles relevant edge cases"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-2026-11-19T19:50:36.623710+00:00",
+      "sessionId": "session-2026-11-19T19:48:42.201123+00:00",
+      "createdAt": "2026-11-19T19:50:36.623710+00:00",
+      "text": "Predict the three logged values and explain why. Submit your prediction before running the code.\n\n```js\nfunction makeTicketCounter(start) {\n  let next = start;\n  return () => next++;\n}\n\nconst deskA = makeTicketCounter(40);\nconst deskB = makeTicketCounter(40);\n\nconsole.log(deskA());\nconsole.log(deskA());\nconsole.log(deskB());\n```\n\nRuntime: Node.js 22, CommonJS (.cjs).",
+      "primaryTopic": "Core JavaScript",
+      "requirementIds": [
+        "R150"
+      ],
+      "type": "output tracing",
+      "expectedProficiency": "Explain closure state retention and independent lexical environments at 1-star target",
+      "target": 1,
+      "aboveTarget": false,
+      "fingerprint": "closure-factory-postincrement-independent-ticket-counters",
+      "runtime": {
+        "nodeVersion": "22",
+        "moduleFormat": "CommonJS"
+      },
+      "attempts": [
+        {
+          "timestamp": "2026-11-19T19:52:01.074608+00:00",
+          "answer": "40, 41, 40",
+          "assistance": "independent",
+          "evaluation": "Output prediction correct; requested reasoning not yet supplied.",
+          "score": null
+        },
+        {
+          "timestamp": "2026-11-19T19:53:07.759696+00:00",
+          "answer": "uh I dont remember but maybe its a closure bcause return is an arrow func and next is outshide of that",
+          "assistance": "independent clarification",
+          "evaluation": "Recognizes closure and outer variable access. Separate lexical environments not explained; arrow syntax suggested as cause.",
+          "score": 2
+        },
+        {
+          "timestamp": "2026-11-19T19:54:56.941539+00:00",
+          "answer": "they dont know about each other. like they are in separate rooms. but not sure why it is a closure",
+          "assistance": "hinted",
+          "score": 3,
+          "evaluation": "Correctly explains independent state through separate rooms analogy; asks for explanation of closure definition."
+        }
+      ],
+      "originalScore": 2,
+      "latestScore": 3,
+      "verificationStatus": "Executed with local Node.js; output confirmed: 40, 41, 40. Exact local runtime version not checked.",
+      "status": "resolved",
+      "hints": [
+        {
+          "timestamp": "2026-11-19T19:53:07.759696+00:00",
+          "text": "You\u2019re on the right track: it is a closure, and next belongs to the surrounding function. An ordinary function could form the same closure; arrow syntax is not what causes it. Think about what happens to the local next variable each time makeTicketCounter(40) is called."
+        }
+      ],
+      "outcome": "hinted_then_explained",
+      "revealedExplanation": {
+        "timestamp": "2026-11-19T19:54:56.941539+00:00",
+        "text": "A closure is a function together with access to its surrounding lexical environment. The returned function accesses next from makeTicketCounter even after that call returns. Each call to makeTicketCounter creates a separate next binding. deskA retains one binding; deskB retains another. Postincrement returns the current value then increments it. Arrow syntax is not required."
+      },
+      "followUpTeaching": [
+        {
+          "timestamp": "2026-11-19T19:56:13.417278+00:00",
+          "studentQuestion": "but how does A remember that it was already 40 once?",
+          "explanation": "deskA holds the returned function, whose closure retains access to the same next binding. Calling deskA does not call makeTicketCounter again. The first deskA call returns 40 and updates that binding to 41; the second returns 41 and updates it to 42. It retains current state rather than a history of outputs. The binding stays available while reachable through the closure.",
+          "scored": false
+        },
+        {
+          "timestamp": "2026-11-19T19:57:35.287436+00:00",
+          "studentQuestion": "but like\nconst deskA = makeTicketCounter(40);\nconsole.log(deskA());\nconsole.log(deskA()); -> here its still makeTicketCounter(40) isnt it?",
+          "explanation": "The assignment executes makeTicketCounter(40) once and stores its returned function in deskA. It does not store the expression for reexecution. Later deskA() calls that returned function, which retains the original next binding. Only another explicit makeTicketCounter(40) call creates a new counter initialized to 40.",
+          "scored": false
+        }
+      ]
+    },
+    {
+      "id": "q-2026-11-19T19:58:38.705254+00:00",
+      "sessionId": "session-2026-11-19T19:48:42.201123+00:00",
+      "createdAt": "2026-11-19T19:58:38.705254+00:00",
+      "text": "Question 2 \u2014 npm scenario\n\nA teammate clones a Node.js project. Its package.json contains:\n\n```json\n{\n  \"scripts\": {\n    \"check\": \"eslint src\",\n    \"start\": \"node src/main.cjs\"\n  },\n  \"devDependencies\": {\n    \"eslint\": \"9.0.0\"\n  }\n}\n```\n\nThe repository also contains a matching package-lock.json, but no node_modules directory. Node.js and npm are installed.\n\nWhat commands should your teammate run to install the locked dependencies and then run the check script? Explain whether ESLint needs to be installed globally.",
+      "primaryTopic": "NPM and package configuration",
+      "requirementIds": [
+        "R006",
+        "R030",
+        "R114",
+        "R151"
+      ],
+      "type": "practical scenario",
+      "expectedProficiency": "Use a lockfile-based install and npm script with a project-local executable; 1-star practical package management",
+      "target": 1,
+      "aboveTarget": false,
+      "fingerprint": "fresh-clone-locked-devdependency-npm-custom-check-local-bin",
+      "attempts": [
+        {
+          "timestamp": "2026-11-19T20:00:17.021618+00:00",
+          "answer": "npm ci  installs exacts from the lock file\nnpm run check\n\neslint will be installed with the npm ci",
+          "assistance": "independent",
+          "score": 4,
+          "evaluation": "Correct lockfile install, custom script invocation, and local ESLint installation. No global installation required."
+        }
+      ],
+      "originalScore": 4,
+      "latestScore": 4,
+      "verificationStatus": "Not executed; conceptual command scenario",
+      "status": "resolved",
+      "outcome": "independently_correct",
+      "feedback": "Correct. npm ci installs dependencies from the matching lockfile, including devDependencies by default. npm run check makes the project-local node_modules/.bin executable available, so no global ESLint installation is needed. Omitting devDependencies would omit ESLint."
+    },
+    {
+      "id": "q-2026-11-19T20:01:19.470007+00:00",
+      "sessionId": "session-2026-11-19T19:48:42.201123+00:00",
+      "createdAt": "2026-11-19T20:01:19.470007+00:00",
+      "text": "Question 3 \u2014 Read a JSON file\n\nUse Node.js 22, CommonJS (.cjs). Implement async function readPreferences(filePath). Read the UTF-8 file asynchronously, parse its JSON, and return the parsed value. If reading fails or JSON is invalid, let the returned promise reject with the original error. Do not log or replace errors. Use only built-in Node.js modules. No validation of the parsed value is required.\n\n```js\nasync function readPreferences(filePath) {\n  // Your implementation\n}\n```\n\nExample file contents: {\"theme\":\"dark\",\"fontSize\":16}. await readPreferences(filePath) should return { theme: \"dark\", fontSize: 16 }. Missing files and invalid JSON must reject. You may use an IDE, documentation, and execution. Paste your code here or identify a local solution file.",
+      "primaryTopic": "Core APIs",
+      "requirementIds": [
+        "R012",
+        "R032",
+        "R111"
+      ],
+      "type": "coding",
+      "expectedProficiency": "Implement a small asynchronous UTF-8 file reader using promises and JSON parsing; shared-topic practical scope",
+      "target": 1,
+      "aboveTarget": false,
+      "fingerprint": "async-json-preferences-file-reader-preserve-errors-utf8",
+      "runtime": {
+        "nodeVersion": "22",
+        "moduleFormat": "CommonJS"
+      },
+      "attempts": [],
+      "originalScore": null,
+      "latestScore": null,
+      "verificationStatus": "Awaiting submitted code",
+      "status": "awaiting_answer"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "review-q-2026-11-19T19:50:36.623710+00:00",
+      "questionId": "q-2026-11-19T19:50:36.623710+00:00",
+      "createdAt": "2026-11-19T19:53:07.759696+00:00",
+      "status": "due_later_session",
+      "concept": "Closure state persistence and separate lexical environments; closures do not require arrow functions",
+      "strategy": "Different exercise first, original exercise in a subsequent session"
+    }
+  ]
+}

@@ -264,6 +264,11 @@ export default defineConfig(withLearningPaths(applyPublicationPolicy(applyConten
     sidebar: {
       '/node-js/tech-check/': [
         { text: 'Node.js tech-check', items: [{ text: 'Whats on this page?', link: '/node-js/tech-check/' }] },
+        { text: 'Check yourself', items: [
+          { text: 'Start an assessment', link: '/node-js/tech-check/check-yourself' },
+          { text: 'Repository prompt', link: '/node-js/tech-check/assessment-repository' },
+          { text: 'Portable prompt', link: '/node-js/tech-check/assessment-portable' }
+        ] },
         ...nodeTechCheckPaths.map(path => ({
           text: path.title,
           items: path.items.map(item => ({ text: `${item.type}: ${item.title}`, link: item.href }))

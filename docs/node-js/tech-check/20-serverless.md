@@ -153,7 +153,7 @@ Prepare the ZIP/package and infrastructure configuration for one protected route
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R056](./requirements.md#r056).
 
@@ -217,7 +217,7 @@ Locally test success/failure ID selection, then run the real durable adapter aga
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R057](./requirements.md#r057), [R093](./requirements.md#r093).
 

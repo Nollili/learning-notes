@@ -13,7 +13,7 @@ The primary path is Node.js 24 → `@prometheus-io/client`0.16.1 → Prometheus 
 *Study depth: Foundational*
 
 Level Up: L2 — Software Engineer\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R095](./requirements.md#r095), [R146](./requirements.md#r146).
 
@@ -49,7 +49,7 @@ Define two user-facing SLIs and one saturation signal for the products service. 
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R096](./requirements.md#r096).
 
@@ -171,7 +171,7 @@ Extend an owned HTTP application with aborted, failed and successful requests. A
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R096](./requirements.md#r096), [R146](./requirements.md#r146).
 

@@ -162,7 +162,7 @@ Module mode is a runtime/package contract, and CJS/ESM interop must be checked a
 *Study depth: Intermediate*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R005](./requirements.md#r005), [R025](./requirements.md#r025).
 
@@ -255,7 +255,7 @@ Module-private variables can still be shared through a cached instance; define t
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R027](./requirements.md#r027).
 
@@ -440,7 +440,7 @@ Package metadata selects public runtime entry contracts, and the same package na
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐
+Tech Check level: ⭐
 
 Source mapping: [R068](./requirements.md#r068).
 

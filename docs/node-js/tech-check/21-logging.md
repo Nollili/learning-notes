@@ -13,7 +13,7 @@ Use Winston 3.18.3 on Node.js 24 for the worked logger. The primary deployment e
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R022](./requirements.md#r022).
 
@@ -54,7 +54,7 @@ Design success, invalid input, unauthorized, dependency timeout and unexpected f
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R058](./requirements.md#r058).
 
@@ -176,7 +176,7 @@ Test level thresholds, nested-secret attempts, newline/oversize fields, stream e
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R058](./requirements.md#r058).
 
@@ -233,7 +233,7 @@ Run concurrent real requests/jobs with distinct IDs, induce SQL retry and client
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐⭐
 
 Source mapping: [R094](./requirements.md#r094).
 

@@ -16,6 +16,10 @@ The [five progressive projects](./progressive-projects.md) grow one repository f
 
 Each question has one Level Up career target for its question and answer: L1 Junior, L2 Software Engineer, L3 Senior or L4 Lead. Study depth describes how deeply the lesson teaches the topic. Tech Check stars distinguish explicit chart entries from Related correspondence. The [source mapping and label guide](./requirements.md) retains the full career/proficiency matrix without repeating it below every question.
 
+## Check yourself
+
+[Start an interactive assessment](./check-yourself.md) with a repository prompt or a portable version to share. Choose Tech Check or Level Up, full or half length, and broad or focused topic coverage.
+
 ## Node.js Foundations
 
 Understand the runtime and build command-line programs with modules, asynchronous code and core APIs.
@@ -49,6 +53,9 @@ Operate message-driven and real-time services with logs, monitoring and speciali
 ## Node.js Tech Check levels chart
 
 The chart summarizes the five levels and their topic groups, from JavaScript and Node.js foundations to specialized systems.
+
+- [View the full-size levels chart](/images/node-js/nodejs-tech-check-levels.png).
+- [Open the sortable requirements matrix](./requirements.md#source-matrix): compare all 193 requirements by topic, Level Up proficiency and Tech Check level.
 
 ## Practice and references
 

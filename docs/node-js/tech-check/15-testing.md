@@ -143,7 +143,7 @@ Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), 
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R052](./requirements.md#r052).
 
@@ -634,7 +634,7 @@ Official references: [Jest async completion](https://jestjs.io/docs/30.0/asynchr
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R054](./requirements.md#r054).
 
@@ -732,7 +732,7 @@ Official references: [Jest behavior grouping](https://jestjs.io/docs/30.0/api#de
 *Study depth: introductory operations with an executable local lab*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R090](./requirements.md#r090).
 
@@ -885,7 +885,7 @@ Official references: [k6 test types](https://grafana.com/docs/k6/latest/testing-
 *Study depth: introductory performance reasoning and measurement*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R091](./requirements.md#r091).
 
@@ -988,7 +988,7 @@ Official references: [Node performance hooks](https://nodejs.org/download/releas
 *Study depth: Intermediate*
 
 Level Up: L3 — Senior\
-Tech Check level: Related ⭐⭐
+Tech Check level: ⭐⭐
 
 Source mapping: [R130](./requirements.md#r130).
 

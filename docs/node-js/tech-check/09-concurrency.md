@@ -1002,7 +1002,7 @@ Acceptance: no child/channel remains after owned close, results and lifecycle fa
 *Study depth: Intermediate*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R117](./requirements.md#r117).
 
@@ -1205,7 +1205,7 @@ Acceptance: each promise settles according to its phase, repeated close is stabl
 *Study depth: Intermediate; representative infrastructure measurements remain practical work*
 
 Level Up: L4 — Lead\
-Tech Check level: Related ⭐⭐⭐
+Tech Check level: ⭐⭐⭐
 
 Source mapping: [R119](./requirements.md#r119), [R101](./requirements.md#r101).
 

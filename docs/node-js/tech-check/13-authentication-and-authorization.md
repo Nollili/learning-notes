@@ -13,7 +13,7 @@ Use the existing Express 5/PostgreSQL application as the primary browser-session
 *Study depth: Foundational*
 
 Level Up: L1 — Junior\
-Tech Check level: Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐⭐
 
 Source mapping: [R051](./requirements.md#r051).
 
@@ -343,7 +343,7 @@ Check callback URI/proxy origin, transaction cookie scope/SameSite, expired stat
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐, ⭐⭐⭐⭐
 
 Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
 
@@ -423,7 +423,7 @@ Test overlapping/retired keys, wrong issuer/audience/type/algorithm, missing tim
 *Study depth: Advanced*
 
 Level Up: L4 — Lead\
-Tech Check level: ⭐⭐⭐; Related ⭐⭐⭐⭐
+Tech Check level: ⭐⭐⭐, ⭐⭐⭐⭐
 
 Source mapping: [R019](./requirements.md#r019), [R085](./requirements.md#r085).
 

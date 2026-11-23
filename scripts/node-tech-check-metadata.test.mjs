@@ -57,22 +57,19 @@ test('every question has one career target, hidden ID and supported source mappi
     })
     const stars = body.match(/^Tech Check level: (.+)$/m)?.[1]
     assert(stars, label)
-    for (const part of stars.split('; ')) {
-      const related = part.startsWith('Related ')
-      const allowed = rows.filter(row => row.related === related).flatMap(row => row.levels)
-      for (const group of part.replace(/^Related /, '').split(', ')) {
-        assert.match(group, /^⭐{1,5}$/u, label)
-        assert(allowed.includes(group.length), `${label}: unsupported ${related ? 'related' : 'explicit'} level ${group.length}`)
-      }
+    const allowed = rows.flatMap(row => row.levels)
+    for (const group of stars.split(', ')) {
+      assert.match(group, /^⭐{1,5}$/u, label)
+      assert(allowed.includes(group.length), `${label}: unsupported level ${group.length}`)
     }
   }
   assert.equal(cited.size, 193, 'Every supplied source row remains traceable from a lesson')
 })
 
 test('hidden curriculum placement is independent of the visible career target and source stars', () => {
-  const sample = `<!-- tech-check: t06-q01; level: 2 -->\n\n### Emitter\n\n*Study depth: Intermediate*\n\nLevel Up: L3 — Senior\\\nTech Check level: ⭐; Related ⭐⭐\n`
+  const sample = `<!-- tech-check: t06-q01; level: 2 -->\n\n### Emitter\n\n*Study depth: Intermediate*\n\nLevel Up: L3 — Senior\\\nTech Check level: ⭐, ⭐⭐\n`
   const original = collectTasks('/node-js/tech-check/events', sample)
-  const revised = collectTasks('/node-js/tech-check/events', sample.replace('⭐; Related ⭐⭐', '⭐⭐⭐⭐').replace('L3 — Senior', 'L1 — Junior'))
+  const revised = collectTasks('/node-js/tech-check/events', sample.replace('⭐, ⭐⭐', '⭐⭐⭐⭐').replace('L3 — Senior', 'L1 — Junior'))
   assert.deepEqual(revised, original)
   assert.equal(original[0].level, 2)
   assert.equal(original[0].href, '/node-js/tech-check/events#t06-q01')
