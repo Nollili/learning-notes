@@ -4,7 +4,11 @@ outline: [2, 3]
 
 # Designing service architecture
 
-Architecture is a set of decisions about **ownership, dependencies, state and failure**. These six questions extend the completed [design-pattern catalogue](./18-patterns.md); a catalogue of classes does not replace system design. Examples use Node.js 24 and the existing Express 5/PostgreSQL path. Distributed deployment is a design exercise until tested against real infrastructure.
+<span class="notes-section-label">**Section 3 reading path:**</span> You have already separated routes, use cases and storage in Section 2. Review that application with the [layers/modules](#t18-q24) and [module contracts](#t18-q25) lessons. Then explain why one deployable application is still suitable. Read the other Core answers to understand the design options. The outbox, saga, CAP and advanced load exercises are later extensions; they are not required for the single-service Project 3 release. NestJS modules and providers follow the same dependency rules. The framework does not decide which component owns business rules or data.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
+Architecture is a set of decisions about **ownership, dependencies, state and failure**. These six questions extend the application boundaries and selected patterns from Section 2. The [design-pattern catalogue](./18-patterns.md) remains a reference, not an additional prerequisite; a catalogue of classes does not replace system design. Examples use Node.js 24 and the existing Express 5/PostgreSQL path. Distributed deployment is a design exercise until tested against real infrastructure.
 
 <!-- tech-check: t18-q24; level: 3 -->
 
@@ -28,7 +32,7 @@ Group code by business feature, such as products or orders. Within a feature, se
 
 </div>
 
-A layer groups responsibilities: a controller translates HTTP, an application service runs a use case, a repository speaks to storage. A feature groups related change: `products/` owns its router, service, validation and repository. These are compatible choices, not competing architectures.
+A layer groups code by responsibility. A controller handles HTTP, an application service runs a use case, and a repository reads or writes stored data. A feature groups code that changes together: `products/` contains its router, service, validation and repository. You can organize features into layers.
 
 ```text
 products/
@@ -39,7 +43,7 @@ composition.mjs     creates dependencies and connects the modules
 server.mjs          opens the listener and owns shutdown
 ```
 
-A domain rule such as “price cannot be negative” belongs to the model/use case and is reinforced by a database constraint. JSON parsing belongs at the transport edge. Returning an ORM entity directly can accidentally expose internal fields and couple your API contract to schema changes.
+A business rule such as “price cannot be negative” belongs in the model or use case. A database constraint should also enforce it. Parse JSON at the HTTP boundary. Returning an ORM entity directly can expose internal fields and make API responses depend on database schema changes.
 
 <span class="notes-section-label">**Worked example — inject the storage capability**</span>
 
@@ -83,11 +87,13 @@ await assert.rejects(service.rename({ actor: null, id: 'p1', name: 'New' }));
 assert.deepEqual(calls, [['p1', 'acme', 'New']]);
 ```
 
-The fake proves dependency direction and DTO projection; it does not prove real tenant isolation. The SQL implementation must include tenant ownership in the update predicate. An interface per function adds ceremony when there is no genuine boundary; start with a small explicit object contract.
+For Learning Progress, the same shape is the existing `completeItem` operation calling an owner-scoped repository: HTTP parses the request, the use case checks the transition, and storage persists it atomically. Keep the existing item/session rules and public error codes. In NestJS, an injected provider supplies that repository; the controller remains an HTTP adapter.
+
+The fake repository shows how dependencies are supplied and how the response selects public fields. This selection is often called DTO projection. The fake does not prove that the real database separates tenants. Its SQL update must include the tenant ID in the `WHERE` condition. Start with a small object contract; adding an interface for every function can make simple code harder to follow.
 
 <span class="notes-section-label">**Examiner follow-up — where does a transaction belong?**</span>
 
-At the use case that requires the invariant. Pass its transaction-scoped repository into each operation. Separate repository calls that each open their own transaction cannot make a multi-step use case atomic.
+Put the transaction around the use case that must preserve a business rule, also called an invariant. Give each participating operation a repository that uses that transaction. If each repository call opens its own transaction, the whole use case cannot commit or roll back as one unit.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -117,15 +123,15 @@ A maintainable module exposes a small, clear interface, has an identifiable owne
 
 </div>
 
-Export use cases rather than raw mutable tables. Keep dependency construction in one composition root. Inject a clock, ID generator or remote client where deterministic behavior matters; do not inject every language operation. A repository contract must state not-found behavior, ordering, concurrency and error semantics as well as method names.
+Export application operations instead of exposing mutable data directly. Create and connect dependencies in one setup module, often called the composition root. Supply a clock, ID generator or remote client when tests need predictable behavior. You do not need to inject every built-in language operation. Document the repository’s results, missing-item behavior, ordering, concurrency rules and errors.
 
-A practical contract for `reserve(productId, quantity)` says whether it atomically checks stock, which domain conflict represents insufficient stock, whether it accepts an idempotency key and whether a caller can safely retry. Without that detail, swapping SQL for an in-memory implementation may change correctness while preserving the TypeScript signature.
+For example, the contract for `reserve(productId, quantity)` must answer several questions. Does it check and reduce stock atomically? Which error means insufficient stock? Does it accept an idempotency key to prevent duplicate effects? Is retrying safe? Without these answers, an in-memory replacement can behave differently from SQL even if both expose the same TypeScript signature.
 
 Use consumer contract tests when several implementations share the boundary. Unit tests check policy; integration tests check the real adapter; a small end-to-end test checks wiring. Avoid a circular dependency where the service imports its router and the router imports the service: move shared domain concepts inward, rather than patching initialization order.
 
 <span class="notes-section-label">**Design decision**</span>
 
-A shared `Money` value object can encode currency and integer minor units. A shared `BaseService` that assumes every feature uses the same authorization, retry and transaction rules is often brittle. Prefer composition until a stable repeated contract justifies abstraction. Document who may change that contract and how older consumers are migrated.
+A shared `Money` value object can keep currency and integer amounts together. A shared `BaseService` can become difficult to change if it assumes that every feature has identical authorization, retry and transaction rules. Start by combining small components. Add a shared abstraction when several callers need the same stable behavior. Document who may change that contract and how existing callers will move to a new version.
 
 <span class="notes-section-label">**Examiner follow-up — is Flux a backend architecture?**</span>
 
@@ -159,9 +165,9 @@ Consider a separate service when a feature needs independent team ownership, fai
 
 </div>
 
-A modular monolith deploys together but keeps capability interfaces. Microservices can deploy independently and own their data. SOA is a broader service-oriented style, often with larger integration services; it is not a synonym for a particular ESB product. Event-driven architecture connects producers and consumers through events and can exist inside a monolith or across services.
+A modular monolith has clear internal interfaces but is deployed as one application. Microservices can be deployed separately and own their data. Service-oriented architecture (SOA) is a broader approach to connecting services. It does not require a particular enterprise service bus (ESB) product. Event-driven architecture connects producers and consumers through events, either inside one application or between services.
 
-Before extracting invoicing, identify its owner, API/event contract, data ownership, migration/backfill plan and service-level objective. If every change requires synchronized deployment of six services sharing the same tables, you have gained network failure without useful autonomy.
+Before separating invoicing into a service, identify its team owner, API/event contract and data owner. Plan data migration, including filling existing records into the new system (backfilling). Set a service-level objective: a measurable reliability or performance target. If every change still requires six services to deploy together and share the same tables, the split adds network failures without useful independence.
 
 | Concern | Direct in-process call | Remote service call |
 |---|---|---|
@@ -170,9 +176,9 @@ Before extracting invoicing, identify its owner, API/event contract, data owners
 | State | Local transaction may span modules | Separate owners; explicit consistency workflow |
 | Diagnosis | Stack trace and local logs | Correlation, trace propagation and dependency metrics |
 
-Set outbound deadlines shorter than the caller's remaining budget. Retry only classified transient failures and only with safe operation semantics; cap attempts and add jitter. Use bulkheads to keep one dependency from consuming all sockets/work slots. A circuit breaker temporarily stops calls after failures; it is not a queue, a transaction or a cure for overload. Preserve a failure response rather than returning invented success.
+Give an outgoing call a deadline shorter than the caller’s remaining time. Retry only failures known to be temporary, and only when repeating the operation is safe. Limit attempts and add a small random delay, called jitter. Give each dependency separate capacity limits, sometimes called bulkheads, so one failure cannot use every socket or work slot. A circuit breaker temporarily stops calls after repeated failures. It does not store work or make changes transactional. Report failure rather than inventing a successful result.
 
-Advanced introductions retained: service discovery locates healthy instances; an API gateway handles edge routing; a service mesh can add transport policy but increases operating cost. A strangler migration moves one route/capability at a time with observable rollback. You do not need Kubernetes or a mesh to demonstrate the basic boundary.
+Some advanced tools may help later. Service discovery finds healthy instances. An API gateway routes incoming requests. A service mesh can apply network policies between services, but also adds operating work. A strangler migration replaces an old system one route or capability at a time, with checks and a way to reverse each step. You do not need Kubernetes or a service mesh for this exercise.
 
 <span class="notes-section-label">**Examiner follow-up — can I share an authentication database?**</span>
 
@@ -180,7 +186,7 @@ Prefer a documented identity contract over arbitrary table access. Even when sto
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
-Write an extraction ADR comparing one deployable with two. Include three concrete failure cases, timeout budget, contract versioning, migration and rollback, operating cost and evidence needed to reverse the choice. A diagram alone does not pass. Reference: [Microsoft microservices architecture](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices), [resilient systems worked notes](../module-12-resilient-distributed-systems.md).
+Write an architecture decision record (ADR) comparing one application with two services. Include three possible failures, call deadlines, contract versions, data migration, rollback and operating cost. Explain what evidence would make you change the decision. A diagram alone is not enough. Reference: [Microsoft microservices architecture](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices), [resilient systems worked notes](../module-12-resilient-distributed-systems.md). Reference: [Microsoft microservices architecture](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices), [resilient systems worked notes](../module-12-resilient-distributed-systems.md).
 
 ---
 
@@ -218,11 +224,11 @@ VALUES ('event-1', 'order-1', 'OrderPlaced', '{"orderId":"order-1"}'::jsonb);
 COMMIT;
 ```
 
-This fragment assumes tables and constraints already exist. A real relay needs bounded batches, claim/lease ownership, retry classification, poison-message handling and retention. A consumer uses a unique `(consumer_name, event_id)` receipt; if the receipt already exists it skips the database mutation. Do not mark the receipt first and perform the effect outside that transaction.
+This SQL fragment assumes that the tables and constraints already exist. A real publisher needs batch limits, clear responsibility for claimed work, retry rules and a policy for messages that repeatedly fail. Set a retention period for old records. Each consumer stores a unique `(consumer_name, event_id)` receipt with its database change. If the receipt already exists, it skips the change. The receipt and change must use the same transaction.
 
-External payment or email cannot join that local transaction. Use the provider's idempotency mechanism, retain its operation ID and reconcile unknown outcomes. **A timeout does not prove the external effect failed.** Event ordering needs an aggregate version/sequence and a partitioning policy; timestamps from different machines are not a safe global order.
+An external payment or email cannot be part of that local database transaction. Use the provider’s duplicate-protection mechanism and save its operation ID. If the result is unknown, check what actually happened before retrying; this is called reconciliation. **A timeout does not prove the external effect failed.** To preserve event order, use a version or sequence for each business entity and define how events are partitioned. Timestamps from different machines do not provide a reliable global order.
 
-A saga example: reserve inventory → authorize payment → confirm order. If payment is rejected, release inventory. Compensation is a new business action, not a database rollback across services; releasing an already-shipped item is not meaningful. Persist saga state, retry safe transitions and send irrecoverable cases to a human reconciliation workflow.
+For example, a saga can reserve stock, authorize payment and confirm an order. If payment fails, it releases the reservation. That release is a new business action, not a rollback across databases. It may no longer be valid after the item has shipped. Save the saga’s progress, retry only safe steps, and send cases that cannot be recovered automatically for human review.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -254,15 +260,15 @@ Linearizable means operations behave like they use one shared copy, with each ta
 
 </div>
 
-Linearizability means operations behave as if taking effect at one instant between invocation and response, respecting real-time order. CAP availability means every request to a non-failing node eventually receives a response; it is not the same as a monthly uptime percentage. Network partitions are possible, so specify which operations reject or wait and which may serve stale state.
+Linearizability means each operation appears to take effect at one moment between its start and response, in real-time order. Under CAP, availability means every request to a node that has not failed eventually receives a response. This differs from a monthly uptime percentage. Decide which operations must wait or fail during a network partition and which may return older data.
 
 For a public catalogue, a stale description may be acceptable with a freshness budget. For spending the last unit of stock, accepting conflicting writes on both sides can oversell; a single authoritative owner or coordinated transaction may reject requests during a partition. “Eventual” consistency promises convergence under the model's assumptions, not a bounded delay by itself.
 
-Database ACID consistency concerns preservation of declared invariants. Transaction isolation concerns concurrent transaction effects. Neither is interchangeable with CAP consistency. PostgreSQL Read Committed takes a new snapshot per statement; Serializable may abort a transaction so the application can retry the complete unit. A replica read may be stale even after the primary committed.
+ACID consistency means database changes preserve the declared rules. Transaction isolation controls how concurrent transactions affect one another. CAP consistency is a different concept. PostgreSQL Read Committed gives each statement a new snapshot. Serializable may reject a transaction so the application can retry the whole operation. A replica can still return older data after the primary has committed a write.
 
 <span class="notes-section-label">**Examiner follow-up — how do users read their own writes?**</span>
 
-Route the follow-up read to the primary, use a causal/version token with a defined wait/fallback, or return the committed representation from the write. Do not promise immediate replica visibility without an observed replication contract.
+Send the follow-up read to the primary, return the committed data in the write response, or use a version token with an explicit wait/fallback policy. Do not promise that a replica immediately shows a write unless that guarantee has been verified.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -293,11 +299,11 @@ Define realistic traffic and acceptable response times and error rates. Measure 
 
 </div>
 
-Performance is behavior for a given workload; scalability is how that behavior changes with more load and resources. Measure request rate, p50/p95/p99 latency, errors, loop delay, CPU, heap/RSS, pool wait, database time and external-service time together. Averages hide tail failures. A saturated database is not fixed by adding more HTTP replicas and multiplying its connections.
+Performance describes behavior under a particular workload. Scalability describes how that behavior changes as load and resources increase. Measure request rate, latency percentiles, errors, event-loop delay, CPU, memory, pool wait and dependency time together. For example, p95 latency is the value at or below which 95% of requests finish. An average can hide slow requests. Adding API copies can worsen a saturated database by creating more connections.
 
 For a stable system, Little's law relates average in-flight work, throughput and average time in the measured boundary. It does not predict tail latency or a safe queue size under overload. CPU-heavy work may need a bounded worker pool; asynchronous database calls usually do not benefit from worker threads. See [concurrency capacity ownership](./09-concurrency.md#t09-q08).
 
-Caches trade freshness and complexity for reduced repeated work. Bound size/TTL, include tenant/permission dimensions where required, prevent stampedes with single-flight or controlled refresh and define invalidation. A timeout or cache miss must not amplify unlimited backend calls. Never cache an authorization decision forever or share a user's response across tenants.
+A cache reduces repeated work but may return older data. Limit its size and time-to-live (TTL). Include user or tenant scope in keys when required. Prevent many requests from refreshing the same missing value at once; one shared refresh is sometimes called single-flight. Define when values are removed or updated. A timeout or cache miss must not trigger unlimited backend calls. Do not retain permission decisions forever or share one user’s private response with another tenant.
 
 For stateful bottlenecks, examine query plans and lock duration before adding a cache. For stateless request handling, test horizontal replicas behind a health-aware load balancer. Track queue age as well as depth; a bounded queue still needs deadline handling, rejection and fair ownership. Autoscaling needs startup time, a maximum and a dependency budget.
 

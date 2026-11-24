@@ -4,6 +4,10 @@ outline: [2, 3]
 
 # Cloud fundamentals for Node.js services
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Map the container, database, identity and report storage you already know to one AWS design. Prepare its network, permission, cost and recovery plan locally. Creating VM, S3, ECS or RDS resources belongs to the separate live-cloud checkpoint. You can complete Project 3’s local/design release without cloud spending. Mark deployment/recovery checks as not executed until you actually run them.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 AWS is the primary provider, following the existing [AWS service slice](../aws-service-slice.md): HTTPS load balancer → private ECS Fargate tasks → private RDS PostgreSQL, with selected S3 report objects. That slice contains the infrastructure template and prerequisites. This chapter develops the concepts, VM alternative and practice plan. **No cloud resources or costs were created by writing these notes.** Provider references were checked on 2026-11-05; check regional features, quotas and prices before execution.
 
 <!-- tech-check: t30-q01; level: 3 -->
@@ -37,7 +41,7 @@ A VM such as EC2 gives control over OS packages, runtime and processes, with cor
 | SaaS | Hosted business application | Users, access policy, data use and integration |
 | FaaS | Lambda handler triggered by events | Handler, triggers, permissions, retry/concurrency and state |
 
-Service categories overlap at the edges; name the actual responsibility boundary instead of forcing every product into one label. Horizontal scaling adds instances; vertical scaling changes the resources of an instance. Stateless API replicas need shared authoritative state and sessions. Autoscaling must respect database connections, downstream quotas, startup time, minimum/maximum and cost.
+These service categories can overlap. Describe the actual responsibilities instead of forcing each product into one category. Horizontal scaling adds application copies; vertical scaling gives one instance more resources. API copies need shared persistent state and sessions. Automatic scaling must account for database connections, dependency quotas, startup time, minimum/maximum size and cost.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -67,13 +71,13 @@ A snapshot saves storage state at a point in time, but the application or databa
 
 </div>
 
-For an owned practice VM, select a maintained OS image and architecture matching Node/native dependencies; restrict ingress, attach a narrow instance role and use a controlled management path such as Systems Manager. Do not expose SSH to every address or put long-lived cloud keys in user data. Bootstrap nonsecret packages/service configuration repeatably; cloud-init/user-data logs and metadata are not secret vaults.
+For your practice VM, choose a maintained OS image and architecture compatible with Node and native dependencies. Limit incoming access and the instance role’s permissions. Use a controlled management tool such as Systems Manager. Do not open SSH to all addresses or put long-lived keys in startup user data. Make non-secret package/configuration setup repeatable. Startup logs and machine metadata are not secret stores.
 
-Virtual devices include the virtual NIC/security groups, EBS block devices, CPU/memory and optional instance-store disks. The device name requested at attachment may differ from the guest's actual NVMe device. Inspect device identity before partitioning/formatting; formatting the wrong device destroys data. Mount via stable filesystem identifiers, apply permissions and verify reboot behavior. Instance-store storage is ephemeral and has different loss rules from EBS.
+VM resources include virtual network interfaces, security groups, EBS disks, CPU, memory and optional instance-store disks. A disk’s configured name can differ from its NVMe name inside the VM. Check the actual device before partitioning or formatting it; choosing the wrong one destroys data. Mount using stable filesystem identifiers, set permissions and test after reboot. Instance-store data is temporary and has different loss behavior from EBS.
 
-An EBS snapshot captures blocks at a point in time and is incremental. Coordinate writes or use an application/database-consistent backup process; a snapshot of several independently changing disks is not automatically a valid multi-volume database backup. Encrypt and restrict snapshots, define retention, and test restoring to a **new isolated volume/VM**. Record data-loss window and time to a verified application read, not just time until an instance boots.
+An EBS snapshot saves disk blocks at a point in time and stores later changes incrementally. Coordinate writes or use an application-consistent backup process. Snapshots of several independently changing disks are not automatically a consistent database backup. Encrypt snapshots, restrict access and define how long to keep them. Test restoration to a **new isolated volume/VM**. Measure recoverable data loss and the time until the application can read verified data, not only until the VM starts.
 
-A reusable machine image helps rebuild OS/application state; a database backup restores data. Keep those concepts separate. Stopping a VM can leave charged volumes, snapshots, IP resources and load balancers. Teardown needs an inventory and retention owner.
+A machine image helps rebuild the OS and application. A database backup restores data. Stopping a VM may leave chargeable disks, snapshots, IP resources and load balancers. List all resources during cleanup and decide who manages anything retained.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -105,7 +109,7 @@ Object storage keeps objects under keys and exposes APIs for reading and writing
 
 S3 is appropriate for immutable exports, uploads and assets. EBS is block storage for a VM's filesystem/database under its attachment constraints. EFS provides a shared file interface for workloads that need filesystem semantics. Compare latency, throughput, availability zone/region behavior, access controls, encryption, retention, lifecycle and egress/request costs.
 
-For a Products report, commit a report row/status in PostgreSQL, produce an object at a server-selected tenant key and mark the report ready with its exact key/version. The object write and SQL commit are separate systems: failures require an idempotent workflow and reconciliation/cleanup. Do not announce a report as ready before the referenced object exists.
+For a Products report, save a report/status row in PostgreSQL. Write the object under a tenant key chosen by the server. Mark the report ready only after that exact object/key/version exists. SQL and object storage cannot commit together automatically. Define safe retries and a way to reconcile failures or remove incomplete objects.
 
 ```js [report-object-key.mjs]
 import assert from 'node:assert/strict';
@@ -128,7 +132,7 @@ assert.throws(() => reportKey(undefined, 'r-1'));
 assert.throws(() => reportKey('acme', null));
 ```
 
-Here both arguments come from authorized server state. A valid key shape is not tenant authorization. The existing [AWS slice](../aws-service-slice.md#three-identities-with-different-purposes) scopes a per-tenant task role to selected report objects; a shared multi-tenant service needs per-request enforcement too. Use the AWS SDK with workload credentials rather than embedding keys. A presigned URL is a bearer capability for a specific operation/time; authorize first, keep expiry narrow and avoid logs. For uploads enforce size/type/key policy and process untrusted contents safely.
+Both arguments come from authorized server state. A correctly formatted key does not prove permission. The [AWS example](../aws-service-slice.md#three-identities-with-different-purposes) limits a tenant-specific task role to selected report objects. A service handling several tenants also needs checks on each request. Use workload credentials with the AWS SDK instead of embedded keys. Anyone holding a presigned URL can use its permitted operation until expiry. Authorize before creating it, keep expiry short and avoid logging it. Validate upload size, type and key, and safely process untrusted content.
 
 S3's documented strong consistency for object operations is not an atomic transaction across several objects and PostgreSQL. Versioning helps recover overwritten/deleted objects but can retain chargeable versions indefinitely. Lifecycle rules, encryption keys and deletion policy need deliberate review.
 
@@ -160,11 +164,11 @@ The application needs an allowed network route to the database, database credent
 
 </div>
 
-In the selected topology, RDS is private and accepts PostgreSQL traffic only from the API security group. The task needs correct subnet routes, DNS and security-group paths; the database need not be publicly reachable. A timeout suggests network/DNS/routing or saturation; authentication failure suggests the role/secret/database contract; certificate errors require the correct endpoint and CA chain rather than disabling checks.
+In this design, RDS is private and accepts PostgreSQL traffic only from the API security group. The task also needs correct routes and DNS. The database does not need a public endpoint. A timeout may indicate a network, DNS, routing or capacity problem. Authentication errors point to database credentials/permissions. Certificate errors require the correct hostname and CA chain; do not disable verification.
 
-The ECS execution role can retrieve the configured startup secret; the application task role separately controls SDK actions. The database role still needs SQL privileges. A connection URI injected at task start will not automatically rotate an already running pool when the secret changes. Plan rotation with overlapping credentials/restarts/reconnection and validate both old retirement and new success.
+The ECS execution role retrieves the startup secret. The application task role separately controls SDK actions, and the SQL role controls database permissions. Updating a secret does not automatically change an already-running connection pool. Plan how new credentials are adopted and old credentials retired, including restarts or reconnection. Test both steps.
 
-Use [the driver's verified TLS configuration](./17-databases.md#t17-q02), a separate migration identity and controlled schema rollout. Managed backup/PITR and failover features require configured retention and application reconnect behavior. Read replicas may lag; use the authoritative write path for an invariant and decide read-your-writes explicitly. A database proxy can improve connection management but does not grant infinite backend capacity or remove transaction/session constraints.
+Use [verified driver TLS settings](./17-databases.md#t17-q02), a separate migration identity and a controlled schema rollout. Configure backup retention and test restore/reconnection. Point-in-time recovery (PITR) restores data to a chosen supported time. Replicas can lag behind the primary, so decide how a user reads their own recent write. A database proxy can manage connections but does not provide unlimited capacity or remove transaction/session rules.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -194,11 +198,11 @@ Use separate identities for deploying the system, running the platform's setup t
 
 </div>
 
-The CI/deployment role changes the selected stack and passes only reviewed roles. The ECS execution role pulls the selected ECR image, emits logs and retrieves the designated startup secret. The task role grants the application's selected S3 operations. Use short-lived workload federation/roles, not repository-stored cloud access keys; protect `PassRole`, trust policies and deployment environments.
+The CI/deployment role changes the selected infrastructure and may pass only approved roles. The ECS execution role pulls the image, sends logs and reads its startup secret. The task role grants the application its required S3 actions. Prefer short-lived role credentials over cloud keys stored in a repository. Protect `PassRole`, role trust rules and deployment environments.
 
 IAM evaluates identity/resource policies and explicit denies alongside other account controls. A wildcard action/resource is not a harmless convenience. Test the exact action/key boundary and inspect denied access safely. Encrypt at rest and in transit with a managed key policy/rotation plan, while remembering encryption does not compensate for an overbroad authorized role.
 
-Subnets, routes, security groups, endpoints and application authentication have different roles. A private task may still need image/log/secret/storage access through reviewed VPC endpoints or NAT; either has costs and policy implications. A security group does not validate JWTs, and HTTPS does not stop a correctly encrypted unauthorized request. Retain audit logs with redaction and an owner.
+Subnets, routes, security groups, network endpoints and application authentication protect different boundaries. A private task may need VPC endpoints or NAT to reach image, log, secret and storage services. Both choices have costs and access rules. Security groups do not validate JWTs. HTTPS encrypts a request but does not grant permission. Keep access logs with sensitive values removed and assign responsibility for reviewing them.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -229,11 +233,13 @@ A complete cloud exercise tests a reviewed change in the intended environment. *
 
 </div>
 
-Follow the [existing AWS slice](../aws-service-slice.md) in one sandbox account/region. Its prerequisites include reviewed VPC/subnets/RDS/load balancer/certificate/endpoints and a compatible image. Do not assume the slice creates those foundations. First save the account/region, resource inventory, expected cost drivers and maximum test duration. Set budgets/alerts, but recognize alerts are not an automatic hard spending cap.
+**This is the live-cloud checkpoint.** For Project 3’s required [local/design checkpoint](./progressive-projects.md#project-3-checkpoint-levels), prepare the plan and mark the execution results not assessed. Proceed with the following live steps only when doing the separate authorized sandbox exercise.
 
-Prepare a change set and inspect creates/replacements/deletes and IAM/network effects. Deploy through controlled authority, then test HTTPS routing, application auth/tenant isolation, report storage and DB access. Measure readiness and graceful replacement, not only “stack complete.” Save release digest, redacted outputs, smoke results and observations.
+Follow the [AWS example](../aws-service-slice.md) in one sandbox account and region. It requires an existing VPC, subnets, RDS database, load balancer, certificate, endpoints and compatible image. Do not assume its template creates all of them. Record the account/region, resources, expected costs and maximum test duration first. Set budgets and alerts, but remember that an alert does not automatically stop spending.
 
-Estimate compute, load balancer, database, storage/requests, logs, endpoints/NAT, transfer and backup retention using current regional pricing. A tiny task may cost less than its supporting endpoints/load balancer. Teardown should enumerate retained backups/versions/log groups/volumes as well as the main compute. Record intentional retention and an expiry owner instead of silently deleting evidence or leaving resources indefinitely.
+Prepare a change set and inspect which resources it creates, replaces or deletes, including permission/network changes. Deploy through the approved process. Test HTTPS, authentication, tenant separation, report storage and database access. Check readiness and replacement behavior, not just the stack’s status. Retain the release digest, test results and outputs with secrets removed.
+
+Estimate costs for compute, load balancer, database, storage/requests, logs, endpoints/NAT, data transfer and backups using current regional prices. Supporting resources may cost more than a small task. During cleanup, also list retained backups, object versions, logs and disks. Record why each retained resource is needed, when it expires and who will remove it.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

@@ -4,6 +4,10 @@ outline: [2, 3]
 
 # Docker and containerization
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Package the service you have already tested with PostgreSQL. Learn the image/container concepts, build one image, then check Compose networking and shutdown. Use the linked lab for comparison. Change its COPY paths to include your application modules and static UI; do not replace your application with its small example server. A NestJS image needs compiled files and runtime dependencies. Kubernetes and deployment across several instances are later extensions.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 Use the [canonical Node/PostgreSQL container lab](../container-deployment-lab.md) for the runnable implementation. This chapter explains its decisions and troubleshooting in five questions. Docker commands use the Compose plugin (`docker compose`); the lab records its own tested Engine/Compose/image versions. Its previous live-container evidence is historical, not a new run from reading this page.
 
 <!-- tech-check: t23-q01; level: 3 -->
@@ -28,11 +32,11 @@ An image packages application files, dependencies and information about how to r
 
 </div>
 
-The Docker CLI talks to a daemon, which builds/pulls images and manages containers/networks/volumes. On macOS, Linux containers run through a Linux VM; they do not gain a separate full kernel per container. Containers share the host kernel within that environment, so runtime privileges and daemon access matter. Mounting the Docker socket into an untrusted app gives dangerous control over that environment.
+The Docker CLI sends commands to a background service called the daemon. The daemon builds or downloads images and manages containers, networks and volumes. On macOS, Linux containers run inside a Linux VM. They share that VM’s kernel rather than getting a separate kernel each. Access to the daemon is powerful: mounting its Docker socket into an untrusted application gives that application control over the Docker environment.
 
-An image contains layers; a container adds a writable layer. Removing/replacing that container loses unpersisted writes. Put authoritative database files in a deliberate named volume or managed database, and test backups independently. A bind mount maps a host path and can hide files originally present at that container path. A named volume is Docker-managed storage, not an automatic cross-host replication system.
+An image contains layers. A container adds a layer where it can write files. Replacing the container loses files saved only in that layer. Store important database files in a named volume or managed database, and test backups separately. A bind mount connects a host directory to a container directory; it can hide files originally packaged at that path. Docker manages named volumes, but does not automatically copy them to other hosts.
 
-Use one main service responsibility per container so health, scaling and logs have clear owners. This does not require literally one OS process: a controlled child process or init can be necessary. Choose a VM when you need stronger kernel separation or a different OS boundary; choose a managed service when owning the database/runtime is unnecessary.
+Give each container one main service responsibility so its health, logs and scaling are easy to manage. This does not mean it must have exactly one OS process; a controlled child process or small init process may be needed. Choose a VM when you need a separate kernel or OS. Choose a managed service when the provider can take responsibility for running the database or hosts.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -66,11 +70,11 @@ The canonical Dockerfile below is included directly from the lab. Its selected p
 
 <<< ../../workbench/node-js/deployment/container-lab/Dockerfile
 
-Copying the manifests before source allows dependency-layer cache reuse when only source changes. `npm ci` uses the lock and rejects a mismatched manifest. `--omit=dev` keeps runtime dependencies; `--ignore-scripts` is safe only for this reviewed dependency tree, not for every native/build package. Native modules need the correct runtime ABI, architecture and libc; copying host macOS `node_modules` into Linux is not a deployment strategy.
+Copy `package.json` and the lockfile before the source so Docker can reuse the dependency layer after a source-only change. `npm ci` follows the lockfile and rejects a mismatch. `--omit=dev` leaves out development dependencies. `--ignore-scripts` is appropriate for this reviewed lab, but can break packages that need installation scripts. Native modules must match the runtime ABI, CPU architecture and C library. Do not copy macOS `node_modules` into a Linux image.
 
-Set `.dockerignore` for `.git`, local `node_modules`, build output where appropriate, credentials and irrelevant files. Also COPY only intended paths. A secret copied and deleted in a later layer can remain recoverable from prior layers/cache. Use a reviewed BuildKit secret mount for private dependency access and runtime secret injection for application credentials; neither belongs in `ARG`/`ENV` baked into a public image.
+Use `.dockerignore` to exclude `.git`, local `node_modules`, credentials and files the image does not need. COPY only the intended paths. A secret copied into one layer can remain there even if a later layer deletes it. For private package access, use a reviewed BuildKit secret mount. Supply application credentials at runtime. Do not bake either kind of secret into a public image with `ARG` or `ENV`.
 
-The exec-form `CMD ["node", "server.mjs"]` delivers the stop signal to Node rather than an extra shell. A writable volume must have compatible UID/GID; `USER` alone does not fix ownership. A read-only root is useful when the app has a defined writable temp/volume policy. Do not respond to permission failures with broad privileged mode or `chmod 777`.
+Exec-form `CMD ["node", "server.mjs"]` sends the stop signal directly to Node. A writable volume must allow access by the application’s user/group IDs (UID/GID). Setting `USER` does not change existing file ownership. A read-only root filesystem works when the application has explicit writable paths for temporary files and data. Fix permission errors narrowly rather than using privileged mode or `chmod 777`.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -102,13 +106,13 @@ Compose describes a local application made of several containers. It configures 
 
 <<< ../../workbench/node-js/deployment/container-lab/compose.yaml
 
-Inside `api`, the database hostname is `db` and the port is its container port 5432. `localhost` means the API container itself. The host's random loopback port maps to API port 3000; it is unrelated to service-to-service database traffic. `EXPOSE` documents a port but does not publish it. Bind the application listener to the container interface (`0.0.0.0`) and restrict host publishing separately.
+From inside `api`, connect to database hostname `db` on container port 5432. `localhost` would mean the API container itself. The host’s temporary loopback port maps to API port 3000; containers do not use that host port to reach the database. `EXPOSE` only documents a port. Listen on `0.0.0.0` inside the container and separately restrict which host addresses publish it.
 
-The lab separates private database and edge networks. The database has no published host port. The API's edge network provides outbound routing; this is not a deny-all-egress design. Reference service names rather than ephemeral IPs, and reconnect after container replacement.
+The lab has separate database and edge networks. It does not publish a database port on the host. The API’s edge network allows outgoing traffic, so it is not a setup that blocks all outbound connections. Use service names instead of temporary container IP addresses. Handle reconnection after a container is replaced.
 
-`depends_on: condition: service_healthy` waits for the declared database probe before initial API startup. The application still checks schema/connectivity, owns connection failures later and becomes unready during draining. A database accepting connections may not yet have the expected migration. A Docker health status alone does not guarantee automatic restart, failover or traffic removal in every environment.
+`depends_on: condition: service_healthy` waits for the database’s health check during initial startup. The application must still check connectivity and schema, handle later failures and become unready during shutdown. A database can accept connections before its required migration has run. Docker health status alone does not guarantee restart, failover or removal from traffic in every platform.
 
-Runtime secrets are mounted only to the services needing them. Local Compose secret files remain trusted host files, not an encrypted managed vault. The lab uses a separate database admin bootstrap secret and application secret; ordinary requests do not receive admin credentials. An existing PostgreSQL volume does not rerun bootstrap scripts when you change a secret or initialization file. Rotate the actual role and migrate the actual schema deliberately.
+Mount secrets only in services that need them. Local Compose secret files are still files on the host; they are not an encrypted managed vault. The lab separates database-administrator credentials from normal application credentials. PostgreSQL does not repeat its initialization scripts for an existing volume when a secret file changes. Change the actual database role’s password and update the schema through deliberate operations.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -138,11 +142,11 @@ Source mapping: [R098](./requirements.md#r098), [R103](./requirements.md#r103).
 
 </div>
 
-A multi-platform manifest/index digest can select several platform images; a local image ID is a different identity. Record source revision, dependency lock, base reference, platform, test result and resulting release digest. `latest` cannot tell you which code ran yesterday. Pinning forever preserves vulnerabilities; update the selected digest through the same checks.
+A multi-platform image index can identify several platform-specific images. A local image ID identifies something different. Record the source revision, lockfile, base reference, target platform, test result and release digest. The tag `latest` does not tell you what ran yesterday. Update pinned images through the normal checks; keeping an old digest forever also keeps its old vulnerabilities.
 
 A registry hosts image repositories. Authentication authorizes pull/push to selected namespaces and should use short-lived scoped credentials where supported. Use a credential helper or protected stdin flow rather than a literal password in shell history/logs. Reading an image does not authorize publishing a replacement. This course prepares release evidence locally; registry publication is a separate controlled delivery action.
 
-Compose is useful for one-host development/integration. An orchestrator such as ECS or Kubernetes schedules replicas, replaces failures and supports rollout policy. It adds resource requests/limits, readiness/liveness, graceful termination, secrets, routing and observability decisions. A cluster does not remove application idempotency, database budgets or migration compatibility. Kubernetes implementation is optional enrichment here; AWS ECS is the primary cloud path.
+Compose is useful for local development and integration on one host. ECS or Kubernetes can schedule application copies, replace failed ones and control rollouts. You still need to configure resource limits, health checks, shutdown, secrets, routing and diagnostics. An orchestrator does not remove the need for duplicate protection, database connection budgets or compatible migrations. Kubernetes is an optional extension; AWS ECS is the main cloud path here.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -192,9 +196,9 @@ docker compose -p "$lab_project" exec api id
 docker compose -p "$lab_project" exec api node -e "fetch('http://127.0.0.1:3000/healthz').then(r=>console.log(r.status))"
 ```
 
-Use `docker inspect` for state/health/mounts/network membership but avoid dumping raw environment into shared diagnostics. `exec` requires a running process; a repeatedly crashing container may need a temporary debug command on an owned copy. Minimal/distroless images may not have a shell or curl: use available runtime diagnostics or an approved debug container rather than modifying production live.
+Use `docker inspect` to check state, health, mounts and network membership. Avoid sharing full environment output because it can contain secrets. `exec` needs a running container; for a crashing process, use a temporary debug command in your own copy. Small or distroless images may have no shell or curl. Use the available runtime tools or an approved debug container instead of changing a live production container.
 
-Capture the first error before restart loops overwrite it. An OOM-killed flag suggests memory pressure; exit 137 alone can also mean another SIGKILL. Check resource settings and actual memory use. Health failures need their probe output and timeout, not simply a longer sleep.
+Capture the first error before automatic restarts hide it. An OOM-killed flag suggests the process ran out of memory. Exit 137 can also mean another cause of SIGKILL, so check actual memory use and limits. For a failed health check, inspect its output and deadline before simply increasing a delay.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -202,7 +206,7 @@ Inject three separate failures in an owned copy: wrong database hostname, wrong 
 
 ## Revision and practical checkpoint
 
-Trace source/context → layers → release digest → process identity → listener/network → dependency → shutdown → data recovery. The canonical lab remains the implementation owner.
+Follow the complete path: source/build context → image layers → release digest → process user → listener/network → dependency → shutdown → data recovery. The linked lab provides the implementation.
 
 ### Mixed practice
 

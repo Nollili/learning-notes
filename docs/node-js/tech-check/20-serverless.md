@@ -4,7 +4,72 @@ outline: [2, 3]
 
 # Serverless functions and workflows
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Start with the [scheduled-report adapter](#scheduled-report-adapter) calling the existing application operation. Test it locally, then test the real report generation and persistent duplicate-protection records. HTTP Lambda and SQS show other trigger types. Project 3’s local/design checkpoint does not require a broker deployment or another cloud provider.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 AWS Lambda is the primary function platform here, alongside the existing long-running Express/Fargate API. Use Node.js 24 (`nodejs24.x`) for the examples; verify runtime availability in the chosen region before deployment. Azure Functions and Google Cloud Run functions remain bounded alternatives. References checked 2026-11-05; no provider deployment is implied by the local handler checks.
+
+### First scheduled-report adapter {#scheduled-report-adapter}
+
+**Adapt the existing report operation rather than invent another report.** Start here after the local service works. The HTTP Lambda and SQS examples below remain useful trigger comparisons; neither is a prerequisite for this scheduled-event experiment.
+
+Save `scheduled-report.mjs`. Supply the application’s `runReportOnce` function through dependency injection. That function verifies service identity, records each schedule occurrence persistently to prevent duplicate effects, runs the existing owner-scoped report and waits for the output file/object to be published. This adapter only reads the trigger and adds a deadline. The deployment entry creates it with the real operation and exports the returned `handler`. The local check uses a stub.
+
+```js [scheduled-report.mjs]
+export function createScheduledReportHandler({ scheduleId, runReportOnce }) {
+  if (typeof scheduleId !== 'string' || !scheduleId || typeof runReportOnce !== 'function') {
+    throw new TypeError('Schedule configuration required');
+  }
+  return async function handler(event) {
+    if (event?.source !== 'aws.events' || event['detail-type'] !== 'Scheduled Event' ||
+        typeof event.time !== 'string' || !Number.isFinite(Date.parse(event.time))) {
+      throw new TypeError('Unsupported schedule event');
+    }
+    const occurrence = new Date(event.time).toISOString();
+    return await runReportOnce({
+      operationId: `${scheduleId}:${occurrence}`,
+      signal: AbortSignal.timeout(2000)
+    });
+  };
+}
+```
+
+Read `scheduleId` from trusted deployment configuration. The application operation supplies the owner and permissions; do not take them from event fields. This example accepts EventBridge scheduled-rule events, not every scheduler format. Allow only the intended rule to invoke the deployed function. Repeated deliveries for one scheduled time produce the same operation ID.
+
+Save `check-scheduled-report.mjs`:
+
+```js [check-scheduled-report.mjs]
+import assert from 'node:assert/strict';
+import { createScheduledReportHandler } from './scheduled-report.mjs';
+
+const seen = [];
+const handler = createScheduledReportHandler({
+  scheduleId: 'daily-progress',
+  async runReportOnce(request) {
+    seen.push(request.operationId);
+    assert.equal(request.signal.aborted, false);
+    return { reportId: 'report-1' };
+  }
+});
+const event = { source: 'aws.events', 'detail-type': 'Scheduled Event',
+  time: '2026-11-23T09:00:00Z' };
+assert.deepEqual(await handler(event), { reportId: 'report-1' });
+await handler(event);
+assert.deepEqual(seen, [
+  'daily-progress:2026-11-23T09:00:00.000Z',
+  'daily-progress:2026-11-23T09:00:00.000Z'
+]);
+await assert.rejects(handler({ ...event, source: 'unknown' }));
+const failing = createScheduledReportHandler({ scheduleId: 'daily-progress',
+  async runReportOnce() { throw new Error('Report failed'); } });
+await assert.rejects(failing(event), /Report failed/);
+```
+
+Run `node check-scheduled-report.mjs`. It checks stable operation IDs, awaited results and error propagation. Its stub deliberately records both calls: **it does not prove persistent duplicate protection**. Next connect the real report/receipt implementation. Submit the same occurrence twice, restart the adapter and submit it again. Verify that it reuses one published artifact or reports a pending outcome that requires reconciliation, without repeating effects. Compare the decompressed rows with the direct report.
+
+The application operation must respond to the signal; a timeout does not automatically roll back work. Leave enough invocation time for both work and cleanup. Store output in authorized persistent storage rather than Lambda’s temporary directory. Save incomplete attempts so they can be recovered. The local two-second deadline is a teaching setting, not a recommended cloud limit. Reuse the [persistent receipt/workflow notes](../jobs-and-schedules.md) and the [Project 3 handoff](./progressive-projects.md#project-2-to-project-3-handoff).
+
 
 <!-- tech-check: t20-q01; level: 3 -->
 
@@ -28,9 +93,9 @@ A serverless function runs code when the platform receives a trigger, such as an
 
 </div>
 
-An HTTP trigger adapts a request into an event; a queue trigger delivers a batch; a schedule wakes work at intended times. Each has different response/retry semantics. Keep business logic independent of the envelope so it can be tested without a cloud account. Do not use the same `statusCode` response contract for every trigger.
+An HTTP trigger supplies a request event. A queue trigger supplies a batch. A schedule starts work at a planned time. Their responses and retry rules differ. Keep business logic separate from these event formats so it can be tested locally. A `statusCode` response is not appropriate for every trigger.
 
-Execution environments may be reused. Module-level clients can reduce setup work, but mutable per-user state must not leak between invocations. Local temporary files are ephemeral and may survive warm reuse; never rely on them as authoritative cross-invocation storage. Initialization/cold starts affect tail latency, especially with large packages, networking and expensive startup.
+The platform may reuse an execution environment. Shared database/SDK clients can reduce setup time, but never keep one user’s mutable state for the next invocation. Temporary files can remain during reuse, yet disappear when the environment ends. They are not persistent storage shared across invocations. A cold start means a new environment must initialize; package size, networking and setup work affect its duration.
 
 Prefer the existing long-running API for an always-on Express service that already needs predictable connection ownership and a familiar deployment. A report transformation or queue consumer is a reasonable first function. Long jobs, heavy sustained throughput, custom runtimes or long-lived connections may fit containers better. Compare actual limits and cost rather than rewriting every service into functions.
 
@@ -62,7 +127,7 @@ For an API Gateway proxy invocation, the platform calls your exported handler. *
 
 </div>
 
-This standalone API Gateway HTTP API payload-v2 fixture expects a configured JWT authorizer. Deployment must enforce that authorizer on the route with the correct issuer/audience; a caller must not have arbitrary direct invocation authority to fabricate an event. The sample only computes a square and does not persist data.
+This API Gateway HTTP API payload-v2 example expects a configured JWT authorizer. Protect the deployed route with the correct issuer/audience settings. An untrusted caller must not be allowed to invoke the function directly with fabricated identity fields. The example calculates a square and saves no data.
 
 ```js [http-function.mjs]
 export async function handler(event) {
@@ -168,7 +233,7 @@ Source mapping: [R056](./requirements.md#r056).
 
 </div>
 
-For an SQS standard-queue event source mapping, enable `ReportBatchItemFailures` and return failed message IDs. Successful records can be removed while failed ones retry. The adapter below processes sequentially to keep concurrency bounded; it assumes a trusted mapping supplies the SQS envelope and an injected durable `applyOnce` validates the business payload and performs receipt/effect atomically.
+For this SQS standard-queue integration, enable `ReportBatchItemFailures` and return IDs for failed messages. Successful records can then be removed while failed ones retry. The adapter handles records one at a time. It assumes a trusted SQS event mapping and an injected `applyOnce` operation that validates business data and saves the effect with a duplicate-protection receipt in one transaction.
 
 ```js [queue-function.mjs]
 export function createHandler({ applyOnce }) {
@@ -200,9 +265,9 @@ export function createHandler({ applyOnce }) {
 }
 ```
 
-Use the [durable outbox/receipt implementation](../jobs-and-schedules.md), not a new toy Set for production. Two delivery IDs can represent the same business event; deduplicate the stable business operation. Malformed/poison messages need a bounded receive/redrive policy, a dead-letter destination, monitoring and an operator/replay owner. An external effect needs the provider's idempotency/receipt contract as well.
+Use the [persistent outbox/receipt implementation](../jobs-and-schedules.md) for real duplicate protection. Two delivery IDs can refer to the same business event, so use the stable business operation ID. Limit retries of malformed or repeatedly failing messages. Route them to a dead-letter destination and assign someone to inspect/replay them. External effects also need the provider’s idempotency and outcome checks.
 
-Configure batch size 10 or less for this adapter, visibility timeout according to function timeout/batching/retry policy, and maximum concurrency within downstream capacity. The snippet is for a standard queue. FIFO requires stopping after the first failure and reporting subsequent unprocessed records appropriately to preserve order; do not reuse this continuation policy blindly. HTTP client retries and asynchronous Lambda invocations have different semantics from an SQS mapping.
+Use a batch size of at most 10 for this adapter. Set visibility timeout from the function duration, batching and retry policy, and keep concurrency within dependency capacity. This example is for a standard queue. FIFO processing must stop after the first failure and report later unprocessed records to preserve order. HTTP retries, ordinary asynchronous Lambda invocations and SQS triggers have different rules.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -232,13 +297,13 @@ Configure the runtime, memory, timeout and concurrency, plus execution permissio
 
 </div>
 
-Memory allocation also affects available CPU; benchmark the actual handler rather than choosing the smallest setting solely on price. Reserve a maximum concurrency/budget and size database pools across warm environments. Reuse a small client where supported, recover stale connections and consider a managed proxy with its documented constraints. A function in private subnets needs a deliberate path to databases and external services/endpoints; attaching a VPC does not provide internet egress by itself.
+Memory settings also affect available CPU. Benchmark the actual handler instead of choosing the smallest setting only by price. Set maximum concurrency and calculate total database connections across reused environments. Reuse a small client when supported and recover stale connections. A managed proxy may help, subject to its limits. Private-subnet functions still need network routes to dependencies; adding a VPC does not automatically provide internet access.
 
-Keep each downstream deadline within remaining invocation time, leaving time to report/clean up. Await owned promises; work started after response may be frozen or interrupted. A deadline race does not cancel an arbitrary remote operation. Avoid request-specific credentials/user data in reusable globals and never mutate a global tenant context.
+Give each dependency a deadline shorter than the invocation’s remaining time, with time left for reporting and cleanup. Await work the invocation is responsible for. Work left after the response may be paused or interrupted. Racing a timeout does not cancel arbitrary remote work. Do not store request credentials, user data or a changing tenant identity in reusable global variables.
 
-Use an execution role limited to exact resources/actions; restrict who may invoke the function and who may configure its trigger. Secrets belong in a reviewed secret/config mechanism with rotation/cache behavior. Environment variables are configuration, not an excuse to log secrets or commit them. Capture invocation errors, duration, throttles, concurrency and queue age/dead letters, with correlation IDs.
+Limit the execution role to required actions/resources. Restrict who may invoke the function or change its trigger. Use a managed secret/configuration mechanism with defined rotation and caching. Never log secrets or commit them as environment settings. Record invocation errors, duration, rejected/throttled calls, concurrency and queue delays with request/operation IDs.
 
-Optional advanced configuration: published versions/aliases support a stable release reference and controlled traffic shifts; provisioned concurrency trades cost for reduced startup variability; event destinations and workflow orchestration make recovery explicit. They do not replace compatible schema/event contracts. Deploy the same tested package, record the version and define rollback behavior for already queued events.
+Later options include published versions/aliases for stable release references and controlled traffic changes. Provisioned concurrency pays for prepared environments to reduce startup variation. Event destinations and workflow tools can help recovery. None replaces compatible database and event contracts. Deploy the tested package, record its version and define how rollback affects events already waiting.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -269,7 +334,7 @@ AWS Lambda, Azure Functions and Google Cloud's function platform all run code in
 
 </div>
 
-Azure Functions' Node programming model v4 registers code with `app.http()` or another trigger-specific registration from `@azure/functions` 4.x. That programming-model version is different from the Functions host/runtime version. Use the documented matching runtime/package requirements and do not mix v3 `function.json` registration with v4 code registration in one app. Bindings can connect services declaratively, but transactional/idempotency guarantees still need examination. Managed identity can replace static cloud credentials.
+Azure Functions’ Node programming model v4 registers handlers through `app.http()` or other functions from `@azure/functions` 4.x. This model version is separate from the Functions host/runtime version. Use compatible runtime/package versions. Do not mix v3 `function.json` registration with v4 code registration in one app. Bindings simplify service connections, but do not automatically provide transactions or duplicate protection. Managed identity can replace fixed cloud keys.
 
 Google's current documentation uses **Cloud Run functions** for the functions platform; older material calls it Cloud Functions. Node functions register HTTP or CloudEvent handlers using the Functions Framework, then deploy with the selected entry point/runtime and invoker/service identity. Do not assume its per-instance concurrency or event retry configuration matches Lambda. A CloudEvent ID identifies an event; the effect still needs durable deduplication and authorization.
 
@@ -286,7 +351,7 @@ Write an adapter comparison for the same pure computation without deploying anot
 
 ## Revision and practical checkpoint
 
-Name the trigger contract before explaining retries. Demonstrate local envelope/validation tests, then distinguish them from real provider auth, queue delivery, durable effects and cold-start measurements. All cloud exercises remain learner work until evidence exists.
+Explain the trigger’s input/output contract before discussing retries. Run local format and validation tests, then distinguish them from real-provider authentication, queue delivery, persistent effects and cold-start measurements. Cloud exercises remain untested until you have execution evidence.
 
 ### Mixed practice
 

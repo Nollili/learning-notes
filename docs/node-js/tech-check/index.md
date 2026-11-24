@@ -48,7 +48,36 @@ Use the [first HTTP milestone](./progressive-projects.md#first-http-milestone) f
 
 Design service boundaries, persistence, access control and deployment.
 
+**Continue from the full Section 2 project.** Keep its HTTP/CLI contracts, tests and NestJS companion. Work through architecture → PostgreSQL/SQL/ORM → identity → worker reports → containers/deployment. The chapter guides distinguish the required service implementation from advanced distributed-system and Section 4 extensions.
+
+Complete the [Project 3 local/design checkpoint](./progressive-projects.md#project-3-checkpoint-levels) first. Cloud execution has a separate checkpoint; a local pass is not a claim that AWS deployment or recovery was tested.
+
 <LearningPath path-id="services" />
+
+### Terms used in Section 3 {#section-3-vocabulary}
+
+The technical terms below are useful when reading documentation and discussing services. Learn the term together with its meaning; you do not need more advanced English to understand the underlying idea.
+
+| Term | Meaning in these lessons |
+|---|---|
+| Principal | Verified information about the caller, such as user ID and permissions |
+| Scope | The set of data or actions an operation is allowed to access |
+| Invariant | A business rule that must remain true, even when operations overlap |
+| Payload | The data carried in a request or message |
+| Serialization | Converting values into a format that can be stored or sent |
+| Admission | Deciding whether to accept new work or reject it because capacity is full |
+| Correlation | Using an ID to match a reply or log record with its request |
+| Settlement | A promise resolving or rejecting; this does not always mean the underlying work stopped |
+| Terminal state | A final state such as completed, failed or cancelled |
+| Drain | Let already accepted work finish before closing resources |
+| Idempotency | Repeating the same operation does not repeat its intended business effect |
+| Reconciliation | Checking what actually happened when an operation’s outcome is uncertain |
+| Retention | How long data, files or records are kept |
+| Artifact | A produced file, package or image, such as a report or release image |
+| Rollout / rollback | Introducing a release / returning to a previous compatible release |
+| Test fixture | A controlled test setup and its data |
+
+
 
 ## Hardening and Optimizing Node.js Services
 

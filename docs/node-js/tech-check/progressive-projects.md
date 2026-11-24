@@ -544,31 +544,31 @@ Project 3 is still one service. **A worker, a database and a container do not au
 
 `finishSession` ends a session; `completeItem` marks an item done only when it has no open session. **Completion must not silently finish an open session.** An item with an open session still produces `STATE_CONFLICT` / HTTP 409. Do not combine the two commands or change the existing session endpoint.
 
-In PostgreSQL, validate and persist each operation within a transaction. A session finish updates that session and the item's timestamp together; completion validates the current item/session state and changes the item's status/timestamp together. Lock the relevant item or use an equivalent concurrency check so two processes cannot both accept an incompatible transition. Race two completions: one succeeds, the other observes the completed state and returns `STATE_CONFLICT`. A failed transaction leaves both item and session state unchanged.
+In PostgreSQL, validate and save each operation in one transaction. Finishing a session updates the session and the item’s timestamp together. Completing an item checks current state and updates its status/timestamp together. Lock the item or use an equivalent concurrency check. When two completions overlap, one succeeds and the other returns `STATE_CONFLICT`. If a transaction fails, neither item nor session state changes.
 
 <span class="notes-section-label">**The repository can change without rewriting callers**</span>
 
-Before ending Project 2, create one adapter-independent contract suite for `findById`, `list`, `append`, `appendBatch` and `close`. Run it against fresh JSONL and in-memory repositories. Cover replay/state, ordering, isolated returned objects, missing items, duplicate events, invalid transitions and validation-before-write. In Project 3, run those same assertions against PostgreSQL before selecting it as the default. Keep separate tests for adapter-specific behavior: JSONL's possible partial I/O writes and PostgreSQL's transaction rollback are different guarantees.
+Before finishing Project 2, write one shared contract test suite for `findById`, `list`, `append`, `appendBatch` and `close`. Run it against fresh JSONL and in-memory repositories. Check replayed state, ordering, independent returned objects, missing items, duplicate events and invalid transitions. Verify that validation happens before writes. In Project 3, run the same checks against PostgreSQL before making it the default. Separately test each adapter’s failure guarantees: JSONL may leave partial I/O writes, while PostgreSQL can roll back a transaction.
 
-The SQL adapter reconstructs the same item/session results from relational rows. Retain processed event IDs in a small migration-managed table so duplicate-event detection survives restarts; an ORM identity map is not that record. Apply an event's ID and state changes in the same transaction. `appendBatch` validates and commits a candidate batch transactionally in PostgreSQL, which is a stronger failure guarantee than the file adapter provides. The JSONL single-process restriction still applies whenever that adapter is used; it does not become safe for concurrent writers merely because a SQL adapter exists.
+The SQL adapter returns the same items and sessions from relational rows. Save processed event IDs in a table created by a migration, so duplicate detection still works after restart. The ORM identity map is not a persistent event record. Save each event ID and its state changes in the same transaction. PostgreSQL validates and commits `appendBatch` as one transaction, giving a stronger failure guarantee than JSONL. The file adapter still allows only one owning process; adding SQL does not make concurrent JSONL writers safe.
 
 <span class="notes-section-label">**Existing data gets an explicit owner**</span>
 
-Project 2 data has no user identity. Write a one-time migration command that takes an operator-selected, existing destination user ID and a Project 2 event log. Preserve the source as a backup. Replay and validate the log, then transfer its items, sessions, timestamps and processed event IDs into PostgreSQL under that owner. Preserve item/session IDs and report totals. Reject invalid source records, an unknown destination user and collisions; do not silently assign data to the first person who signs in. Record the source digest and successful migration so repeating the command is rejected without duplicate records.
+Project 2 data has no user identity. Write a one-time migration command that accepts the Project 2 log and an existing destination user ID chosen by the operator. Keep the original log as a backup. Replay and validate it, then transfer items, sessions, timestamps and processed event IDs under that owner. Preserve item/session IDs and report totals. Reject invalid records, unknown users and ID collisions. Do not assign old data to whoever signs in first. Save the source digest and migration result so repeating the command cannot create duplicates.
 
-For the bounded learning dataset, commit the transfer and its migration record in one transaction. A failed transfer leaves the destination unchanged. This is a controlled migration task, separate from a user's ordinary `importEvents` operation. Later imports obtain their owner from the trusted caller, never from an imported field. Test with two users: migrated data is visible to the chosen owner and absent from the other user's lists, item lookups and reports.
+This learning dataset has explicit size limits. Transfer it and save its migration record in one transaction. A failure leaves the destination unchanged. This administrator-controlled migration is separate from normal `importEvents`. Later imports use the verified caller as owner, never an owner field inside the imported file. Test two users: only the selected owner can see migrated items, sessions and report data.
 
 <span class="notes-section-label">**HTTP and CLI supply the same trusted identity**</span>
 
-Create an authorization wrapper around the existing application operations and give it `{ userId, permissions }` from a verified boundary. Supply an owner-scoped repository underneath it; every lookup, list, write and report snapshot must include that owner scope. Keep identity out of item bodies and public report rows. The reusable domain rules do not parse tokens, cookies or HTTP requests.
+Wrap the existing application operations with permission checks. Supply verified `{ userId, permissions }` from the HTTP or CLI entry point. Give that wrapper a repository restricted to the owner. Every lookup, list, write and report snapshot must apply the restriction. Do not add caller identity to item request bodies or public report rows. Domain rules do not parse tokens, cookies or HTTP requests.
 
-For HTTP, use the verified bearer token or same-origin session described in Increment 2. For the standalone CLI, accept a token through `STUDY_ACCESS_TOKEN`, verify it with the same issuer/audience/key/expiry policy and construct the same caller context. Do not put the token in command-line arguments, logs or reports. A local test issuer can provide test credentials; an arbitrary `--owner` argument must not grant access. Project 3's default configuration requires identity; old unauthenticated test cases must be updated explicitly rather than supported through an accidental bypass.
+For HTTP, use the verified bearer token or same-origin session from Increment 2. For the standalone CLI, read `STUDY_ACCESS_TOKEN` and verify the same issuer, audience, key and expiry rules. Build the same trusted caller information. Never put the token in command arguments, logs or reports. A local test issuer may provide credentials, but an arbitrary `--owner` argument must not grant access. Project 3 requires identity by default. Update old unauthenticated tests explicitly; do not keep a hidden authentication bypass.
 
 Missing/invalid authentication returns HTTP 401, insufficient operation permission returns 403, and another owner's item/job returns the same 404 as an absent one. CLI equivalents fail with a nonzero exit code. Preserve the existing invalid-input, state-conflict and safe unexpected-error responses. Reuse the Project 2 success tests with a verified test caller, then add denial tests. An owner's ID in SQL rows is internal data, not a new caller-controlled item property.
 
 <span class="notes-section-label">**Keep downloads and add report jobs separately**</span>
 
-**`GET /reports/progress` stays a gzip download.** It now includes only the caller's items, using the same six report fields and download headers from Project 1. Keep `createProgressReport` as the reusable direct-report operation and retain its tests. Add jobs alongside it; do not silently change this GET into a JSON job response. Both paths reuse the same snapshot rules and report calculation/serialization code; worker execution changes where calculation runs, not its business result.
+**`GET /reports/progress` stays a gzip download.** It includes only the caller’s items and keeps Project 1’s six fields and download headers. Keep `createProgressReport` and its tests. Add report jobs separately; do not change this GET to return JSON job data. Both paths use the same snapshot, calculation and serialization rules. A worker changes where the calculation runs, not the report’s meaning.
 
 | New route | Result |
 |---|---|
@@ -577,15 +577,33 @@ Missing/invalid authentication returns HTTP 401, insufficient operation permissi
 | `POST /report-jobs/:id/cancel` with `{}` | 200 and the same status shape, after cancellation has reached its final outcome |
 | `GET /report-jobs/:id/download` | 200 gzip download only when the job is `completed`; otherwise 409 with `STATE_CONFLICT` |
 
-Jobs move from `queued` to `running`, then to exactly one of `completed`, `failed` or `cancelled`; a queued job can also go directly to `cancelled` or `failed`. Record status/ownership in PostgreSQL and expose only fixed public error codes. Require `report:run` on job operations and enforce ownership on every status, cancellation and download request. Queue admission failure returns 503 with `REPORT_BUSY` and creates no accepted job.
+Jobs move from `queued` to `running`, then to one final state: `completed`, `failed` or `cancelled`. A queued job may also go directly to `cancelled` or `failed`. Save status and ownership in PostgreSQL. Expose only fixed public error codes. Require `report:run` and check ownership for every status, cancellation and download request. If the queue cannot accept work, return 503 with `REPORT_BUSY` and do not create an accepted job.
 
-A cancellation request removes queued work or cooperatively stops running work under a documented deadline. If completion wins the race, return `completed`; never relabel a published artifact as cancelled. Cancelling a terminal job returns its existing status. The UI polls with a finite interval/deadline and stops polling on a terminal state or navigation. Disconnecting a poll does not cancel the job: use the cancellation route explicitly. Disconnecting a direct download still stops that request's owned stream.
+A cancellation request removes queued work or asks running work to stop within a documented deadline. If completion happens first, return `completed`; do not mark an already published artifact cancelled. Cancelling a job already in a final state returns that state. Poll the status at a finite interval and stop at a final state, a deadline or navigation. Closing a poll does not cancel the job; call the cancellation route. Closing a direct download still stops that request’s stream.
 
-Take the owner's consistent item snapshot when a worker starts the job. Publish the artifact before marking the job completed; failed/cancelled jobs have no downloadable partial artifact. Record a digest and byte count internally to verify the saved file. Use one owning report-job scheduler process in Project 3; multiple HTTP/CLI database clients do not imply multiple job schedulers. A worker crash marks affected jobs failed; on scheduler restart, reconcile its previous unfinished jobs as failed and clean up their temporary files. Automatic durable requeueing is deferred to the later broker stage. Job artifacts must live on configured storage that survives process restart; use a configured 24-hour retention period by default (test expiry with an injected clock), and return 410 with `REPORT_EXPIRED` after a completed job's artifact expires. Status lookup remains owner-scoped.
+Take a consistent snapshot of the owner’s items when the worker starts. Publish the artifact before setting `completed`. Failed/cancelled jobs must not expose a partial download. Save its digest and byte count for verification.
+
+Project 3 has one report-job scheduler process, even if several HTTP/CLI clients use the database. A worker crash fails its affected jobs. On scheduler restart, mark its previous unfinished jobs failed and remove their temporary files. Automatic persistent requeueing comes later in the broker stage.
+
+Keep artifacts on storage that survives process restart. Default retention is 24 hours; test expiry with an injected clock. An expired completed artifact returns 410 with `REPORT_EXPIRED`. Status requests still check ownership.
 
 <span class="notes-section-label">**The release record proves the transition**</span>
 
-Keep a short `docs/decisions/project-3-handoff.md` with the starting Project 2 tag, unchanged contracts, identity changes, data-migration procedure and rollback limits. Include commands for the shared repository suite, authenticated API/UI/CLI checks, transaction race, migration replay rejection and report download/job checks. After new writes reach PostgreSQL, switching back to the old JSONL file would lose those changes; rollback must preserve database compatibility or use an explicit reverse-data migration. Use the canonical release names `project-2-http-application` and `project-3-deployable-service` throughout.
+In `docs/decisions/project-3-handoff.md`, record the starting Project 2 tag, preserved contracts, identity changes, data migration and rollback limits. Include commands for repository tests, authenticated API/UI/CLI checks, concurrent transactions, repeated-migration rejection and report/job tests. After PostgreSQL receives new writes, the old JSONL file no longer contains current data. A rollback must keep database compatibility or explicitly migrate data back. Use the release names `project-2-http-application` and `project-3-deployable-service` consistently.
+
+
+### Project 3 checkpoint levels {#project-3-checkpoint-levels}
+
+**The required Project 3 release is a local service plus a deployment design.** Complete the PostgreSQL migration, verified identity, worker-report behavior, container/UI checks and local scheduled-adapter integration from the release checklist. Run the real local database and container tests; a design document alone does not satisfy those implementation checks.
+
+| Checkpoint | Required evidence | Completion claim |
+|---|---|---|
+| Local/design — required | Passing local application/repository/auth/worker tests; running Compose API/database/UI; migration/rollback record; bounded report and scheduled-adapter checks; reviewed AWS identity/network/storage/cost plan | Project 3 local/design release complete; cloud execution not assessed |
+| Live cloud — separate extension | Authorized sandbox deployment of that reviewed release; positive/negative access checks; observed readiness, replacement/recovery, costs and resource cleanup | Live cloud checkpoint executed, with recorded limits |
+
+For the local/design checkpoint, use the existing AWS template and prerequisites as a plan to inspect. Record which resources you would need, who can access them, how secrets/artifacts are supplied, and how migration, restore, rollback and cleanup would work. Do not mark a live-cloud exercise complete because its template parsed or its code ran locally. VM snapshots, actual S3 access tests, provider authorizers and cloud rollout/recovery remain live exercises until executed.
+
+The serverless HTTP/SQS examples show other trigger types. Project 3 requires the local scheduled-report adapter to call the same report operation. Test duplicate occurrences with real persistent receipt records and output storage. If this guarantee is incomplete, record the limitation and observed behavior as the release checklist requires. A passing stub test is not proof. Broker deployment, saga recovery, Kubernetes and advanced identity/isolation exercises are later extensions.
 
 
 ### What you learn and why it belongs here
@@ -605,7 +623,7 @@ Keep a short `docs/decisions/project-3-handoff.md` with the starting Project 2 t
 
 Put application operations in `application/`, business rules in `domain/` and external-system implementations in `adapters/`. Keep Express and the CLI as entry points to the same operations. Business code should not depend on those entry points. The main setup code creates and connects the actual implementations.
 
-Model `users`, `study_items` and `study_sessions` in PostgreSQL. Use primary/foreign keys, check constraints, unique rules and tenant/owner-aware indexes. Add a reviewed MikroORM migration and a separate test database. Use the [handoff transaction rules](#project-2-to-project-3-handoff): finish a session and complete an item as separate operations, each with atomic validation and persistence. Completion still rejects an open session.
+Model `users`, `study_items` and `study_sessions` in PostgreSQL. Add primary/foreign keys, check constraints, uniqueness rules and indexes for owner/tenant queries. Create a reviewed MikroORM migration and a separate test database. Follow the [handoff transaction rules](#project-2-to-project-3-handoff): finishing a session and completing an item remain separate operations. Validate and save each atomically. Completion still rejects an open session.
 
 Failure drill: violate each database constraint, race two completion requests and force a statement timeout. Observe the real database/ORM error, rollback behavior and public error mapping. Inspect a representative query with `EXPLAIN (ANALYZE, BUFFERS)` only on owned test data.
 
@@ -621,9 +639,9 @@ Failure drill: expired token, wrong audience, unknown key, valid token for anoth
 
 ### Increment 3 — bounded worker report {#increment-3-—-bounded-worker-report}
 
-First profile a report calculation that is large enough to block the event loop in a controlled test. If CPU work is the problem, create a fixed-size `worker_threads` pool. Limit waiting jobs, validate messages, define whether data is copied or transferred, and reject excess work promptly.
+Keep the current report calculation as a pure function using a snapshot the caller may access. Verify that direct and worker execution return identical rows and decompressed output. Then profile a large enough controlled dataset to reveal event-loop blocking. Do not change the report schema or add unrelated calculations to create work. If CPU work is the problem, use a fixed-size `worker_threads` pool. Limit queued jobs, validate messages, define copying/transfer rules and reject excess work promptly.
 
-For direct reports, pass the HTTP operation's deadline and cancellation through to the calculation. For accepted report jobs, use the job's own execution deadline and the explicit cancellation operation; a disconnected polling request does not abandon the job. Define what happens if a worker fails, exits after replying or is stopped during shutdown. A database commit and a worker result are separate outcomes; they do not automatically form one all-or-nothing operation. Do not claim exactly-once execution.
+For direct reports, pass the HTTP deadline and cancellation signal to the calculation. An accepted report job has its own execution deadline and cancellation operation; closing a polling request does not stop it. Define behavior for worker failure, exit after a reply and shutdown during work. A database commit and worker result do not automatically form one all-or-nothing operation. Do not claim exactly-once execution.
 
 Let the UI start one report job, show `queued`, `running`, `completed`, `failed` or `cancelled`, cancel an owned job and download only a completed artifact. Polling a bounded status endpoint is enough; WebSockets are unnecessary for this small interface.
 
@@ -639,7 +657,7 @@ Expose separate liveness and readiness. On termination, mark the service unready
 
 Choose one primary cloud design—for example, an ECS/Fargate-style container service plus a managed PostgreSQL database—and write the deployment contract even if you do not spend money deploying it: image digest, configuration/secrets, network boundary, health, resource limits, migration order, backward compatibility, rollback and backup/restore owner.
 
-Extract only the scheduled progress-report trigger into a serverless-compatible handler around the same application use case. Test it locally for duplicate delivery, deadline and retry. Compare cold start, connection reuse, execution limit and idempotency with the long-running container; **do not create a second business implementation**.
+Use the [scheduled-report adapter](./20-serverless.md#scheduled-report-adapter) to extract only the scheduled progress-report trigger into a serverless-compatible handler around the same application use case. Test it locally for duplicate delivery, deadline and retry. Compare cold start, connection reuse, execution limit and idempotency with the long-running container; **do not create a second business implementation**.
 
 Failure drill: wrong database DNS name, unreadable runtime path, SIGTERM during a request, incompatible migration and duplicate serverless event. Recover from evidence rather than adding privileges or deleting the database volume.
 
@@ -655,7 +673,7 @@ Failure drill: wrong database DNS name, unreadable runtime path, SIGTERM during 
 - [ ] UI report status reflects queued/running/completed/failed/cancelled outcomes, stops polling at the right time and cannot download another owner's artifact.
 - [ ] The worker pool has fixed concurrency/queue bounds, cancellation and shutdown tests; measured loop responsiveness improves for the chosen workload without an unsupported capacity claim.
 - [ ] `docker compose` starts an owned environment, readiness reflects dependency state and SIGTERM closes HTTP, workers and database handles within the stated deadline.
-- [ ] The release record identifies source revision, lockfile, image digest, migration and test results; rollback compatibility is explained.
+- [ ] The release record identifies source revision, lockfile, image digest, migration and local test results; rollback compatibility is explained. The AWS deployment plan is reviewed and every unexecuted live-cloud exercise is marked not assessed.
 - [ ] The scheduled handler survives duplicate input without duplicate durable effect, or explicitly records why the current design cannot promise that yet.
 - [ ] You can draw the runtime boundaries and explain what fails independently: client, Node process, worker, database, container scheduler, identity provider and serverless invocation.
 

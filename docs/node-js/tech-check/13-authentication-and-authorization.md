@@ -4,6 +4,10 @@ outline: [2, 3]
 
 # Authentication and authorization
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Start when the PostgreSQL-backed service works. Add [ownership checks](#t13-q01), the [browser-session model](#t13-q02) and [token verification](#t13-q03) to the same Learning Progress operations. Follow the authentication module for the full session/CSRF setup. Passport shows another integration approach; external identity providers are an extension. Advanced OIDC, key rotation and refresh-race questions t13-q06–q08 belong to Section 4. Keep the handoff’s verified identity for both HTTP and CLI.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 Use the existing Express 5/PostgreSQL application as the primary browser-session implementation. This chapter adds examination questions and bounded token examples on Node.js 24; it does not introduce a second identity platform. Security references were checked on 2026-11-05. The [full authentication module](../module-09-authentication-authorization.md) contains the session, password-reset and refresh-family implementation.
 
 <!-- tech-check: t13-q01; level: 3 -->
@@ -28,7 +32,7 @@ Source mapping: [R051](./requirements.md#r051).
 
 </div>
 
-A role groups permissions; an attribute-based rule also considers tenant, ownership, resource status or time. Deny by default and evaluate each operation, including background tasks and alternate API routes. Hiding a button helps usability, not enforcement. A resource ID is an identifier, not proof of authority.
+A role groups permissions. Attribute-based rules also check facts such as tenant, owner, resource state or time. Deny access unless an explicit rule allows it. Apply checks to background tasks and every API route. Hiding a button can improve usability, but does not enforce access. Knowing an ID is not proof of permission.
 
 ```js [ownership-policy.mjs]
 import assert from 'node:assert/strict';
@@ -50,7 +54,9 @@ assert.equal(mayEdit(actor, { tenantId: 'a', status: 'archived' }), false);
 assert.equal(mayEdit(null, { tenantId: 'a' }), false);
 ```
 
-Treat `actor` as trusted only after credential verification and server-side mapping. In the real adapter, use `WHERE id=$1 AND tenant_id=$2` to avoid a check-then-use gap or cross-tenant lookup. If permissions can change concurrently, sensitive mutations need the relevant check within their consistency boundary.
+In the cumulative project, map the product example to study-item ownership: a verified `userId` scopes that user’s item lookup, write and report. Use two users for the required denial tests; you do not need to invent an organization hierarchy merely because this comparison fixture uses `tenantId`.
+
+Trust `actor` only after verifying credentials and mapping them to server-controlled identity. In the database adapter, include `WHERE id=$1 AND tenant_id=$2` in the operation itself. This avoids reading another tenant’s item or checking ownership separately from the write. If permissions can change concurrently, protect the permission check and sensitive change within the required consistency boundary.
 
 Return 401 for absent/unusable authentication, normally with the API's `WWW-Authenticate` challenge; 403 for a known caller without permission. A consistent 404 policy can conceal object existence. Do not turn a database outage into “invalid password”; operational errors need a separate path without leaking details.
 
@@ -82,15 +88,15 @@ With a server-side session, the browser holds a random session ID and the server
 
 </div>
 
-A session cookie carries a random identifier; the shared store owns account binding, expiry and revocation. Multiple replicas need the same store and signing configuration, not separate in-memory sessions. Regenerate the ID after login/privilege changes to prevent fixation; persist it before responding. Logout destroys server state and clears the cookie with matching path/domain options.
+The session cookie contains a random ID. A shared server-side store links it to the account and manages expiry and revocation. Multiple application copies need the same store and signing configuration. Generate a new session ID after login or a privilege change to prevent session fixation, and save it before responding. Logout removes server-side state and clears the cookie with matching path/domain settings.
 
-For HTTPS deployment, use an appropriate `Secure`, `HttpOnly`, `SameSite` cookie policy; a host-only `__Host-` name additionally requires Secure, path `/` and no Domain attribute. Configure Express proxy trust for the actual trusted proxy chain rather than trusting all forwarded input. `HttpOnly` blocks JavaScript cookie reads but does not stop XSS from making authenticated requests.
+For HTTPS, configure `Secure`, `HttpOnly` and `SameSite` appropriately. A `__Host-` cookie also requires Secure, path `/` and no Domain attribute. Trust only the actual proxy chain in Express; do not trust arbitrary forwarded headers. `HttpOnly` prevents JavaScript from reading the cookie. It does not prevent malicious scripts from sending authenticated requests.
 
-Cookie credentials are attached automatically by the browser. Protect unsafe methods with a session-bound CSRF token and trusted-origin checks; choose SameSite as another defense, not the entire policy. Cross-site `SameSite=None` requires Secure and stronger attention to browser cookie rules. CORS controls browser access to responses, not authentication or CSRF by itself.
+The browser sends cookie credentials automatically. Protect state-changing requests with a session-bound CSRF token and trusted-origin checks. SameSite adds protection but is not the whole strategy. Cross-site `SameSite=None` requires Secure and careful handling of browser cookie rules. CORS controls browser access to responses; it does not provide authentication or CSRF protection by itself.
 
 A bearer access token can be replayed by whoever holds it. Keep it short-lived; do not log it or put it in URLs. Browser local storage is readable by injected scripts. A backend-for-frontend can keep provider tokens on the server and expose only its session to the browser.
 
-Refresh credentials need longer-lived server state, hashed storage where appropriate, rotation, reuse detection and family revocation. Two simultaneous refreshes need a defined atomic policy; “generate another token” is insufficient. Revocation cannot undo already authorized in-flight work. Use idle and absolute session expiry, and revoke on password reset/account disable.
+Refresh credentials need persistent server-side state, protected storage, rotation and detection of reuse. Define how to revoke the whole related token family. Two simultaneous refreshes need an atomic rule; generating another token is not enough. Revocation cannot undo work already authorized and running. Configure both idle expiry and a maximum session lifetime. Revoke access after password reset or account disable.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -120,7 +126,7 @@ Source mapping: [R019](./requirements.md#r019).
 
 </div>
 
-A JWS compact token has encoded header, payload and signature. The header is untrusted input until verification. Never select arbitrary algorithms or fetch a URL supplied by the token. `kid` selects from a configured issuer's trusted keys; it is not a filesystem path or arbitrary network destination. Cache and bound JWKS refresh, and distinguish unknown keys/rotation from accepting unsigned input.
+A compact JWS token contains an encoded header, payload and signature. The header is untrusted until verification succeeds. Do not accept arbitrary algorithms or fetch a token-supplied URL. Use `kid` only to select among keys from the configured trusted issuer. Limit and cache JWKS key-list refreshes. An unknown key is a verification problem, not permission to accept an unsigned token.
 
 The following standalone fixture uses `jose` 6.1.3 and Node.js 24. Generate local keys only for the demonstration; real services load a reviewed issuer configuration and protected signing keys. Install in a disposable example directory, not the docs root: `npm install --save-exact jose@6.1.3`.
 
@@ -175,7 +181,7 @@ const modified = Buffer.from(JSON.stringify({ sub: 'admin' })).toString('base64u
 await assert.rejects(verify(`${header}.${modified}.${signature}`));
 ```
 
-The fixed type is a local contract with this issuer; not all providers use `at+jwt`. Validate their actual access-token profile. ID tokens authenticate a login to their client; do not substitute them for resource-server access tokens. Signed claims can become stale: account disable, key compromise and immediate logout may require introspection or server-side revocation/version checks. Clock tolerance is small deliberate skew, not permission to ignore expiry.
+The `typ` value is part of this example issuer’s contract. Other providers may use a different access-token profile. An ID token proves login to its client; do not use it as an API access token. Signed claims can become outdated after an account is disabled, a key is compromised or a user logs out. Immediate invalidation may need a server-side check or revocation/version record. Clock tolerance allows small clock differences; it must not bypass expiry.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -205,7 +211,7 @@ Authentication middleware verifies credentials and adds a small amount of truste
 
 </div>
 
-An Express pipeline typically applies a bounded body parser, session/credential middleware, authentication, input validation and use-case authorization before handling the request. Error middleware stays last. Order matters: `passport.session()` requires session middleware first; a route registered before its guard is not protected retroactively.
+An Express request pipeline commonly runs a size-limited body parser, session/credential middleware, authentication, input validation and use-case permission checks. Put error middleware last. `passport.session()` needs session middleware before it. A route registered before a guard is not protected by adding that guard later.
 
 The integration shape below assumes an existing injected `passport` instance with a reviewed local strategy and configured session serialization, plus `csrfGuard`, `allowProductRead` and a router. It is not a complete runnable server:
 
@@ -219,9 +225,9 @@ app.post('/login', csrfGuard, passport.authenticate('local'), (req, res) => {
 app.use('/products', requireSessionUser, allowProductRead, productsRouter);
 ```
 
-A local strategy receives credentials and calls its completion callback exactly once: error for an operational failure, `false` for unusable credentials, or a public account identity for success. Catch rejected async password verification and call `done(error)`; do not let it escape from a callback API. Use an established password-hashing implementation such as Argon2id with reviewed parameters, generic failures and abuse controls. Do not store plaintext or fast SHA hashes of passwords.
+A local strategy receives credentials and calls its completion callback once. Pass an error for an operating failure, `false` for invalid credentials, or the public account identity for success. Catch rejected password-check promises and call `done(error)`. Use an established password-hashing implementation such as Argon2id with reviewed settings, generic failure responses and abuse limits. Never store plaintext passwords or use fast SHA hashes as password storage.
 
-Serialize a stable account ID, not a password hash or entire account object. Deserialize to current allowed account state, with a deliberate cache/revocation policy. For bearer APIs, disable Passport login-session creation where the strategy supports `{ session: false }`. Local, OIDC and bearer strategies solve different wire protocols; choose the maintained strategy matching your requirement rather than installing all of them.
+Save a stable account ID in the session, not a password hash or full account object. When restoring the session, load current allowed account state and define cache/revocation rules. For bearer APIs, disable login-session creation with `{ session: false }` where the strategy supports it. Local-password, OIDC and bearer strategies handle different protocols. Choose the maintained strategy your application needs.
 
 <span class="notes-section-label">**Debugging and acceptance**</span>
 
@@ -251,11 +257,11 @@ Configure which issuer you trust and which audience you accept. **A caller-suppl
 
 </div>
 
-For this project's optional federation path, put authorization-code login in the backend-for-frontend, using a maintained OIDC client, PKCE, an exact registered redirect URI, state/transaction binding and nonce validation where required by the chosen OIDC flow. Exchange the code on the server, validate the returned identity and create the existing application session. Do not hand-code the protocol or use the legacy implicit/password grant as a new default.
+For the optional external-login path, handle authorization-code login in the backend-for-frontend using a maintained OIDC client. Configure PKCE, an exact registered redirect URI, a state value bound to the login attempt, and nonce checks when required by the flow. Exchange the code on the server, validate identity and create the existing session. Do not implement the protocol yourself or choose the legacy implicit/password grant for a new application.
 
-Map identities using the stable `(issuer, subject)` pair. Email alone can collide or change; account linking is a security-sensitive action requiring proof, not an automatic merge. A provider authenticates its user but does not decide your tenant membership, product ownership or administrator permissions. Compare managed identity services on supported protocols, MFA/recovery, data residency, outage behavior, cost and migration/export before committing.
+Identify users by the stable `(issuer, subject)` pair. Email can change or be shared by identities from different issuers. Linking accounts needs proof; do not merge them automatically. A valid provider login does not grant local tenant membership, ownership or administrator rights. When comparing identity providers, consider protocols, multi-factor authentication, recovery, data location, outages, cost and data export.
 
-For a machine job, use a workload identity/client-credentials flow with narrow scopes and short lifetime. A gateway may authenticate at the edge, but downstream services still need a trusted propagation contract and local authorization. Strip spoofed identity headers at the trusted boundary. Either verify an appropriately audience-bound token downstream or exchange it for a narrower one; blindly forwarding a broad token everywhere expands the blast radius.
+For a machine job, use workload identity or a client-credentials flow with limited permissions and a short lifetime. A gateway can authenticate at the edge, but downstream services still need trusted identity information and local permission checks. Remove caller-supplied identity headers at that boundary. Verify a token intended for the downstream audience, or exchange it for a more limited token. Forwarding a broad token everywhere increases the damage if it leaks.
 
 mTLS authenticates a transport peer and protects its channel; application authorization still determines which operation that peer may perform. Rotate credentials, bound key-cache refresh and fail closed when authenticity cannot be established. An identity-provider outage may allow existing valid sessions under your expiry policy; it must not switch protected routes into anonymous success.
 

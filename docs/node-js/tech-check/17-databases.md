@@ -4,9 +4,82 @@ outline: [2, 3]
 
 # Database fundamentals and data access
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Complete the [local database checkpoint](#local-database-checkpoint). Then study query parameters, constraints, transactions and the [first ORM lookup](#t17-q06). Add session loading and writes step by step until the shared repository tests pass. Questions t17-q09–q11 are the deeper Section 4 continuation. Project 3 still needs its own concurrent-transaction and basic query-plan checks, but not every advanced isolation/index exercise.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 The primary path is **PostgreSQL → parameterized SQL → MikroORM**, using Node.js 24, `pg` 8.16.3 and the application's pinned MikroORM 7.2.5 packages. SQL examples use PostgreSQL 16-compatible syntax; PostgreSQL 18 documentation is the reference for stated semantics, not a claim that the local server was upgraded.
 
 The full [Relational Databases, PostgreSQL and MikroORM module](../module-08-postgresql-mikroorm.md) covers the requested relational curriculum: tables/types/keys, modeling and normalization, joins, indexes, ACID, PostgreSQL setup, ORM CRUD, relationships, population and migrations. Its [SQL workbench](../sql-query-workbench.md) adds executable reports. This page is the technical-examination companion, not a replacement or a second persistence stack.
+
+### Local database checkpoint {#local-database-checkpoint}
+
+**Use your completed Project 2 application as the baseline.** This isolated scratch lab teaches the new database boundary before you change its repository. You need PostgreSQL 16 server/client tools (`initdb`, `pg_ctl`, `createdb`, `psql`) on PATH and Node 24. Check their versions first. Docker is not a prerequisite for this first database exercise; the later container lab packages the same kind of dependency.
+
+If an assignment supplies a database, use its exact settings and skip cluster creation. Otherwise, create a private disposable cluster in a terminal you will keep open:
+
+```sh
+study_lab=$(mktemp -d "${TMPDIR:-/tmp}/study-db.XXXXXX")
+mkdir "$study_lab/socket"
+initdb -D "$study_lab/data" -U study_learner --auth-local=trust --auth-host=reject
+pg_ctl -D "$study_lab/data" -l "$study_lab/postgres.log" -o "-k \"$study_lab/socket\" -h ''" -w start
+export PGHOST="$study_lab/socket"
+export PGPORT=5432
+export PGUSER=study_learner
+export PGDATABASE=study_learning
+export PGOPTIONS='-c search_path=services_intro,public'
+createdb
+psql -X -v ON_ERROR_STOP=1 -c 'SELECT current_database(), current_user;'
+```
+
+Expected database/user: `study_learning` / `study_learner`. The temporary directory is private and the cluster listens only on its Unix socket, with no TCP listener. Local trust is limited to this disposable fixture; it is not a deployment authentication policy. Keep using this terminal so Node and `psql` inherit the same settings. Do not copy these fixture settings into Autocode or a remote database.
+
+Create a separate JavaScript lab folder, run `npm init -y`, then `npm install --save-exact pg@8.16.3`. Save `study-schema.sql` there and execute it once with `psql -X -v ON_ERROR_STOP=1 -f study-schema.sql`:
+
+```sql [study-schema.sql]
+CREATE SCHEMA services_intro;
+CREATE TABLE services_intro.study_items (
+  id text PRIMARY KEY,
+  owner_id text NOT NULL,
+  title text NOT NULL CHECK (length(btrim(title)) BETWEEN 1 AND 120),
+  estimate_minutes integer NOT NULL CHECK (estimate_minutes BETWEEN 1 AND 1440),
+  status text NOT NULL CHECK (status IN ('active', 'done')),
+  resource_url text,
+  created_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL
+);
+INSERT INTO services_intro.study_items VALUES
+ ('item-1', 'alice', 'File reads', 30, 'active', NULL,
+  '2026-11-23T09:00:00Z', '2026-11-23T09:00:00Z'),
+ ('item-2', 'bob', 'Worker threads', 45, 'active', NULL,
+  '2026-11-23T09:01:00Z', '2026-11-23T09:01:00Z');
+```
+
+These rows deliberately have no sessions. They are a small read slice of the Learning Progress model, not the full Project 3 migration. The final schema adds users, sessions and processed events according to the [handoff](./progressive-projects.md#project-2-to-project-3-handoff). Re-running this setup should fail rather than silently replace existing data.
+
+Save `first-query.mjs`:
+
+```js [first-query.mjs]
+import assert from 'node:assert/strict';
+import { Pool } from 'pg';
+
+const pool = new Pool({ max: 2, connectionTimeoutMillis: 2000, statement_timeout: 3000 });
+try {
+  const result = await pool.query(
+    'SELECT id, title FROM services_intro.study_items WHERE owner_id=$1 AND id=$2',
+    ['alice', 'item-1']
+  );
+  assert.deepEqual(result.rows, [{ id: 'item-1', title: 'File reads' }]);
+  console.log(result.rows);
+} finally {
+  await pool.end();
+}
+```
+
+Run `node first-query.mjs`: expect Alice's item. Change only the owner argument to `bob` and predict an empty result; adapt the assertion and verify it. Restore the original afterward. You have now crossed Node → driver → SQL → row data, while keeping ownership in the query. The deployment pool configuration in the next lesson adds TLS and deployment credentials to this already understood boundary.
+
+When finished with all database exercises, stop only this cluster with `pg_ctl -D "$study_lab/data" -m fast -w stop`. Keep its directory until you have retained your observations; later removal of that disposable directory deletes its data. Close Node/ORM pools before stopping the server.
+
 
 <!-- tech-check: t17-q01; level: 3 -->
 
@@ -97,9 +170,9 @@ pool.on('error', (error) => {
 // Shutdown: stop admission, drain requests, then await pool.end().
 ```
 
-The environment/secret provider supplies real values; never print the URI. Fail startup on missing settings. Local disposable Unix-socket fixtures may deliberately omit TLS because no network is used; that is a fixture choice, not production guidance. Disabling certificate verification to fix a hostname/CA error removes server authentication. Separate migration privileges from ordinary request credentials.
+The environment or secret provider supplies the real settings. Never print the connection URI. Fail startup if required settings are missing. This private Unix-socket test can omit TLS because it uses no network connection; remote deployments still need verified TLS. Disabling certificate checks hides a hostname/CA problem by removing server authentication. Keep migration privileges separate from normal request credentials.
 
-Pool exhaustion can mean leaked clients, long transactions or too much admission. Measure `totalCount`, `idleCount`, `waitingCount`, acquisition delay and server sessions. `connectionTimeoutMillis` bounds acquiring/connecting; `statement_timeout` bounds server statement execution, not the entire HTTP lifecycle. Release checked-out clients in `finally`; a broken client should be evicted. Budget headroom for migrations/admin work and all replicas.
+A full pool may mean connections were not released, transactions are long, or too much work was accepted. Measure `totalCount`, `idleCount`, `waitingCount`, connection-acquisition delay and server sessions. `connectionTimeoutMillis` limits acquiring/connecting; `statement_timeout` limits a server statement. Neither limits the whole HTTP operation. Release checked-out clients in `finally` and remove broken clients from the pool. Leave capacity for administration, migrations and other application copies.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -175,7 +248,7 @@ ROLLBACK;
 
 In Node use `pool.query(text, values)` with `$1` placeholders. The malicious-looking name remains text. For dynamic sorting, map an allowlisted input such as `name` or `created` to fixed SQL fragments; `$1` cannot stand for a column name. Tenant identifiers must come from the trusted principal, not an unchecked request body.
 
-CRUD means create/read/update/delete rows. Project explicit columns and map numeric/time types intentionally: PostgreSQL bigint/numeric may be returned as strings to avoid precision loss; JavaScript floating point is not a general money type. For pagination, use a bounded limit and a stable ordering with a unique tie-breaker. Soft deletion needs a retention/visibility/uniqueness policy, not only a `deleted_at` column.
+CRUD means create, read, update and delete. Select only required columns and deliberately map number/time types to application values. PostgreSQL bigint/numeric can arrive as strings to avoid losing precision. JavaScript floating-point numbers are not a general money representation. Pagination needs a limit and stable ordering, with a unique field to break ties. Soft deletion also needs rules for visibility, retention and uniqueness; a `deleted_at` column alone is insufficient.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -205,7 +278,7 @@ A `JOIN` combines related rows so a result can include columns from both sides. 
 
 </div>
 
-An INNER JOIN omits unmatched rows. A LEFT JOIN retains the left row with NULL right-side values; a right-side `WHERE` filter can accidentally remove those unmatched rows. Join on the complete relationship key, including tenant where applicable. One product with two lines produces two joined rows: sum line quantities at the correct grain rather than double-counting product stock.
+An INNER JOIN leaves out rows without a match. A LEFT JOIN keeps each left row and fills missing right-side fields with NULL. A right-side condition in `WHERE` can accidentally remove those unmatched rows. Join on the complete key, including tenant ID where required. A product with two order lines produces two joined rows. Aggregate at the intended level so you do not count its stock twice.
 
 `UNION` removes duplicate result rows; `UNION ALL` preserves them and avoids that deduplication work. Both require matching column counts and compatible types. Neither updates either input table.
 
@@ -231,9 +304,9 @@ DROP TABLE prices;             -- removes this temporary table's structure
 ROLLBACK;
 ```
 
-This MERGE syntax is available in PostgreSQL 15+; newer versions add clauses that should not be copied into the PostgreSQL 16 baseline blindly. Source keys must be unique for the intended match. MERGE and `ON CONFLICT` have different concurrency semantics; use `ON CONFLICT` for an insert/update key-conflict workflow and handle real transaction failures. Neither is a distributed reconciliation policy.
+This MERGE syntax works in PostgreSQL 15 and later. Newer versions add clauses that may not work in the PostgreSQL 16 baseline. Make source keys unique for the intended match. MERGE and `ON CONFLICT` behave differently under concurrency. Use `ON CONFLICT` for insertion/update based on a key conflict, and handle transaction failures. Neither automatically reconciles changes across distributed systems.
 
-DDL (`CREATE/ALTER/DROP`) changes structure; `DELETE` changes rows; `TRUNCATE` has distinct locking/trigger behavior. Version schema changes in migrations. Prefer expand→backfill→switch→contract for rolling deployments; an old process can still need the previous column. Preview destructive changes, test a restore and separate seed data from schema. Do not auto-synchronize production schema on every startup.
+DDL commands such as `CREATE`, `ALTER` and `DROP` change the schema. `DELETE` changes rows; `TRUNCATE` has different lock and trigger behavior. Record schema changes in migrations. For rolling deployments, add compatible fields, fill existing data, switch code, then remove old fields. Old processes may still require the previous column. Review destructive changes, test a restore and keep seed data separate from schema. Do not automatically synchronize production schema at every startup.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -263,7 +336,11 @@ A transaction groups database changes so they commit together or roll back toget
 
 </div>
 
-ACID means atomic commit/rollback, preserved declared invariants, isolation from concurrent work and durability according to the database's configured guarantees. It does not include an email or payment API automatically. Keep transactions short; never hold a database lock while waiting for user input or a remote payment.
+ACID describes atomic commit/rollback, preservation of declared rules, isolation between concurrent transactions and durability under the database’s configured guarantees. It does not automatically include an external email or payment API. Keep transactions short. Never hold a database lock while waiting for user input or a remote payment.
+
+Create persistent tables before running the inventory example. Copy only the `tenants`, `products` and `lines` definitions and seed inserts from the earlier SQL example into `persistent-stock.sql`. Remove `TEMP` and `ON COMMIT DROP`. Leave out the demonstration `PREPARE`/checks and outer `BEGIN`/`ROLLBACK`. Run `psql -X -v ON_ERROR_STOP=1 -f persistent-stock.sql` once. The checkpoint’s `PGOPTIONS` selects `services_intro`. These tables remain available to later Node connections; the original temporary tables do not.
+
+For Learning Progress, apply the same transaction reasoning to `finishSession` and `completeItem` separately. Lock/check the relevant item and persist each operation atomically; an open session must still make completion fail. Do not add an inventory-reservation rule to the homework.
 
 This integration function assumes `products(tenant_id,id,stock)` and `lines(tenant_id,product_id,quantity)` from the fixture are durable tables in your isolated application schema. It validates bounded input, conditionally reserves stock and records the line in one transaction:
 
@@ -313,9 +390,9 @@ export async function reserveStock(pool, tenant, productId, quantity) {
 }
 ```
 
-Concurrent conditional UPDATEs on the same row are coordinated by PostgreSQL. A separate “read stock, then subtract my old value” can lose updates. For multi-row decisions, select appropriate row locks in consistent order or choose Serializable with full-transaction retry. Default Read Committed is not a guarantee against all business anomalies. Repeatable Read and Serializable have distinct guarantees; know which invariant you are protecting.
+PostgreSQL coordinates concurrent conditional UPDATEs to the same row. Reading stock first and later writing a value calculated from that old read can lose updates. For decisions across several rows, lock rows in a consistent order or use Serializable and retry the complete transaction when appropriate. Default Read Committed does not protect every business rule. Choose the isolation/locking rule for the invariant you need to preserve.
 
-`40001` serialization failure and `40P01` deadlock can justify bounded full-transaction retries with jitter. A uniqueness error is usually a business conflict; a timeout or lost connection around COMMIT may leave the outcome unknown. **Blindly retrying an uncertain commit can duplicate work.** Add a durable idempotency key/receipt and reconciliation contract for retriable API mutations. The small function above deliberately has no retry/idempotency contract.
+Serialization failure `40001` and deadlock `40P01` can justify retrying the whole transaction with limited attempts and random delays. A uniqueness failure usually represents a business conflict. A timeout or lost connection near COMMIT can leave the outcome unknown. **Retrying an uncertain commit can duplicate work.** Operations that allow retry need a persistent idempotency key/receipt and a way to check uncertain outcomes. This small function does not implement those features.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -345,7 +422,94 @@ An ORM maps application objects and relationships to database data and tracks ch
 
 </div>
 
-Use the [existing MikroORM 7.2.5 setup, entities and CRUD](../module-08-postgresql-mikroorm.md#_13-mikroorm-setup) rather than a second configuration. All `@mikro-orm/*` packages must use compatible versions. In the primary application, request context is established before route handlers; background jobs create a fresh context/fork too. A global EntityManager can leak state between requests and accumulate entities.
+<span class="notes-section-label">**First replacement: the existing repository lookup**</span>
+
+Keep the [local database checkpoint](#local-database-checkpoint) running and inherit its PG settings. In that JavaScript lab, install `@mikro-orm/core@7.2.5` and `@mikro-orm/postgresql@7.2.5` with `npm install --save-exact`. This small bridge uses an explicit `EntitySchema` so no TypeScript compiler or decorator configuration is needed. The full course's compiled decorator setup remains available for its larger model.
+
+Save `item-reader.mjs`:
+
+```js [item-reader.mjs]
+import { EntitySchema } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/postgresql';
+
+const ItemRow = new EntitySchema({
+  name: 'ItemRow', tableName: 'study_items', schema: 'services_intro',
+  properties: {
+    id: { type: 'string', primary: true },
+    ownerId: { type: 'string', fieldName: 'owner_id' },
+    title: { type: 'string' },
+    estimateMinutes: { type: 'integer', fieldName: 'estimate_minutes' },
+    status: { type: 'string' },
+    resourceUrl: { type: 'string', fieldName: 'resource_url', nullable: true },
+    createdAt: { type: 'Date', fieldName: 'created_at' },
+    updatedAt: { type: 'Date', fieldName: 'updated_at' }
+  }
+});
+
+export async function openItemReader(ownerId) {
+  if (typeof ownerId !== 'string' || !ownerId) throw new TypeError('Owner required');
+  const orm = await MikroORM.init({
+    entities: [ItemRow], host: process.env.PGHOST,
+    port: Number(process.env.PGPORT ?? '5432'),
+    user: process.env.PGUSER, dbName: process.env.PGDATABASE,
+    pool: { min: 0, max: 2 },
+    driverOptions: { connectionTimeoutMillis: 2000, statement_timeout: 3000 },
+    debug: false
+  });
+  try {
+    await orm.connect();
+    await orm.em.getConnection().execute('SELECT 1');
+    return {
+      async findById(id) {
+        const row = await orm.em.fork().findOne(ItemRow, { id, ownerId });
+        if (!row) return null;
+        return {
+          id: row.id, title: row.title, estimateMinutes: row.estimateMinutes,
+          status: row.status, resourceUrl: row.resourceUrl ?? null,
+          createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString(),
+          sessions: []
+        };
+      },
+      close: () => orm.close(true)
+    };
+  } catch (error) {
+    await orm.close(true);
+    throw error;
+  }
+}
+```
+
+This example implements **lookup for items without sessions only**. It is not the complete application repository. Returning `sessions: []` is valid for these test rows, but would lose information for real items with sessions. Add session loading, writes and error mapping next. Run the full existing repository contract suite before replacing JSONL.
+
+Save `check-item-reader.mjs` to exercise the same `findById` result/absence contract callers already use:
+
+```js [check-item-reader.mjs]
+import assert from 'node:assert/strict';
+import { openItemReader } from './item-reader.mjs';
+
+const repository = await openItemReader('alice');
+try {
+  const item = await repository.findById('item-1');
+  assert.equal(item.title, 'File reads');
+  assert.equal(item.createdAt, '2026-11-23T09:00:00.000Z');
+  assert.deepEqual(item.sessions, []);
+  assert.equal(await repository.findById('item-2'), null);
+  assert.equal(await repository.findById('missing'), null);
+  item.title = 'Changed by caller';
+  assert.equal((await repository.findById('item-1')).title, 'File reads');
+} finally {
+  await repository.close();
+}
+```
+
+Run `node check-item-reader.mjs`. It exits without output when all assertions pass. SQL and ORM lookups now agree about Alice’s item and the absence of Bob’s item from her results. `fork()` creates an EntityManager context for this operation. Returning a new plain object prevents callers from changing tracked entity state. The code does not create or update tables; the SQL setup is responsible for the schema.
+
+Move these lookup assertions into the shared adapter tests and supply each repository factory in turn. The full suite must also cover sessions, event IDs, changes, close behavior and transactions. In NestJS, inject the initialized database through a provider and close it with the application. Create a fresh context for each request/job. Registering a provider does not create that context by itself.
+
+References: [MikroORM JavaScript and EntitySchema support](https://mikro-orm.io/docs/usage-with-js), [identity map](https://mikro-orm.io/docs/identity-map). The following existing integration fragment is the next step for the larger course model, whose entity names differ from this fixture.
+
+
+For the full model, use the [existing MikroORM 7.2.5 setup, entities and CRUD](../module-08-postgresql-mikroorm.md#_13-mikroorm-setup). The small reader above is a separate comparison exercise. Keep one chosen configuration in the final application and compatible versions of all `@mikro-orm/*` packages. Create request context before route handlers. Background jobs also need a fresh context/fork. A global EntityManager can retain entities and mix state between requests.
 
 The following is an integration fragment with the existing `orm` and registered `Product` entity; its field names must match your actual model:
 
@@ -358,11 +522,11 @@ await em.flush();
 const response = { id: product.id, name: product.name };
 ```
 
-An entity loaded twice in the same context can be the same object reference; that does not promise no second SQL query. `flush()` computes/persists tracked changes; creating an object does not necessarily persist it. `em.transactional(async tx => ...)` provides the transaction-scoped EntityManager: use `tx` throughout that callback rather than escaping to a global repository.
+Loading the same entity twice in one context may return the same object. It does not guarantee that only one SQL query runs. `flush()` finds and saves tracked changes; creating an object alone does not necessarily save it. Inside `em.transactional(async tx => ...)`, use the supplied `tx` EntityManager for every participating operation. Do not switch back to a global repository.
 
-Relations need foreign keys and explicit population strategy. Iterating 100 products and lazily fetching each owner can create N+1 queries. Populate the required relation or project a deliberate join/batch, inspect generated SQL and avoid loading a huge graph merely to return two fields. ORMs can still issue unsafe raw SQL if you interpolate inputs.
+Use foreign keys for relationships and explicitly choose which related data to load. Loading 100 products and then fetching each owner separately can cause N+1 queries: one main query plus one per product. Load the needed relationship or use an intentional join/batch. Inspect the SQL and avoid loading a large object graph for a two-field response. An ORM can still run unsafe raw SQL if you insert input directly into query text.
 
-Choose a driver for precise SQL/control, a query builder for composable queries and an ORM when entity/unit-of-work conventions help. Avoid using all three independently for the same use case without a clear transaction and pool owner. The driver pool, EntityManager context and transaction are related but different lifetimes.
+Use a driver for direct SQL control, a query builder to assemble queries, or an ORM when entity tracking and units of work help. Do not independently mix all three within one use case without a shared transaction and clear pool owner. The connection pool, EntityManager context and transaction have related but different lifetimes.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -392,9 +556,9 @@ Inspect the actual SQL and query plan using representative data. **An index help
 
 </div>
 
-For a tenant-scoped chronological list, consider a B-tree on `(tenant_id, created_at, id)` aligned with filter/order and a keyset cursor on `(created_at,id)`. It can support a bounded ordered range without scanning a huge OFFSET. Index column order, selectivity, collation, NULL policy and query expression matter; PostgreSQL can sometimes use non-leading columns, so “must use every leftmost column or never uses the index” is too absolute.
+For a chronological tenant list, a B-tree on `(tenant_id, created_at, id)` may match the filter and order. A keyset cursor on `(created_at,id)` can then read the next range without skipping a large OFFSET. Results depend on column order, matching values, text comparison rules, NULL handling and the query expression. PostgreSQL can sometimes use later index columns; it is too absolute to say every query must use all leftmost columns.
 
-Use `EXPLAIN` first; `EXPLAIN (ANALYZE, BUFFERS)` actually runs the statement, including writes. Inspect rows estimated versus actual, loops, scan/join types, sorts/spills and buffers. A sequential scan is reasonable for a tiny table or a query returning much of it. Keep statistics current and compare repeated representative runs, including writes and warm/cold-cache conditions. Do not force an index just to get an attractive plan screenshot.
+Start with `EXPLAIN`. `EXPLAIN (ANALYZE, BUFFERS)` actually runs the statement, including writes. Compare estimated and actual row counts, repeated loops, scans, joins, sorting, disk use and buffers. A full-table scan can be reasonable for a small table or a query returning most rows. Keep statistics current and compare repeated realistic runs, including writes and cache differences. Do not force index use merely to produce a preferred plan.
 
 A unique/primary key creates its supporting unique index. PostgreSQL does not automatically add an index on every referencing foreign-key column; inspect whether your joins/deletes need one. Extra indexes slow mutations and consume storage. Building on a large live table needs an operational plan; `CREATE INDEX CONCURRENTLY` has special transaction/cleanup constraints.
 
@@ -426,9 +590,9 @@ Source mapping: [R137](./requirements.md#r137).
 
 </div>
 
-Return controlled unavailable/conflict/not-found responses at the transport boundary. Log correlation ID, operation name, safe SQLSTATE, duration and retry attempt; omit passwords, URIs, token values and sensitive parameters. Distinguish a constraint violation from network failure, lock timeout, pool exhaustion and programming errors. A failed transaction cannot continue normally until rollback or an appropriate savepoint recovery.
+Translate failures into the documented unavailable, conflict or missing-item response at the HTTP boundary. Log a request ID, operation, safe SQLSTATE code, duration and retry attempt. Leave out credentials and sensitive parameters. Distinguish constraint failures, network failures, lock timeouts, full pools and code bugs. After a statement error, roll back the failed transaction or recover through an appropriate savepoint before continuing.
 
-For a job, claim a bounded batch using a transaction and an ownership/lease policy, release the connection before slow external work and persist completion/idempotency receipts. A lease expiry requires protection against a stale worker committing later; use version/fencing checks where the resource supports them. Do not hold all database clients while waiting for a remote API.
+For a job, claim a limited batch in a transaction and define who owns it and for how long. Release the database connection before slow external work. Save completion and duplicate-protection records. When a claim expires, prevent the old worker from committing later; version or fencing checks can protect supported resources. Do not hold every database client while waiting for a remote API.
 
 Back up authoritative data and test restoration into a separate environment. A successful dump command or managed “backup enabled” flag does not prove recovery time or acceptable data loss. See [recovery exercises](../database-recovery.md) and [architecture outbox/saga](./18-architecture.md#t18-q27). Cache fallbacks must respect freshness and tenant permissions; do not return stale financial success during an authoritative-store outage.
 

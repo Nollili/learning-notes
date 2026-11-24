@@ -4,6 +4,10 @@ outline: [2, 3]
 
 # Deployment and delivery
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Reuse Section 2’s scripts and tests. Check the packaged service, health responses and shutdown. Prepare a migration/rollback record and test it locally. The cloud chapter then maps that release to AWS. Section 3 requires the project’s local/design checkpoint. Publishing to a registry and deploying to the cloud are separate exercises; a local build does not prove they work.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 The primary delivery path packages the existing Express 5/Node.js 24 application into a reviewed container for AWS ECS, with PostgreSQL migrations owned separately. NestJS follows the same runtime/health/artifact rules. Use the [full-stack deployment lesson](../full-stack-deployment.md), [container lab](../container-deployment-lab.md) and [release compatibility lab](../release-artifact-compatibility.md) as implementation owners. This chapter prepares a release; it does not publish an image, push Git or deploy resources.
 
 <!-- tech-check: t24-q01; level: 3 -->
@@ -28,9 +32,9 @@ Package scripts provide repeatable project commands. CI runs the required checks
 
 </div>
 
-In a TypeScript Node application, a typical sequence is locked dependency installation → type/lint checks → tests → compilation → artifact verification. The exact scripts belong to the task template. This documentation repository has only docs scripts at its root; do not add generic `build`/`test` scripts merely to make an example look uniform.
+For a TypeScript application, a typical sequence is: install locked dependencies, run type/lint checks and tests, compile, then check the packaged output. Use the actual task template’s scripts. This documentation repository only has docs scripts at its root. Do not add generic `build` or `test` scripts just to match the example.
 
-Use `npm ci` with the reviewed lock. A cache accelerates installation but is not the release artifact or a promise that another job has dependencies installed. Install needed build/test dependencies in the verification stage, then package only required runtime files. Test runtime startup with production dependencies and the correct OS/architecture/Node contract.
+Use `npm ci` with the reviewed lockfile. A cache can make installation faster, but is not the release package and does not mean another job already has dependencies installed. Install build/test tools in the verification stage. Package only files needed at runtime. Test startup with production dependencies on the required OS, architecture and Node version.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -89,7 +93,7 @@ assert.throws(() => verifyArtifact(Buffer.from('changed'), trustedExpected));
 assert.throws(() => verifyArtifact(bytes, 'not-a-digest'));
 ```
 
-Real CI obtains the expected identity/provenance from its trusted build output, not a hash recomputed from the same untrusted download. Action dependencies should be pinned to reviewed immutable revisions; use minimal job permissions, short-lived cloud federation, protected deployment environments and redacted logs. Untrusted pull-request code must not run with production secrets or privileged deployment credentials.
+Real CI gets the expected digest and build history from a trusted build. Recomputing a hash from the same untrusted download does not establish trust. Pin action dependencies to reviewed immutable revisions. Give jobs limited permissions, use short-lived cloud credentials, protect deployment environments and remove secrets from logs. Never run untrusted pull-request code with production secrets or privileged deployment credentials.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -119,11 +123,11 @@ Keep the fixed application package separate from settings and secrets that vary 
 
 </div>
 
-For the selected environment, inventory runtime/architecture, network/DNS/TLS, database and migration role, session store, secret references, outbound dependencies, logging, health paths and connection/time budgets. Keep nonsecret configuration versioned and secrets injected at runtime. A browser bundle cannot keep a secret; build-time frontend environment values are public.
+List the environment’s runtime and architecture, network/DNS/TLS settings, database and migration roles, session store, secrets, outgoing dependencies, logs, health paths and resource limits. Version non-secret configuration and supply secrets at runtime. Values included in browser files are public; a browser bundle cannot hide a secret.
 
-On a VM alternative, use a process manager such as systemd to own the non-root Node process, restart policy, working directory, environment file access, logs and stop deadline. Avoid manually starting `node ... &` in a transient terminal. Prefer a controlled management service; if SSH is required, use a verified host identity, scoped user/key and limited ingress. Do not disable host-key verification to make automation pass or put passwords in command arguments.
+For a VM, a process manager such as systemd can start the non-root Node process and manage restarts, working directory, settings, logs and stop deadline. Do not rely on `node ... &` in a temporary terminal session. Prefer a controlled management service. If SSH is needed, verify the host identity and limit the user, key and incoming network access. Do not disable host checks or place passwords in command arguments.
 
-An SSH/CLI runbook should name the target account/region/host, artifact digest, working directory and narrow command before mutation. Copy only reviewed files, preserve permissions, check exit status and record sanitized output. A remote shell must not run unquoted user-controlled strings. For ECS, ordinary operators update the service through the deployment mechanism; editing files inside a running task is not a repeatable release.
+A runbook is a repeatable set of operating instructions. An SSH/CLI runbook should identify the account, region, host, release digest, working directory and exact command before changing anything. Copy only reviewed files, preserve permissions and check exit status. Keep logs free of secrets. Do not insert unquoted user input into remote shell commands. For ECS, update the service through the deployment process rather than editing files inside a running task.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -153,11 +157,11 @@ Source mapping: [R112](./requirements.md#r112), [R143](./requirements.md#r143).
 
 </div>
 
-A shallow `/healthz` can report that HTTP/process execution works. `/readyz` checks the required bounded dependency contract and the stopping flag. Cache/share probe work where appropriate so probes do not become a database load generator. A database accepting connections does not prove schema compatibility or a business mutation works.
+A simple `/healthz` can show that the process can answer HTTP requests. `/readyz` checks required dependencies within a time limit and checks whether shutdown has started. Share or cache probe work when appropriate so health checks do not overload the database. A database connection alone does not prove that the schema or business operation is usable.
 
-Express's `app.listen()` returns the server to close. NestJS lifecycle/shutdown hooks must be enabled/configured for the chosen signals and providers. In both cases the application owner tracks server, pools, worker pools and timers. Handle SIGTERM once, mark unready, stop new work and await actual closure. An outer timeout does not make unfinished work disappear; define forced termination and recovery of uncertain effects.
+Express’s `app.listen()` returns the server that must later be closed. In NestJS, configure the required shutdown hooks and signals. In either framework, one application owner tracks servers, pools, workers and timers. Handle SIGTERM once, mark the service unready, stop new work and wait for resources to close. An outer timeout does not stop unfinished work by itself. Define when to force termination and how to check uncertain outcomes afterward.
 
-The [canonical container server](../container-deployment-lab.md#own-health-work-through-timeout-and-shutdown) implements this ownership for a small fixture. Reuse its design rather than copying an incomplete two-line signal handler. Platform grace must exceed application drain plus routing propagation margin; tune from actual longest accepted operations and test under traffic. Active work may need idempotency/retry after a forced stop.
+The [container server](../container-deployment-lab.md#own-health-work-through-timeout-and-shutdown) demonstrates this cleanup for a small test setup. Reuse its approach rather than an incomplete two-line signal handler. The platform must allow enough time for accepted work to finish and traffic routing to update. Measure that time under traffic. Work interrupted by a forced stop may need safe retry or duplicate protection.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -187,13 +191,13 @@ Release database and application changes in compatible stages. Use a known, test
 
 </div>
 
-A rolling release replaces instances incrementally and needs spare capacity and compatibility between old/new versions. Blue/green keeps two environments for a traffic switch but still shares or migrates data deliberately. Canary sends a controlled fraction of traffic to the candidate and watches a defined metric/rollback rule. None automatically proves zero downtime.
+A rolling release replaces application copies gradually. It needs spare capacity and compatibility between old and new versions. Blue/green deployment keeps two environments so traffic can switch between them, but still needs a data plan. A canary release sends a small share of traffic to the new version and checks defined metrics before continuing. None of these methods automatically guarantees zero downtime.
 
 For the AWS path, prepare a new ECS task definition using the tested digest, reviewed execution/task roles, secrets, ports, resource limits and health settings. Set deployment healthy/surge limits that allow at least one replacement and fit capacity. Use service events and application metrics to distinguish image-pull, IAM/network, startup and business failures. The [AWS slice](../aws-service-slice.md) documents prerequisites; a template lint does not deploy the surrounding network/database.
 
-For a renamed field, expand with a compatible new column → deploy bridge readers/writers → backfill in bounded chunks → verify consistency → switch reads → retire old writes → contract only after the rollback window closes. Run one serialized migration job with lock/time bounds, not every replica racing a destructive startup migration.
+For a renamed field, first add a compatible new column. Deploy code that supports old and new fields. Fill existing data into the new column in limited batches, then verify it. Switch reads, stop old writes and remove the old column only after the rollback period ends. Run migrations through one coordinated job with lock/time limits, not separately in every application copy.
 
-The [release compatibility lab](../release-artifact-compatibility.md) demonstrates four real storage contracts and where rollback stops being safe. Save a matrix of old/new reader/writer versus schema, not just a “down migration” file. If data was transformed destructively, recovery may need forward repair or an isolated restore/reconciliation with an explicit data-loss decision.
+The [release compatibility lab](../release-artifact-compatibility.md) shows four storage contracts and when rollback becomes unsafe. Record which old/new readers and writers work with each schema version. A down-migration file alone is not enough. If a transformation destroyed information, recovery may need a forward fix or a separate restore followed by data reconciliation. Document any accepted data loss.
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -224,11 +228,11 @@ A delivery handoff explains which release was built, which checks actually ran, 
 
 </div>
 
-A concrete local release packet contains source revision/dirty-state disclosure, lock/toolchain/runtime/platform, artifact digest, build/test results, contents/security review, migration compatibility, environment/secret references, smoke plan, health/drain settings, rollback artifact and current limitations. Record failed checks and missing integration, not just green badges.
+A local release record should identify the source revision and uncommitted changes, lockfile, tool/runtime versions, platform and artifact digest. Include build/test results, packaged contents, security review, schema compatibility, configuration references, smoke tests, health/shutdown limits and rollback package. List failures and checks that did not run.
 
-For Docker CI integration, the conceptual stages are test → build candidate image → run packaged-image checks → collect digest/provenance → prepare scoped registry publication → promote the same digest through the controlled deployment job. Only authorized trusted jobs receive registry write credentials; untrusted PR validation should remain read-only and secret-free. Do not rebuild the candidate after its verification and call the result “the same release.”
+A Docker pipeline typically tests the application, builds a candidate image, tests that image and saves its digest/build evidence. It then prepares publication and promotes that same digest through deployment. Only authorized, trusted jobs receive registry-write credentials. Pull-request checks remain read-only and secret-free. Do not rebuild after verification and describe the new image as the tested release.
 
-After deployment, check authentication, owner/cross-tenant mutation, database invariants, job lag and actual error/latency/resource metrics. A 200 on `/healthz` proves much less. Record alarms and a named operational owner; a graph without a response policy is not incident readiness.
+After deployment, test authentication, ownership checks and database rules. Check job delays, errors, latency and resource use. A 200 from `/healthz` does not prove those behaviors. Assign someone to respond to alarms. A graph without an action plan is not enough for incident handling.
 
 Cleanup includes owned test accounts/data, resources, retained artifact/log/backup policy and cost review. Preserve evidence without exposing secrets. If an integration could not be run, state the exact limitation and the next required action; do not replace it with an invented successful environment.
 
@@ -238,7 +242,7 @@ Prepare one reviewable release packet locally and let another engineer reproduce
 
 ## Revision and practical checkpoint
 
-Explain source→checks→artifact→environment→migration→health→rollout→observation→recovery with one immutable identity. The checksum demonstration and documentation checks validate bounded examples. They do not establish a running cloud release, a real registry push, a restore or your delivery proficiency.
+Explain the path from source to checks, package, environment, migration, health, rollout, observation and recovery. Keep the same verified artifact identity throughout. The checksum example and documentation checks do not prove a live cloud release, registry push, restore or your practical deployment skills.
 
 ### Mixed practice
 

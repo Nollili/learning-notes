@@ -121,21 +121,9 @@ export const nodeTechCheckPaths = [
     "description": "Design service boundaries, persistence, access control and deployment.",
     "items": [
       {
-        "id": "/node-js/tech-check/09-concurrency",
-        "title": "Concurrency",
-        "href": "/node-js/tech-check/09-concurrency",
-        "type": "Explanation"
-      },
-      {
         "id": "/node-js/tech-check/18-architecture",
         "title": "Architecture",
         "href": "/node-js/tech-check/18-architecture",
-        "type": "Explanation"
-      },
-      {
-        "id": "/node-js/tech-check/13-authentication-and-authorization",
-        "title": "Authentication and authorization",
-        "href": "/node-js/tech-check/13-authentication-and-authorization",
         "type": "Explanation"
       },
       {
@@ -145,9 +133,27 @@ export const nodeTechCheckPaths = [
         "type": "Explanation"
       },
       {
+        "id": "/node-js/tech-check/13-authentication-and-authorization",
+        "title": "Authentication and authorization",
+        "href": "/node-js/tech-check/13-authentication-and-authorization",
+        "type": "Explanation"
+      },
+      {
+        "id": "/node-js/tech-check/09-concurrency",
+        "title": "Concurrency",
+        "href": "/node-js/tech-check/09-concurrency",
+        "type": "Explanation"
+      },
+      {
         "id": "/node-js/tech-check/23-containerization",
         "title": "Docker",
         "href": "/node-js/tech-check/23-containerization",
+        "type": "Explanation"
+      },
+      {
+        "id": "/node-js/tech-check/24-deployment",
+        "title": "Deployment",
+        "href": "/node-js/tech-check/24-deployment",
         "type": "Explanation"
       },
       {
@@ -160,12 +166,6 @@ export const nodeTechCheckPaths = [
         "id": "/node-js/tech-check/20-serverless",
         "title": "Serverless",
         "href": "/node-js/tech-check/20-serverless",
-        "type": "Explanation"
-      },
-      {
-        "id": "/node-js/tech-check/24-deployment",
-        "title": "Deployment",
-        "href": "/node-js/tech-check/24-deployment",
         "type": "Explanation"
       },
       {

@@ -4,6 +4,10 @@ outline: [2, 3]
 
 # Concurrency
 
+<span class="notes-section-label">**Section 3 reading path:**</span> Async I/O, errors and cleanup are familiar from Sections 1–2. Start by running the supplied worker helper. Then inspect how it handles one task before trying the one-worker pool. Study the pool in stages: accepting work, assigning it, matching results, cancelling tasks and shutting down. Run its checks after each stage. Buffer transfer, shared memory, cluster and repeated IPC are later extensions. Project 3 requires one measured report pool with clear limits.
+
+For unfamiliar technical terms, use the [Section 3 vocabulary guide](./index.md#section-3-vocabulary).
+
 Examples use **Node.js 24.18.0**, ES Modules and built-in APIs. These eight questions cover process/thread isolation, worker and data ownership, bounded pools, cluster, forked IPC sessions and production choices. Practical exercises remain separate.
 
 <!-- tech-check: t09-q01; level: 3 -->
@@ -17,6 +21,57 @@ Tech Check level: ⭐⭐⭐
 
 Source mapping: [R080](./requirements.md#r080).
 
+
+<div class="notes-core-answer">
+
+<p class="notes-core-answer__title">Core answer</p>
+
+**A child process is a separate operating-system process with its own JavaScript memory.** `child_process.fork()` starts another Node program and adds IPC, a channel for sending messages between processes. It does not create a thread inside the parent process.
+
+`cluster` manages several Node processes, often running copies of a server that share a listening port. **`worker_threads` runs JavaScript on separate threads inside one process**, with separate ordinary JavaScript heaps.
+
+Worker messages copy ordinary objects using structured cloning. Buffer transfer and shared memory use different rules. Choose according to the work, required isolation, communication cost and cleanup needs. A library’s use of the word “worker” does not tell you whether it uses a process or a thread.
+
+</div>
+
+<span class="notes-section-label">**First experiment — use the supplied owner, then inspect it**</span>
+
+You already know cancellation and cleanup from Section 2. The new idea is **JavaScript executing on another thread with its own ordinary objects**. First use the existing [one-task helper](../../workbench/node-js/runtime/worker.ts), saving its source as `worker.ts` beside these files. Node 24 can strip that helper's erasable type annotations; no new TypeScript build is needed for this experiment.
+
+`first-thread.mjs`:
+
+```js
+import { workerData, parentPort } from 'node:worker_threads';
+workerData.value += 1;
+parentPort.postMessage({ value: workerData.value });
+```
+
+`first-thread-main.mjs`:
+
+```js
+import assert from 'node:assert/strict';
+import { runWorker } from './worker.ts';
+
+const original = { value: 1 };
+const reply = await runWorker(
+  new URL('./first-thread.mjs', import.meta.url), original,
+  raw => {
+    if (!raw || raw.value !== 2) throw new Error('Unexpected worker result');
+    return raw;
+  },
+  { timeoutMs: 1000 }
+);
+assert.equal(original.value, 1);
+assert.equal(reply.value, 2);
+console.log(original.value, reply.value);
+```
+
+Run `node first-thread-main.mjs`: expect `1 2`. The worker changed its copy. The supplied helper validates the reply, observes failures and waits for cleanup; leave those safeguards intact. It stops the worker after a valid one-result message. The complete example below uses another deliberate policy—valid message followed by normal exit—so inspect that distinction next.
+
+For the project, replace the small arithmetic example with a pure calculation on a snapshot of items the caller may access. Compare its report rows with the existing calculation, then compare the decompressed report output. Keep permission checks, database connections and HTTP responses outside the worker. Use a large enough test dataset before claiming better responsiveness. Ordinary database waiting does not need a worker thread.
+
+
+:::: details Complete worker lifecycle and isolation example — inspect after the first experiment
 
 <span class="notes-section-label">**Example — predict the parent value and identity comparisons**</span>
 
@@ -72,21 +127,11 @@ const result = await cloneOnce(original);
 console.log(original.value, result.value, result.pid === process.pid, result.threadId > 0);
 ```
 
-<div class="notes-core-answer">
 
-<p class="notes-core-answer__title">Core answer</p>
-
-**A child process is a separate operating-system process with its own JavaScript memory.** `child_process.fork()` starts another Node program and adds IPC, a channel for sending messages between processes. It does not create a thread inside the parent process.
-
-`cluster` manages several Node processes, often running copies of a server that share a listening port. **`worker_threads` runs JavaScript on separate threads inside one process**, with separate ordinary JavaScript heaps.
-
-Ordinary objects sent to a worker are copied using structured cloning. Transferred buffers and shared memory follow different rules. Choose based on the work, required separation, communication cost and cleanup needs; the word “worker” alone does not tell you which mechanism is used.
-
-</div>
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Output is `1 2 true true`. The worker changed its structured-cloned input, while the parent's object stayed 1. process.pid is shared because it is one OS process; threadId identifies the different worker thread. This proves the fixture's value/identity properties, not a speedup or race-free shared-memory program.
+The output is `1 2 true true`. The worker changed its copied input, while the parent’s value stayed `1`. Both have the same `process.pid` because they run in one process. Their `threadId` values differ. This example checks copying and identity. It does not prove a speed improvement or that a shared-memory algorithm is free of races.
 
 The arithmetic is intentionally too small to justify creating a worker in a real application.
 
@@ -98,21 +143,21 @@ The arithmetic is intentionally too small to justify creating a worker in a real
 | cluster worker | Another Node process under a primary | IPC plus coordinated listening; multiple service processes on one host |
 | worker_threads Worker | Another JS isolate/thread in the same process | Structured clone, transfer lists or explicit shared memory; sustained CPU-heavy JS |
 
-Structured cloning produces independent ordinary object data; it does not retain every class prototype, function or resource. A transferable ArrayBuffer can move ownership and detach the sender's usable view. SharedArrayBuffer deliberately permits shared bytes and requires an appropriate synchronization protocol, often with Atomics.
+Structured cloning creates independent copies of supported data. It does not preserve every class, function or resource. Transferring an `ArrayBuffer` moves its storage to the receiver and removes the sender’s access. A `SharedArrayBuffer` lets both sides access the same bytes. Shared access needs coordination rules, often using `Atomics`.
 
 These choices are not interchangeable performance switches. A library named worker pool might wrap threads or processes; inspect its actual boundary.
 
-The helper validates its small input and expected reply, observes worker errors, rejects a clean exit without a result and requires normal exit after that result. A worker that posts and then stays alive reaches the deadline. finally terminates/reaps its owned worker before the caller settles and releases its own listeners.
+The helper checks its input and reply, handles worker errors and rejects an exit without a result. After a valid reply, it also requires the worker to exit normally. A worker that replies but stays alive reaches the deadline. The `finally` block stops the worker, waits for termination and removes its listeners before the caller’s promise finishes.
 
-This is intentionally different from the [source one-result wrapper](../module-02-standard-library.md#promise-wrapper), which selects a valid result and then terminates immediately. Protocol completion must be explicit rather than copied accidentally between helpers. A termination failure can replace an earlier outcome in this small finally; richer error-preservation/cancellation protocols remain for the following batch.
+The [existing one-result wrapper](../module-02-standard-library.md#promise-wrapper) uses a different policy: it accepts a valid result and then stops the worker. Choose the completion rule explicitly. Do not mix the two helpers’ rules by accident. In this small `finally` block, a termination error can replace an earlier result or error. The next lesson explains how to preserve both failures.
 
-A process provides a different failure/resource boundary, but not an automatic sandbox: it may inherit credentials and filesystem/network authority. Threads share the process's overall native fate and resource pressure even though ordinary heaps are separate. A native crash or process-wide resource exhaustion can affect the entire service.
+A process separates some memory and failure behavior, but is not automatically a sandbox. It may still have the parent’s credentials and file/network permissions. Worker threads have separate ordinary JavaScript heaps, but share the process’s native failure risks and resource limits. A native crash or exhausted process resources can affect the whole service.
 
 Separate worker heaps do not guarantee separate libuv pools for pool-backed APIs. Never send secrets or arbitrary executable paths merely because a message crosses a boundary.
 
-For a CPU-heavy report, measure whether useful work exceeds startup, serialization and scheduling overhead; a bounded reusable pool may fit. For ordinary database/network waiting, start with asynchronous APIs and admission limits.
+For a CPU-heavy report, compare calculation time with the cost of starting a worker, copying data and scheduling work. Reusing a limited pool may help. For normal file, database or network waiting, start with async APIs and limits on accepted work.
 
-For serving more traffic, multiple processes/containers can distribute requests, but do not accelerate one indivisible slow operation automatically. In-memory sessions/caches differ across cluster processes; shared state, affinity where needed and shutdown/restart policy belong to the service design.
+Several processes or containers can distribute independent requests. They do not automatically speed up one operation that cannot be split. Cluster processes have separate in-memory sessions and caches. Decide where shared state lives, whether requests must return to the same process, and how shutdown/restart works.
 
 Avoid unlimited worker creation and automatic crash respawn loops.
 
@@ -139,9 +184,11 @@ Identify the execution and ownership boundary before choosing communication, fai
 - [ ] Test worker startup failure, thrown error, malformed result, exit 0 without a result and a worker that reports then stays alive. Every case must terminate under an external test watchdog.
 - [ ] Explain why fork, cluster and worker_threads solve different problems, then choose an approach for a CPU-heavy report, an external executable and an I/O-bound request.
 
-Acceptance: assert values/error paths and actual worker settlement; do not claim thread speedup from the tiny arithmetic example. Process/cluster integration, transfers/shared-memory correctness, reusable pools and cross-platform behaviour are not established by this fixture.
+Acceptance: check the returned values, errors and actual worker completion. The small calculation does not prove that threads are faster. This example also does not verify process/cluster integration, buffer transfers, shared-memory correctness, reusable pools or behavior on other operating systems.
 
 Official references checked 2026-11-04: Node 24.18 [worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child_process.fork](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options). Earlier fork/IPC examples remain in [related explanation](./02-cli-and-processes.md#t02-q08); this question adds the process/thread comparison without duplicating that implementation.
+
+::::
 
 ---
 
@@ -159,7 +206,7 @@ Source mapping: [R080](./requirements.md#r080).
 
 <span class="notes-section-label">**Example — predict completion before running**</span>
 
-Use the existing source helper below unchanged. In an owned temporary directory, save it as `worker.ts`, then create sum-worker.mjs and run-worker.mjs. Node 24.18 can strip this helper's erasable TypeScript syntax when imported; **runtime stripping does not type-check it** or implement arbitrary tsconfig transforms.
+Copy the helper below unchanged into a private test directory as `worker.ts`. Then create `sum-worker.mjs` and `run-worker.mjs`. Node 24.18 can remove this helper’s supported TypeScript annotations when loading it. **Removing types at runtime does not check them** or apply arbitrary `tsconfig` transformations.
 
 No TypeScript dependency is needed for this stated runtime experiment.
 
@@ -219,35 +266,35 @@ The helper used here accepts the first final outcome, removes its deadline and a
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
-Output is 6, then true. The first valid result selects success, but the helper does not resolve immediately: it waits for termination of the worker, including its deliberately retained interval. The second call is still pending when its caller aborts; the Error object supplied as reason is preserved after termination.
+The output is `6`, then `true`. A valid result selects success, but the helper waits for the worker to stop before resolving. This also removes its deliberately active interval. In the second call, cancellation happens while work is pending. After the worker stops, the caller receives the same Error object used as the cancellation reason.
 
 Attaching catch immediately keeps that expected rejection observed. This is a per-task worker owner, not a cancellation mechanism for a shared pool worker running unrelated tasks.
 
-The completion policy differs from [related explanation](#t09-q01). Q01 requires a valid reply followed by normal worker exit, so reply-then-hang times out. This source helper regards a validated one-result message as the task's terminal result and actively stops the worker.
+The [previous example](#t09-q01) requires a valid reply followed by a normal exit. A worker that replies but hangs therefore times out. This helper accepts a valid one-result message as completion and then stops the worker itself.
 
-Both policies can be intentional; mixing them accidentally causes either leaked work or premature success. The worker must not post success before finishing the effects that success is meant to confirm. Here the only meaningful result is a small arithmetic value; there is no external transaction.
+Either completion policy can be valid. Mixing them can leave work running or report success too early. A worker must finish the required effects before sending a success message. Here it only calculates a number; no external transaction is involved.
 
 Walk through the owner in stages:
 
-1. Validate timer/parser arguments and check pre-aborted input before constructing a worker. A constructor/startup clone failure must reject rather than leave a live deadline with no task.
-2. Attach message, deserialization-error, worker-error and exit handlers. The parser is synchronous and must actually inspect unknown data; a TypeScript assertion alone does not validate a message.
-3. The first observed terminal callback sets selected. Later messages, exits, aborts and errors cannot replace it. This is event observation order, not a claim that simultaneous events have a universal winning order.
-4. Clear the referenced deadline and remove the abort listener. Retain worker error/exit listeners while termination is still in progress, so expected teardown events do not become unhandled failures.
-5. Await terminate, remove the owned worker listeners, then deliver the chosen outcome. If termination itself rejects, surface an AggregateError containing the cleanup failure rather than silently claiming successful cleanup.
+1. Check the timer/parser arguments and any cancellation that happened before starting. If construction or input copying fails, reject without leaving a timer running.
+2. Register handlers for messages, message-decoding errors, worker errors and exit. The synchronous parser must inspect the received value; a TypeScript assertion does not validate it.
+3. The first final event sets `selected`. Later results, errors or cancellation cannot replace it. Which event is observed first may depend on timing.
+4. Clear the deadline and remove the abort listener. Keep worker error/exit handlers while termination is in progress.
+5. Await termination, remove the remaining listeners, then return the selected result or error. If termination fails, report an `AggregateError` containing the cleanup failure.
 
 The input and result contracts are distinct: the worker rejects invalid numbers; the parent rejects malformed result shape. A structurally valid numeric reply still needs business-level tests for arithmetic/algorithm correctness.
 
 This fixture accepts finite numbers and rejects a nonfinite total through parseSum; large numeric magnitudes, precision requirements or integer-only applications need a different domain contract.
 
-Do not use an async parser with this synchronous validation helper or send progress notifications on its one-result channel; a multi-message protocol needs tagged task/result/progress handling.
+Do not pass an async parser to this helper: its parser must return synchronously. Do not send progress messages on a channel that expects one final result. A protocol with several messages needs separate task, progress and result types.
 
-A timeout means the parent observed its deadline before another terminal outcome, then began cleanup. It includes scheduling and termination latency. Synchronous parent blocking can delay the timer, and native/uninterruptible work can delay worker termination, so use an external process supervisor for a final deployment limit.
+A timeout means the parent observed the deadline before another final event and then started cleanup. The caller also waits for scheduling and termination. Synchronous code can delay the parent’s timer, and native code may take longer to stop. Use an external process supervisor when the deployment needs a final shutdown limit.
 
 Throwing inside a worker normally reaches its error event; process/native resource failures need a broader recovery boundary. Cancellation cannot undo a write already committed by a worker, nor does it guarantee arbitrary in-worker finally cleanup finishes under forced termination.
 
-This helper uses the caller's reason for ordinary Error-object aborts and a fallback Error for a nullish reason in its active-abort path; it does not promise identical arbitrary-reason behaviour for every pre-abort/active-abort path. Use a documented error/cancellation contract when integrating it.
+For an active cancellation with an Error reason, this helper preserves that Error. If the active signal’s reason is `null` or `undefined`, it uses a fallback Error. Cancellation before startup and cancellation during work do not promise identical handling for every possible reason value. Document the cancellation behavior your application relies on.
 
-For a pool, cancellation often needs to remove queued work or stop only the assigned task, with task IDs and worker replacement rules; calling terminate on a shared worker indiscriminately can destroy unrelated work.
+In a pool, cancellation may remove queued work or stop the worker assigned to that task. Track task IDs and define when workers are replaced. Stopping a shared worker without checking its assigned work can destroy unrelated tasks.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -272,7 +319,7 @@ Select one outcome, validate its meaning and finish owned cleanup before reporti
 - [ ] Test malformed result, worker throw, clean/nonzero exit without result, deadline, pre-abort and abort while the worker is active. Assert error identity where the contract preserves it and zero retained caller abort listeners.
 - [ ] Exercise first-result-then-extra-message/late-error and explain the selected-outcome policy without relying on fragile millisecond races. Compare reply-then-hang under Q01 and Q02.
 
-Acceptance: every owned worker must settle/terminate and the external test watchdog must remain able to stop a broken case. Record which terminal/cleanup branches were actually exercised; message-deserialization and native termination failures cannot be inferred from an ordinary thrown error.
+Acceptance: every worker must finish or be stopped. An external test timeout must still be able to stop a broken test. Record which result, error and cleanup paths you exercised. A normal thrown error does not test message-decoding failure or native termination failure.
 
 Official references checked 2026-11-04: Node 24.18 [worker termination and events](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [AbortSignal reason](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#abortsignalreason), [TypeScript stripping limits](https://nodejs.org/download/release/v24.18.0/docs/api/typescript.html#type-stripping). The included implementation is the existing [source helper context](../module-02-standard-library.md#promise-wrapper); no second production helper was added.
 
@@ -315,7 +362,7 @@ The parent initializes one integer to 7 and the worker changes it to 8. Which pa
 | ArrayBuffer transfer | Backing buffer detached; aliases lose access too | Receives ownership of the transferred storage | Large binary data whose sender relinquishes ownership |
 | SharedArrayBuffer | Retains access to shared bytes | Can access the same storage | A measured need with a defined synchronization protocol |
 
-An object containing a transferable buffer still has a message envelope; not every part becomes zero-copy. Transferring a buffer that is absent from the payload does not magically give the receiver a reference to it. A shared buffer is not placed in a transfer list. Prototype/class behavior and arbitrary functions are not preserved like ordinary data; keep messages explicit and validate them.
+A message containing a transferred buffer still has other fields; transferring the buffer does not avoid copying all message data. The receiver needs a reference to the buffer in the payload. Do not put a shared buffer in a transfer list. Functions and class behavior are not copied like ordinary data. Use explicit message fields and validate them.
 
 <span class="notes-section-label">**Worked bounded experiment**</span>
 
@@ -393,7 +440,7 @@ export async function ownershipCase(mode, {
 }
 ```
 
-A constructor/clone failure occurs before a deadline is created. Later errors keep their handlers until termination settles. The helper never reports a successful result from a reply-then-hanging worker. Termination failure is surfaced separately; forced termination cannot guarantee arbitrary worker cleanup or undo effects. The optional filename is an owned test seam, not an API for executing paths supplied by an untrusted caller.
+If construction or cloning fails, no deadline has been created yet. After startup, error handlers remain until termination finishes. A reply followed by a hang cannot produce success in this helper. A termination failure is reported separately. Forced termination cannot guarantee normal worker cleanup or undo earlier effects. The optional filename is for controlled tests, not for paths supplied by an untrusted caller.
 
 ```js
 // file: ownership-demo.mjs
@@ -409,29 +456,34 @@ assert.deepEqual(rows, [
 console.table(rows);
 ```
 
-Run `node ownership-demo.mjs`. Here null explicitly means that the parent no longer owns a usable transferred value, not that the receiver wrote null. Do not continue using a detached sender view or assume a second alias kept the bytes alive. If the receiving worker dies, the detached sender buffer does not automatically become usable again; retain a separate recoverable source when the business requirement needs replay.
+Run `node ownership-demo.mjs`. Here `null` means the parent no longer has a usable transferred value. It does not mean the worker wrote null. Do not use a detached view or assume that another view of the same buffer still works. If the worker fails, the sender does not regain that buffer automatically. Keep a separate recoverable input when the operation may need to be repeated.
 
 <span class="notes-section-label">**Why the shared case uses Atomics**</span>
 
-A shared counter update such as `counter[0]++` is a read/modify/write sequence; multiple participants can overwrite one another's changes. `Atomics.add` makes this one integer operation atomic. It does not make a group of fields, a queue, authorization or a whole business operation atomic. Our one-writer fixture demonstrates visibility under the stated protocol; it does not establish a general race-free algorithm or demonstrate contention.
+`counter[0]++` reads a value, changes it and writes it back. Concurrent writers can overwrite each other’s updates. `Atomics.add` makes this one integer update atomic. It does not make several fields, a queue or an entire business operation atomic. This test has one writer, so it checks visibility under that protocol. It does not test competing writers or prove a general race-free algorithm.
 
-An actual shared queue needs ownership of slots, publication/visibility rules, bounds, wakeup/timeout/cancellation and recovery from a failed participant. Avoid blocking the service's main event loop with `Atomics.wait`; advanced lock-free queues and shared-memory tuning remain optional. Prefer message passing when its cost is acceptable and ownership is easier to explain.
+A shared queue needs rules for slot ownership, when data becomes visible, size limits, waiting, cancellation and failure recovery. Do not block the service’s main event loop with `Atomics.wait`. Advanced shared-memory queues remain optional. Prefer messages when their cost is acceptable and their ownership rules are easier to explain.
 
 <span class="notes-section-label">**Buffers and subviews need extra care**</span>
 
 A typed array or Buffer is a view, not necessarily the owner of its entire backing store. A subview can refer to a larger allocation; moving that whole allocation may move more data than intended. For this reason the example allocates a dedicated four-byte ArrayBuffer rather than transferring an arbitrary incoming Buffer's `.buffer`.
 
-Node Buffer pooling introduces version-sensitive clone/transfer restrictions. Do not assume a small Buffer owns a dedicated transferable allocation, and do not widen the payload to an entire pool to avoid a transfer error. Copy the exact intended byte range into dedicated owned storage when needed. Check the Node 24 transfer/Buffer guidance before integrating a particular Buffer creation path.
+Node Buffer pooling adds version-specific copy/transfer restrictions. A small Buffer may share a larger allocation rather than own a separate transferable buffer. Do not send an entire pool to work around a transfer error. When needed, copy only the intended bytes into a separate buffer. Check the Node 24 guidance for the Buffer creation method you use.
 
 <span class="notes-section-label">**Choose and measure**</span>
 
-Compare end-to-end startup, serialization, queue wait, useful CPU work, memory and responsiveness. Copying costs can matter for large inputs, but extra synchronization or ownership complexity can outweigh a nominal copy reduction. Bound payload bytes and task counts independently. Sharing does not reduce an unbounded task queue, and a reusable pool still needs per-task correlation and lifecycle rules.
+Measure worker startup, data copying, queue wait, calculation time, memory and responsiveness together. Copying large inputs can be expensive, but shared-memory coordination may cost more than the copying it avoids. Set separate limits for payload bytes and task count. Shared memory does not prevent an unlimited queue. A reusable pool still needs task IDs and cleanup rules.
 
 For an image transform where the caller gives up its original bytes, transfer can fit. For a small report request retained for retries, a copy may be clearer. Shared counters may help a measured local need; a database remains responsible for state shared across process replicas. These are design choices, not a measured performance result from this fixture.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
-Sending a function/class instance and expecting its behavior to survive; transferring an aliased buffer then using its other view; assuming transfer returns ownership after failure; using a shared read/modify/write without a protocol; calling shared memory a distributed store; or changing an existing helper's completion semantics accidentally.
+- Expecting a copied function or class instance to keep all its behavior.
+- Transferring a buffer, then continuing to use another view of that buffer.
+- Assuming a failed worker automatically returns transferred data to the sender.
+- Updating shared memory without agreed coordination rules.
+- Treating local shared memory as a persistent distributed store.
+- Accidentally changing when an existing helper considers a task complete.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -484,7 +536,19 @@ Give tasks IDs so replies reach the correct caller, and track assigned work unti
 
 With one worker and two waiting places, submit four tasks synchronously. Which one is rejected? If the running task's caller aborts, can the next task safely use that same worker immediately? What if the abandoned task never returns?
 
-This experiment deliberately has **one reusable worker**. It makes queue/ownership behavior visible without hiding it behind scheduling across several workers. It is still a bounded pool, but it does not demonstrate parallel throughput across multiple CPU workers. The tiny arithmetic is for observable protocol checks, not a speed benchmark.
+Use the complete implementation below first; then inspect and extend it in these stages while retaining its failure/cleanup checks:
+
+| Stage | Observable check |
+|---|---|
+| Admission | One worker plus two waiting places rejects the fourth simultaneous task |
+| Dispatch and correlation | Each result settles the caller with the matching task ID |
+| Cancellation | Removing queued work differs from stopping/replacing a worker running a task |
+| Failure | A malformed reply or worker exit fails the affected task without inventing success |
+| Shutdown | Stop admission, finish or fail accepted tasks under a deadline, then observe worker closure |
+
+Map these checks to Project 3’s existing report-job states. A successful message is not permission to mark an artifact completed before publication. Keep the report calculation and output schema unchanged while replacing its execution mechanism.
+
+This experiment has **one reusable worker**. That makes task assignment and queue behavior easier to observe. The pool has clear limits, but it does not demonstrate several CPU workers running in parallel. Its small calculation tests the protocol, not performance.
 
 | Boundary | Explicit policy in this lab |
 |---|---|
@@ -497,7 +561,7 @@ This experiment deliberately has **one reusable worker**. It makes queue/ownersh
 | Protocol/worker failure | Fail closed, reject affected work, terminate; no automatic respawn |
 | Close | Stop admission, drain accepted work; force termination if close budget expires |
 
-A production system must choose those policies; there is no universal correct queue length or worker count. Size CPU pools against available capacity, account for all application replicas and native work, and measure queue wait/useful work/memory/event-loop response. More workers or a larger queue can worsen tail latency and resource pressure.
+There is no single correct worker count or queue length. Choose them from available CPU, other native work and the number of application instances. Measure queue wait, useful calculation time, memory and event-loop responsiveness. More workers or a larger queue can increase slow-request latency and resource use.
 
 <span class="notes-section-label">**Worker protocol**</span>
 
@@ -519,7 +583,7 @@ parentPort.on('message', message => {
 
 <span class="notes-section-label">**Pool owner — read by lifecycle stage**</span>
 
-Save `sum-pool.mjs` alongside it. Follow admission → queue → assigned task → matched reply → caller settlement. The trusted filename option exists for owned test fixtures; do not accept executable paths from an HTTP payload.
+Save `sum-pool.mjs` beside the worker. Follow each task through acceptance → queue → worker assignment → matching reply → caller result. The filename option is for controlled tests. Do not accept executable paths from an HTTP request.
 
 ```js
 // file: sum-pool.mjs
@@ -659,31 +723,31 @@ console.log('Bounded admission, correlated results, reuse and drained shutdown p
 
 <span class="notes-section-label">**Admission and correlation**</span>
 
-The first task is assigned immediately; two others wait and the fourth rejects. Rejections are promises, so callers must observe them. Every accepted task gets a new ID; the owner accepts a reply only for the currently assigned ID and expected shape. Unknown, duplicate or mismatched replies fail the pool rather than resolve another caller accidentally. Shape validation does not prove arithmetic correctness; the demo and behavior checks do that for their cases.
+The first task starts immediately, two wait and the fourth rejects. Callers must handle these rejected promises. Every accepted task receives a new ID. The pool accepts a reply only when its ID and shape match the assigned task. An unknown, duplicate or wrong-ID reply fails the pool instead of completing another caller’s task. Checking the reply’s shape does not prove the calculation is correct; the result tests check that.
 
 Each task retains a copied bounded input rather than a mutable caller array. Sparse/invalid arrays are rejected. Queue capacity does not bound every runtime allocation, but fixed worker count, bounded payloads and waiting places constrain the main retained workload. Global admission across process replicas is a separate control.
 
 <span class="notes-section-label">**Cancellation is two different operations**</span>
 
-A queued cancellation removes work that has not been assigned. Its deadline and abort listener are released, and another request can occupy that queue place. A running cancellation rejects the caller but leaves the task assigned. Its eventual reply still must match the ID before the worker can serve another task. `snapshot().running` reports this physical occupancy, including work whose caller already stopped waiting.
+Cancelling a queued task removes work that has not started. Its timer and abort listener are removed, and its queue place becomes available. Cancelling a running task rejects the caller’s promise but leaves the worker busy. The pool still checks its eventual reply before assigning another task. `snapshot().running` reports that actual running work, including tasks whose callers have stopped waiting.
 
-This policy does **not** stop CPU execution on a running deadline. A hung worker can remain occupied until the application closes the pool and its shutdown budget escalates. That limitation is explicit: every example owns and awaits `close()` in a `finally` path. A production design can instead implement cooperative checkpoints or retire/replace the assigned worker, with bounded replacement and outcome policies. Do not terminate an entire shared pool or release a slot merely because one caller timed out.
+This policy **does not stop a running calculation when its deadline expires**. A stuck worker can stay busy until the application closes the pool and reaches its shutdown deadline. Every example therefore awaits `close()` in `finally`. A production pool may instead check cancellation inside the calculation or stop and replace the assigned worker. Limit replacements and define what happens to the task’s result. A caller timeout must not free a still-busy worker slot.
 
 Cooperative messages cannot interrupt a worker stuck in a synchronous loop that never checks them. Shared cancellation flags/checkpoints or forceful retirement have different costs and guarantees. Neither undoes a remote effect already committed. Before requeueing abandoned work, establish replay safety and know who owns the original outcome.
 
 <span class="notes-section-label">**Drain, failure and resource ownership**</span>
 
-`close()` returns one stable promise. New tasks reject while accepted tasks drain. When the queue and assigned task are empty, the owner terminates its idle message-listening worker and awaits termination. `{ drained: true }` means accepted physical work finished before teardown; it does not mean the worker exited naturally with code 0.
+Repeated `close()` calls return the same promise. New tasks reject while accepted tasks finish. When no tasks are queued or running, the pool stops its idle worker and waits for termination. `{ drained: true }` means the accepted work finished before cleanup. It does not mean the worker exited naturally with code 0.
 
-If the close budget expires, queued/running callers are rejected and termination is awaited; the result is `{ drained: false }`. That is completed forced teardown, not a successful drain. A worker/protocol failure rejects pending work and the close promise. Termination rejection is surfaced as a cleanup failure rather than silently reported as success. The internal catch observes an automatically initiated close rejection; callers still need to await `close()` to receive it.
+If the shutdown deadline expires, queued and running callers reject. The pool waits for forced termination and returns `{ drained: false }`. Cleanup has finished, but the work did not finish normally. Worker or protocol failure rejects pending tasks and the close promise. A termination error is reported as a cleanup failure. The internal catch observes an automatically started close; callers still await `close()` to receive its failure.
 
-Keep error/exit handling until termination settles, then remove the owned listeners. Unexpected exits are failures even with code 0. This lab fails closed and never respawns; a real replacement policy needs limits/backoff, readiness, queued-task ownership and crash-loop protection. Constructor startup/module-load failure and a later worker crash are different observations but both need cleanup.
+Keep error/exit handlers until termination finishes, then remove them. An unexpected exit is a failure even with code 0. This lab stops accepting work after failure and never restarts the worker automatically. A real replacement policy needs restart limits, delays, readiness checks and clear responsibility for queued tasks. Distinguish failure to start from a crash after startup; both need cleanup.
 
 A timer cannot preempt blocked parent JavaScript or guarantee a native thread stops immediately. The close budget initiates forceful termination; awaiting that termination can take longer. An external process supervisor remains the final deployment deadline. `unref()` is not graceful shutdown and does not establish task completion.
 
 <span class="notes-section-label">**Diagnostics and alternatives**</span>
 
-Record bounded task IDs, queue wait, execution duration, rejected admission, occupied slots and forced drains without logging private payloads. A task ID matches this protocol; full async diagnostic-context correlation is a separate integration. Node recommends AsyncResource when implementing pools for diagnostic tooling; this didactic owner does not claim that integration.
+Record task IDs, queue wait, execution time, rejected tasks, busy slots and forced shutdowns. Keep private payloads out of logs. These IDs match requests to results; linking all related async diagnostic records is a separate integration. Node recommends `AsyncResource` for that tooling when building pools. This teaching pool does not implement it.
 
 For a real service, compare a maintained pool library against these same admission, cancellation, worker-failure and shutdown requirements. For ordinary asynchronous I/O, start with the existing async APIs rather than adding CPU workers. For stronger process isolation or independently scaled jobs, a process/broker architecture may fit, with different delivery and persistence requirements.
 
@@ -710,7 +774,7 @@ Bound accepted work, retain physical ownership after caller cancellation, and di
 - [ ] Demonstrate graceful drain and forced `{ drained: false }` closure, then explain why the latter is not successful task completion.
 - [ ] Before extending to multiple workers, define dispatch/fairness, per-worker active IDs, total admission, replacement and measurement criteria. Advanced tuning remains optional.
 
-Acceptance: exact results, failure identities where promised, bounded retained work, no leaked workers/listeners/timers after owned closure, and a clear distinction between caller and physical completion. Production performance, native termination-failure handling and durable side effects need separate evidence.
+Acceptance: verify results and promised error identities, keep work within its limits, and leave no worker, listener or timer running after close. Distinguish the caller’s promise finishing from the calculation finishing. Production performance, native termination errors and persistent external effects need separate tests.
 
 <span class="notes-section-label">**Official references**</span>
 
@@ -744,7 +808,7 @@ The primary process coordinates starting workers, checking readiness, handling f
 
 A primary starts two service workers. Each has its own JavaScript heap and local counter. A request reaches one worker; another worker cannot read that counter by ordinary reference. External/shared storage and intentional session routing are needed when the domain requires common state.
 
-Cluster distributes connections according to its supported scheduling policy; do not promise perfect per-request fairness. A long keep-alive connection can carry many requests, and a long-running CPU operation still occupies the worker handling it. Cluster does not divide one indivisible operation among processes. Containers/orchestrators or a process supervisor with an external load balancer are alternatives; avoid multiplying all these layers without a capacity budget.
+Cluster distributes connections using its scheduling policy; it does not promise an equal share of individual requests. One keep-alive connection can carry many requests. A long CPU operation still occupies the process handling it. Cluster does not split that operation across processes. Containers, an external load balancer or a process supervisor may provide the distribution you need. Account for total capacity before combining several layers.
 
 <span class="notes-section-label">**Owned two-process service fixture**</span>
 
@@ -817,11 +881,11 @@ if (cluster.isPrimary) {
 }
 ```
 
-The ready line appears only after both owned workers report listening on the same port. Request `GET /` there; JSON reports the responding PID and its local count. Count requests separately by PID. This proves neither a shared global counter nor a particular distribution ratio. `online` or a forked PID alone would not establish application readiness; a real service must also verify required dependencies.
+The ready line appears after both workers report listening on the same port. Request `GET /` and inspect the responding PID and local count. Count requests separately for each PID. The test does not prove a global shared counter or a particular traffic ratio. A worker’s `online` event or PID alone does not prove readiness; a real service must also check its dependencies.
 
-Send SIGTERM to the owned primary after the check. It stops initiating new work and asks workers to disconnect/drain; a deadline kills remaining owned workers. The stopped line follows observed worker exits. Its forced flag and exit status distinguish graceful completion from escalation. The local fixture has no database/jobs/upgraded WebSocket connections; those resources need additional worker-owned close logic.
+After the check, send SIGTERM to this lab’s primary process. It stops starting work and asks workers to finish accepted requests and disconnect. A deadline kills any remaining workers. The stopped line appears after their observed exits. The forced flag and exit status distinguish normal shutdown from forced cleanup. This lab has no database, jobs or WebSockets; real workers must close those resources too.
 
-Unexpected worker loss fails this lab closed and stops the rest. It never respawns automatically. Production can replace a failed worker, but must bound retries/backoff, distinguish deployment drain from a crash, wait for readiness and avoid a crash loop that hides a bad artifact. Killing a worker can lose in-flight responses even if an external effect committed; reconnect/retry requires the domain’s outcome policy.
+Unexpected worker loss makes this lab stop the remaining workers. It never restarts them automatically. Production replacement needs retry limits, delays and readiness checks. Distinguish a planned deployment stop from a crash, and avoid repeatedly restarting a broken release. A killed worker may lose its response after a remote write committed. Check the operation’s actual outcome before retrying.
 
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
@@ -875,9 +939,9 @@ A child may return a job result and remain available for more jobs. That result 
 
 <span class="notes-section-label">**Reuse the existing foundation, extend the lifecycle**</span>
 
-The [one-shot fork example](./02-cli-and-processes.md#t02-q08) already owns one request and waits for child close. This session extends the same principle to repeated work: a result completes one calculation, while an explicit stop → stopped → disconnect/close sequence disposes the reusable child. The owner implementation is in the next question so there is one shared session implementation rather than competing helpers.
+The [one-request fork example](./02-cli-and-processes.md#t02-q08) already waits for the child to close. Here the child handles several requests. A result finishes one calculation; a separate stop → stopped → disconnect/close sequence ends the child process. The next question provides the shared session implementation.
 
-Choose fixed reviewed module paths and runtime flags. This fixture uses an empty environment and no inherited inspector arguments to reduce accidental configuration inheritance; it still runs with the user’s OS authority and is not a sandbox. A real child may require an explicit environment allowlist, working directory and reviewed flags. Do not pass a client-supplied executable or shell command through this API.
+Use fixed, reviewed module paths and runtime flags. This test passes an empty environment and does not inherit inspector arguments. That reduces accidental configuration changes, but the child still has the user’s OS permissions. A real child may need a selected set of environment variables, a working directory and runtime flags. Do not pass caller-selected executables or shell commands to this API.
 
 <span class="notes-section-label">**Child protocol — bounded pure work, explicit stop**</span>
 
@@ -963,9 +1027,9 @@ console.log(
 
 <span class="notes-section-label">**Stdio, process events and limits**</span>
 
-This teaching protocol has no stdout/stderr data contract, so those streams are ignored deliberately. A real integration needs bounded draining or forwarding with safe diagnostic fields; unread pipes can block a child. Avoid collecting unbounded output or logging credentials. Process exit and stdio closure are distinct observations; the owner below settles its close promise from close.
+This example deliberately ignores stdout/stderr because the protocol does not use them for data. A real integration must read or forward output with size limits and safe diagnostic fields. An unread pipe can fill and block the child. Process exit and output-stream closure are separate events. The session’s close promise settles from the `close` event, after those streams close.
 
-A request deadline terminates this direct owned child because there is only one assigned job and no queue. It does not kill unrelated work in a shared process pool. A child can spawn descendants; supervising a process tree needs its own platform-specific boundary. SIGKILL here is forceful POSIX cleanup, not a cross-platform graceful-shutdown guarantee, and a parent timer is not an instantaneous OS termination guarantee.
+A request deadline stops this child because it has only one assigned job and no queue. It does not stop unrelated work in a shared process pool. If a child creates more processes, managing that process tree needs OS-specific handling. SIGKILL is forced POSIX cleanup, not a portable normal-shutdown guarantee. A parent timer also cannot guarantee immediate OS termination.
 
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
@@ -1019,9 +1083,9 @@ IPC carries messages; your application defines what they mean. **Check the messa
 
 <span class="notes-section-label">**One assigned request, no hidden waiting queue**</span>
 
-The session admits at most one request and rejects another while busy. IDs increase within a 100-job session limit. Replies match the active ID, expected tiny arithmetic result and owned child PID. The fixed message schemas contain no caller-supplied file path, role or tenant authority. For a real service, validate its actual schema and authorize at the trusted operation boundary.
+The session accepts one request at a time and rejects another while busy. IDs increase within a maximum of 100 jobs per session. Each reply must match the current request ID, expected calculation and child PID. Messages contain no caller-selected executable path or permission fields. A real service must validate its own message schema and check permissions at the protected operation.
 
-This design sends one small bounded request and then waits for its result before accepting another. Node send can return false when the channel is closed/backlogged; that is not an instruction to immediately resend the same command. Keep a callback error owner, stop producing further application work and respect the outcome/deadline contract. A larger window needs both finite message/byte budgets and correlated per-task state; a transport backlog threshold is not your business queue limit.
+The session sends one small request and waits for its result before accepting another. Node’s `send` can return false when the channel is closed or has too much buffered data. Do not immediately resend the command. Handle callback errors and stop submitting work until the protocol allows it. Supporting several pending requests needs byte/message limits and separate state for each task. The channel’s buffer limit is not an application queue limit.
 
 <span class="notes-section-label">**Shared session owner**</span>
 
@@ -1162,17 +1226,17 @@ export function createForkSession({
 }
 ```
 
-The request timer includes child startup and waiting for its business reply. Unexpected/duplicate replies fail the session closed rather than completing another job. The close timer bounds the waiting period before forceful cleanup; the close promise still waits for observed process/stdio closure. Repeated close returns the same promise.
+The request timer includes child startup and the wait for a reply. An unexpected or duplicate reply fails the session rather than completing another task. The close timer limits how long the owner waits before forced cleanup. The close promise still waits for the process and its output streams to close. Repeated close calls return the same promise.
 
 An internally attached rejection handler observes an automatically failed closure, but callers still await close to receive that failure. Ignored stdio is deliberate in this fixture; it does not provide diagnostic output guarantees. The code does not exercise the native saturated-buffer branch or handle passing, and does not claim them from ordinary small-message tests.
 
-A successful reply can precede a later session failure. If the child commits a write then loses its reply, the caller cannot infer rollback. Persist a stable operation identity and outcome where side effects require safe retries. This child’s in-memory seen-ID set only prevents repeated IDs during its own bounded lifetime; after restart it knows nothing about previous effects.
+A valid reply can arrive before a later session failure. If the child writes data but its reply is lost, the caller cannot assume that the write was rolled back. Persistent operation IDs and saved outcomes allow safe retry decisions. This child only remembers IDs in memory during one session. After restart it has no record of earlier effects.
 
 Default serialization, explicit advanced serialization and worker-thread transfer/shared-memory rules are different contracts. Choose supported values deliberately, test the actual mode and avoid reserved internal message conventions. Passing a socket/handle is a separate capability handoff with buffered-data, ownership and platform concerns; use it only when justified, rather than smuggling it into an ordinary data schema.
 
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
-Treating send=true or its callback as a result; resending on send=false; interpreting duplicate/stale replies as the current job; accepting an unbounded queue; or disconnecting before required replies have drained. Record bounded correlation/phase evidence and queue pressure. A request ID is not a secret or permission grant.
+Do not treat `send` returning true or its callback running as a job result. Do not resend simply because `send` returns false. Reject stale or duplicate replies, limit queued work, and finish required replies before disconnecting. Record request IDs, protocol stages and queue pressure without private payloads. A request ID grants no permission.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -1190,7 +1254,7 @@ Correlate application outcomes, bound producers independently, and wait for the 
 - [ ] Inject wrong/duplicate replies and clean exit without a reply; assert that another task cannot receive that result.
 - [ ] Test request and shutdown deadlines, then design a bounded two-request window with explicit out-of-order matching before implementing it.
 
-Acceptance: each promise settles according to its phase, repeated close is stable, all owned children close, and transport acknowledgements remain distinct from durable business outcomes. Native send saturation/handle passing require their own integration tests before claiming support.
+Acceptance: each promise must finish according to the documented protocol stage, repeated close calls must be safe, and every child must close. Sending a message is not proof of a committed business result. Saturated send buffers and handle passing need their own integration tests.
 
 <span class="notes-section-label">**Official references**</span>
 
@@ -1260,7 +1324,7 @@ assert.throws(() => budget({ replicas: -1 }), RangeError);
 console.log('Capacity multiplication fixture passes; no capacity benchmark is implied.');
 ```
 
-Three replicas with two processes each create 24 CPU workers and up to 60 configured DB connections in this fixture. Rolling deployments can temporarily add old and new replicas; capacity planning must include that overlap. A bound in one process does not establish a global limit. CPU quotas and available resources matter more than the host’s nominal core count. Shared native work, memory, sockets and dependency capacity still compete.
+In this example, three application copies with two processes each create 24 CPU workers and allow up to 60 database connections. A rolling deployment can briefly run old and new copies together, so include that overlap in the budget. One process’s limit is not a global limit. Use the actual CPU quota and available resources, not just the host’s core count. Memory, sockets, native work and dependency capacity also matter.
 
 <span class="notes-section-label">**A reproducible diagnostic sequence**</span>
 
@@ -1274,13 +1338,13 @@ For example, high queue wait with CPU workers fully occupied can justify admissi
 
 <span class="notes-section-label">**Failure and delivery decisions**</span>
 
-Define queued versus assigned cancellation, retry ownership, stable operation identity, poison-input/crash-loop handling and deployment drain. An automatic retry can duplicate an external effect after a lost reply. A crash can invalidate local cache/session/deduplication state. Authentication and resource authorization must remain valid at the authoritative operation; a child/thread boundary grants neither.
+Define cancellation for queued and assigned tasks separately. Decide who retries work, how operations are identified, and how repeated bad input or crashes are handled. A retry after a lost reply can duplicate a remote effect. A crash loses local caches, sessions and duplicate-ID records. Verify identity and permissions where the protected operation happens. A process or thread boundary grants neither.
 
-For rolling replacement, stop new admission, let accepted work settle under a budget, then close owned resources and await process/thread termination. Escalation is a distinct result. Use an external supervisor for a final bound when JavaScript/native cleanup cannot progress. Never report an unreferenced worker, a hidden process exit or an abandoned promise as successful drain.
+During a rolling replacement, stop accepting work, give accepted tasks a deadline, then close resources and wait for threads/processes to stop. Forced termination is a separate outcome. Use an external supervisor if JavaScript or native cleanup cannot finish. An unreferenced worker or an abandoned promise does not prove that work finished.
 
 <span class="notes-section-label">**Common mistakes**</span>
 
-Adding threads to I/O wait, increasing every pool simultaneously, forgetting replica multiplication, interpreting a local microbenchmark as an SLA, or testing only the happy path. Observability must show queue and physical ownership, not merely which promises have already rejected.
+Common mistakes include adding threads for I/O waiting, enlarging every pool at once, ignoring the number of application copies, treating a small local benchmark as a service guarantee, and testing only success. Diagnostics must show queued and actually running work, not only rejected promises.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
 
@@ -1305,7 +1369,7 @@ Source mapping: [R176](./requirements.md#r176).
 
 
 
-The supplied chart names “Event Splitting” without defining it. This lesson uses an **editorial interpretation: partitioning a long operation into bounded chunks across event-loop turns**. It is not a Node API name. The L3 audience is editorial too; the chart-only entry supplies no career proficiency.
+The supplied chart names “Event Splitting” but does not define it. This lesson uses an **explicit interpretation: dividing a long operation into limited chunks across event-loop turns**. It is not a Node API name. The L3 audience is also this guide’s choice; the chart gives no separate career target for this entry.
 
 <div class="notes-core-answer">
 
@@ -1357,9 +1421,9 @@ console.log('Partitioned result, interleaving and cancellation pass.');
 
 <span class="notes-section-label">**Why this changes responsiveness**</span>
 
-Without the awaited immediate, one loop owns the JavaScript thread until completion. The await allows later chunks to run on subsequent loop turns. `await Promise.resolve()` only schedules a microtask continuation and can keep starving timers/I/O. Calling `EventEmitter.emit()` is also insufficient: ordinary listeners execute synchronously.
+Without awaiting the immediate, the loop keeps the JavaScript thread until it finishes. With the await, later chunks run on later event-loop turns. `await Promise.resolve()` only schedules a microtask and can still prevent timers and I/O from running. `EventEmitter.emit()` does not solve this either: ordinary listeners run synchronously.
 
-The marker assertion shows another scheduled immediate progressed before completion in this fixture. It does not promise timer ordering, fairness between clients or a latency SLA. Count-based chunks work here because each iteration has similar bounded cost. A single expensive regular expression, JSON parse or synchronous native call cannot be interrupted by a chunk boundary outside it. A time budget checked between items also cannot interrupt an indivisible item.
+The marker assertion shows that another scheduled immediate ran before this calculation finished. It does not guarantee timer order, fairness between clients or a latency target. Counting iterations works here because each iteration has a similar small cost. Chunking cannot interrupt one long regular expression, JSON parse or synchronous native call. A time check between items also cannot interrupt an item that is already running.
 
 <span class="notes-section-label">**Choose the right boundary**</span>
 
