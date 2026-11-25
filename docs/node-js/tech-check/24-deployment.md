@@ -32,9 +32,26 @@ Package scripts provide repeatable project commands. CI runs the required checks
 
 </div>
 
+<span class="notes-section-label">**Check what will actually run**</span>
+
+Source checks and packaged-application checks protect different boundaries.
+
+```mermaid
+flowchart TD
+ Source["Clean source and locked dependencies"] --> Build["Required build and source checks"]
+ Build --> Package["Package runtime files or image"]
+ Package --> Smoke["Check that packaged application starts and behaves correctly"]
+ Smoke --> Identity["Retain verified release identity for later stages"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For a TypeScript application, a typical sequence is: install locked dependencies, run type/lint checks and tests, compile, then check the packaged output. Use the actual task template’s scripts. This documentation repository only has docs scripts at its root. Do not add generic `build` or `test` scripts just to match the example.
 
 Use `npm ci` with the reviewed lockfile. A cache can make installation faster, but is not the release package and does not mean another job already has dependencies installed. Install build/test tools in the verification stage. Package only files needed at runtime. Test startup with production dependencies on the required OS, architecture and Node version.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -63,6 +80,21 @@ Build one release package or image and record its source revision, runtime and d
 A checksum lets you compare bytes against an expected value. **The expected checksum must come from a trusted source.** A matching hash supplied alongside an untrusted download does not establish who made it, whether it is safe or whether it is approved for release.
 
 </div>
+
+<span class="notes-section-label">**Promote the same bytes**</span>
+
+A clean verifier consumes the built artifact. Later stages use that artifact rather than silently rebuilding it.
+
+```mermaid
+flowchart TD
+ Build["Build release once"] --> Artifact["Artifact plus trusted source and checksum record"]
+ Artifact --> Verify["Verify in a separate clean environment"]
+ Verify --> Approved["Retain verified artifact identity"]
+ Approved --> Release["Use the same artifact for release"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 For a container, record the release digest and target platform along with revision, lock, build configuration and schema compatibility. For an archive, verify its digest before safe extraction and check its allowed contents. Never execute an arbitrary uploaded archive simply because somebody supplied a matching hash. The [existing compatibility lab](../release-artifact-compatibility.md) demonstrates isolated build/test jobs and fixed allowlisted files.
 
@@ -95,6 +127,8 @@ assert.throws(() => verifyArtifact(bytes, 'not-a-digest'));
 
 Real CI gets the expected digest and build history from a trusted build. Recomputing a hash from the same untrusted download does not establish trust. Pin action dependencies to reviewed immutable revisions. Give jobs limited permissions, use short-lived cloud credentials, protect deployment environments and remove secrets from logs. Never run untrusted pull-request code with production secrets or privileged deployment credentials.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Build an owned application image once, save its digest and prepare (without pushing) a release manifest containing checks and target registry/repository. Test the downloaded/exported artifact in a fresh consumer and reject deliberate corruption. Accept with the same immutable identity at every stage and no credential in layers/logs. References: [GitHub Actions security](https://docs.github.com/en/actions/reference/security/secure-use), [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations).
@@ -123,11 +157,29 @@ Keep the fixed application package separate from settings and secrets that vary 
 
 </div>
 
+<span class="notes-section-label">**Supply environment settings at the boundary**</span>
+
+Configuration changes across environments; the verified application artifact can stay fixed.
+
+```mermaid
+flowchart TD
+ Artifact["Fixed application artifact"] --> Startup["Environment startup owner"]
+ Settings["Environment-specific settings"] --> Startup
+ Secrets["Controlled secret source"] --> Startup
+ Startup --> Validate["Validate before readiness"]
+ Validate --> Service["Run under limited identity with safe diagnostics"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 List the environment’s runtime and architecture, network/DNS/TLS settings, database and migration roles, session store, secrets, outgoing dependencies, logs, health paths and resource limits. Version non-secret configuration and supply secrets at runtime. Values included in browser files are public; a browser bundle cannot hide a secret.
 
 For a VM, a process manager such as systemd can start the non-root Node process and manage restarts, working directory, settings, logs and stop deadline. Do not rely on `node ... &` in a temporary terminal session. Prefer a controlled management service. If SSH is needed, verify the host identity and limit the user, key and incoming network access. Do not disable host checks or place passwords in command arguments.
 
 A runbook is a repeatable set of operating instructions. An SSH/CLI runbook should identify the account, region, host, release digest, working directory and exact command before changing anything. Copy only reviewed files, preserve permissions and check exit status. Keep logs free of secrets. Do not insert unquoted user input into remote shell commands. For ECS, update the service through the deployment process rather than editing files inside a running task.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -157,11 +209,29 @@ Source mapping: [R112](./requirements.md#r112), [R143](./requirements.md#r143).
 
 </div>
 
+<span class="notes-section-label">**Separate liveness, readiness and drain**</span>
+
+A dependency outage may stop admission without making a healthy Node process need replacement.
+
+```mermaid
+flowchart TD
+ Running["Process responds to liveness check"] --> Required{"Can required work be served?"}
+ Required -->|yes| Ready["Ready: receive traffic"]
+ Required -->|no| Unready["Unready: stop new traffic and diagnose dependency"]
+ Ready -->|shutdown| Drain["Mark unready; drain within deadline"]
+ Drain --> Close["Close owned resources and observe completion"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A simple `/healthz` can show that the process can answer HTTP requests. `/readyz` checks required dependencies within a time limit and checks whether shutdown has started. Share or cache probe work when appropriate so health checks do not overload the database. A database connection alone does not prove that the schema or business operation is usable.
 
 Express’s `app.listen()` returns the server that must later be closed. In NestJS, configure the required shutdown hooks and signals. In either framework, one application owner tracks servers, pools, workers and timers. Handle SIGTERM once, mark the service unready, stop new work and wait for resources to close. An outer timeout does not stop unfinished work by itself. Define when to force termination and how to check uncertain outcomes afterward.
 
 The [container server](../container-deployment-lab.md#own-health-work-through-timeout-and-shutdown) demonstrates this cleanup for a small test setup. Reuse its approach rather than an incomplete two-line signal handler. The platform must allow enough time for accepted work to finish and traffic routing to update. Measure that time under traffic. Work interrupted by a forced stop may need safe retry or duplicate protection.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -191,6 +261,22 @@ Release database and application changes in compatible stages. Use a known, test
 
 </div>
 
+<span class="notes-section-label">**Expand, migrate, then retire**</span>
+
+Keep old and new application versions compatible during their overlap. Retiring old schema can end the safe code-rollback window.
+
+```mermaid
+flowchart TD
+ Expand["Add backward-compatible schema"] --> Deploy["Roll out compatible new code alongside old instances"]
+ Deploy --> Migrate["Migrate data and verify business operations"]
+ Migrate --> Retire["Retire old code and later remove obsolete schema"]
+ Deploy -.-> Rollback["Code rollback possible while schema and data remain compatible"]
+ Retire -.-> Repair["After destructive change, recovery may require repair or restore"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A rolling release replaces application copies gradually. It needs spare capacity and compatibility between old and new versions. Blue/green deployment keeps two environments so traffic can switch between them, but still needs a data plan. A canary release sends a small share of traffic to the new version and checks defined metrics before continuing. None of these methods automatically guarantees zero downtime.
 
 For the AWS path, prepare a new ECS task definition using the tested digest, reviewed execution/task roles, secrets, ports, resource limits and health settings. Set deployment healthy/surge limits that allow at least one replacement and fit capacity. Use service events and application metrics to distinguish image-pull, IAM/network, startup and business failures. The [AWS slice](../aws-service-slice.md) documents prerequisites; a template lint does not deploy the surrounding network/database.
@@ -198,6 +284,8 @@ For the AWS path, prepare a new ECS task definition using the tested digest, rev
 For a renamed field, first add a compatible new column. Deploy code that supports old and new fields. Fill existing data into the new column in limited batches, then verify it. Switch reads, stop old writes and remove the old column only after the rollback period ends. Run migrations through one coordinated job with lock/time limits, not separately in every application copy.
 
 The [release compatibility lab](../release-artifact-compatibility.md) shows four storage contracts and when rollback becomes unsafe. Record which old/new readers and writers work with each schema version. A down-migration file alone is not enough. If a transformation destroyed information, recovery may need a forward fix or a separate restore followed by data reconciliation. Document any accepted data loss.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -228,6 +316,8 @@ A delivery handoff explains which release was built, which checks actually ran, 
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 A local release record should identify the source revision and uncommitted changes, lockfile, tool/runtime versions, platform and artifact digest. Include build/test results, packaged contents, security review, schema compatibility, configuration references, smoke tests, health/shutdown limits and rollback package. List failures and checks that did not run.
 
 A Docker pipeline typically tests the application, builds a candidate image, tests that image and saves its digest/build evidence. It then prepares publication and promotes that same digest through deployment. Only authorized, trusted jobs receive registry-write credentials. Pull-request checks remain read-only and secret-free. Do not rebuild after verification and describe the new image as the tested release.
@@ -235,6 +325,8 @@ A Docker pipeline typically tests the application, builds a candidate image, tes
 After deployment, test authentication, ownership checks and database rules. Check job delays, errors, latency and resource use. A 200 from `/healthz` does not prove those behaviors. Assign someone to respond to alarms. A graph without an action plan is not enough for incident handling.
 
 Cleanup includes owned test accounts/data, resources, retained artifact/log/backup policy and cost review. Preserve evidence without exposing secrets. If an integration could not be run, state the exact limitation and the next required action; do not replace it with an invented successful environment.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

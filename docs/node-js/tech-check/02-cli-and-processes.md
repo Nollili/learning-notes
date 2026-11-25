@@ -8,7 +8,7 @@ JavaScript examples use Node 24, ES Modules (`.mjs`) and built-in APIs. Shell co
 
 <span class="notes-section-label">**First pass:**</span> study questions 1–5: running a script, environment settings, the REPL, terminal input/output and exit status. In question 5, focus on `process.exitCode` and closing work before finishing. Return to process diagnostics, subprocesses and IPC in questions 6–8 after building your first CLI.
 
-The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+The expandable deeper explanations preserve the additional examples. Common mistakes, examiner follow-ups and key takeaways stay visible outside them. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
 
 <!-- tech-check: t02-q01; level: 1 -->
 
@@ -45,6 +45,25 @@ Use `--version` for the Node version, `--help` for help and `--check` to check s
 
 </div>
 
+<span class="notes-section-label">**Separate the argument channels**</span>
+
+For `node --trace-warnings app.mjs hello`, Node consumes the runtime option and passes hello to your program.
+
+```mermaid
+flowchart TD
+    Command["node --trace-warnings app.mjs hello"] --> Runtime["Node option: --trace-warnings"]
+    Command --> Entry["Entry file: app.mjs"]
+    Command --> Arg["Application argument: hello"]
+    Runtime --> Exec["process.execArgv"]
+    Entry --> Argv["process.argv: executable, script, hello"]
+    Arg --> Argv
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 For the command above the result has runtime `["--trace-warnings"]` and application `["--mode","test"]`. Absolute executable/entry paths are intentionally omitted by slice(2). Node consumes its own flag before loading the entry. It does not automatically convert the script's --mode into a settings object.
@@ -65,6 +84,8 @@ Use `node -- args.mjs --help` when deliberately ending Node option parsing befor
 Never implement security by assuming you know what the user typed before shell expansion.
 
 A real CLI should parse a declared option schema (for example node:util parseArgs), reject unsupported/duplicate options according to policy, validate numbers/enums and produce a useful usage error. This tiny example only shows the two argument channels. There is no DOM form to constrain a terminal user; direct invocation can bypass any wrapper script.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -108,6 +129,23 @@ Environment variables provide settings such as a port number or a feature flag. 
 
 </div>
 
+<span class="notes-section-label">**Follow configuration parsing**</span>
+
+Missing and invalid are different branches. Only checked, converted values reach the application.
+
+```mermaid
+flowchart TD
+    Raw["Read environment setting"] --> Present{"Present?"}
+    Present -->|no| Default["Use the documented default"]
+    Present -->|yes| Valid{"Accepted format and range?"}
+    Valid -->|no| Fail["Fail startup with a safe diagnostic"]
+    Valid -->|yes| Convert["Convert string to intended type"]
+    Default --> Config["Checked configuration object"]
+    Convert --> Config
+    Config --> App["Pass settings into the application"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `port.mjs`:
@@ -132,7 +170,9 @@ Run `node port.mjs` to see the default, `3000`. In a macOS/Linux shell, try `POR
 
 For a boolean setting, compare the string explicitly: `process.env.FEATURE_ENABLED === 'true'`. Validate that a supplied value is either `'true'` or `'false'` if other spellings should be rejected.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -171,6 +211,8 @@ A process receives its environment from its parent. Editing the parent's shell o
 
 Source code should depend on validated configuration rather than read ambient env in every helper, making tests and ownership clearer.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Printing the entire environment to debug one missing setting.
@@ -188,7 +230,6 @@ Source code should depend on validated configuration rather than read ambient en
 Parse environment strings into a validated startup contract; defaults, precedence and secret handling are explicit policy.
 :::
 
-::::
 
 ---
 
@@ -213,6 +254,24 @@ The REPL is Node's interactive JavaScript prompt. REPL means Read–Eval–Print
 **Code that works in the REPL may behave differently in a file.** Earlier inputs can affect the result, and top-level variables and displayed output follow REPL rules. Save important experiments as a file or test so you can repeat them. The REPL has your process's permissions; it is not a sandbox.
 
 </div>
+
+<span class="notes-section-label">**See the REPL loop**</span>
+
+Each new input can use values left by earlier inputs. Moving the experiment to a fresh file makes that setup explicit.
+
+```mermaid
+flowchart TD
+    Read["Read your input"] --> Eval["Evaluate using the current session state"]
+    Eval --> Print["Print the resulting value or error"]
+    Print --> Wait["Wait for your next input"]
+    Wait --> Read
+    Print -.-> File["Save a minimal experiment and run it in a fresh process"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -243,6 +302,8 @@ Use a disposable nonsecret fixture and avoid recording credentials in terminal/R
 Top-level interactive bindings and inspection conveniences are not the same as an isolated ESM/CommonJS module scope. Explicitly import the API you intend to use instead of relying on previously entered or conveniently available names. Large/infinite synchronous expressions can block the session.
 
 A promise that never completes can make interactive diagnosis confusing; add a finite reproduction and move it into a file/test to observe its lifecycle properly.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -286,6 +347,23 @@ A CLI has three standard streams: `stdin` reads input, `stdout` writes normal re
 
 </div>
 
+<span class="notes-section-label">**Keep data and diagnostics apart**</span>
+
+For the shell example below, the result and error messages have different destinations. The exit status reports success or failure separately.
+
+```mermaid
+flowchart TD
+    Input["input.txt"] -->|stdin: 0| CLI["Your CLI"]
+    CLI -->|stdout: 1| Data["result.json: machine-readable data"]
+    CLI -->|stderr: 2| Logs["errors.log: diagnostics"]
+    CLI --> Status["Exit status: 0 or nonzero"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 `tool < input.txt > result.json 2> errors.log` in a POSIX shell connects input and separates the two outputs. If a debug console.log is mixed into a JSON result, the next program may fail to parse it. console.error normally targets stderr; it does not set a failure exit code by itself.
@@ -317,6 +395,8 @@ try {
 Run `node count-lines.mjs < fixture.txt > result.json 2> errors.log`. `a\nb\n` produces `{"lines":2}`, not 3: a final terminator does not add an empty logical line. A blank line within the input is still a line. crlfDelay makes CRLF handling explicit; this is not a binary file/framing protocol.
 
 Limits: readline can accumulate a long line before the check runs, so this is not a hard hostile-input memory cap. A production byte/line protocol needs bounded chunks/framing before accumulation, deadlines and stream-error ownership. This small final stdout write is not a general streaming/backpressure implementation. Large output must observe write(false)/drain or use pipeline. Do not claim a browser ReadableStream and Node process streams have identical methods/lifetimes.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -375,6 +455,26 @@ The `exit` event allows only synchronous final work. `beforeExit` can add work w
 
 </div>
 
+<span class="notes-section-label">**Follow an owned shutdown**</span>
+
+This is the deliberate service shutdown path, not a guarantee for crashes or forced termination. Cleanup belongs before the exit event.
+
+```mermaid
+flowchart TD
+    Signal["Shutdown signal"] --> Stop["Stop accepting new work"]
+    Stop --> Drain["Finish or limit active work"]
+    Drain --> Close["Close owned resources; await cleanup"]
+    Close --> Status["Set process.exitCode"]
+    Status --> Empty["No resources keep Node active"]
+    Empty --> Exit["Exit event: synchronous final work only"]
+    Exit --> End["Process ends"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The example does not print saved and naturally exits with status 2. By the time exit is being processed, scheduling a timer cannot revive normal execution. Making the listener async does not make the runtime await it. Await required persistence/cleanup before reaching termination, then set the appropriate final status.
@@ -407,6 +507,8 @@ try {
 This ensures main's promise is observed. It does not create an overall deadline or make arbitrary cleanup succeed. The runtime foundations health service demonstrates a real bounded server stop; database/job owners require their own close/drain contracts.
 
 After a fatal uncaught error, continuing to accept requests as though state is healthy is unsafe; report a minimal safe failure, bound cleanup and let a supervisor restart according to policy. Security-critical effects still need durable recovery, since cleanup cannot undo a remote commit.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -450,6 +552,27 @@ The `process` object gives information about the running Node program: its ID, a
 
 </div>
 
+<span class="notes-section-label">**Separate waiting from CPU work**</span>
+
+This example timeline shows why elapsed time can be large while CPU time is small. It is not a measurement of a particular machine.
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant IO as File or network I/O
+    App->>App: Start elapsed-time measurement
+    App->>App: Small amount of CPU work
+    App->>IO: Start operation
+    Note over App,IO: Waiting increases elapsed time without requiring continuous CPU work
+    IO-->>App: Operation completes
+    App->>App: Finish measurement
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The working directory belongs to the process, not the source module. Launching the same file from another directory can change path.resolve('config.json') without changing the file itself. Module-relative assets should use an explicit module location, such as new URL('./asset.txt', import.meta.url).
@@ -486,6 +609,8 @@ RSS (resident set size) includes resident process memory beyond the JavaScript h
 A temporary RSS increase alone does not prove a JavaScript object leak. Retention trends, allocation/heap analysis and workload reproduction belong in the diagnostics/performance groups.
 
 Use getActiveResourcesInfo to investigate types such as timers or sockets when a program does not exit. It does not reveal all business ownership or justify closing another module's resources. Preserve a reference to resources you create and implement disposal through their public APIs. Prefer this documented diagnostic over relying on private underscored process methods as application contracts.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -528,6 +653,25 @@ Use `spawn()` to start a program and read its output as it arrives. `execFile()`
 Set limits on execution time, collected output and the number of children running at once. Pass only the environment settings the child needs. Handle a failure to start separately from a program that starts and then exits unsuccessfully. Also wait for its output streams to finish. A child process is a separate program, not automatically a secure sandbox.
 
 </div>
+
+<span class="notes-section-label">**See the extra shell layer**</span>
+
+These are the default execution paths. spawn streams output; execFile and exec normally collect output for their callback.
+
+```mermaid
+flowchart TD
+    Spawn["spawn: executable plus arguments"] --> Direct["Child executable"]
+    File["execFile: executable plus arguments"] --> Direct
+    Exec["exec: command string"] --> Shell["Shell interprets the command"]
+    Shell --> Program["Selected program or programs"]
+    Direct --> Parent["Parent observes errors, output and closure"]
+    Program --> Parent
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -572,6 +716,8 @@ It is not an absolute kill-all-descendants deadline. Consume both streams for st
 
 Use close when collected output/child-handle completion matters, and prevent duplicate settlement across failure events.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Using `exec('tool ' + userText)` and expecting argument validation alone to neutralize a shell.
@@ -614,6 +760,29 @@ Source mapping: [R080](./requirements.md#r080), [R117](./requirements.md#r117).
 Check messages, keep them small, give requests IDs so replies can be matched, and set a deadline. **A successful send does not prove the child finished the task.** Wait for a valid result and confirm that the child closes as expected. Handle errors and close unused channels. For repeated tasks, a limited set of reusable processes may be cheaper than starting one for every task.
 
 </div>
+
+<span class="notes-section-label">**Follow the one-request IPC example**</span>
+
+Read downward. A sent message and a received result are separate milestones; this parent also waits for successful closure.
+
+```mermaid
+sequenceDiagram
+    participant P as Parent process
+    participant C as Child process
+    P->>C: fork starts a separate Node process
+    P->>C: Send square request with value 6
+    C->>C: Validate message and calculate 36
+    C-->>P: Send result 36
+    C->>C: Disconnect when the send completes
+    Note over P: Retain result, do not settle yet
+    C-->>P: Child exits and stdio closes
+    P->>P: Check result and successful close, resolve
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -686,6 +855,8 @@ Setting execArgv explicitly avoids accidentally inheriting a parent's inspector 
 This validates selected fields/ranges, not a general hostile IPC schema or sandbox. Add exact keys/version/request IDs and finite queue/payload/concurrency budgets for multiple requests. Unknown fields/oversize messages should be rejected before expensive processing. The two-second timer is a local deadline, not proof OS termination happens instantaneously.
 
 POSIX signal checks do not prove Windows behavior. Same-user child processes retain broad host authority unless a separate isolation boundary restricts them.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 

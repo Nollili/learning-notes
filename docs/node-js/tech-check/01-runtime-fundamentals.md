@@ -8,7 +8,7 @@ Examples use Node 24 and ES Modules (`.mjs`) unless stated otherwise. Only built
 
 <span class="notes-section-label">**First pass:**</span> read the Core answer panels and try the short examples in questions 1–4. In question 3, focus on when a file read blocks other work. Leave worker internals, isolation and the longer service examples for a second reading.
 
-The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+The expandable deeper explanations preserve the additional examples. Common mistakes, examiner follow-ups and key takeaways stay visible outside them. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
 
 <!-- tech-check: t01-q01; level: 1 -->
 
@@ -32,6 +32,19 @@ The JavaScript language stays the same, but the available tools change. **Node h
 
 </div>
 
+<span class="notes-section-label">**See the runtime layers**</span>
+
+The boxes show responsibilities, not an execution order. Node supplies the host APIs; V8 executes JavaScript.
+
+```mermaid
+flowchart TD
+    Code["Your JavaScript program"] --> V8["V8: execute JavaScript"]
+    Code --> API["Node APIs: files, processes, networking"]
+    API --> OS["Operating system: permitted resources"]
+    Browser["Browser host"] --> DOM["Page and DOM APIs"]
+```
+
+
 <span class="notes-section-label">**Example**</span>
 
 Attempt this in a `.mjs` file on Node 24, without DOM libraries or a bundler:
@@ -44,9 +57,9 @@ console.log(typeof Buffer);
 
 Expected output is `undefined`, `object`, `function`, on separate lines. `typeof` can check a name that does not exist without throwing. Node supplies `process` and `Buffer`, but does not supply the browser’s `document`. This example runs directly in Node, without tools that add browser APIs.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
 
 
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -68,6 +81,8 @@ In a browser you normally use JavaScript to react to user input and update a doc
 
 Cross-platform means supported Node distributions run on multiple operating systems. It does not make paths, file permissions, shell commands, signal behavior or native dependencies identical. Use portable APIs and test the deployment OS rather than concatenate a Windows or Unix path/shell command and assume universal behavior.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Calling Node a programming language: the language is JavaScript; Node supplies its runtime/host.
@@ -85,7 +100,6 @@ Cross-platform means supported Node distributions run on multiple operating syst
 Node runs JavaScript with server/OS host facilities; V8 executes the language, and the host determines the available resources and boundaries.
 :::
 
-::::
 
 ---
 
@@ -111,6 +125,23 @@ Event-driven code responds to things that happen, such as a request arriving, a 
 
 </div>
 
+<span class="notes-section-label">**Follow the timer example**</span>
+
+Read downward. Registering a timer does not interrupt the JavaScript that is already running.
+
+```mermaid
+sequenceDiagram
+    participant JS as Current JavaScript
+    participant Timer as Timer system
+    JS->>JS: Print Start
+    JS->>Timer: Register callback with delay 0
+    JS->>JS: Print End
+    Note over JS: Current synchronous work finishes
+    Timer-->>JS: Callback gets a turn when ready
+    JS->>JS: Print Timer finished
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `waiting.mjs` and run `node waiting.mjs`:
@@ -125,7 +156,9 @@ The output is `Start`, `End`, then `Timer finished`. Node finishes the current J
 
 **Waiting for a timer is different from doing a calculation.** A long loop still occupies the JavaScript thread, even inside an `async` function.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Code question — attempt first**</span>
 
@@ -172,6 +205,8 @@ Changing a CPU-heavy function to `async`, or wrapping the calculation in Promise
 
 Do not spawn one unbounded worker per hostile request.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - “Node is single-threaded, so it cannot handle concurrent requests”: this confuses one callback's execution with pending I/O and the whole process's threads.
@@ -188,7 +223,6 @@ Do not spawn one unbounded worker per hostile request.
 Nonblocking I/O permits progress while waiting; async syntax alone cannot prevent CPU work from blocking a JavaScript execution thread.
 :::
 
-::::
 
 ---
 
@@ -213,6 +247,25 @@ A synchronous file operation makes the current JavaScript thread wait until it f
 **A small synchronous operation can be reasonable during startup or in a command-line tool.** For example, a tool may read one small configuration file before doing anything else. Async does not necessarily make that single read faster. Either approach still needs error handling and limits on file size and the amount of work started at once.
 
 </div>
+
+<span class="notes-section-label">**Compare who waits**</span>
+
+In the async branch, the file-reading function waits while other callbacks can run. Parsing the returned text still uses the JavaScript thread.
+
+```mermaid
+flowchart TD
+    Choice{"File API"}
+    Choice -->|synchronous| S["Read file: JavaScript thread waits"]
+    S --> SP["Parse text, then continue"]
+    Choice -->|asynchronous| A["Start read and await its promise"]
+    A --> Other["Other callbacks can run during the I/O wait"]
+    Other --> AP["Read settles: resume function and parse text"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -251,6 +304,8 @@ if (!['sync', 'async'].includes(mode) || !file) {
 Both branches print the decoded string length in UTF-16 code units, not file bytes or user-visible grapheme count. Both handle failure; the sync branch throws directly, the async read rejects and is caught by await. This is a small-file teaching example, not a safe public upload/file endpoint.
 
 Measure responsiveness under multiple requests before concluding one implementation is better for a service.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -295,6 +350,22 @@ A command-line tool usually performs a task, prints a result and exits. **A serv
 
 </div>
 
+<span class="notes-section-label">**Compare program lifetimes**</span>
+
+Both programs can use the same built-in modules. Their difference is how long they accept work.
+
+```mermaid
+flowchart TD
+    Start["Start Node program"] --> Kind{"Program purpose"}
+    Kind -->|CLI| Task["Check input and perform one task"]
+    Task --> Result["Print result, close resources, exit"]
+    Kind -->|service| Listen["Listen for requests"]
+    Listen --> Handle["Handle a request using core APIs"]
+    Handle --> Listen
+    Listen -->|shutdown| Stop["Stop new work and close resources"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Create a small `message.txt` file containing `Hello from a file`. Save this code beside it as `read-message.mjs`, then run `node read-message.mjs` from that folder:
@@ -313,9 +384,9 @@ try {
 
 `readFile` is a built-in tool, so there is nothing to install. `await` waits for its result before printing it. `utf8` asks for text instead of raw bytes. Rename the text file and run again to try the error path. This example reads one small local file completely into memory.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
 
 
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -413,6 +484,8 @@ This loopback-only service returns 200 for GET /health, 404 for other GET paths 
 
 The timeout settings do not interrupt synchronous CPU work and do not configure production authentication, TLS, quotas or load-balancer drain. Signal behavior differs across platforms; the POSIX signal test is not a Windows portability guarantee.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Installing a package named fs to use Node's filesystem API rather than importing the built-in module.
@@ -430,7 +503,6 @@ The timeout settings do not interrupt synchronous CPU work and do not configure 
 Core modules provide the building blocks; a program's interface, lifetime and owned resources determine whether it behaves as a CLI or a service.
 :::
 
-::::
 
 ## Revision {#group1-revision}
 

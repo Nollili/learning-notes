@@ -8,7 +8,7 @@ Examples target Node 24.18.0. Keep the shown .mjs/.cjs extensions and package.js
 
 <span class="notes-section-label">**First pass:**</span> study questions 1–3 and the `exports` assignment distinction in question 4. Run the two-file ESM example before comparing CommonJS. Package conditions, loader bridges, asynchronous module initialization, diagnostic resolvers and cycles in questions 4–8 are second-pass material.
 
-The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+The expandable deeper explanations preserve the additional examples. Common mistakes, examiner follow-ups and key takeaways stay visible outside them. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
 
 <!-- tech-check: t03-q01; level: 1 -->
 
@@ -32,6 +32,26 @@ An import specifier is the name or path written in an import, such as `'express'
 
 </div>
 
+<span class="notes-section-label">**Classify the import first**</span>
+
+These arrows show where lookup starts. A successful lookup is followed by loading and execution, which can still fail.
+
+```mermaid
+flowchart TD
+    S{"Import specifier"}
+    S -->|node:fs| B["Built into Node: no npm install"]
+    S -->|./parser.mjs| L["Local file relative to the importing module"]
+    S -->|express| P["Installed package and its public entry"]
+    B --> Load["Load and execute the selected module"]
+    L --> Load
+    P --> Load
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 An import specifier is the string in import/require. `node:path` names Node's path API. `./parser.mjs` names a local module relative to the importing file. A bare name such as express asks the package resolver for a dependency's public entry. The package manager normally prepares dependencies/lockfiles; importing is not an instruction to install something automatically.
@@ -54,6 +74,8 @@ console.log(isBuiltin('express'));
 The output is true, false, false. isBuiltin answers a classification question; it does not prove a non-builtin exists, is installed, is safe or can load under the current conditions. No express installation is required to classify its name. A typo should lead to diagnosis of the declared dependency, not an automatic install of whatever name an assistant suggested.
 
 For file paths, `./parser.mjs` in `/app/lib/use.mjs` refers to `/app/lib/parser.mjs` even if the process was launched from another directory. Conversely process.cwd-relative filesystem input belongs to the launch context. Do not fix a module-relative import failure by globally changing cwd in a concurrent service.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -98,6 +120,22 @@ For your first program, choose ESM and use the `.mjs` examples below. The deeper
 
 </div>
 
+<span class="notes-section-label">**Choose an explicit module format**</span>
+
+This is a guide for ordinary files. Explicit extensions avoid depending on ambiguous-input detection.
+
+```mermaid
+flowchart TD
+    F{"File extension"}
+    F -->|.mjs| E["ES Module: import and export"]
+    F -->|.cjs| C["CommonJS: require and module.exports"]
+    F -->|.js| P{"Nearest package.json type"}
+    P -->|module| E
+    P -->|commonjs| C
+    P -->|not explicit| D["Applicable Node detection rules matter; make the format explicit"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save these two files in the same folder.
@@ -120,9 +158,9 @@ console.log(greet('Alice'));
 
 Run `node main.mjs`. It prints `Hello, Alice!`. `export` makes the function available to another file; `import` brings it into this one. The `./` means the same folder as the importing file. Include the `.mjs` extension. Learn this ESM pattern first, then compare it with CommonJS below.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
 
 
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -165,6 +203,8 @@ The CommonJS entry prints `42`. The ES module entry prints `42 42` on one line b
 
 In Node 24.18, `require('./value.mjs')` can obtain this synchronous module's namespace. A graph containing top-level await cannot finish synchronously and is a different case, examined in Q06. Cross-version/package-tooling support must be checked instead of applying a historical blanket rule. Keep the primary application mode coherent and place deliberate bridges at narrow boundaries.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Treating .js as universally CommonJS or universally ESM regardless of package/runtime context.
@@ -182,7 +222,6 @@ In Node 24.18, `require('./value.mjs')` can obtain this synchronous module's nam
 Module mode is a runtime/package contract, and CJS/ESM interop must be checked against the actual graph and Node version.
 :::
 
-::::
 
 ---
 
@@ -228,6 +267,24 @@ Node normally caches a CommonJS module after loading it. **Code that requires th
 
 </div>
 
+<span class="notes-section-label">**Picture the cached instance**</span>
+
+Within one process, both requires of the same resolved CommonJS file reach one exported object and one private counter.
+
+```mermaid
+flowchart TD
+    First["first = require counter.cjs"] --> Cache["One cached module instance"]
+    Second["second = require counter.cjs"] --> Cache
+    Cache --> Export["One exported object with next function"]
+    Export --> Value["Private value: 0, then 1, then 2"]
+    Other["A separate process"] --> Own["Its own cache and counter"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The first line is `true`. The second line is `1 2`. Both requires resolve to the same cached module instance. Its private value variable is not a global property, but both exported closures reach the same value. Private scope therefore does not mean “fresh state for each request.” A module-level currentUser or unbounded Map can leak data/state between otherwise independent requests in a long-lived server.
@@ -258,6 +315,8 @@ export function createCounter() {
 A composition owner chooses whether to construct one counter per application, job or test. A real per-user repository still needs authenticated scope and durable storage when required. Factories provide explicit instance lifetime, not authorization or cross-process consistency.
 
 Conversely an app-owned reusable immutable configuration or connection-pool owner can intentionally be shared; “all module state is bad” is another overgeneralization.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -307,6 +366,22 @@ The built-in `node:module` module is a different thing: it provides tools such a
 
 </div>
 
+<span class="notes-section-label">**See why reassigning exports fails**</span>
+
+The arrows show the references after `exports = { answer: 42 }`. Only module.exports determines what require returns.
+
+```mermaid
+flowchart TD
+    M["module.exports"] --> Old["Original object: still empty"]
+    E["Local exports variable"] --> New["New object: answer = 42"]
+    Require["require receives module.exports"] --> Old
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The broken example logs undefined. It leaves the original exported object in place. Either `exports.answer = 42` mutates that original object, or `module.exports = {answer: 42}` replaces the exported value. If you replace module.exports, the old exports alias does not automatically rebind. Treat this as ordinary object/reference behavior, not a mysterious asynchronous race.
@@ -339,6 +414,8 @@ It does not bypass package exports, missing dependencies or the synchronous-load
 The broader node:module API includes built-in-name metadata and version-sensitive customization/compile-cache facilities. These target tooling or measured startup needs, not a replacement for ordinary import/export or runtime permissions. Verify support before adopting hooks and do not use deprecated require.extensions as a general modern compiler pipeline.
 
 Module compile caching concerns compiled code/startup work, not a database/query cache or permission policy.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -383,6 +460,26 @@ In `package.json`, `main` gives the traditional starting file for a package. **`
 Conditional exports can choose **different files for `import` and `require`**, which may create separate copies of package state. The `imports` field defines private shortcuts beginning with `#` for use inside that package. These fields control module lookup; they do not install packages, check TypeScript types or prevent all direct filesystem access.
 
 </div>
+
+<span class="notes-section-label">**Follow the fixture package entries**</span>
+
+This diagram describes the package.json example below. Its exports mapping selects the entry instead of main.
+
+```mermaid
+flowchart TD
+    Entry{"Requested package entry"}
+    Entry -->|import study-package| E["exports root: import condition"]
+    E --> EFile["index.mjs"]
+    Entry -->|require study-package| C["exports root: require condition"]
+    C --> CFile["index.cjs"]
+    Entry -->|study-package/feature| Feature["Published subpath: feature.mjs"]
+    Entry -->|study-package/hidden| Error["Not exported: reject package subpath"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Detailed explanation**</span>
 
@@ -444,6 +541,8 @@ An application can separately declare a private alias in its own package.json:
 
 If message.mjs exports a label, an ESM file in that application can import it from #message. The # mapping is scoped to that package; a bare string alias configured only in a bundler/tsconfig is not automatically a Node runtime alias. Compiler declarations/types and package-manager dependency records have other purposes and do not override the actual emitted import target.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Reaching into a dependency's internal path and treating a blocked subpath as an absent installation.
@@ -496,6 +595,26 @@ A synchronous `require()` cannot load a module dependency chain containing top-l
 
 </div>
 
+<span class="notes-section-label">**Wait for module readiness**</span>
+
+In the example, the importing code can use mode only after async-settings.mjs finishes its top-level await.
+
+```mermaid
+sequenceDiagram
+    participant R as async-reader.mjs
+    participant M as async-settings.mjs
+    R->>M: Dynamic import returns a promise
+    M->>M: Await initialization
+    Note over R: Wait for the import promise
+    M-->>R: Module ready: namespace exposes mode
+    R->>R: Read mode and print study
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Static imports declare dependencies for linking before ordinary module body execution. Dynamic import is an expression whose promise can reject because resolution/linking/evaluation failed. Await its result at an owned boundary; failing to observe it can become an unhandled rejection.
@@ -533,6 +652,8 @@ That is a graph constraint, not proof that every .mjs file rejects require. Q02'
 Repeated import of the same resolved ESM identity normally reuses its evaluated module; it does not automatically rerun initialization on every call. Adding random query strings to force reload creates distinct identities and can retain resources/state.
 
 Dynamic plugin selection must use an application allowlist; a user/model choosing an arbitrary specifier gains code-execution authority, not merely a data lookup.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -578,6 +699,24 @@ First check which Node version and file are actually running. Is Node executing 
 
 </div>
 
+<span class="notes-section-label">**Locate the failing stage**</span>
+
+This is a simplified diagnostic checklist. Stop at the failing stage instead of treating every failure as a missing installation.
+
+```mermaid
+flowchart TD
+    Context["Confirm actual runtime, entry file and package context"] --> Resolve["Resolution: which target does the specifier select?"]
+    Resolve --> Format["Format and syntax: can Node parse this target?"]
+    Format --> Link["Linking: do the requested exports exist?"]
+    Link --> Eval["Evaluation: does initialization succeed?"]
+    Eval --> Ready["Module is available to its consumer"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 A useful investigation narrows the failing stage:
@@ -618,6 +757,8 @@ console.log(settings.mode);
 ```
 
 Create settings.json containing `{"mode":"study"}`. The attribute supplies the import type contract; it does not validate your application's settings schema. Old assertion syntax or a transpiler accepting it is not a guarantee of runtime compatibility.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -681,6 +822,30 @@ Prefer removing the cycle or putting shared setup in a separate place. **Reloadi
 
 </div>
 
+<span class="notes-section-label">**Trace the CommonJS cycle**</span>
+
+This follows the a.cjs entry shown above. B reads a value before A finishes, so saw records false even though ready later becomes true.
+
+```mermaid
+sequenceDiagram
+    participant Entry
+    participant A as a.cjs
+    participant B as b.cjs
+    Entry->>A: require A
+    A->>A: Set ready = false
+    A->>B: require B
+    B->>A: require A while A is initializing
+    A-->>B: Partial exports: ready is false
+    B-->>A: sawAReady is false
+    A->>A: Set saw = false, then ready = true
+    A-->>Entry: ready true, saw false
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The CJS entry prints `{"ready":true,"saw":false}`. Loading a sets ready=false, then loads b. b requires the still-evaluating a and reads that initial property. b records false, a resumes and finally sets ready=true. saw is an observed primitive value, not a live formula. Reversing the entry/order or replacing exports can change what a cycle exposes, which is why the exact reproduction matters.
@@ -732,6 +897,8 @@ This prints AB. The shared dependency has no reverse import, making evaluation r
 A failed or repeated import does not transact external effects. If module initialization opens a socket and then throws, the loader cannot infer how to close it. Deleting require.cache can create a new instance while callers retain the old one and its resources. ESM has no interchangeable public require.cache deletion API.
 
 Hot reloading needs an explicit supported lifecycle and bounded replacement/cleanup policy; do not cache-bust normal requests to refresh a database result.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 

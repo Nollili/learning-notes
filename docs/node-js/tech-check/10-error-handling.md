@@ -10,7 +10,7 @@ Read the examples before their explanations. Error text, paths, payloads and nes
 
 <span class="notes-section-label">**First pass:**</span> Read [built-in errors](#t10-q01), then the short [custom error](#t10-q02). Try one success and one failure before studying cause chains. Next connect [async failures](#t10-q03) to the [Express error boundary](#t10-q06). Database transaction retries belong after the database stage; they are not required for the Project 2 file repository.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t10-q01; level: 2 -->
 
@@ -62,6 +62,8 @@ An `Error` object describes a failure. It usually contains a name, a readable me
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Example answer**</span>
 
 The output is `value 3`, then `failure SyntaxError`, `failure TypeError` and `failure RangeError`. Parsing `"3"` as JSON succeeds but produces a string, which violates this function's contract. **Valid syntax is not the same as valid application input**.
@@ -87,6 +89,8 @@ A system error, such as `ENOENT` from a file operation, includes operation-speci
 A boundary may validate, recover under a defined policy, translate a failure, release resources or report it to an owner. A catch that merely returns `undefined` changes the contract and hides the failure. A catch that repeats `throw error` adds no context by itself, though its surrounding `finally` may still matter.
 
 JavaScript can throw any value, including `null` or a string. That is why a catch variable is not automatically an Error. Prefer throwing Error objects in code you own. When receiving failures from other boundaries, narrow the value before reading properties; do not assume a cast makes it safe.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -136,6 +140,19 @@ Create a custom error when callers need to recognize a specific application fail
 
 </div>
 
+<span class="notes-section-label">**Preserve causes without exposing them**</span>
+
+An internal cause chain helps diagnosis. The public response is a separate, deliberately selected representation.
+
+```mermaid
+flowchart TD
+    Driver["Original dependency error"] --> Context["Application error with stable code and cause"]
+    Context --> Logs["Controlled diagnostics: context, stack and cause"]
+    Context --> Boundary["HTTP error boundary"]
+    Boundary --> Public["Public status and safe fields only"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `first-custom-error.mjs`:
@@ -161,7 +178,9 @@ Run it with Node. It prints `true` and `ITEM_NOT_FOUND`. The class gives a meani
 
 To preserve an earlier failure when adding context, use `new Error('Could not load the item', { cause: originalError })`. This creates a new error and retains the original value in `.cause`; it does not handle or retry the failure. The deeper example demonstrates that chain and chooses safe public fields separately.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict the error boundary**</span>
 
@@ -254,6 +273,8 @@ Codes should be scoped and documented. Renaming an internal class may be possibl
 
 Extending Error alone does not sanitize anything. Standard fields may be non-enumerable, but custom enumerable properties, logger serializers and nested objects can still reveal sensitive values. Never rely on `JSON.stringify(error)` as the security boundary.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Catching every dependency failure and reclassifying it as “not found.”
@@ -278,7 +299,6 @@ Inject a valid product, `null`, a rejected Error, a rejected `null`, and an inva
 
 Official references, checked 2026-11-04: [Node 24 Error and cause](https://nodejs.org/download/release/v24.18.0/docs/api/errors.html#class-error), [cause accepts arbitrary values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause), [Error subclasses](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#custom_error_types).
 
-::::
 
 ---
 
@@ -352,6 +372,22 @@ Different APIs report failure in different ways. A synchronous throw can be caug
 **Set up error handling before starting the work.** Keep some part of the application responsible for the result and any cleanup until the operation actually finishes. A surrounding `try/catch` does not automatically cover unrelated work scheduled for later.
 
 </div>
+
+<span class="notes-section-label">**Give each failure channel an owner**</span>
+
+Follow the branch for the API you actually called. One surrounding catch does not cover all four channels.
+
+```mermaid
+flowchart TD
+    Work{"How is failure delivered?"}
+    Work -->|synchronous throw| Sync["Catch around the running call"]
+    Work -->|promise rejection| Promise["Return, await or catch its promise chain"]
+    Work -->|later callback error| Callback["Handle inside the callback contract"]
+    Work -->|emitter error or listener failure| Event["Install the appropriate event and rejection handlers"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example answer**</span>
 
@@ -432,6 +468,8 @@ try {
 The registration call returns normally. Its catch is no longer active when the callback runs; `OUTER_CATCH_RAN` is not printed. The later exception has no owner in this process.
 
 Likewise, `void someAsyncOperation()` does not handle rejection. If background work is intentional, give it an explicit supervisor that observes failures, bounds active work and participates in shutdown. A reporting handler can itself fail, so ownership must extend to the reporting path too. A process-level unhandled-rejection or uncaught-exception hook is a last-resort lifecycle boundary, not request recovery.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -552,6 +590,23 @@ try {
 
 </div>
 
+<span class="notes-section-label">**Test one explanation at a time**</span>
+
+The regression check should distinguish the defective behavior from the corrected behavior.
+
+```mermaid
+flowchart TD
+    Failure["Record a safe, reproducible failure"] --> Repro["Reduce to a controlled example"]
+    Repro --> Hypothesis["Choose one explanation supported by the evidence"]
+    Hypothesis --> Test["Create a check that fails with the defect"]
+    Test --> Fix["Apply a focused correction"]
+    Fix --> Verify["Rerun the check and relevant existing checks"]
+    Verify -->|still fails| Hypothesis
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Example answer**</span>
 
 The output is:
@@ -599,6 +654,8 @@ The example prints only fixed fixture names and application-owned codes; the ori
 Useful operational records can include an application-owned operation/phase, build version, reviewed error category and correlation identifier. Bound their size and retention, and treat client-supplied identifiers as untrusted. Full diagnostic access requires an explicit internal logging/debugging policy; a generic serializer is not supplied by this lesson.
 
 The fixture reads tiny files it created itself. `readFile()` is not a general memory-bound configuration loader for arbitrary untrusted files. Cleanup failure would fail this fixture rather than count as a successful run; real multi-resource owners must also define how cleanup and primary failures are preserved.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -655,6 +712,22 @@ An error criticality matrix is a table of application-specific decisions about f
 **Retry only if the failure is temporary, repeating the operation is safe, and attempt and time limits allow it.** Otherwise return an appropriate failure, report it to the responsible person or stop the process when continued operation is unsafe.
 
 </div>
+
+<span class="notes-section-label">**Separate safety from retryability**</span>
+
+This is a decision aid. Request response, service lifecycle and alerting still need separate application policies.
+
+```mermaid
+flowchart TD
+    Failure["Failure observed"] --> Safe{"Is shared state safe to keep using?"}
+    Safe -->|no| Stop["Stop admitting work and begin bounded shutdown"]
+    Safe -->|yes| Retry{"Temporary failure, safe repetition and budget remain?"}
+    Retry -->|yes| Again["Retry under finite attempt and time limits"]
+    Retry -->|no| Respond["Return or escalate the appropriate failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**A practical starting matrix**</span>
 
@@ -751,6 +824,8 @@ An application-owned log level describes an event record. An incident severity d
 **A known unsafe process state or an uncaught exception requires a fatal lifecycle policy**, not a catch-and-continue response. Node explicitly warns against resuming normal operation after an uncaught exception. A last-resort handler may perform minimal synchronous reporting/cleanup before termination; an external supervisor replaces the process.
 
 For a controlled shutdown while the process can still run safely, stop admission, drain within a deadline and close owned resources. Do not assume asynchronous cleanup will finish inside an uncaught-exception handler. The pure function's `terminate` result does none of this; integrating it with the actual lifecycle owner is separate work. Never install process-wide fatal handlers inside an imported utility just to demonstrate this matrix.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -878,6 +953,22 @@ Express error middleware has four parameters: `(error, req, res, next)`. **Regis
 
 </div>
 
+<span class="notes-section-label">**Respect the response boundary**</span>
+
+Once headers have been sent, a second JSON error response cannot replace the first response.
+
+```mermaid
+flowchart TD
+    Error["Error reaches final Express middleware"] --> Headers{"Headers already sent?"}
+    Headers -->|yes| Delegate["Call next with the error"]
+    Headers -->|no| Known{"Recognized application or parser error?"}
+    Known -->|yes| Map["Chosen status and safe public fields"]
+    Known -->|no| Generic["Generic 500 response"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Example answer**</span>
 
 - `GET /products/p1` returns 200 and projected product data.
@@ -907,6 +998,8 @@ The Express default error handler may also log errors, including late-response f
 Express 5 observes a handler's returned promise. It does not adopt unrelated detached promises or arbitrary later callback throws. Return/await the actual work, or forward callback failures with `next(error)`. Do not both call `next(error)` and reject the same returned promise, delivering one failure twice.
 
 Express 4 needs explicit promise rejection forwarding, such as a reviewed async wrapper or try/catch with `next(error)`. Check the installed major version rather than assuming a copied pattern has the same behavior. Keep all four error-handler parameters and avoid sending a response followed by `next()`.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -964,6 +1057,26 @@ Use documented database driver or server fields to classify failures where the a
 **Do not blindly repeat a write if you do not know whether it committed.** First determine its outcome or use a durable idempotency design that prevents a repeated command from producing duplicate effects.
 
 </div>
+
+<span class="notes-section-label">**Retry only a confirmed replay-safe transaction**</span>
+
+Each retry repeats the whole transaction with a newly acquired client. An uncertain commit outcome takes a separate reconciliation path.
+
+```mermaid
+flowchart TD
+    Attempt["Acquire client; BEGIN; read, decide and write"] --> Commit["Attempt COMMIT"]
+    Commit -->|confirmed retryable server abort| Rollback
+    Commit -->|confirmed success| Done["Release client; return result"]
+    Commit -->|connection lost: outcome unknown| Unknown["Release or discard client; reconcile durable outcome"]
+    Attempt -->|confirmed retryable server abort| Rollback["ROLLBACK and release client"]
+    Rollback --> Budget{"Rollback succeeded, replay safe and budget remains?"}
+    Budget -->|yes| Wait["Bounded backoff without holding client"]
+    Wait --> Attempt
+    Budget -->|no| Fail["Propagate failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**PostgreSQL examples, not universal driver codes**</span>
 
@@ -1110,6 +1223,8 @@ For side-effecting API operations, store a stable operation key, normalized payl
 The repository can translate a known product-SKU constraint into an application conflict, retaining the driver error as cause. The HTTP boundary then chooses a safe status/code. Do not return the raw SQLSTATE, query text, connection string, constraint details or driver stack automatically. Internal records can include a reviewed operation/category, attempt number and duration under bounded/redacted logging.
 
 A query returning zero rows is different from a rejected query. Never catch every database error and return `null`: that incorrectly turns outages or bugs into a missing-record result. Likewise, returning a released client or a still-pending query lets work escape the transaction owner.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 

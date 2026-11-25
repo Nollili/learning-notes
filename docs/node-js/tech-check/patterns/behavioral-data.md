@@ -32,6 +32,23 @@ Interpreter represents the rules of a small language and defines how its express
 
 </div>
 
+<span class="notes-section-label">**Evaluate only the intended language**</span>
+
+Syntax bounds and record validation protect different parts of the interpreter contract.
+
+```mermaid
+flowchart TD
+ Expression["Filter expression"] --> Parse["Parse allowed grammar with size and depth limits"]
+ Parse --> Tree["Bounded expression tree"]
+ Record["Record to inspect"] --> Validate["Validate record data"]
+ Tree --> Eval["Evaluate within a work budget"]
+ Validate --> Eval
+ Eval --> Result["Result or deliberate failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 A catalogue filter may support only price/stock thresholds and conjunction. A structured expression tree avoids inventing a general parser in this lesson; parsing text into this grammar would be another bounded boundary. Never use eval or Function on user-supplied filters.
@@ -109,6 +126,8 @@ assert.throws(() => compileFilter(cycle), /budget/);
 
 Compilation visits every expression before runtime short-circuiting, so an invalid later expression is not hidden by an earlier false result. Captured primitive thresholds and compiled child arrays isolate the executable predicate from later AST edits. Only evaluated fields are checked here; a complete product schema belongs at the record boundary. Inputs are intended to be plain parsed data, not arbitrary objects with side-effecting getters.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Adding unbounded regex, recursion or general property paths changes the resource/security contract. An AST without a clear grammar is not a safe language by itself. A normal parameterized query/filter object is simpler when no language is needed; avoid translating unchecked fields directly into SQL.
@@ -152,6 +171,23 @@ Iterator lets callers visit values one at a time without knowing how the collect
 **Define cleanup when traversal finishes, stops early or fails.** If traversal opens a file or cursor, decide which code closes it. Simply creating an iterator should not quietly leave an eagerly opened resource without a clear cleanup path.
 
 </div>
+
+<span class="notes-section-label">**Close traversal on early exit**</span>
+
+This is a resource-owning generator design. The owner must also handle manually abandoned iterators.
+
+```mermaid
+flowchart TD
+ Start["Start traversal"] --> Open["Acquire owned cursor when iteration begins"]
+ Open --> Next["Request next value"]
+ Next --> Use["Consumer processes value"]
+ Use -->|continue| Next
+ Use -->|break| Close["Iterator closing runs owned cleanup"]
+ Next -->|exhaustion or producer failure| Close
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -228,6 +264,8 @@ assert.equal(released, true);
 
 Generator execution begins at the first pull, when open runs. The for-of break calls return and executes finally; normal exhaustion and read failure also close. The cursor snapshot is shallow and suitable for these primitive rows. Real paged iteration can reduce retention without promising an immutable snapshot across database changes. This traversal adapter does not impose an item-count/deadline on an arbitrary cursor; callers need explicit budgets for untrusted or infinite sources.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Opening a cursor before returning an unstarted generator is a common leak: return before its first next does not enter that generator’s finally. Explicitly own a never-consumed resource or acquire it lazily. A throwing close can replace a primary failure unless the API preserves both. Use arrays when the collection is small and already materialized.
@@ -271,6 +309,24 @@ Memento lets an object, called the originator, save its own state and restore it
 **A snapshot restores only the state covered by that object's design.** It does not automatically undo an external effect. Define what is saved and how restoration works; holding a snapshot is not the same as having a general rollback mechanism.
 
 </div>
+
+<span class="notes-section-label">**Let the originator restore its own snapshot**</span>
+
+The caretaker stores an opaque memento. Restoration covers only the state promised by the originator.
+
+```mermaid
+sequenceDiagram
+ participant O as Originator
+ participant C as Caretaker
+ O-->>C: Save opaque snapshot
+ O->>O: Change owned state
+ C->>O: Ask originator to restore saved snapshot
+ O->>O: Validate and restore covered state
+ Note over O,C: External effects are outside this snapshot unless explicitly designed otherwise
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -329,6 +385,8 @@ assert.equal(history.length, 3);
 
 WeakMap entries bind opaque tokens to their originator’s string snapshots. The caretaker retains at most three tokens. Strings are immutable, so restoring an old value cannot mutate another checkpoint. Opaque tokens are not serializable durable checkpoints; JSON-copying the empty object loses its identity.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 An unbounded caretaker history still retains memory. A mutable object snapshot needs an explicit copy policy; an alias is not a memento. Cross-user history can expose private state. For persistence, define versioned checkpoint data and authorization separately. A direct immutable-state history is often simpler when opacity is not useful.
@@ -373,6 +431,23 @@ Visitor puts operations on a family of node types into separate visitor objects.
 **Adding an operation is easier, but adding a node type means updating the visitors.** Choose the pattern for that trade-off, not merely because a method is named `accept()`. Define how missing visitor methods or unsupported node types fail.
 
 </div>
+
+<span class="notes-section-label">**Dispatch by node type**</span>
+
+A visitor adds one operation across supported types. Adding another node type requires revisiting those visitors.
+
+```mermaid
+flowchart TD
+ Walk["Traversal calls node.accept visitor"] --> Type{"Node type"}
+ Type -->|type A| A["visitor.visitA node"]
+ Type -->|type B| B["visitor.visitB node"]
+ Type -->|unsupported| Fail["Defined missing-method or unsupported-type failure"]
+ A --> Result["Visitor operation result"]
+ B --> Result
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -437,6 +512,8 @@ assert.throws(() => new Add(deep, new Literal(1)), /Depth/);
 ```
 
 accept selects literal versus add; each visitor then implements its operation across those types. Adding TextVisitor did not change the nodes. A new Multiply node would require a matching method in every complete visitor. Immutable typed children and depth 8 bound this binary traversal; it is not a parser for arbitrary external graphs.
+
+::::
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 

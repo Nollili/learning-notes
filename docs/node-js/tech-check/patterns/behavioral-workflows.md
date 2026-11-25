@@ -32,6 +32,23 @@ Order matters: an earlier handler can prevent later ones from running. A failure
 
 </div>
 
+<span class="notes-section-label">**Keep pass, handled and failed distinct**</span>
+
+A failed handler does not silently become a request to try the next one.
+
+```mermaid
+flowchart TD
+ Request["Request"] --> A["Handler A"]
+ A --> Decision{"A outcome"}
+ Decision -->|handled| Done["Stop with result"]
+ Decision -->|pass| B["Handler B"]
+ Decision -->|failed| Error["Propagate failure under contract"]
+ B --> End["Apply the same outcomes or explicit no-handler policy"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 It fits a bounded sequence of product lookup sources or escalation rules when the sender should not name a single receiver. This version stops at the first handled result; a validation pipeline or Express continuation chain has a different explicit continuation protocol.
@@ -89,6 +106,8 @@ assert.deepEqual(calls, ['local', 'catalog']);
 
 Only null delegates; a result envelope handles the request. Throws/rejections stop the chain and preserve their identity. Later handlers never run after handling or failure. The request payload itself belongs to the application’s validation/authentication boundary; this generic dispatcher does not validate a domain schema.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Swallowing a denial and falling through can bypass policy. An unbounded/dynamically cyclic chain can fail to terminate. This array-based chain has no next callback, so next-called-twice is avoided rather than solved generically. Use direct dispatch for a fixed obvious receiver.
@@ -132,6 +151,23 @@ Command represents an operation separately from the code that triggers it. The c
 **Define execution, retry and undo separately.** A command object does not prove the caller has permission, make repeated execution safe or guarantee reversal. Restoring a local value you own is different from undoing an external effect, such as a payment, which may require a separate action that can also fail.
 
 </div>
+
+<span class="notes-section-label">**Separate execution from undo**</span>
+
+Undo is an explicit operation whose feasibility depends on the effect. External compensation can fail independently.
+
+```mermaid
+flowchart TD
+ Invoker["Invoker"] --> Command["Command describes requested operation"]
+ Command --> Receiver["Receiver executes after checks"]
+ Receiver --> Effect["Result or effect"]
+ Effect --> Undo{"Undo or compensation supported?"}
+ Undo -->|yes| Reverse["Run separate checked reverse action and observe outcome"]
+ Undo -->|no| Contract["Report the defined limitation"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -192,6 +228,8 @@ assert.throws(() => renameCommand(store, '').execute(), TypeError);
 
 The command owns the operation request and captured before-state; the store is the receiver. The version guard prevents undo from overwriting another edit. Failed execution does not record an applied result. This is a local synchronous contract, not proof of cross-process atomicity.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 An in-memory already-executed flag is not durable idempotency. Captured credentials can expire, and a queued command must be authorized at execution. Undo can fail or conflict; compensation is a new fallible operation. Use direct service calls when no scheduling/history/invoker separation is needed.
@@ -235,6 +273,23 @@ Mediator coordinates a group of components so they do not all need to call each 
 **Define operation order, overlapping work and failure handling explicitly.** Centralizing calls does not answer those questions automatically. Keep a mediator focused on one coherent interaction; a global object that handles every event can become difficult to understand and change.
 
 </div>
+
+<span class="notes-section-label">**Coordinate one focused interaction**</span>
+
+Peers communicate through the mediator for this workflow. Ordering and failure handling remain explicit mediator responsibilities.
+
+```mermaid
+flowchart TD
+ Trigger["One interaction begins"] --> M["Focused mediator"]
+ M --> A["Peer A"]
+ A -->|outcome| M
+ M --> B["Peer B"]
+ B -->|outcome| M
+ M --> End["Agreed result or failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -308,6 +363,8 @@ assert.equal(broken.isBusy(), false);
 
 The peers do not hold references to each other; the mediator owns their collaboration. A held promise makes concurrent-submission rejection deterministic. The refresh failure occurs after save and is not reported as a rollback. Real recovery should distinguish “saved but view refresh failed” from “save failed.”
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Centralizing unrelated flows creates a god object and hidden event cycles. A Facade emphasizes a simplified entry point; a Mediator emphasizes peer interaction, and one service may play both roles. Use direct composition when there are only two obvious calls and no coordination policy.
@@ -351,6 +408,21 @@ State gives different lifecycle states their own behavior. An object delegates a
 **A `status` field alone is not the State pattern.** The pattern organizes state-specific behavior. Check that a transition is allowed before changing the object, so a rejected action does not leave it partly modified.
 
 </div>
+
+<span class="notes-section-label">**Check before changing the lifecycle**</span>
+
+This is an illustrative document lifecycle. Each state defines permitted operations and valid transitions.
+
+```mermaid
+flowchart TD
+ Draft["Draft: editable behavior"] -->|allowed publish transition| Published["Published: published-state behavior"]
+ Published -->|allowed archive transition| Archived["Archived: restricted behavior"]
+ Request["Requested operation"] --> Validate["Current state checks operation before mutation"]
+ Validate -->|not allowed| Reject["Reject without partial state change"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -411,6 +483,8 @@ assert.equal(product.snapshot().state, 'archived');
 
 The context exposes a stable API, while state-specific handlers decide which actions exist. Validation happens before name mutation. Returned snapshots cannot change the hidden state. This fixture’s rules are deliberate domain choices, not universal product-publication rules.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Directly exposing a writable status bypasses transition guards. Separate processes require authoritative version/transaction checks; a closure cannot synchronize replicas. Strategy chooses an algorithm for a common operation; State models behavior tied to lifecycle/transitions. A switch is clearer when there are few stable states.
@@ -455,6 +529,22 @@ Template Method defines a workflow in a base class and lets subclasses customize
 JavaScript does not make the template method unchangeable through a `final` keyword. Use clear conventions and contract tests to protect required behavior, such as validation order and cleanup, when subclasses add their own steps.
 
 </div>
+
+<span class="notes-section-label">**Keep the workflow fixed and selected steps variable**</span>
+
+A subclass supplies the permitted variation. Contract checks protect the complete sequence and cleanup.
+
+```mermaid
+flowchart TD
+ Template["Template method"] --> Validate["Required validation step"]
+ Validate --> Hook["Overridable operation step"]
+ Hook --> Finish["Required completion or error handling"]
+ Finish --> Cleanup["Owned cleanup under workflow policy"]
+ Subclass["Subclass implementation"] -.-> Hook
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -519,6 +609,8 @@ await assert.rejects(
 ```
 
 Both parsers reuse the inherited parse → validate → save sequence. Invalid parsed rows never reach save. Persistence rejection remains its original error; multi-row transaction and partial-write semantics belong to the real save implementation. The parser may be awaited, but the number/size of rows is still bounded.
+
+::::
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 

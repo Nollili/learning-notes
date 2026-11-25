@@ -28,6 +28,22 @@ A threat model describes what you need to protect, who can reach it and how it c
 
 </div>
 
+<span class="notes-section-label">**Turn each risk into a checked boundary**</span>
+
+Multiple entry points can reach the same protected action. The control belongs where that action actually happens.
+
+```mermaid
+flowchart TD
+ HTTP["Public HTTP route"] --> Protected["Protected resource operation"]
+ Job["Background job"] --> Protected
+ Internal["Internal caller"] --> Protected
+ Protected --> Check["Enforce the relevant trust and permission rules"]
+ Check --> Evidence["Test allowed and denied paths for the identified threat"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For a Products API, assets include tenant records, credentials, administrator actions and report files. Trace browser→proxy→Express→database/object store, plus queue consumers and deployment identity. The proxy's forwarded headers, a signed user's resource IDs and a previously stored document have different trust levels. Authentication does not make every field safe.
 
 | Abuse case | Control | Evidence |
@@ -38,6 +54,8 @@ For a Products API, assets include tenant records, credentials, administrator ac
 | Compromise one dependency | Narrow runtime authority, reviewed updates and monitoring | Dependency path and reachable-code analysis |
 
 Prioritize impact and plausibility, define an owner and retain residual risk. OWASP Top 10 is an awareness taxonomy; ASVS offers more concrete verification requirements. Neither a checklist nor one scanner covers your application's business abuse rules. Rate limiting needs a trusted client identity/proxy policy and shared state across replicas; unlimited in-memory keys can themselves become a memory attack.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -71,6 +89,21 @@ These defenses solve different problems:
 **There is no single “sanitize everything” function.** Use the defense for the specific place where data is interpreted or an action is authorized.
 
 </div>
+
+<span class="notes-section-label">**Match the defense to the interpretation boundary**</span>
+
+Each branch names a different control. Passing one does not supply the other protections.
+
+```mermaid
+flowchart TD
+ Data["Untrusted input or requested action"] --> Validation["Input boundary: validate allowed shape and values"]
+ Validation --> SQL["SQL boundary: bind values as parameters"]
+ Validation --> HTML["Output boundary: encode for the destination context"]
+ Action["Cookie-authenticated change"] --> CSRF["Request boundary: appropriate CSRF and origin checks"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Validate types, permitted keys, lengths, ranges and business relationships before expensive work. In Express, limit JSON bodies and reject unsupported content types; schema validation after parsing does not bound parsing itself. Copy allowed fields into a DTO rather than mass-assigning the body into an entity or merging arbitrary keys into configuration.
 
@@ -108,6 +141,8 @@ A product name containing `<` can be legitimate data. Render it through the UI f
 
 SQL values use driver parameters; identifier/sort choices use fixed allowlisted SQL fragments. See the [real bound SQL fixture](./17-databases.md#t17-q03). Parameters do not add tenant authorization. Cookie-authenticated mutations need the [session-bound CSRF token and origin policy](./13-authentication-and-authorization.md#t13-q02); do not put state-changing actions behind GET. SameSite and CORS alone are not the entire CSRF design.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test extra fields, wrong types, oversize JSON, injection-shaped text, unsafe rich HTML and a cross-origin mutation. Accept when valid literal text survives, SQL/schema remain intact, browser execution does not occur and CSRF denial does not rely on hiding a button. References: [OWASP input validation](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html), [XSS contexts](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html), [CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
@@ -136,6 +171,23 @@ SSRF means server-side request forgery: an attacker tricks your server into maki
 
 </div>
 
+<span class="notes-section-label">**Keep destination authority on the server**</span>
+
+A provider ID selects a reviewed destination. The actual connection and redirects still need the intended destination policy.
+
+```mermaid
+flowchart TD
+ Input["Caller supplies allowed provider ID"] --> Mapping["Server maps ID to reviewed destination"]
+ Mapping --> Policy["Apply policy to actual resolved connection destination"]
+ Policy --> Connect["Connect under network and request budgets"]
+ Connect --> Redirect{"Redirect encountered?"}
+ Redirect -->|yes| Recheck["Reject or reapply destination policy before following"]
+ Redirect -->|no| Result["Consume bounded response"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For a report source, accept a provider ID and map it to a fixed reviewed origin/path rather than accepting a complete URL. If arbitrary destinations are unavoidable, define allowed schemes/hosts/ports, resolve and validate all relevant IPv4/IPv6 addresses, prevent resolution-to-connect gaps, bound redirects and revalidate each hop. Deny loopback/private/link-local/metadata paths as applicable and enforce network egress policy as another boundary. Do not invent a few regexes and call them a complete IP policy.
 
 ```js [fixed-provider.mjs]
@@ -161,6 +213,8 @@ assert.throws(() => providerRequest('catalogue', '../admin'));
 ```
 
 The reserved `.example` host deliberately performs no request. A real adapter uses a configured trusted destination, disables unexpected redirects (`redirect: 'error'` for fetch), verifies TLS and bounds total time and streamed response bytes. Never attach a broad bearer credential to a caller-selected destination. A timeout must own/cancel the request and observe late errors; a `Promise.race` alone only stops waiting. Limit decompressed content too when response handling can expand it.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -189,6 +243,8 @@ Source mapping: [R038](./requirements.md#r038), [R184](./requirements.md#r184), 
 Authenticated encryption protects encrypted data's secrecy and detects unauthorized changes, including when that data is stored. **Encryption does not decide who is allowed to use the data.** It also cannot fix a leaked key: revoke or replace the key and investigate the exposure.
 
 </div>
+
+:::: details Deeper explanation and additional examples
 
 Use supported TLS, not obsolete SSL protocols. Verify the server certificate chain and hostname, track CA/certificate expiry and rotate deliberately. In a proxy deployment, document where TLS terminates and which downstream hops need TLS or mTLS. HSTS tells supporting browsers to use HTTPS; it does not encrypt an arbitrary database socket. For PostgreSQL, retain the [CA/hostname-verified driver configuration](./17-databases.md#t17-q02) and separate app/migration privileges.
 
@@ -223,6 +279,8 @@ assert.throws(() => open(ciphertext, tag, Buffer.from('tenant-b')));
 
 Hashing, HMAC, encryption and password hashing have different purposes. AAD binds authenticated context but is not encrypted. Persist an algorithm/version/key ID, nonce, tag and ciphertext under a reviewed envelope; bound/validate all decoded fields before decryption and map failure to a generic error. The fixture is not a complete key-management protocol or streaming decryptor.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Verify trusted/untrusted/wrong-host TLS fixtures; test credential rotation and corrupted ciphertext/tag/context. Accept only when every invalid case fails closed, plaintext is withheld until authentication completes and no secret is logged. References: [Node 24 TLS](https://nodejs.org/docs/latest-v24.x/api/tls.html), [crypto AEAD API](https://nodejs.org/docs/latest-v24.x/api/crypto.html), [OWASP secret management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html).
@@ -251,6 +309,22 @@ Source mapping: [R051](./requirements.md#r051).
 
 </div>
 
+<span class="notes-section-label">**Bound expensive password verification**</span>
+
+The diagram shows a login attempt, rather than a password-storage algorithm. Use the maintained hashing implementation and reviewed cost from the lesson.
+
+```mermaid
+flowchart TD
+ Attempt["Login attempt"] --> Limits["Apply attempt and concurrent-work limits"]
+ Limits --> Verify["Verify with stored salt and expensive password hash"]
+ Verify --> Decision["Make authentication decision"]
+ Decision --> Public["Return a response that follows the account-disclosure policy"]
+ Limits -->|budget exceeded| Reject["Controlled denial without starting more expensive work"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Argon2id is the primary algorithm in the existing application. Its encoded hash carries the salt and cost parameters; verify with the library and rehash after successful login when policy changes. OWASP currently gives an Argon2id baseline of 19 MiB memory, two iterations and parallelism one; choose parameters using current guidance and measured service capacity, never weaken them merely to pass a tiny benchmark.
 
 ```js [password-hash.mjs]
@@ -275,6 +349,8 @@ Do not log the example's real-world equivalents. Accept long passphrases under a
 Scrypt is a memory-hard alternative when Argon2id is unavailable; bcrypt has legacy length limits; PBKDF2 can fit specific compliance requirements. A pepper is a separately held secret with rotation/recovery consequences, not a replacement for a salt. Do not migrate hashes by attempting to decrypt them: verify the old format on login and rehash with the new policy.
 
 Use the [existing single-use reset and credential-version workflow](../module-09-authentication-authorization.md), including session/refresh revocation. Recovery codes are credentials; store/expire/consume them deliberately. A password reset cannot undo already authorized in-flight operations.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -304,11 +380,29 @@ Different scanners provide different evidence. Dependency scanners look for know
 
 </div>
 
+<span class="notes-section-label">**Treat scanner output as evidence to review**</span>
+
+A focused fix needs behavior and compatibility checks; a clean report is only one part of the evidence.
+
+```mermaid
+flowchart TD
+ Scans["Dependency, static, secret and dynamic checks"] --> Findings["Findings"]
+ Findings --> Review["Review reachability, impact and fix risk"]
+ Review --> Change["Apply a focused correction"]
+ Change --> Tests["Run relevant compatibility and regression checks"]
+ Tests --> Record["Record resolved findings and remaining limitations"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 In the actual application directory, run `npm audit --json` and inspect the dependency path, affected versions, advisory and available fix. `npm audit --omit=dev` answers a narrower runtime-tree question; build-tool compromise still matters. Registry access, submitted dependency metadata and the selected registry are part of the workflow. Do not send a private dependency inventory to an unreviewed service.
 
 An audit can fail because vulnerabilities exist or because the registry/report failed; distinguish the exit/output before labeling the release. `npm audit fix` changes the lock/tree, and `--force` can cross compatibility boundaries. Prefer a minimal reviewed update with build/test/artifact checks and a time-bounded exception owner when no safe fix exists. Do not edit protected tests to make an upgrade appear compatible.
 
 SAST tools such as CodeQL inspect code paths but need configuration/triage. SCA services such as Dependabot or Snyk compare dependency inventories. Secret scanning detects selected credential patterns, while DAST such as OWASP ZAP exercises a running application. None reliably discovers every tenant-authorization or workflow defect. Use a sandbox for active scanning, narrow its scope and avoid destructive requests against production.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -338,6 +432,22 @@ Helmet adds HTTP response headers that help browsers apply protections. Configur
 
 </div>
 
+<span class="notes-section-label">**Verify the effective response**</span>
+
+Helmet participates in the response-header boundary. Permission and input controls remain in the application path.
+
+```mermaid
+flowchart TD
+ Request["Request"] --> Input["Input limits, authentication and authorization"]
+ Input --> Handler["Application handler"]
+ Handler --> Headers["Configured Helmet and response headers"]
+ Headers --> Response["Effective response received by browser"]
+ Response --> Test["Test actual headers and page behavior"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 This integration fragment uses Helmet 8.1.0 with Express 5.1.0; the rest of the application supplies authenticated routes and final error middleware:
 
 ```js [helmet-configuration.mjs]
@@ -362,6 +472,8 @@ app.use(express.json({ limit: '16kb', strict: true }));
 The CSP extends Helmet's defaults rather than replacing every directive. Test the effective header and your real frontend assets; strict policy may block inline scripts/styles or third-party assets. Use a generated per-response nonce when a reviewed inline-script requirement exists, never a fixed nonce. A report-only rollout can reveal violations before enforcement. Do not disable the entire policy merely to make an error disappear.
 
 HSTS and upgrade directives assume an HTTPS deployment; avoid learning a localhost exception as a production setting. Configure proxy trust for known topology before relying on client IP or Secure cookies. Never expose stack traces, inspector ports or administrative diagnostics publicly. Bound request/header/body time and upload/decompression sizes in the correct layer; a body limit does not bound CPU-heavy work after parsing.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -392,11 +504,28 @@ Source mapping: [R088](./requirements.md#r088).
 
 </div>
 
+<span class="notes-section-label">**Choose a constrained input before arbitrary code**</span>
+
+A smaller data language can avoid granting code-execution authority. Hostile code needs a reviewed execution boundary with explicit restrictions.
+
+```mermaid
+flowchart TD
+ Need["What must the caller express?"] --> Data{"Can a limited data language meet it?"}
+ Data -->|yes| Parser["Parse and validate the constrained language"]
+ Data -->|no, hostile code required| Review["Use a reviewed isolation service or environment"]
+ Review --> Limits["Restrict authority, resources and external cleanup"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A process can inherit filesystem access, environment credentials and network authority. A timeout does not stop every native/child operation, and a worker shares process-wide native failure/resource pressure. Node's permission model can reduce accessible capabilities for a trusted program under its documented limits; do not treat it as a complete malicious-code sandbox.
 
 A stronger execution design separates the trust domain: unprivileged identity, no host socket/mounts/secrets, deny-by-default network, bounded CPU/memory/PIDs/output/time, read-only base, explicit ephemeral storage, syscall/runtime policy and an external kill/reap owner. A container shares a kernel boundary and still needs patching/configuration; a dedicated VM or specialist sandbox may be justified for hostile tenants. Review side channels, escape history, dependency trust and cleanup, not only API convenience.
 
 For user-defined reports, prefer a bounded data DSL over JavaScript. Permit a small set of operations, validate depth/count/value size and interpret without eval/Function. The [worked Interpreter](./patterns/behavioral-data.md#t18-q17) demonstrates bounded grammar mechanics; it is not an isolated arbitrary-code runtime.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

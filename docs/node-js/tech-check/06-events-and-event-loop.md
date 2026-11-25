@@ -8,7 +8,7 @@ This chapter covers event-driven contracts, EventEmitter, waiting for events and
 
 <span class="notes-section-label">**First pass:**</span> Start with [one listener](#t06-q01) and [one event wait](#t06-q02). Register, emit, predict the output, then remove the listener. Next explain why a long synchronous handler blocks other callbacks. Return to exact microtask ordering, libuv mechanisms, utilization measurements and starvation experiments after your HTTP app works.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t06-q01; level: 2 -->
 
@@ -32,6 +32,25 @@ Use `once()` for a listener that should run only once. To remove a listener with
 
 </div>
 
+<span class="notes-section-label">**Follow synchronous event delivery**</span>
+
+This example has two ordinary synchronous listeners. The emitter calls both before emit returns, without waiting for any promises an async listener might return.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant E as EventEmitter
+    participant A as First listener
+    participant B as Second listener
+    Caller->>E: emit event
+    E->>A: Invoke first registered listener
+    A-->>E: Return
+    E->>B: Invoke second registered listener
+    B-->>E: Return
+    E-->>Caller: true because listeners existed
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `first-event.mjs` and run `node first-event.mjs`:
@@ -53,7 +72,9 @@ The output is `Before`, `Finished: File reads`, then `After`. `on` registers a f
 
 Change `on` to `once` and emit the event twice: the listener should run only for the first emission. Next, give the listener a name and pass that same function to `off` when you no longer need it. Learn these steps before studying the ordering and error cases below.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict the delivery order and final listener count**</span>
 
@@ -101,6 +122,8 @@ Subscriptions retain their listener closures. Request-scoped listeners left on a
 
 Dispose only subscriptions you own; removeAllListeners can break other components. A direct promise-returning function is often simpler when one caller requires one result, while a durable broker fits recoverable cross-process work.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Treating emit as asynchronous or interpreting true as business success.
@@ -118,7 +141,6 @@ Dispose only subscriptions you own; removeAllListeners can break other component
 An event contract includes delivery, payload, failure and subscription lifetime, not merely a string name.
 :::
 
-::::
 
 ---
 
@@ -144,6 +166,26 @@ Source mapping: [R034](./requirements.md#r034).
 
 </div>
 
+<span class="notes-section-label">**Register both waits before publishing**</span>
+
+Both event promises must exist before a producer that can emit both events in the same turn starts.
+
+```mermaid
+sequenceDiagram
+    participant Owner
+    participant E as EventEmitter
+    participant Producer
+    Owner->>E: Register wait for event A
+    Owner->>E: Register wait for event B
+    Owner->>Producer: Start producer
+    Producer->>E: Emit A
+    E-->>Owner: A wait observes its event
+    Producer->>E: Emit B
+    E-->>Owner: B wait observes its event
+    Note over Owner: Observe both promises and cancel unused waits
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `first-wait.mjs`:
@@ -164,7 +206,9 @@ Run `node first-wait.mjs`. It prints `File reads`. Register the wait before emit
 
 The deeper example adds several waits, cancellation cleanup and error handling. Use those patterns before turning a teaching wait into an application operation.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — register before publication**</span>
 
@@ -208,6 +252,8 @@ When explicitly waiting for the error event itself, that event resolves as the r
 
 For repeated notifications, events.on provides an async iterator, but queued events require an admission/backpressure policy; not every producer supports pause/resume. Neither waiting helper turns a transient notification into a durable job protocol. Correlate IDs when several requests share an emitter so an unrelated event cannot satisfy the wrong request.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Registering the next wait only after awaiting the previous notification.
@@ -225,7 +271,6 @@ For repeated notifications, events.on provides an async iterator, but queued eve
 Subscribe before publishing, attach observers promptly and cancel waits that no longer have an owner.
 :::
 
-::::
 
 ---
 
@@ -266,6 +311,23 @@ The event loop decides when ready JavaScript callbacks can run. Meanwhile, the o
 
 </div>
 
+<span class="notes-section-label">**Trace the scheduling context in this example**</span>
+
+This order applies to the shown file-read callback on the stated Node baseline. It is not a universal top-level timer/immediate ordering rule.
+
+```mermaid
+flowchart TD
+    Sync["Module body prints sync"] --> IO["File read finishes; I/O callback prints io callback"]
+    IO --> Schedule["Inside I/O callback: schedule timer and immediate"]
+    Schedule --> Check["Check phase: immediate from io"]
+    Check --> Timer["Eligible timer opportunity: timer from io"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The output is `sync`, `io callback`, `immediate from io`, `timer from io`. The read callback cannot interrupt the current synchronous module body. Scheduling both from that I/O cycle supplies the context needed to reason about check before the next eligible timer opportunity. A zero timeout is normalized to a minimum delay; it is not an instruction to run immediately.
@@ -281,6 +343,8 @@ The [Node learning reference](https://nodejs.org/en/learn/asynchronous-work/even
 A timer's measured lateness can reflect synchronous JavaScript, GC, a saturated host or high-priority callback churn. Slow file completion could instead reflect storage or native worker contention without a blocked event loop. The event-loop diagnosis examples measure these boundaries; reproducing this ordering is not a performance diagnosis.
 
 Moving CPU-heavy code into setImmediate **defers it but still blocks while it executes**; chunking can yield between chunks, whereas worker threads provide a separate JavaScript execution thread.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -343,6 +407,27 @@ Continually adding work to either queue can prevent timers and I/O callbacks fro
 
 </div>
 
+<span class="notes-section-label">**Compare this exact CJS and ESM trace**</span>
+
+The branches show the example's top-level output after start and end. Both later run the immediate callback with callback tick before callback microtask.
+
+```mermaid
+flowchart TD
+    Sync["Print start and end"] --> Context{"Top-level module context"}
+    Context -->|CommonJS| Tick["tick"]
+    Tick --> CP["promise, then microtask"]
+    Context -->|ES Module| EP["promise, then microtask"]
+    EP --> ET["tick"]
+    CP --> Immediate["immediate"]
+    ET --> Immediate
+    Immediate --> Inside["callback tick, then callback microtask"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 CommonJS output is `start`, `end`, `tick`, `promise`, `microtask`, `immediate`, `callback tick`, `callback microtask`. ESM output is `start`, `end`, `promise`, `microtask`, `tick`, `immediate`, `callback tick`, `callback microtask`. Standard microtasks here preserve their registration order.
@@ -360,6 +445,8 @@ That trades throughput and interleaving complexity for fairness; it does not mak
 Diagnose a real ordering bug by recording runtime/module mode, reducing to a minimal callback origin and writing assertions only for guaranteed relationships. Do not write a test requiring a top-level timer to beat an immediate simply because one local run printed that sequence.
 
 Infinite starvation demonstrations should run only as bounded owned child processes; The later examples add safe diagnostics rather than hang this documentation process.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -431,6 +518,25 @@ When that work finishes, JavaScript handles the result on its own event-loop thr
 
 </div>
 
+<span class="notes-section-label">**Separate native work from JavaScript completion**</span>
+
+These are common mechanisms for the APIs discussed here. Worker threads for additional JavaScript execution are a separate tool.
+
+```mermaid
+flowchart TD
+    JS["JavaScript calls an asynchronous API"] --> Mechanism{"API implementation"}
+    Mechanism -->|many network operations| OS["Operating-system readiness or completion notification"]
+    Mechanism -->|many file, lookup, crypto or zlib operations| Pool["libuv native worker pool"]
+    OS --> Ready["Completion becomes available to the event loop"]
+    Pool --> Ready
+    Ready --> Callback["JavaScript callback or continuation runs on its JS thread"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The first line is `true 16 true`; the second records the actual linked libuv version. The marker native-work is present in this source. File content and derived bytes complete before the continuation runs on the main JavaScript thread.
@@ -446,6 +552,8 @@ libuv distinguishes long-lived handles, such as a TCP listener or timer, from re
 The documented native pool defaults to 4 threads and is shared across event loops in a process. Its work can contend: **many expensive crypto tasks can delay filesystem or system resolver work even when the JavaScript loop remains responsive**. dns.lookup uses system resolution, while dns.resolve-style network DNS has a different path.
 
 Configure UV_THREADPOOL_SIZE before startup only after workload evidence; more threads consume memory and can increase CPU contention. Exact filesystem backend details can vary by runtime/platform, so avoid treating an implementation summary as a universal guarantee.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -529,6 +637,25 @@ console.log('ready');
 
 </div>
 
+<span class="notes-section-label">**Start shutdown only once**</span>
+
+Repeated signals should share one shutdown operation. The external supervisor supplies a deadline that blocked JavaScript cannot enforce for itself.
+
+```mermaid
+flowchart TD
+    Signal["SIGTERM or SIGINT on a supported platform"] --> Guard{"Shutdown already started?"}
+    Guard -->|yes| Existing["Reuse existing shutdown operation"]
+    Guard -->|no| Stop["Mark not ready and stop admission"]
+    Stop --> Drain["Drain or limit active work; close resources"]
+    Drain --> Status["Set status and allow natural exit"]
+    Supervisor["External supervisor deadline"] -.->|if still running| Force["Forced termination: cleanup may not finish"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The normal child logs ready, stopping SIGTERM and closed, then exits 0. The hanging child logs the deadline diagnostic and exits 1. The interval supplies explicit active work until shutdown; the pending promise alone would not keep the child alive, but the referenced deadline does. The stopping guard prevents repeated signals from starting overlapping cleanup.
@@ -546,6 +673,8 @@ The platform supervisor must enforce a longer external grace period and can ulti
 Signal availability and semantics differ on Windows and Unix-like systems. process.emit('SIGTERM') only exercises an event listener and does not prove OS delivery. Test against an owned child PID after a readiness handshake, never send a signal to an unrelated process. SIGKILL/SIGSTOP are not catchable shutdown hooks.
 
 SIGHUP and filesystem watcher events have separate platform-specific semantics; fs.watch is an advisory change notification, not a durable audit log. If watching configuration, handle errors, coalesced/missing filenames and atomic replacement, validate reloaded data, and close the watcher on disposal.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -618,6 +747,24 @@ Measure a specific interval rather than relying only on totals since startup. Re
 
 </div>
 
+<span class="notes-section-label">**Use metrics to choose an investigation**</span>
+
+Neither metric identifies the faulty function. Compare interval-based observations with other evidence before concluding what is slow.
+
+```mermaid
+flowchart TD
+    Window["Choose an observation interval and workload"] --> Delay["Event-loop delay: how late did checks run?"]
+    Window --> ELU["Utilization: loop active time versus idle time"]
+    Delay --> Compare["Compare with CPU, request latency, GC and dependency waits"]
+    ELU --> Compare
+    Compare --> Investigate["Choose a focused profile or dependency investigation"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The JSON has samples and nonnegative duration/utilization fields; the induced block should be visible in max and commonly p99 after the sampler resumes. Do not assert exact millisecond output or a universal utilization threshold: scheduling, sampling alignment and host contention affect observations.
@@ -635,6 +782,8 @@ Process CPU can also be consumed by native workers rather than the main loop. Re
 For a process that will not exit, process.getActiveResourcesInfo can suggest resource types, but it is not a complete ownership graph or a mapping to source lines. Inspect created servers, timers, pools and subscriptions; fix their owners rather than forcing every test to exit.
 
 The [performance course](../module-11-performance-diagnostics.md) covers profiling and wider operational signals; this question establishes independent interpretation of the basic loop measurements.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -709,6 +858,30 @@ Split suitable calculations into small chunks and await `setImmediate()` between
 
 </div>
 
+<span class="notes-section-label">**Compare starvation with cooperative chunking**</span>
+
+A resolved-promise loop can keep feeding microtasks. An awaited immediate gives the event loop an opportunity between bounded CPU chunks.
+
+```mermaid
+flowchart TD
+    subgraph Starvation["No useful I/O fairness boundary"]
+        Work["Run work"] --> Micro["Await already-resolved promise"]
+        Micro --> Work
+    end
+    subgraph Chunking["Cooperative chunking"]
+        Chunk["Run one small CPU chunk"] --> Yield["Await setImmediate"]
+        Yield --> Loop["Event loop can progress other work"]
+        Loop --> Next{"More chunks?"}
+        Next -->|yes| Chunk
+        Next -->|no| Done["Finish"]
+    end
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `microtasks 100 0`, then `yielding 100 1`. The first loop resumes through standard microtasks and finishes before the pending immediate. The second yields through check-phase work; the already scheduled immediate can run before counting completes. This demonstrates an opportunity to progress, not a guarantee that every I/O callback finishes within a chosen latency budget.
@@ -722,6 +895,8 @@ To reproduce truly endless queue starvation, launch a child that prints ready, s
 Do not execute such code directly in the shared docs/test process. A missing heartbeat is evidence within this controlled fixture, not proof a real outage has the same cause.
 
 When fairness changes do not fix the service, separate admission overload, native-pool contention, GC, blocking native calls and external dependency delay. A worker pool also needs queue limits, message/result validation, time budgets and shutdown. T09 covers implementation of process/thread isolation; adding a yield here does not claim that scope is complete.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 

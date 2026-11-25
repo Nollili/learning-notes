@@ -45,6 +45,22 @@ For each row, keep the evidence record described below and check the exercise's 
 | Verify signed webhooks before applying effects | [Specification](./signed-webhooks.md) | P-331; focused API, data or security practice |
 | SQL Query Workbench: From Rows to Reports | [Specification](./sql-query-workbench.md) | P-331; focused API, data or security practice |
 
+
+
+<span class="notes-section-label">**Turn reading into a checked exercise**</span>
+
+The loop ends with retained evidence and cleanup. A reading checkmark does not replace running the task yourself.
+
+```mermaid
+flowchart TD
+ Read["Read prerequisites and task contract"] --> Build["Implement a small increment in an owned practice directory"]
+ Build --> Check["Run required success and failure checks"]
+ Check -->|failure| Diagnose["Reproduce and correct one cause"]
+ Diagnose --> Build
+ Check -->|pass| Evidence["Retain results, source and runtime identity"]
+ Evidence --> Cleanup["Verify cleanup and note untested boundaries"]
+```
+
 ## Evidence and progression
 
 Work in a disposable practice directory with made-up test data and the runtime version stated in the chapter. Preserve the application template's scripts and database settings. Never change restricted `src/tests` files.

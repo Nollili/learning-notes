@@ -28,6 +28,22 @@ Object spread, such as `{ ...original }`, creates a new outer object. It copies 
 
 </div>
 
+<span class="notes-section-label">**Picture the references**</span>
+
+Arrows mean “points to”. Spreading creates a second outer object, but both objects still reach the same nested settings.
+
+```mermaid
+flowchart TD
+    A["original"] --> O1["Outer object A"]
+    B["copy = spread original"] --> O2["Outer object B"]
+    O1 -->|settings| S["One shared object: retries = 2"]
+    O2 -->|settings| S
+    C["copy.settings.retries = 4"] --> S
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```js
 const original = { settings: { retries: 2 } };
 const copy = { ...original };
@@ -36,6 +52,8 @@ console.log(original === copy, original.settings.retries);
 ```
 
 The output is `false 4`. The outer objects have different identities and both `settings` properties point to the same object. To update that branch independently, copy it too: `{ ...original, settings: { ...original.settings } }`.
+
+::::
 
 ---
 
@@ -61,6 +79,22 @@ For an ordinary method call such as `counter.read()`, **`this` is the object bef
 
 </div>
 
+<span class="notes-section-label">**Follow the call**</span>
+
+Read each branch as a separate way of calling the function. The detached-call result below assumes an ES module.
+
+```mermaid
+flowchart TD
+    C{"How is read called?"}
+    C -->|counter.read| M["Ordinary method: this is counter"]
+    C -->|detached ordinary function| D["Plain call in ESM: this is undefined"]
+    C -->|bound with bind| B["this is the bound object"]
+    C -->|arrow function| A["this comes from the surrounding scope"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```js
 const counter = {
   value: 3,
@@ -71,6 +105,8 @@ console.log(read());
 ```
 
 Save as an ES module. The bound call prints `3`. Calling a detached `counter.read` without binding it gives the method `undefined` as its receiver in this module, and reading `this.value` throws. Use a bound callback or a wrapper such as `() => counter.read()` when passing the method to another API.
+
+::::
 
 ---
 
@@ -97,6 +133,23 @@ Functions created during the same outer call can share a variable. **Each new ca
 
 </div>
 
+<span class="notes-section-label">**Picture the captured variables**</span>
+
+The two functions from one call share one count. A second call creates a different count.
+
+```mermaid
+flowchart TD
+    A["First makeCounter call"] --> I1["first.increment"]
+    A --> R1["first.read"]
+    I1 --> C1["First count: 0 becomes 1"]
+    R1 --> C1
+    B["Second makeCounter call"] --> R2["second.read"]
+    R2 --> C2["Second count: still 0"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```js
 function makeCounter() {
   let count = 0;
@@ -115,3 +168,5 @@ console.log(first.read(), second.read());
 The output is `1 0`. Both functions returned by the first call see the same `count` binding, so `read` sees the increment. The second call creates a separate binding. A callback that closes over a large object can keep it reachable while the callback is registered, so release subscriptions when their work ends.
 
 [Homework on closures, races and cleanup](../../practice/frontend/f03-javascript.md).
+
+::::

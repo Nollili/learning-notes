@@ -26,6 +26,21 @@ Use these interview questions to practise clear explanations of React. This page
 
 - Does each navigation item created by the recursive component have separate state?
 
+
+
+<span class="notes-section-label">**Picture the recursive menu task**</span>
+
+Each node represents one menu item. Use the tree to explain keys, nested rendering and which item owns an expanded state.
+
+```mermaid
+flowchart TD
+ Menu["Menu receives items through props"] --> A["Item A"]
+ Menu --> B["Item B with nestedItems"]
+ B --> B1["Nested item B1"]
+ B --> B2["Nested item B2 with nestedItems"]
+ B2 --> B21["Nested item B2.1"]
+```
+
 ## JSX and component return values
 
 
@@ -66,6 +81,20 @@ Use these interview questions to practise clear explanations of React. This page
 
 - How would you update a value inside several levels of nested state?
 
+
+
+<span class="notes-section-label">**Trace a batch using your chosen example**</span>
+
+Write the state before the event, each queued update and the value used by the next render. Compare replacement values with functional updaters.
+
+```mermaid
+flowchart TD
+ Before["State visible to the event handler"] --> Event["Handler calls state setters"]
+ Event --> Queue["List the queued updates in order"]
+ Queue --> Apply["Explain how each queued update computes the next state"]
+ Apply --> Render["Predict the state used for rendering"]
+```
+
 ## Rendering lifecycle and error boundaries
 
 
@@ -89,6 +118,21 @@ Use these interview questions to practise clear explanations of React. This page
 - What happens if you remove the dependency array?
 
 - Have you used useLayoutEffect, and how does it differ from useEffect?
+
+
+
+<span class="notes-section-label">**Draw the effect lifetime**</span>
+
+For each stage, explain what setup or cleanup your particular effect needs. Check the React version and development mode when discussing extra checks.
+
+```mermaid
+flowchart TD
+ Setup["When does this effect set up its work?"] --> Work["What request or subscription does it own?"]
+ Work --> Change["What happens when relevant dependencies change?"]
+ Change --> Cleanup["How does previous work stop or become irrelevant?"]
+ Cleanup --> Next["What setup is needed for the new values?"]
+ Work --> End["What cleanup is required when this component leaves?"]
+```
 
 ## Hook categories and custom hooks
 
@@ -245,6 +289,22 @@ Use these interview questions to practise clear explanations of React. This page
 - With App Router, how do you generate pages statically and later regenerate or revalidate their data or content?
 
 - How does that differ from the Pages Router approach?
+
+
+
+<span class="notes-section-label">**Use the server-rendering question as a sequence**</span>
+
+Fill in what crosses each boundary. Distinguish the returned HTML from later client behavior for the rendering strategy being discussed.
+
+```mermaid
+sequenceDiagram
+ participant B as Browser
+ participant S as Server
+ B->>S: What is requested?
+ S->>S: What rendering and data work happens here?
+ S-->>B: What HTML and other data are returned?
+ B->>B: What must happen next for the page to become interactive?
+```
 
 ## Build tools and production optimization
 

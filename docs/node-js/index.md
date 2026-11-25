@@ -23,6 +23,21 @@ Use the [shared JavaScript references](./prerequisites-and-boundaries.md) to fil
 | Persistence continuation | PostgreSQL/SQL/MikroORM; constraints, transactions, migrations and query diagnosis | MongoDB or Redis |
 | Delivery/distribution continuation | Containers, restore/rollback, durable jobs, operational failure boundaries | AWS/Kubernetes administration or a deployed multi-service system |
 
+
+
+<span class="notes-section-label">**See the course boundaries**</span>
+
+Follow the runtime path first. Add backend, persistence and delivery when the application needs those responsibilities.
+
+```mermaid
+flowchart TD
+ Prereq["JavaScript and terminal prerequisites"] --> Runtime["Runtime: modules, async work, resources, HTTP and diagnostics"]
+ Runtime --> Practice["Small CLI and local HTTP practice"]
+ Practice --> Backend["Backend: Express, contracts and authorization"]
+ Backend --> Persistence["Persistence: SQL, constraints, transactions and ORM"]
+ Persistence --> Delivery["Delivery and distributed failure: deploy, recover and coordinate durable work"]
+```
+
 ## Recommended reading order
 
 ### Runtime foundations

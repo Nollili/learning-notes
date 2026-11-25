@@ -10,7 +10,7 @@ These local teaching clients/servers are not production deployment templates. Va
 
 <span class="notes-section-label">**First pass:**</span> Start with [HTTP inspection](#t08-q09), now placed first, using the Products server you already ran in the framework lesson. Then study [browser requests](#t08-q10) when adding the project UI. TCP/UDP, DNS/TLS mechanisms, real-time transports and client pooling remain later readings: they explain boundaries you will encounter, but do not block your first HTTP application.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t08-q09; level: 2 -->
 
@@ -34,9 +34,23 @@ Inspect an HTTP exchange in order: request method and URL, request headers and b
 
 </div>
 
+<span class="notes-section-label">**Check the exchange in layers**</span>
+
+Passing one layer does not prove the next one succeeded. In particular, fetch can resolve for an HTTP error status.
+
+```mermaid
+flowchart TD
+    Request["Send request with intended method, URL, headers and body"] --> Transport["Connection and transport succeed"]
+    Transport --> Status["Check response status and headers"]
+    Status --> Body["Read the complete body under limits"]
+    Body --> Data["Parse and validate application data"]
+    Data --> Result["Accept the application result"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
-Keep the [starter Products server](./16-frameworks.md#t16-q05) running in another terminal. Save as `first-request.mjs`:
+Keep the [starter Products server](./16-framework-applications.md#t16-q05) running in another terminal. Save as `first-request.mjs`:
 
 ```js
 try {
@@ -56,7 +70,9 @@ Run `node first-request.mjs`. Expect status 200, a JSON content type and the Boo
 
 **An HTTP failure status and a failed connection are different outcomes.** This client reads the complete body of a tiny fixed local response. A client for arbitrary remote content also needs a byte limit and data validation. Learn HEAD, empty bodies and additional status codes in the deeper example.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict the status and body before running**</span>
 
@@ -159,6 +175,8 @@ For the fixture, add `console.error(base)` after startup to learn its temporary 
 
 If there is no response, identify DNS, connect, TLS or cancellation failure before discussing HTTP status. If a response exists, inspect its status and content before blaming JSON parsing. If content is malformed, preserve a safe bounded diagnostic sample rather than dumping credentials or a huge body into logs.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Catching only rejected fetch promises and treating a fulfilled 404 as success.
@@ -183,7 +201,6 @@ Run the fixture and retain a redacted comparison of all five responses. Then mak
 
 Official references, checked 2026-11-04: [HTTP semantics](https://httpwg.org/specs/rfc9110.html), [HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods), [status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status), [Fetch response handling](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch), [Node 24 HTTP](https://nodejs.org/download/release/v24.18.0/docs/api/http.html).
 
-::::
 
 ---
 
@@ -252,6 +269,23 @@ Handle connection, read and write failures, and close both client and accepted s
 
 </div>
 
+<span class="notes-section-label">**See why chunks are not messages**</span>
+
+TCP preserves byte order, but the receiver may see these writes split differently. Framing reconstructs complete application messages.
+
+```mermaid
+flowchart TD
+    Sender["Sender writes: ABC then DEF"] --> Stream["TCP byte stream: ABCDEF"]
+    Stream --> Chunks["Possible received chunks: A, BCDE, F"]
+    Chunks --> Frame["Application framing: length or delimiter rules"]
+    Frame --> Message["Complete validated messages"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The fixture prints hello only after EOF. The client accepts arbitrary chunking, accumulates no more than 64 logical bytes and has a total deadline spanning connection plus body. A peer that sends a partial greeting and stays open cannot make that call wait forever while the loop progresses. The accepted-socket inactivity timeout is a separate fixture guard.
@@ -269,6 +303,8 @@ Prefer an established HTTP/database protocol over custom framing when that fits 
 The server's small known handler emits a fixed response and handles its owned errors silently only to keep fixture output deterministic. Production services need safe diagnostic codes, admission/connection limits and an accepted-socket ownership set for bounded shutdown.
 
 A server close waits for existing connections; a malicious or broken peer may require explicit draining/deadlines/destruction. Do not copy an empty error handler as a complete operational policy.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -352,6 +388,27 @@ Choose the address family and binding deliberately. Loopback restricts access to
 
 </div>
 
+<span class="notes-section-label">**Separate sending from receiving**</span>
+
+This shows one successful UDP exchange. The send callback is a local milestone, not proof of the receiver's later processing.
+
+```mermaid
+sequenceDiagram
+    participant S as Sender
+    participant OS as Sender network stack
+    participant R as Receiver
+    S->>OS: Send datagram ping
+    OS-->>S: Send callback succeeds
+    Note over S: No proof of remote processing
+    OS-->>R: Datagram arrives if delivered
+    R->>R: Receive, validate and process
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `ping IPv4 4`. A successful receive observes one datagram and its sender metadata. This result does not establish that arbitrary Internet datagrams arrive, or that a sender address is an authenticated identity. Register the message observer before sending so a quick reply cannot be missed, and close both socket owners afterward.
@@ -369,6 +426,8 @@ A connected UDP socket selects a peer/filtering relationship; it **does not crea
 Application acknowledgements, sequence numbers, duplicate suppression and retry/backoff may be needed, but implementing those naively can amplify congestion or repeat side effects. Prefer an established protocol/library if reliability/security matters.
 
 Public UDP services also need rate limits, source validation appropriate to the protocol and amplification/reflection protections. The fixture does not implement those controls and must not be exposed as a public echo service.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -450,6 +509,26 @@ HTTPS is HTTP protected by TLS. **Check that the certificate is trusted, valid a
 
 </div>
 
+<span class="notes-section-label">**Supervise the full HTTPS lifetime**</span>
+
+The deadline covers the operation through body consumption. Errors or cancellation need cleanup at any stage.
+
+```mermaid
+flowchart TD
+    Input["Validate intended HTTPS destination"] --> TLS["Connect and verify TLS certificate identity"]
+    TLS --> Headers["Receive headers and check status"]
+    Headers --> Body["Read body with a byte limit"]
+    Body --> Complete["Accept complete result"]
+    Budget["One operation deadline and failure owner"] -.-> TLS
+    Budget -.-> Headers
+    Budget -.-> Body
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 For a matching trusted local fixture returning 200 and a short body, the helper resolves with that body. It rejects untrusted/mismatched certificates, non-200 status, excessive bytes, broken bodies and deadline expiry.
@@ -467,6 +546,8 @@ SNI selects the intended virtual TLS service, while certificate checks establish
 TLS 1.3 is preferred where supported; TLS 1.2 remains a compatibility choice under current reviewed policy. Do not re-enable obsolete SSL/TLS versions to silence errors. Production deployments may terminate TLS at a proxy; secure the proxy-to-service hop for its threat model and trust forwarded metadata only from configured proxies.
 
 URL parsing does not authorize outbound destinations: SSRF/DNS/redirect restrictions remain application work, not something this small helper claims to implement.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -529,6 +610,25 @@ console.log(JSON.stringify(await addressCandidates('127.0.0.1')));
 
 </div>
 
+<span class="notes-section-label">**Separate name lookup from connection success**</span>
+
+The lookup APIs choose addresses differently. Either result still needs a separately supervised connection.
+
+```mermaid
+flowchart TD
+    Host["Host name"] --> Lookup["dns.lookup: operating-system lookup rules"]
+    Host --> Resolve["dns.resolve methods: DNS records from resolver"]
+    Lookup --> Addresses["Address candidates"]
+    Resolve --> Records["Requested DNS records"]
+    Addresses --> Connect["Connection and TLS checks are separate"]
+    Records --> Connect
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The fixture reports one IPv4 record for 127.0.0.1. Literal resolution exercises result shape, not external DNS availability. Injection tests should explicitly distinguish a synthetic answer from a real resolver integration result. Input validation here limits the helper's diagnostic contract; it is not a complete hostname validator, authorization boundary or SSRF defense.
@@ -548,6 +648,8 @@ Cache under an explicit TTL/negative-cache policy and consider connection reuse;
 For outbound restrictions, checking one DNS answer then allowing a later independent lookup introduces a time-of-check/use gap. Validate the actual connected destination, redirects and relevant address families under a reviewed policy; DNS names and private-range checks require careful threat modeling.
 
 Resolver.cancel can cancel outstanding queries on that resolver, not arbitrary lookup or an already connected socket. A promise race alone does not stop the native lookup; retain supervision of that work.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -608,6 +710,29 @@ Socket.IO adds event messages, reconnection, acknowledgements and groups. It use
 
 </div>
 
+<span class="notes-section-label">**Compare the update direction**</span>
+
+These arrows show message direction, not guaranteed delivery. Socket.IO adds its own event protocol on compatible clients and servers.
+
+```mermaid
+flowchart TD
+    subgraph Polling["Polling: repeated requests"]
+        PC["Client"] -->|check for changes| PS["Server"]
+        PS -->|response| PC
+    end
+    subgraph SSE["SSE: ongoing server-to-client events"]
+        SS["Server"] -->|text events| SC["Client"]
+    end
+    subgraph WS["WebSocket: messages both ways"]
+        WC["Client"] <-->|messages| WServer["Server"]
+    end
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 For occasional job progress, completion-driven polling with a bounded interval and conditional requests is a reasonable initial choice. SSE fits a continuous authorized audit-view stream if latency and infrastructure support warrant it. A durable audit record still belongs in storage rather than only in the connection.
@@ -628,6 +753,8 @@ Native browser EventSource cannot set arbitrary authorization headers; use an in
 WebSocket preserves message boundaries above TCP and provides ordered delivery on an active connection, but not application receipt/commit evidence after a lost connection. Socket.IO adds its own framing and may select polling, WebSocket or other supported transports depending on version/configuration.
 
 A plain WebSocket client cannot talk directly to its Socket.IO event API. Neither solves document merging, presence expiry, offline edits or per-resource permissions automatically.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -716,6 +843,25 @@ Also detect unresponsive peers, close connections and plan recovery. Node 24 pro
 
 </div>
 
+<span class="notes-section-label">**Give a real-time session a lifecycle**</span>
+
+The handshake only establishes the connection. Validate and authorize each action, and bound work before it accumulates.
+
+```mermaid
+flowchart TD
+    Handshake["Accept a permitted authenticated connection"] --> Message["Receive a message under size and rate limits"]
+    Message --> Validate["Validate fields and authorize this action"]
+    Validate --> Admit["Admit work only within active-work and queue limits"]
+    Admit --> Handle["Process and send under outgoing queue limits"]
+    Handle --> Message
+    Message -->|peer lost or session ends| Close["Close connection and stop related owned work"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 A valid text message is echoed with only its projected fields. Invalid JSON/schema closes with 1008, binary input with 1003, and ws rejects excessive payload under maxPayload. A close timer escalates to terminate if cooperative closing stalls; the timer is removed once closed.
@@ -733,6 +879,8 @@ A connected socket can be stale without a clean close event, and a transport-ali
 Standard WebSocket APIs do not provide general application-level receive backpressure. Monitor send buffering, cap input/pending asynchronous work, coalesce replaceable updates or disconnect slow consumers. An async message callback is not awaited by EventEmitter.
 
 Shutdown stops upgrades/new work, disposes subscriptions, closes clients and ultimately terminates leftovers before reporting complete. Reconnect with backoff/jitter, reauthenticate/resubscribe and recover from a cursor or snapshot; retain message IDs when command effects need deduplication.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -812,6 +960,30 @@ Retries can send the same command again. Give commands stable IDs and durably re
 
 </div>
 
+<span class="notes-section-label">**Understand a lost acknowledgement**</span>
+
+This diagram shows an application-level idempotency design for a lost acknowledgement. Socket.IO does not implement the durable command record for you.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server handler
+    participant DB as Durable operation record
+    C->>S: Command with stable ID
+    S->>DB: Apply and record the outcome atomically
+    DB-->>S: Committed outcome
+    S--xC: Acknowledgement is lost
+    C->>S: Retry same command ID
+    S->>DB: Look up the recorded command
+    DB-->>S: Existing outcome
+    S-->>C: Return outcome without repeating the effect
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Middleware executes for the incoming Socket.IO connection; it is not automatically rerun for every event. Authenticate via a real verifier in an application, expire/revoke sessions deliberately and reauthorize each relevant resource/action. A failed handshake can emit connect_error rather than a normal connected/disconnect lifecycle.
@@ -829,6 +1001,8 @@ Client retries can improve client-to-server arrival attempts, but pending in-mem
 For multiple nodes, a compatible adapter forwards broadcasts between instances. It does not by itself replace session affinity when HTTP long-polling is enabled: related polling requests need the owning session node. WebSocket-only configuration changes that affinity requirement but removes fallback and does not solve shared state/durable delivery.
 
 Connection-state recovery is a version/adapter-dependent feature that can fail; design a snapshot/resync fallback. CORS rules concern browser HTTP polling; WebSocket admission still needs its own Origin/auth policy. Real deployment also needs heartbeat/proxy timeout alignment, admission/rate limits and bounded pending events.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -897,6 +1071,27 @@ Measure connection failures, active connections, queue sizes, update delay and l
 
 </div>
 
+<span class="notes-section-label">**Reconnect and recover are different steps**</span>
+
+This is one replay design when retained history exists. A cursor that can no longer be replayed needs a deliberate snapshot or resynchronization path.
+
+```mermaid
+flowchart TD
+    Lost["Connection lost"] --> Reconnect["Reconnect under an attempt budget"]
+    Reconnect --> Auth["Authenticate and authorize subscription again"]
+    Auth --> Cursor["Present last processed cursor"]
+    Cursor --> Available{"Required history available?"}
+    Available -->|yes| Replay["Replay missed updates under limits"]
+    Available -->|no| Snapshot["Fetch a fresh snapshot and synchronize"]
+    Replay --> Live["Continue live updates"]
+    Snapshot --> Live
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `apply 5`, duplicate and resync. A missing sequence triggers snapshot/replay rather than silently rendering an apparently complete state. A duplicate does not reapply the event. The assumptions are deliberate: this resource/epoch uses contiguous IDs and an absolute count.
@@ -916,6 +1111,8 @@ A broker adapter distributes live events; a durable outbox/log may be necessary 
 Define overload behaviour before tuning: reject new sessions, coalesce replaceable updates, shed optional events or disconnect slow consumers under explicit budgets. Reconnect with backoff/jitter and avoid every client fetching a huge snapshot simultaneously after an outage.
 
 Shutdown stops admission, detaches subscriptions, gives active clients a bounded close interval and terminates leftovers. Test through the intended TLS/ingress/load-balancer path and multiple instances; local tests do not establish that deployment. Keep sensitive tokens/message content out of routine diagnostic logs.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -958,6 +1155,25 @@ HTTP defines request and response messages. It does not require the browser to f
 A navigation or form submission may load a new page; an in-page fetch can update the current page. Both use HTTP. **Cancelling the browser's request does not undo a change already committed by the server.** Also prevent an older response from overwriting newer UI state, for example when a user changes a search query before the previous search finishes.
 
 </div>
+
+<span class="notes-section-label">**Prevent an older search from winning**</span>
+
+Two requests can finish in the opposite order. The page needs a request-version check or equivalent policy before applying a result.
+
+```mermaid
+sequenceDiagram
+    participant UI as Page
+    participant API as Server
+    UI->>API: Search A with version 1
+    UI->>API: Search B with version 2
+    API-->>UI: Result B arrives first
+    UI->>UI: Version 2 is current, apply B
+    API-->>UI: Older result A arrives later
+    UI->>UI: Version 1 is stale, ignore A
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Reason through the browser boundary**</span>
 
@@ -1109,6 +1325,8 @@ for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
 
 The server's allowlist permits the exact UI origin. The blocked path intentionally omits CORS headers, so browser preflight fails; Node fetch/curl do not enforce that browser response-access policy. The fixture neither sets nor tests cookies. Configure real HTTPS cookie/session/CSRF behavior in the dedicated security lesson, not by extrapolating these public reads.
 
+::::
+
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
 If Network shows a failed OPTIONS, inspect allowed origin/method/headers before the GET handler. If the GET returns 200 but script rejects, inspect CORS, media type, decoding and schema. If an old result appears, inspect the generation/session owner. Never “fix” this with `mode: 'no-cors'`: an opaque response is not readable application JSON. Do not label every browser error a server 500.
@@ -1156,6 +1374,26 @@ Connection reuse avoids repeating connection setup for every request. A client p
 Keep a deadline that covers queueing, connecting and reading the body. Consume or cancel each response and close the pool when its owner is finished. **Reusing a connection does not make a data-changing request safe to retry** when you do not know whether its first attempt succeeded.
 
 </div>
+
+<span class="notes-section-label">**Bound admission as well as sockets**</span>
+
+Connection limits control active connections. A separate queue budget prevents unlimited waiting requests.
+
+```mermaid
+flowchart TD
+    Incoming["New outbound operation"] --> Admit{"Admission and queue budget available?"}
+    Admit -->|no| Reject["Reject or apply the chosen overload policy"]
+    Admit -->|yes| Queue["Bounded wait for a reusable connection"]
+    Queue --> Send["Connect or reuse connection; send request"]
+    Send --> Body["Consume or cancel response body"]
+    Body --> Reuse["Release reusable capacity"]
+    Deadline["End-to-end deadline"] -.-> Queue
+    Deadline -.-> Send
+    Deadline -.-> Body
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Separate the mechanisms**</span>
 
@@ -1245,6 +1483,8 @@ The header wait has its own abort signal because destroying an Agent-queued requ
 `close()` is deliberately **abortive**, not a graceful wait: it stops admission, destroys tracked active/queued requests and agent sockets, and is idempotent. Callers must still observe/settle their returned promises. A graceful application shutdown would first stop new callers, drain work under a budget, then destroy leftovers. Neither API should change a global agent owned by unrelated components.
 
 The fixture returns bounded text, not validated general JSON. TLS, destination policy, media/schema validation, redirects and safe retries remain separate controls. An idle server may close a pooled socket, producing a reset race even under a correct client. A limited replay-safe GET retry can be appropriate under a total budget; do not add an unlimited retry or assume a POST failed merely because its reused socket reset.
+
+::::
 
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 

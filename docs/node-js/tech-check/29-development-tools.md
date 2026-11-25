@@ -8,7 +8,7 @@ Examples use Node.js 24.18.0 and npm 11. These questions cover package scripts, 
 
 <span class="notes-section-label">**First pass:**</span> Use your existing lab to learn [start/check commands](#t29-q01), [one lint rule](#t29-q02) and a [breakpoint](#t29-q05). Run the Nest starter's build before starting its emitted JavaScript. The larger build-artifact and quality-standard fixtures are a second reading; remote diagnosis and generated API documentation follow once local requests work.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t29-q01; level: 2 -->
 
@@ -32,9 +32,23 @@ Package scripts name commands for different stages. **Build produces the files t
 
 </div>
 
+<span class="notes-section-label">**Connect scripts to an observable service**</span>
+
+A build, a started process and a ready service are separate milestones. The smoke check also verifies that the owned service closes.
+
+```mermaid
+flowchart TD
+    Build["Build the files that will run"] --> Tests["Run relevant checks against the intended artifact"]
+    Tests --> Start["Start the service"]
+    Start --> Listen["Wait for listening before printing startup success"]
+    Listen --> Smoke["Run a bounded endpoint smoke check"]
+    Smoke --> Stop["Request shutdown and confirm closure"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
-Use the lab containing `products-server.mjs` from the [first routing example](./16-frameworks.md#t16-q05). Add these commands to its existing `package.json` scripts; keep its dependency declarations:
+Use the lab containing `products-server.mjs` from the [first routing example](./16-framework-applications.md#t16-q05). Add these commands to its existing `package.json` scripts; keep its dependency declarations:
 
 ```json
 {
@@ -51,7 +65,9 @@ Run `npm run check`, then `npm start`. The syntax check finishes; the server sta
 
 The deeper example deliberately introduces build output and `prestart` so you can investigate each stage separately.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — identify which command keeps running**</span>
 
@@ -149,6 +165,8 @@ This example keeps an explicit ordinary prestart lifecycle. npm's ignore-scripts
 
 CI should invoke the required build/test checks explicitly and promote the same reviewed artifact; do not depend on undocumented hooks. npm restart and watch-mode tools also have their own lifecycle semantics. Before changing scripts, inspect existing names, output paths, module mode, local tool versions, failure statuses and the project contract.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Waiting for a long-running serve command to finish before running the next test stage.
@@ -166,7 +184,6 @@ CI should invoke the required build/test checks explicitly and promote the same 
 Keep build, test, readiness and shutdown as explicit stages with observable outcomes and an owner for the running service.
 :::
 
-::::
 
 ## Small-batch learner practice {#small-batch-learner-practice}
 
@@ -205,6 +222,19 @@ Try an example that should fail, then fix it and confirm it passes. **Disabling 
 
 </div>
 
+<span class="notes-section-label">**Prove the lint rule is active**</span>
+
+A green result is meaningful only if the intended file and rule were actually checked.
+
+```mermaid
+flowchart TD
+    Scope["Confirm tool version, configuration and included files"] --> Bad["Place the intended violation in an owned example"]
+    Bad --> Run["Run lint: confirm the expected failure"]
+    Run --> Fix["Correct the violation"]
+    Fix --> Green["Run lint again: confirm it passes"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Start in the same Products lab; this exercise needs no separate quality-standard project. Install a local pinned linter:
@@ -232,7 +262,9 @@ Run `npx eslint equality.mjs`. The `eqeqeq` rule rejects `==`. For this exercise
 
 This first configuration checks one named file and one rule. It does not claim to check your entire application. Expand the file scope and rules deliberately after you can explain the failure and fix. The deeper lab adds those concerns, typechecking and configuration diagnostics.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Reuse one owned fixture**</span>
 
@@ -266,6 +298,8 @@ For configuration diagnosis, run `npm exec -- eslint --print-config src/equality
 
 Warnings normally differ from errors; `--max-warnings=0` makes any warning fail this gate too. Distinguish a reported rule violation from missing config/parser/tool invocation errors. An exit status alone does not identify the cause. Review proposed `--fix` changes and rerun behavioral checks; static rules cannot prove authorization, transaction or business correctness.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 Changing only an editor setting leaves CI unchanged. Running from the wrong package can discover another configuration. A wrong glob can make a clean result meaningless. Blanket ignore/disable comments can conceal regressions. A formatter fixes whitespace, not a loose-equality or undefined-variable defect.
@@ -287,7 +321,6 @@ Reproduce the loose-equality failure and repair; add an unused declaration and v
 
 [ESLint flat configuration](https://eslint.org/docs/latest/use/configure/configuration-files), [eqeqeq](https://eslint.org/docs/latest/rules/eqeqeq), [CLI and configuration diagnosis](https://eslint.org/docs/latest/use/command-line-interface). Use documentation matching your pinned version; latest documentation can include later options.
 
-::::
 
 ---
 
@@ -312,6 +345,21 @@ Each tool checks a different aspect of the code. A formatter keeps spacing and l
 **Passing one check does not mean the others will pass.** Make each command easy to run on its own. **Keep formatting changes separate from behavior changes** so a reviewer can see what actually changes the program.
 
 </div>
+
+<span class="notes-section-label">**See the independent checks**</span>
+
+The branches check different properties of the same candidate. One green branch does not supply evidence for the others.
+
+```mermaid
+flowchart TD
+    Code["Candidate code"] --> Format["Formatter: layout"]
+    Code --> Lint["Linter: configured code rules"]
+    Code --> Types["Type checker: declared type relationships"]
+    Code --> Tests["Tests: selected runtime behavior"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Configure one formatter in the owned lab**</span>
 
@@ -357,6 +405,8 @@ Run check, inspect the named unformatted file, then run the narrowly scoped writ
 | Return subtraction instead of addition | Behavior test | Syntax, formatting and numeric types can all remain valid |
 
 Our deliberately small ESLint ruleset has no competing layout rules, so no integration plugin is needed. A broader preset may require `eslint-config-prettier` to disable conflicting style rules. Running Prettier as a lint rule is an alternative with trade-offs, not the default requirement. Avoid two tools repeatedly undoing each other's formatting.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -404,6 +454,23 @@ Change one cause at a time and preserve the task template's required behavior. *
 
 </div>
 
+<span class="notes-section-label">**Check that the gate detects the defect**</span>
+
+Compare the same owned fixture before and after one correction. An excluded file can create a false green.
+
+```mermaid
+flowchart TD
+    Gate["Identify the exact gate and its file scope"] --> Defect["Reproduce the intended defect"]
+    Defect --> Detect{"Does this gate fail for that defect?"}
+    Detect -->|no| Scope["Inspect configuration, inclusion and actual command"]
+    Scope --> Gate
+    Detect -->|yes| Fix["Apply the focused fix"]
+    Fix --> Green["Rerun the same gate and confirm success"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**An explicit local verification chain**</span>
 
 In the owned quality fixture only, extend `check` to include formatting:
@@ -440,6 +507,8 @@ A watch process deliberately stays alive. A build may succeed while a stale serv
 3. Run the full chain, then import `dist/add.js` and assert addition again. The fixture's original test imports source; this separate smoke check verifies the emitted export too.
 
 A local hook or `prestart` can be bypassed. Run the same checks in CI.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -487,6 +556,22 @@ Use Go to Definition and Find References to locate an implementation and its cal
 
 </div>
 
+<span class="notes-section-label">**Follow a debugger investigation**</span>
+
+A breakpoint shows one execution path. A repeatable check verifies the fix outside the paused session.
+
+```mermaid
+flowchart TD
+    Locate["Find implementation and callers"] --> Identify["Confirm actual process, artifact and source maps"]
+    Identify --> Pause["Pause at a relevant breakpoint"]
+    Pause --> Inspect["Inspect inputs, variables and calls"]
+    Inspect --> Fix["Form a hypothesis and apply a focused fix"]
+    Fix --> Verify["Run regression checks without the debugger"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Start from one reproducible input**</span>
 
 In the owned quality fixture, add `debug-entry.mjs`:
@@ -533,6 +618,7 @@ For a service, trigger one controlled request after listening and inspect the se
 
 The ordinary launch workflow starts the owned process under a debugger. An explicit `node --inspect`/`--inspect-brk` flow has different start/pause behavior and an inspector endpoint. Keep debugger access local and deliberate; do not expose it through a public bind/tunnel or disable authentication/network protections to simplify attaching. The inspector can inspect/execute powerful process operations. Stop the owned debug process and release resources when finished.
 
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -580,9 +666,28 @@ Node's Inspector is its debugging interface. **Bind Inspector to loopback and co
 
 </div>
 
+<span class="notes-section-label">**Keep the remote diagnostic path explicit**</span>
+
+Reproduce on an isolated staging copy first. The diagram shows the protected attachment path, not a public debugging endpoint.
+
+```mermaid
+flowchart TD
+    Evidence["Identify failing build and process from controlled logs"] --> Stage["Reproduce in isolated staging"]
+    Laptop["Developer debugger"] --> Private["Authenticated private connection"]
+    Private --> Inspector["Inspector bound to loopback on the target"]
+    Stage --> Inspector
+    Inspector --> Match["Verify matching loaded source; inspect only needed values"]
+    Match --> Close["Close the diagnostic connection when finished"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For a staging exercise, deploy a copy of your own service with a synthetic configuration error. Record the artifact revision and process identity. Start the isolated replica with Inspector bound to its loopback interface, then attach through your environment’s approved private forwarding mechanism. Use a breakpoint immediately before configuration validation and check the value’s type and which branch runs. Keep secret values out of logs and screenshots.
 
 Compare the loaded source with the deployed artifact. A breakpoint in the wrong checkout or an unmatched source map can send you to the wrong line. If the replica starts with a break-on-entry flag, resume execution before expecting application readiness. When done, disconnect, stop the replica and verify the debugging listener is closed. [Node.js debugging and Inspector security](https://nodejs.org/en/learn/getting-started/debugging).
+
+::::
 
 ---
 
@@ -608,6 +713,27 @@ A stack trace shows where an error was thrown or reported. Preserve the original
 
 </div>
 
+<span class="notes-section-label">**Connect records with one request ID**</span>
+
+The ID joins events across asynchronous boundaries. The cause chain preserves why an operation failed.
+
+```mermaid
+sequenceDiagram
+    participant HTTP as HTTP boundary
+    participant Service
+    participant Dependency
+    participant Logs as Controlled logs
+    HTTP->>Service: Operation with request ID R1
+    Service->>Dependency: Dependency call correlated with R1
+    Dependency-->>Service: Original failure
+    Service->>Logs: R1, operation context and preserved cause
+    Service-->>HTTP: Application error with cause
+    HTTP-->>HTTP: Return stable safe public error
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```js
 async function readInventory() {
   await Promise.resolve();
@@ -631,6 +757,8 @@ try {
 ```
 
 The first line identifies the failed operation. The second identifies the dependency failure. In this example, removing `await` inside the `try` returns the dependency’s promise before it rejects, so the catch block no longer adds context. In a service, include the same request ID in the entry, dependency and failure records. Report a stable public error and retain diagnostic details in controlled logs.
+
+::::
 
 ---
 
@@ -656,9 +784,29 @@ Use the same command and built files as the service. A missing module needs path
 
 </div>
 
+<span class="notes-section-label">**Find the next startup step to inspect**</span>
+
+Read downward. The first failed step points to the next investigation; successful listening still needs readiness verification.
+
+```mermaid
+flowchart TD
+    Load["Load actual entry and dependencies"] --> Config["Parse and validate settings"]
+    Config --> Dependencies["Create required dependency connections"]
+    Dependencies --> Listen["Bind listening address and port"]
+    Listen --> Ready["Verify required work through readiness checks"]
+    Load -.-> Missing["Missing module: inspect path and package"]
+    Config -.-> Invalid["Invalid setting: inspect validation"]
+    Listen -.-> Port["EADDRINUSE: inspect port ownership"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Run the same command and artifact that the service uses. If a module fails to load, check the entry path, package type and installed dependency. If validation fails, check which configuration keys are present and validate their types. If the server reports `EADDRINUSE`, check the configured host and port and identify the listener before changing anything. Once the server is listening, use a readiness check to distinguish a reachable process from a usable service.
 
 In your owned Express project, supply an invalid port and verify that validation stops startup with a clear error. Restore it, then use a second copy of your own service to occupy the port. Verify that the listen error is distinguishable from the configuration error and that both processes can be stopped cleanly.
+
+::::
 
 ---
 
@@ -684,6 +832,8 @@ Editors and configured static checks can use these annotations to spot mistakes.
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 ```js
 // @ts-check
 
@@ -704,6 +854,8 @@ console.log(toMilliseconds(2.5));
 ```
 
 The example prints `2500`. In your editor or project’s JavaScript type check, try a string argument and observe the diagnostic. Then run with a negative number to see a runtime check that the `number` annotation alone cannot express. [TypeScript JSDoc reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+
+::::
 
 ---
 
@@ -730,6 +882,21 @@ Source mapping: [R055](./requirements.md#r055), [R177](./requirements.md#r177).
 
 </div>
 
+<span class="notes-section-label">**Separate documentation from enforcement**</span>
+
+Swagger UI presents the OpenAPI description. The application implements the behavior, and contract tests compare the two.
+
+```mermaid
+flowchart TD
+    Spec["OpenAPI: paths, inputs and possible responses"] --> UI["Swagger UI: browsable description"]
+    Spec --> Test["Contract test: expected HTTP agreement"]
+    App["Running application: actual HTTP behavior"] --> Test
+    Test --> Result["Report match or mismatch"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```yaml
 openapi: 3.1.0
 info:
@@ -755,6 +922,8 @@ paths:
 Load the document in Swagger UI and inspect the documented status and body. In an owned Express fixture, implement the route and make an HTTP test assert the status, content type and response body against the contract. Change the response to `{ status: 'ready' }` and verify the test catches the drift. For application routes, describe expected failure responses too. A security scheme describes how a client supplies credentials, while the service verifies them.
 
 [OpenAPI 3.1 specification](https://spec.openapis.org/oas/v3.1.0.html).
+
+::::
 
 ---
 

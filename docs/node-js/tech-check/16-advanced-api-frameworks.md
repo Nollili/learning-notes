@@ -28,6 +28,22 @@ Define separately when new tasks may start, when workers are ready, what counts 
 
 </div>
 
+<span class="notes-section-label">**Distinguish process lifecycle milestones**</span>
+
+A ready reply permits admission under the protocol. A result, disconnection and closure are later independent facts.
+
+```mermaid
+flowchart TD
+ Start["Start supervised process"] --> Ready["Observe valid readiness"]
+ Ready --> Admit["Admit bounded tasks"]
+ Admit --> Result["Observe task results and uncertain outcomes"]
+ Result --> Stop["Stop admission; request bounded shutdown"]
+ Stop --> Close["Observe actual process and stream closure"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 The [completed concurrency chapter](./09-concurrency.md#t09-q05) owns the runnable cluster service and [bounded fork session](./09-concurrency.md#t09-q07). Reuse those implementations rather than creating another process wrapper here. Their real checks include shared listening endpoint, separate process memory, repeated correlated messages, wrong/duplicate reply, deadline, graceful stop and fail-closed worker loss.
 
 For an application review, state which contract each wrapper promises: validated result plus natural exit, or validated result plus awaited forced termination. A reply can arrive before a later crash; resolve early only if that is the documented business contract. Forced termination cannot roll back a database commit or guarantee every child finally block ran. A lost IPC response can leave an effect uncertain and require a durable operation receipt.
@@ -35,6 +51,8 @@ For an application review, state which contract each wrapper promises: validated
 Do not accept executable paths, environment, Node flags or shell snippets from a request. Use fixed modules/arguments, minimal inherited authority and owned stdio. `execFile`/`spawn` without a shell avoids one interpretation layer; argument injection into the target program can still matter. Fork/cluster processes are not hostile-code sandboxes. See [isolation limits](./14-security.md#t14-q08).
 
 A restart policy needs bounded backoff, a crash budget and an operational owner. Repeatedly replacing a worker that deterministically fails the same job creates a crash loop. Readiness belongs to the required capability, not merely the worker's online event. During shutdown, stop admission before draining accepted tasks and allow an external supervisor to enforce the final process-tree deadline. A platform replica with its own CPU pool/DB pool needs an aggregate capacity budget.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -63,6 +81,22 @@ Write the complete result to a private temporary file first. Finish writing, syn
 **Complete visibility, overwrite prevention and crash durability are separate guarantees.** Readers should not see partial content; an existing result may need protection from replacement; surviving a crash may require additional steps. Choose and test a publication method that provides the required guarantees on the actual filesystem. A cleanup failure after publication does not mean publication never happened.
 
 </div>
+
+<span class="notes-section-label">**Publish after private completion**</span>
+
+The filesystem publication operation must supply the required visibility and overwrite behavior on the tested filesystem.
+
+```mermaid
+flowchart TD
+ Temp["Create owned private temporary file"] --> Write["Write complete content"]
+ Write --> Sync["Finish, sync and close"]
+ Sync --> Publish["Publish with required filesystem semantics"]
+ Publish --> Visible["Final content becomes visible"]
+ Visible --> Cleanup["Clean up owned leftovers; retain known publication outcome"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 An `exists` check followed by writing races another caller. `open(...,'wx')` prevents replacing an existing name, but writing directly to that final path can expose partial content. A temporary-file rename can publish atomically on supported same-filesystem paths but normally replaces an existing target. The fixture below instead uses a same-filesystem hard link for no-replace publication in an owned private directory.
 
@@ -154,6 +188,8 @@ Only use this helper with a trusted private directory owned by the application a
 
 Cleanup failure after publication is a committed-but-cleanup-failed outcome. Do not tell a retrying caller that no file exists or delete a previously existing target. Retention/reconciliation should remove only owned temporary files under a defined policy. For sensitive uploads, size/type/content validation, malware handling and access control are additional boundaries.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test competing publication, pre-existing target, invalid name, write/sync/link/cleanup failures and process crash at phase boundaries in a disposable directory. Accept when partial bytes never appear under the final name, prior output survives, no unowned file is deleted and durability limits are explicit. Reference: [Node 24 file APIs](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html), [security boundary review](./14-security.md).
@@ -181,6 +217,23 @@ Use `pipeline()` to connect the stream stages your operation manages. Respect ba
 Validate what you can before sending an HTTP response, because sent headers cannot be taken back. **Stopping the caller's wait does not automatically stop the source or destination.** Pass cancellation to the real adapters, handle their final errors and verify that resources such as cursors and sockets actually close.
 
 </div>
+
+<span class="notes-section-label">**Place limits along the stream**</span>
+
+Encoded input, decoded data and final output can have different sizes. Cancellation must reach the real owned adapters.
+
+```mermaid
+flowchart TD
+ Source["Owned source or cursor"] --> Input["Input-size and work limits"]
+ Input --> Transform["Decode or transform"]
+ Transform --> Output["Expanded-data or output limits"]
+ Output --> Sink["Owned destination"]
+ Owner["Awaited pipeline with backpressure, error and cancellation ownership"] -.-> Source
+ Owner -.-> Sink
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This fixture streams bounded JSON Lines through a deliberately asynchronous sink and returns data only after successful completion. It collects a maximum of a few KiB for the demonstration; a real large export writes to an authorized response/file/object destination without buffering the entire result.
 
@@ -255,6 +308,8 @@ A real adapter must stop its database cursor/request when destroyed, not merely 
 
 For HTTP streaming, once headers/body are sent, an error cannot become a fresh JSON 500 response. Terminate the connection or use a documented framed terminal error/status channel. Define client disconnect handling and close only resources owned by that response. For resumable exports, persist a job/status/object and publish completion atomically under a durable operation ID.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test slow sink, source/transform/destination errors, oversize chunk, active abort and client disconnect with the real adapter. Accept with observed cursor/socket closure, bounded prefetch and no success or partial file publication after failure. The local fixture proves byte/validation/pre-abort behavior, not remote cancellation. References: [Node pipeline/backpressure](https://nodejs.org/download/release/v24.18.0/docs/api/stream.html), [existing stream failure cases](./07-core-apis.md#t07-q09).
@@ -285,6 +340,22 @@ Key access, rotation and cleanup remain part of the design. A later authenticati
 
 </div>
 
+<span class="notes-section-label">**Keep plaintext private until authentication succeeds**</span>
+
+This is the important GCM boundary in the lesson. Data from update must not trigger external effects before the final tag check succeeds.
+
+```mermaid
+flowchart TD
+ Cipher["Ciphertext and authenticated context"] --> Update["Decrypt update: tentative plaintext"]
+ Update --> Private["Keep bytes private and bounded"]
+ Private --> Final{"Final authentication check succeeds?"}
+ Final -->|yes| Use["Release authenticated plaintext to consumers"]
+ Final -->|no| Reject["Reject without publishing tentative bytes"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Use the [worked AES-GCM envelope](./14-security.md#t14-q04) for confidentiality/integrity and the [existing HMAC lesson](./07-core-apis.md#t07-q11) for message authenticity. A plain SHA-256 digest detects changes only when its expected value comes from a trusted channel; it does not prove sender identity. Passwords require a password-hashing design, not either of those APIs.
 
 With GCM, `decipher.update()` may yield plaintext before `final()` verifies the tag. A downstream database/file consumer must not act on those bytes early. For bounded messages, withhold the entire result until verification. For large objects, stage privately and publish only after successful authentication, or use a reviewed chunk-authenticated format with sequence/context/truncation protection. Do not invent a homegrown “tag per chunk” protocol without addressing replay, ordering, finality and nonce uniqueness.
@@ -292,6 +363,8 @@ With GCM, `decipher.update()` may yield plaintext before `final()` verifies the 
 Bind tenant/resource/version as authenticated context where the envelope contract requires it, but still perform current authorization. A legitimate ciphertext for tenant A does not grant tenant B permission to read it. Rotate keys with stored key IDs and an explicit decrypt/retention/re-encryption window. An unknown key ID must not trigger arbitrary file/network lookup.
 
 Crypto APIs can also consume native worker-pool capacity. Bound password hashing/key derivation concurrency independently from HTTP admission and observe contention with other pool-backed work. Moving a call into another Promise does not remove its CPU/memory cost. Compare streaming transform choices with the [performance ownership notes](./12-performance-and-v8.md#t12-q04), keeping secrecy and failure semantics unchanged.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -321,6 +394,21 @@ Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
 **Doing fixed work once instead of on every request can help**, provided that work truly does not vary with the request and is refreshed when needed. That improvement shows the benefit of avoiding repeated service work. It does not, by itself, prove that one framework is faster than another.
 
 </div>
+
+<span class="notes-section-label">**Compare equivalent candidates**</span>
+
+The improvement must preserve both successful results and failure behavior.
+
+```mermaid
+flowchart TD
+ Baseline["Record correct baseline on representative requests"] --> Change["Change one measured cost"]
+ Change --> Contract["Recheck routes, validation, permissions and response contract"]
+ Contract --> Repeat["Repeat comparable measurements and retain variation"]
+ Repeat --> Decide["Keep the change only with supported benefit and intact behavior"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 The following Express 5.1.0/Node 24 experiment compares recomputing a fixed public metadata digest with computing it once. It uses an intentionally trivial loopback-only credential to check that both routes still pass the same guard; this is not a production authentication implementation. The client and server share one machine/process, so timings include client competition and are illustrative only.
 
@@ -391,6 +479,8 @@ There is deliberately no “candidate must be faster” assertion. The fixed res
 For Nest, keep the same experiment boundary through a service and guard. Singleton providers can hold immutable metadata; request-scoped dependencies incur per-request construction and need justification. Interceptors/pipes can repeat serialization/validation; profile them before removing them. Switching to a Fastify adapter can change middleware/plugins and lifecycle behavior; run contract/integration/negative tests before considering any benchmark win. You do not need mastery of every named framework.
 
 A useful production comparison includes request mix, concurrency/arrival model, payload/dataset, warm-up, p50/p95/p99, errors, CPU/memory/loop delay, query count and repeated runs. Profile before/after and record the same artifact/runtime settings. Tie a rollout to business/health metrics and a compatible rollback, not just one average latency.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

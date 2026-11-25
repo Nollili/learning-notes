@@ -34,6 +34,22 @@ Worker messages copy ordinary objects using structured cloning. Buffer transfer 
 
 </div>
 
+<span class="notes-section-label">**Compare process and thread boundaries**</span>
+
+The boxes show isolation boundaries. Each worker thread has a separate ordinary JavaScript heap inside its process.
+
+```mermaid
+flowchart TD
+ subgraph P["One Node process"]
+  Main["Main JavaScript thread and heap"]
+  Worker["Worker thread and separate heap"]
+  Main <-->|messages or explicit shared memory| Worker
+ end
+ P <-->|IPC or streams| Child["Separate child process and memory"]
+ Cluster["Cluster: multiple server processes"] --> Port["Shared listening endpoint, separate application memory"]
+```
+
+
 <span class="notes-section-label">**First experiment — use the supplied owner, then inspect it**</span>
 
 You already know cancellation and cleanup from Section 2. The new idea is **JavaScript executing on another thread with its own ordinary objects**. First use the existing [one-task helper](../../workbench/node-js/runtime/worker.ts), saving its source as `worker.ts` beside these files. Node 24 can strip that helper's erasable type annotations; no new TypeScript build is needed for this experiment.
@@ -71,7 +87,9 @@ Run `node first-thread-main.mjs`: expect `1 2`. The worker changed its copy. The
 For the project, replace the small arithmetic example with a pure calculation on a snapshot of items the caller may access. Compare its report rows with the existing calculation, then compare the decompressed report output. Keep permission checks, database connections and HTTP responses outside the worker. Use a large enough test dataset before claiming better responsiveness. Ordinary database waiting does not need a worker thread.
 
 
-:::: details Complete worker lifecycle and isolation example — inspect after the first experiment
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict the parent value and identity comparisons**</span>
 
@@ -161,6 +179,8 @@ Several processes or containers can distribute independent requests. They do not
 
 Avoid unlimited worker creation and automatic crash respawn loops.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Calling fork or cluster a thread API, or assuming all workers share ordinary objects.
@@ -188,7 +208,6 @@ Acceptance: check the returned values, errors and actual worker completion. The 
 
 Official references checked 2026-11-04: Node 24.18 [worker threads](https://nodejs.org/download/release/v24.18.0/docs/api/worker_threads.html), [cluster](https://nodejs.org/download/release/v24.18.0/docs/api/cluster.html), [child_process.fork](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html#child_processforkmodulepath-args-options). Earlier fork/IPC examples remain in [related explanation](./02-cli-and-processes.md#t02-q08); this question adds the process/thread comparison without duplicating that implementation.
 
-::::
 
 ---
 
@@ -264,6 +283,24 @@ The helper used here accepts the first final outcome, removes its deadline and a
 
 </div>
 
+<span class="notes-section-label">**Own every terminal outcome**</span>
+
+Only one final outcome wins, but cleanup still completes before the caller promise settles.
+
+```mermaid
+flowchart TD
+ Start["Check pre-abort, then start owned worker"] --> Outcomes["Observe result, error, exit, timeout or abort"]
+ Outcomes --> Validate["Choose first terminal outcome; validate result if present"]
+ Validate --> Cleanup["Clear deadline and abort listener; terminate and await worker"]
+ Cleanup --> Remove["Remove worker listeners"]
+ Remove --> Settle["Resolve or reject the caller once"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The output is `6`, then `true`. A valid result selects success, but the helper waits for the worker to stop before resolving. This also removes its deliberately active interval. In the second call, cancellation happens while work is pending. After the worker stops, the caller receives the same Error object used as the cancellation reason.
@@ -295,6 +332,8 @@ Throwing inside a worker normally reaches its error event; process/native resour
 For an active cancellation with an Error reason, this helper preserves that Error. If the active signal’s reason is `null` or `undefined`, it uses a fallback Error. Cancellation before startup and cancellation during work do not promise identical handling for every possible reason value. Document the cancellation behavior your application relies on.
 
 In a pool, cancellation may remove queued work or stop the worker assigned to that task. Track task IDs and define when workers are replaced. Stopping a shared worker without checking its assigned work can destroy unrelated tasks.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -351,6 +390,21 @@ Source mapping: [R080](./requirements.md#r080).
 **Shared memory needs rules for coordinating reads, writes and cleanup.** Sharing does not validate messages, undo effects after cancellation or save data durably across service instances.
 
 </div>
+
+<span class="notes-section-label">**Compare ownership of the bytes**</span>
+
+These are three different communication choices, not three names for sharing the same object.
+
+```mermaid
+flowchart TD
+ Mode{"Message storage mode"}
+ Mode -->|copy| Copy["Sender bytes and receiver bytes are independent"]
+ Mode -->|transfer ArrayBuffer| Transfer["Receiver owns storage; sender views are detached"]
+ Mode -->|SharedArrayBuffer| Shared["Both access the same storage; coordinate reads and writes"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Predict the ownership change**</span>
 
@@ -476,6 +530,8 @@ Measure worker startup, data copying, queue wait, calculation time, memory and r
 
 For an image transform where the caller gives up its original bytes, transfer can fit. For a small report request retained for retries, a copy may be clearer. Shared counters may help a measured local need; a database remains responsible for state shared across process replicas. These are design choices, not a measured performance result from this fixture.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Expecting a copied function or class instance to keep all its behavior.
@@ -531,6 +587,23 @@ A worker pool reuses a limited number of workers instead of creating a new one f
 Give tasks IDs so replies reach the correct caller, and track assigned work until it actually finishes. **A caller cancelling its wait does not automatically make the worker available.** During shutdown, stop accepting tasks, allow active work a limited time to finish, then stop remaining workers and wait for cleanup.
 
 </div>
+
+<span class="notes-section-label">**Limit the queue independently of the workers**</span>
+
+A cancelled caller does not free an assigned worker until that worker actually finishes or is terminated.
+
+```mermaid
+flowchart TD
+ Task["Incoming task"] --> Admit{"Task and message budgets available?"}
+ Admit -->|no| Reject["Reject under overload policy"]
+ Admit -->|yes| Queue["Bounded waiting queue"]
+ Queue --> Worker["Assign task ID to available reusable worker"]
+ Worker --> Complete["Observe completion or termination"]
+ Complete --> Free["Only now make capacity available"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Predict admission and cancellation**</span>
 
@@ -751,6 +824,8 @@ Record task IDs, queue wait, execution time, rejected tasks, busy slots and forc
 
 For a real service, compare a maintained pool library against these same admission, cancellation, worker-failure and shutdown requirements. For ordinary asynchronous I/O, start with the existing async APIs rather than adding CPU workers. For stronger process isolation or independently scaled jobs, a process/broker architecture may fit, with different delivery and persistence requirements.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 Creating unlimited workers, accepting an unbounded queue, sharing mutable input, resolving the next caller from an old result, freeing a running slot on caller cancellation, blindly respawning crashing workers, or reporting a forced shutdown as a completed drain. A Promise.race timeout by itself implements none of the underlying ownership rules.
@@ -803,6 +878,23 @@ Source mapping: [R037](./requirements.md#r037), [R080](./requirements.md#r080).
 The primary process coordinates starting workers, checking readiness, handling failures and stopping new work during shutdown. Each worker closes its own server resources. **An IPC disconnect, a process exit and a completed request are different events.** Observe the event that actually proves the outcome your protocol requires.
 
 </div>
+
+<span class="notes-section-label">**Share connections, not a heap**</span>
+
+The primary supervises processes. An external store can provide explicitly shared state across them.
+
+```mermaid
+flowchart TD
+ Primary["Cluster primary: supervise readiness and shutdown"] --> A["Worker process A"]
+ Primary --> B["Worker process B"]
+ Port["Shared listening endpoint"] --> A
+ Port --> B
+ A --> Store["Explicit external session or state store"]
+ B --> Store
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Reason through the topology**</span>
 
@@ -887,6 +979,8 @@ After the check, send SIGTERM to this lab’s primary process. It stops starting
 
 Unexpected worker loss makes this lab stop the remaining workers. It never restarts them automatically. Production replacement needs retry limits, delays and readiness checks. Distinguish a planned deployment stop from a crash, and avoid repeatedly restarting a broken release. A killed worker may lose its response after a remote write committed. Check the operation’s actual outcome before retrying.
 
+::::
+
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
 Storing login sessions only in each worker, using an unbounded worker count, reporting ready before dependencies initialize, or treating IPC disconnect as proof that every accepted operation completed. Compare per-process PID/metrics, active connections/work, dependency pools and exit causes. Do not use process.exit to conceal leaked handles. A primary/supervisor failure is another failure boundary, not solved by a healthy worker counter.
@@ -936,6 +1030,28 @@ A forked Node child has its own JavaScript memory and an IPC messaging channel. 
 A child may return a job result and remain available for more jobs. That result does not mean the process has ended. **A “stopped” reply is also not proof that the child has closed.** The parent must follow the agreed shutdown messages and observe actual process and output-stream closure before reporting cleanup complete.
 
 </div>
+
+<span class="notes-section-label">**Wait past the stopped message**</span>
+
+A protocol reply and actual process closure are distinct milestones.
+
+```mermaid
+sequenceDiagram
+ participant P as Parent
+ participant C as Forked child
+ P->>C: Start with controlled inputs and environment
+ C-->>P: Ready under protocol
+ P->>C: Run job
+ C-->>P: Validated job result
+ P->>C: Stop request
+ C-->>P: Stopped reply
+ Note over P: Keep supervising actual closure
+ C-->>P: Process and output streams close
+ P->>P: Report cleanup complete
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Reuse the existing foundation, extend the lifecycle**</span>
 
@@ -1031,6 +1147,8 @@ This example deliberately ignores stdout/stderr because the protocol does not us
 
 A request deadline stops this child because it has only one assigned job and no queue. It does not stop unrelated work in a shared process pool. If a child creates more processes, managing that process tree needs OS-specific handling. SIGKILL is forced POSIX cleanup, not a portable normal-shutdown guarantee. A parent timer also cannot guarantee immediate OS termination.
 
+::::
+
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
 Resolving the whole session on its first job, confusing channel disconnection with process exit, ignoring output pipes, inheriting an inspector port, or assuming a process inherits only harmless authority. Diagnose startup, send, reply, disconnect and close separately; preserve safe exit/signal/phase evidence rather than only the word “failed.”
@@ -1080,6 +1198,22 @@ IPC carries messages; your application defines what they mean. **Check the messa
 **A send callback does not prove the task finished.** It reports progress in sending the message. Limit how many application requests may be active independently of the channel's internal buffering. Assign clear responsibility for each result, failure and shutdown path, so every pending operation finishes exactly as the protocol promises.
 
 </div>
+
+<span class="notes-section-label">**Correlate replies with live requests**</span>
+
+A late or duplicate reply is checked against protocol state instead of completing whichever task happens to be waiting.
+
+```mermaid
+flowchart TD
+ Message["Incoming IPC message"] --> Shape["Validate version, type, ID and payload"]
+ Shape --> Live{"Matches a live request at this stage?"}
+ Live -->|yes| Request["Deliver to the matching request owner"]
+ Live -->|no| Failure["Apply duplicate, stale or invalid-message policy"]
+ Request --> Settle["Record its terminal outcome once"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**One assigned request, no hidden waiting queue**</span>
 
@@ -1234,6 +1368,8 @@ A valid reply can arrive before a later session failure. If the child writes dat
 
 Default serialization, explicit advanced serialization and worker-thread transfer/shared-memory rules are different contracts. Choose supported values deliberately, test the actual mode and avoid reserved internal message conventions. Passing a socket/handle is a separate capability handoff with buffered-data, ownership and platform concerns; use it only when justified, rather than smuggling it into an ordinary data schema.
 
+::::
+
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
 Do not treat `send` returning true or its callback running as a job result. Do not resend simply because `send` returns false. Reject stale or duplicate replies, limit queued work, and finish required replies before disconnecting. Record request IDs, protocol stages and queue pressure without private payloads. A request ID grants no permission.
@@ -1285,6 +1421,22 @@ Also consider permissions, shared-state correctness, failure handling and shutdo
 **A timeout or crash can leave a business outcome unknown.** Keep a way to identify the operation and check whether its effect happened before retrying it.
 
 </div>
+
+<span class="notes-section-label">**Choose from the measured wait**</span>
+
+Mechanisms target different constraints. Communication, authority and cleanup costs still need measurement.
+
+```mermaid
+flowchart TD
+ Evidence{"Measured bottleneck or requirement"}
+ Evidence -->|waiting for supported I/O| Async["Asynchronous I/O with bounded admission"]
+ Evidence -->|CPU-heavy JavaScript| Threads["Bounded worker-thread pool"]
+ Evidence -->|external program or process separation| Processes["Owned child processes"]
+ Evidence -->|independent request capacity| Replicas["Service replicas within dependency budgets"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Worked choices and rejected alternatives**</span>
 
@@ -1342,6 +1494,8 @@ Define cancellation for queued and assigned tasks separately. Decide who retries
 
 During a rolling replacement, stop accepting work, give accepted tasks a deadline, then close resources and wait for threads/processes to stop. Forced termination is a separate outcome. Use an external supervisor if JavaScript or native cleanup cannot finish. An unreferenced worker or an abandoned promise does not prove that work finished.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 Common mistakes include adding threads for I/O waiting, enlarging every pool at once, ignoring the number of application copies, treating a small local benchmark as a service guarantee, and testing only success. Diagnostics must show queued and actually running work, not only rejected promises.
@@ -1380,6 +1534,23 @@ Here, “Event Splitting” means dividing a long operation into small chunks. R
 **Chunking creates opportunities for other work to run; it does not create parallel CPU execution.** Each chunk still blocks its thread while running. Limit the total input, chunk size and number of active jobs. If measurements show sustained CPU-heavy work needs a separate thread, use a limited worker pool with explicit task and cleanup handling.
 
 </div>
+
+<span class="notes-section-label">**Make room between bounded chunks**</span>
+
+Other callbacks get an opportunity between chunks. Each individual CPU chunk still occupies its thread.
+
+```mermaid
+flowchart TD
+ Job["Finite job with input and work limits"] --> Chunk["Run a small chunk"]
+ Chunk --> More{"More work remains?"}
+ More -->|yes| Yield["Schedule next chunk via setImmediate"]
+ Yield --> Turn["Event loop can handle other ready callbacks"]
+ Turn --> Chunk
+ More -->|no| Done["Finish and release job resources"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Run a bounded example**</span>
 
@@ -1435,6 +1606,8 @@ The marker assertion shows that another scheduled immediate ran before this calc
 | Process a large incoming sequence | Stream with backpressure | Bound buffering and the work per chunk |
 
 **Per-job chunking does not bound the number of admitted jobs.** Thousands of yielding jobs can still exhaust memory/CPU. Use the [worker admission/lifecycle lesson](#t09-q04) and [load-measurement lesson](./12-performance-and-v8.md#t12-q05) to decide between rejection, chunking and offloading. Cancelling a partial computation cannot undo effects already committed; keep this example's intermediate sum private until success.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

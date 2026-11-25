@@ -103,6 +103,21 @@ Source mapping: [R132](./requirements.md#r132), [R135](./requirements.md#r135), 
 
 </div>
 
+<span class="notes-section-label">**Choose from invariants and operations**</span>
+
+Start with the data rules and workload; a database category name alone does not establish its guarantees.
+
+```mermaid
+flowchart TD
+ Rules["Required data rules"] --> Compare["Compare actual database guarantees"]
+ Work["Queries, updates and relationships"] --> Compare
+ Recovery["Failure, recovery and operational needs"] --> Compare
+ Compare --> Test["Test the candidate against representative operations"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A relational schema declares tables, keys and constraints. Normalize repeated facts to reduce inconsistent updates, then denormalize only for an identified read workload with an explicit owner and refresh policy. A document aggregate embeds values usually read/changed together; cross-aggregate references still need consistency and lifecycle decisions.
 
 | System | Useful fit | Decision to verify |
@@ -114,6 +129,8 @@ A relational schema declares tables, keys and constraints. Normalize repeated fa
 | Redis | Low-latency keys, expiring caches and specialized structures | Eviction, persistence, atomicity and failover guarantees |
 
 Do not choose Redis as the authoritative inventory store merely because reads are fast. A lost/evicted cache entry must be reconstructible if the cache is not the source of truth. MongoDB supports transactions; PostgreSQL supports JSONB. Actual topology and workload determine guarantees. Redis multi-command workflows need transactions/scripts or an appropriate atomic command; a Node callback sequence is not atomic across clients.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -142,6 +159,22 @@ Create a connection pool with a maximum size, reuse it for the intended applicat
 **Count connections across every process, replica and separate pool.** An ORM pool and a session-store pool both contribute to the database's total. A safe-looking limit in one process can still exceed capacity when many copies of the application run.
 
 </div>
+
+<span class="notes-section-label">**Count all the pools**</span>
+
+Each process and separate pool adds to total connection demand, even when every individual pool has a small limit.
+
+```mermaid
+flowchart TD
+ A["Replica A: ORM pool"] --> DB["Database connection capacity"]
+ AS["Replica A: session pool"] --> DB
+ B["Replica B: ORM pool"] --> DB
+ BS["Replica B: session pool"] --> DB
+ Budget["Combined connection budget across replicas"] -.-> DB
+```
+
+
+:::: details Deeper explanation and additional examples
 
 A driver handles the database protocol. `pg` is the Node PostgreSQL driver; an ORM or query builder sits above such a driver. A native C binding is an optional implementation detail, not a requirement to call every SQL query “native.” Connection configuration includes host, port, database, role, pool maximum and TLS trust, not just a password string.
 
@@ -174,6 +207,8 @@ The environment or secret provider supplies the real settings. Never print the c
 
 A full pool may mean connections were not released, transactions are long, or too much work was accepted. Measure `totalCount`, `idleCount`, `waitingCount`, connection-acquisition delay and server sessions. `connectionTimeoutMillis` limits acquiring/connecting; `statement_timeout` limits a server statement. Neither limits the whole HTTP operation. Release checked-out clients in `finally` and remove broken clients from the pool. Leave capacity for administration, migrations and other application copies.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Run two owned application processes with a small pool, observe the combined server count and inject a slow statement. Accept when acquisition/statement failures are bounded, logs contain no credentials and shutdown leaves no owned sessions. References: [pg pooling](https://node-postgres.com/features/pooling), [pool sizing](https://node-postgres.com/guides/pool-sizing), [TLS configuration precedence](https://node-postgres.com/features/ssl).
@@ -201,6 +236,22 @@ Validate input to give callers useful errors, then pass values through the drive
 **Query parameters represent values, not table or column names.** Choose dynamic identifiers from an explicit allowed list. **Parameters also do not enforce permissions.** Restrict queries and writes to the caller's trusted tenant or ownership context, and check how many rows were affected.
 
 </div>
+
+<span class="notes-section-label">**Keep validation, parameterization and permission checks**</span>
+
+These controls solve different problems. Database constraints protect the invariant even when another writer uses the database.
+
+```mermaid
+flowchart TD
+ Input["Untrusted input"] --> Validate["Validate fields and choose allowlisted identifiers"]
+ Validate --> Scope["Apply trusted tenant or owner restriction"]
+ Scope --> Query["Bind values through query parameters"]
+ Query --> DB["Database checks constraints and executes"]
+ DB --> Rows["Check affected rows and map the outcome"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Use a disposable database with task-provided settings. The transaction-scoped temporary tables below disappear automatically; the fixture cannot replace an existing production table. Run SQL with `psql -X -v ON_ERROR_STOP=1`.
 
@@ -250,6 +301,8 @@ In Node use `pool.query(text, values)` with `$1` placeholders. The malicious-loo
 
 CRUD means create, read, update and delete. Select only required columns and deliberately map number/time types to application values. PostgreSQL bigint/numeric can arrive as strings to avoid losing precision. JavaScript floating-point numbers are not a general money representation. Pagination needs a limit and stable ordering, with a unique field to break ties. Soft deletion also needs rules for visibility, retention and uniqueness; a `deleted_at` column alone is insufficient.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Implement all four operations through the real driver. Test injection-shaped values, duplicate keys, invalid stock, missing rows and another tenant's ID. Accept only when the schema survives, wrong-tenant writes affect zero rows and each returned field/type matches the API contract. References: [pg value parameters](https://node-postgres.com/features/queries), [PostgreSQL data types](https://www.postgresql.org/docs/18/datatype.html).
@@ -277,6 +330,22 @@ A `JOIN` combines related rows so a result can include columns from both sides. 
 **“Merge tables” is too ambiguous to choose SQL from it.** First say whether you want to combine query results, update existing data or change the schema. Define the matching keys and how conflicts should be handled.
 
 </div>
+
+<span class="notes-section-label">**Choose the operation you actually mean**</span>
+
+Query combination, stored-data changes and schema changes are different branches.
+
+```mermaid
+flowchart TD
+ Meaning{"What does merge mean here?"}
+ Meaning -->|combine related columns| Join["JOIN"]
+ Meaning -->|combine compatible result rows| Union["UNION"]
+ Meaning -->|insert or update stored records| Upsert["Upsert or MERGE with explicit match rules"]
+ Meaning -->|change database structure| Migration["Versioned migration"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 An INNER JOIN leaves out rows without a match. A LEFT JOIN keeps each left row and fills missing right-side fields with NULL. A right-side condition in `WHERE` can accidentally remove those unmatched rows. Join on the complete key, including tenant ID where required. A product with two order lines produces two joined rows. Aggregate at the intended level so you do not count its stock twice.
 
@@ -308,6 +377,8 @@ This MERGE syntax works in PostgreSQL 15 and later. Newer versions add clauses t
 
 DDL commands such as `CREATE`, `ALTER` and `DROP` change the schema. `DELETE` changes rows; `TRUNCATE` has different lock and trigger behavior. Record schema changes in migrations. For rolling deployments, add compatible fields, fill existing data, switch code, then remove old fields. Old processes may still require the previous column. Review destructive changes, test a restore and keep seed data separate from schema. Do not automatically synchronize production schema at every startup.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Use the [SQL report workbench](../sql-query-workbench.md) to explain report grain and NULL cases. Add a nullable column, backfill in bounded batches and deploy a compatible reader before making it required. Accept with old/new version compatibility, repeatable migration history and a tested failure/restore plan. References: [PostgreSQL table expressions](https://www.postgresql.org/docs/18/queries-table-expressions.html), [MERGE](https://www.postgresql.org/docs/18/sql-merge.html), [INSERT conflict handling](https://www.postgresql.org/docs/18/sql-insert.html).
@@ -335,6 +406,23 @@ A transaction groups database changes so they commit together or roll back toget
 **Use the same checked-out database client for the entire transaction.** On a failure that is known to be temporary and safe to retry, repeat the complete transaction within a limit. Do not blindly repeat a write when a lost connection leaves you unsure whether it committed.
 
 </div>
+
+<span class="notes-section-label">**Protect stock with a conditional update**</span>
+
+This is a simplified transaction for one order. A failed condition must prevent the order from being accepted.
+
+```mermaid
+flowchart TD
+ Start["BEGIN on one checked-out client"] --> Update["Conditional stock update: enough stock must remain"]
+ Update --> Changed{"Expected row updated?"}
+ Changed -->|yes| Order["Save order within the same transaction"]
+ Order --> Commit["COMMIT, then release client"]
+ Changed -->|no| Rollback["ROLLBACK and release client; reject order"]
+ Order -->|failure| Rollback
+```
+
+
+:::: details Deeper explanation and additional examples
 
 ACID describes atomic commit/rollback, preservation of declared rules, isolation between concurrent transactions and durability under the database’s configured guarantees. It does not automatically include an external email or payment API. Keep transactions short. Never hold a database lock while waiting for user input or a remote payment.
 
@@ -394,6 +482,8 @@ PostgreSQL coordinates concurrent conditional UPDATEs to the same row. Reading s
 
 Serialization failure `40001` and deadlock `40P01` can justify retrying the whole transaction with limited attempts and random delays. A uniqueness failure usually represents a business conflict. A timeout or lost connection near COMMIT can leave the outcome unknown. **Retrying an uncertain commit can duplicate work.** Operations that allow retry need a persistent idempotency key/receipt and a way to check uncertain outcomes. This small function does not implement those features.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Run two independent clients reserving the last unit: exactly one commits and stock never becomes negative. Inject line-insert failure and prove stock rolls back; force a deadlock and explain whole-unit retry. Reuse [the tested error/retry lesson](./10-error-handling.md#t10-q07). References: [pg transaction client ownership](https://node-postgres.com/features/transactions), [PostgreSQL isolation](https://www.postgresql.org/docs/18/transaction-iso.html).
@@ -421,6 +511,22 @@ An ORM maps application objects and relationships to database data and tracks ch
 **MikroORM's identity map tracks entity objects within a request context.** It helps represent the same entity consistently in that context; it is not a shared application cache. Give separate requests and background jobs appropriate separate contexts. The ORM does not replace permission checks or the need to understand transactions, generated queries and SQL performance.
 
 </div>
+
+<span class="notes-section-label">**Give each request its own identity map**</span>
+
+Within one context, the same entity identity maps to the same tracked object. Another request has its own context.
+
+```mermaid
+flowchart TD
+ RA["Request A context"] --> A1["Load product 42"]
+ RA --> A2["Load product 42 again"]
+ A1 --> AO["Same tracked object within A"]
+ A2 --> AO
+ RB["Request B context"] --> BO["Separate tracked product object within B"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**First replacement: the existing repository lookup**</span>
 
@@ -528,6 +634,8 @@ Use foreign keys for relationships and explicitly choose which related data to l
 
 Use a driver for direct SQL control, a query builder to assemble queries, or an ORM when entity tracking and units of work help. Do not independently mix all three within one use case without a shared transaction and clear pool owner. The connection pool, EntityManager context and transaction have related but different lifetimes.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Implement create/read/update/delete and one relation in the existing workbench. Verify generated queries, request isolation, missing-row behavior, transaction rollback and migration output. Accept with bounded query count, explicit DTOs and no schema auto-update on startup. References: [MikroORM identity map](https://mikro-orm.io/docs/identity-map), [transactions](https://mikro-orm.io/docs/transactions), [migrations](https://mikro-orm.io/docs/migrations).
@@ -556,11 +664,30 @@ Inspect the actual SQL and query plan using representative data. **An index help
 
 </div>
 
+<span class="notes-section-label">**Split the query timeline into stages**</span>
+
+Measure these stages separately before deciding that SQL execution is the slow part.
+
+```mermaid
+flowchart TD
+ Request["Database operation begins"] --> Pool["Wait for pool client"]
+ Pool --> Lock["Wait for required locks"]
+ Lock --> SQL["Execute query"]
+ SQL --> Rows["Transfer result rows"]
+ Rows --> Objects["Map or hydrate application objects"]
+ Objects --> Result["Return result"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For a chronological tenant list, a B-tree on `(tenant_id, created_at, id)` may match the filter and order. A keyset cursor on `(created_at,id)` can then read the next range without skipping a large OFFSET. Results depend on column order, matching values, text comparison rules, NULL handling and the query expression. PostgreSQL can sometimes use later index columns; it is too absolute to say every query must use all leftmost columns.
 
 Start with `EXPLAIN`. `EXPLAIN (ANALYZE, BUFFERS)` actually runs the statement, including writes. Compare estimated and actual row counts, repeated loops, scans, joins, sorting, disk use and buffers. A full-table scan can be reasonable for a small table or a query returning most rows. Keep statistics current and compare repeated realistic runs, including writes and cache differences. Do not force index use merely to produce a preferred plan.
 
 A unique/primary key creates its supporting unique index. PostgreSQL does not automatically add an index on every referencing foreign-key column; inspect whether your joins/deletes need one. Extra indexes slow mutations and consume storage. Building on a large live table needs an operational plan; `CREATE INDEX CONCURRENTLY` has special transaction/cleanup constraints.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -590,11 +717,30 @@ Source mapping: [R137](./requirements.md#r137).
 
 </div>
 
+<span class="notes-section-label">**Prevent a retry storm**</span>
+
+An unhealthy database needs bounded work and recovery. Multiplying replicas and retries can multiply pressure.
+
+```mermaid
+flowchart TD
+ Incoming["Incoming API and job work"] --> Admission["Limit accepted work and queue size"]
+ Admission --> Pool["Bounded database connections and waits"]
+ Pool --> Query["Statement deadline and classified result"]
+ Query -->|temporary replay-safe failure| Retry["Retry only within remaining budget"]
+ Retry --> Pool
+ Query -->|unsafe or exhausted| Failure["Controlled failure and diagnostics"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Translate failures into the documented unavailable, conflict or missing-item response at the HTTP boundary. Log a request ID, operation, safe SQLSTATE code, duration and retry attempt. Leave out credentials and sensitive parameters. Distinguish constraint failures, network failures, lock timeouts, full pools and code bugs. After a statement error, roll back the failed transaction or recover through an appropriate savepoint before continuing.
 
 For a job, claim a limited batch in a transaction and define who owns it and for how long. Release the database connection before slow external work. Save completion and duplicate-protection records. When a claim expires, prevent the old worker from committing later; version or fencing checks can protect supported resources. Do not hold every database client while waiting for a remote API.
 
 Back up authoritative data and test restoration into a separate environment. A successful dump command or managed “backup enabled” flag does not prove recovery time or acceptable data loss. See [recovery exercises](../database-recovery.md) and [architecture outbox/saga](./18-architecture.md#t18-q27). Cache fallbacks must respect freshness and tenant permissions; do not return stale financial success during an authoritative-store outage.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -623,6 +769,28 @@ An invariant is a business rule that must stay true, such as “at least one doc
 **A stable snapshot does not prevent write skew:** two transactions can each make a reasonable decision from the same snapshot, update different rows and jointly break the rule. Serializable isolation can reject an unsafe combination. The application must then handle a bounded retry of the entire transaction, including fresh reads and a new decision.
 
 </div>
+
+<span class="notes-section-label">**Trace write skew**</span>
+
+Initially Alice and Bob are both on call. Under a suitable snapshot-isolation scenario, independent row updates can break the shared rule.
+
+```mermaid
+sequenceDiagram
+ participant A as Transaction A
+ participant DB as Database
+ participant B as Transaction B
+ A->>DB: Read Alice and Bob both on call
+ B->>DB: Read Alice and Bob both on call
+ A->>DB: Set Alice off call
+ B->>DB: Set Bob off call
+ Note over A,B: Different rows changed from the same earlier view
+ A->>DB: Commit
+ B->>DB: Commit
+ Note over DB: Neither doctor remains on call
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Suppose two doctors are on call and at least one must remain available. Each transaction reads that two are on call, then disables a different doctor. Both can commit under PostgreSQL Repeatable Read despite each seeing a stable snapshot. Row-level CHECK constraints cannot directly express this multi-row invariant. Lock a shared coordination row in a consistent protocol, redesign the invariant, or use Serializable with safe full-unit retry.
 
@@ -716,6 +884,8 @@ The fixture deliberately allows the Repeatable Read violation and asserts Serial
 
 MikroORM's `transactional` callback must use its supplied EntityManager/repositories for every participating operation. After rollback, do not keep using stale mutated entities as authoritative state; retry with a fresh context/state according to the ORM's documented behavior. `flush()` does not automatically enforce an invariant that your transaction never checked.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Extend the fixture with a bounded retry that re-evaluates the business decision, then compare a shared-row locking alternative. Accept with at least one doctor remaining, deterministic interleaving evidence, released clients and no unsafe external effect. Reference: [PostgreSQL isolation](https://www.postgresql.org/docs/18/transaction-iso.html), [MikroORM transaction behavior](https://mikro-orm.io/docs/transactions).
@@ -743,6 +913,22 @@ Keyset pagination asks for rows after the last ordering values from the previous
 Choose an index that matches the query's filter, range and ordering. **Verify the actual plan and results with representative data.** A plausible-looking index does not prove faster execution or correct pagination when rows change between requests.
 
 </div>
+
+<span class="notes-section-label">**Continue after a complete ordering key**</span>
+
+The cursor includes the tie-breaker as well as the timestamp. Every page retains the tenant filter.
+
+```mermaid
+flowchart TD
+ Query["Tenant-scoped query ordered by created_at and unique id"] --> Page["Return one bounded page"]
+ Page --> Last["Last row: timestamp T and id I"]
+ Last --> Cursor["Encode ordering values T and I in cursor"]
+ Cursor --> Next["Next tenant-scoped query: rows after the pair T, I"]
+ Next --> Verify["Verify result order and representative index plan"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This PostgreSQL 16-compatible fixture creates only a temporary table inside a rollback transaction. The generated data is large enough to inspect a scan/sort versus an ordered index access, but is not a production capacity benchmark. Run with `psql -X -v ON_ERROR_STOP=1` against the owned database.
 
@@ -785,6 +971,8 @@ A cursor encodes ordering values, not permission. Validate its shape/types/size 
 
 Partial/expression/covering indexes can help selected workloads, but add write/space/maintenance costs and must match actual predicates. `CREATE INDEX CONCURRENTLY` avoids some blocking yet has special transaction restrictions and can leave an invalid index after failure. Inspect/recover it through a planned migration; it is not a free startup operation.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Add equal timestamps, inserts between pages, another tenant and a changed filter. Accept with defined consistency semantics, no unauthorized rows, a stable tie-breaker, captured plans and measured write/index-size trade-offs. References: [PostgreSQL EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html), [index build constraints](https://www.postgresql.org/docs/18/sql-createindex.html).
@@ -814,6 +1002,22 @@ Source mapping: [R137](./requirements.md#r137), [R138](./requirements.md#r138).
 
 </div>
 
+<span class="notes-section-label">**Find what the request is waiting for**</span>
+
+Increasing the pool is a change to capacity and contention, rather than a diagnosis.
+
+```mermaid
+flowchart TD
+ Slow["Slow database request"] --> Stage{"Where is time spent?"}
+ Stage -->|before client acquired| Pool["Inspect pool demand and leaked clients"]
+ Stage -->|blocked statement| Locks["Inspect lock holders and long transactions"]
+ Stage -->|executing query| Plan["Inspect query plan and workload"]
+ Stage -->|schema change| Migration["Inspect migration lock budget and version compatibility"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Use `pg` pool counters/acquisition timings and safe server diagnostics under an authorized monitoring role. Do not expose them through a public endpoint. Avoid dumping query text/parameters that can contain private information.
 
 ```sql [safe-session-diagnostics.sql]
@@ -837,6 +1041,8 @@ ROLLBACK;
 A lock timeout is an opportunity to abort/replan; retrying instantly in every replica can create a migration storm. Use one migration owner and test expand/bridge/backfill/contract compatibility through [the existing release lab](../release-artifact-compatibility.md). Batch backfills with progress, lock and replication-lag observation. A reversible DDL file does not guarantee reversible data transformation.
 
 For N+1, capture query count per use case and compare the required projection/population. For stale ORM entities, inspect context boundaries before adding a global cache. For uncertain commits, use operation receipts and reconciliation, not a generic retry-everything wrapper. For recovery, restore into an isolated target and verify invariants before changing live routing.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

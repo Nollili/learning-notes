@@ -28,6 +28,21 @@ Source mapping: [R095](./requirements.md#r095), [R146](./requirements.md#r146).
 
 </div>
 
+<span class="notes-section-label">**Start with the user-visible result**</span>
+
+Diagnostic signals answer different questions about the same observed service behavior.
+
+```mermaid
+flowchart TD
+ Outcome["Do users operations succeed within their goals?"] --> Metrics["Metrics: trends and distributions"]
+ Outcome --> Logs["Logs: individual events"]
+ Outcome --> Traces["Traces: connected operation steps"]
+ Outcome --> Profiles["Profiles: execution and memory costs"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Define an SLI precisely: successful eligible requests / all eligible requests, measured at a stated boundary, or the fraction completing within a latency objective. Define which outcomes and time window count before drawing an SLO/error-budget conclusion. An error budget is the permitted unreliability under that objective; it is not permission to hide failed traffic by changing the denominator.
 
 Track request rate, errors, latency distribution and saturation. Add queue oldest-message age, consumer lag, retry/dead-letter rate, database pool wait and event-loop delay when they explain the service. A growing queue with steady consumers differs from a disconnected consumer. A low average can hide a bad tail; show p95/p99 alongside volume and distribution.
@@ -35,6 +50,8 @@ Track request rate, errors, latency distribution and saturation. Add queue oldes
 A trace shows selected spans, not every request if sampling is enabled. Correlate a slow trace with safe logs and a CPU/heap profile when necessary. A high event-loop delay is a symptom; use the [diagnostic signals lesson](../module-11-performance-diagnostics.md#_12-logs-metrics-traces-and-profiles) and [performance questions](./12-performance-and-v8.md) to distinguish CPU work, GC, blocking calls and host contention.
 
 **Missing telemetry is not a zero failure rate.** Monitor the observer: target discovery, scrape/ingestion failures, clocks, retention and alert routing. Avoid raw URLs, request IDs, emails and unbounded tenant IDs in metric labels: every combination creates a series, multiplying storage and query cost. Put carefully controlled correlation IDs in logs/traces instead.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -63,6 +80,23 @@ Use a counter for accumulated events, a gauge for a current value and a histogra
 **Keep metric labels to a small, controlled set.** Every different combination creates another time series. Raw URLs, request IDs and private user data can create huge numbers of series, expose information and exhaust monitoring resources. Use bounded route names or outcome categories instead.
 
 </div>
+
+<span class="notes-section-label">**Balance active work on every outcome**</span>
+
+A request contributes one active increment and one completion decrement. Labels come from a small controlled vocabulary.
+
+```mermaid
+flowchart TD
+ Start["Request admitted: increment active gauge"] --> Work["Run request work"]
+ Work -->|success| End["Completion owner records outcome once"]
+ Work -->|failure or applicable abort| End
+ End --> Gauge["Decrement active gauge"]
+ End --> Count["Increment bounded outcome counter"]
+ End --> Histogram["Observe duration with consistent units"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Install the example dependency in an owned study directory with `npm install --save-exact @prometheus-io/client@0.16.1`. This package replaces the deprecated `prom-client` name; existing projects need a reviewed migration rather than a blind search-and-replace. An isolated registry keeps fixture metrics separate from global registrations.
 
@@ -158,6 +192,8 @@ This self-closing HTTP fixture checks two responses and exposition, not producti
 
 An isolated registry does not magically aggregate multiple workers. Each process has its own memory: scrape per-instance targets and aggregate queries deliberately, or use a compatible documented multiprocess strategy. Never sum a gauge that represents duplicated shared state without understanding its meaning.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Extend an owned HTTP application with aborted, failed and successful requests. Accept when completion is counted once, the active gauge returns to zero, units are seconds, scrape requests are excluded and no raw path/query/ID becomes a label. Reference: [official Node client](https://github.com/prometheus/client_js).
@@ -185,6 +221,22 @@ Prometheus periodically fetches metrics from configured targets; this is called 
 **Distinguish real user failures, too little traffic to judge, and missing measurements.** A failed scrape or absent error series is not automatically a zero error rate. Test alert expressions and the notification path, and give each alert a clear owner and response procedure.
 
 </div>
+
+<span class="notes-section-label">**Connect measurement to an actionable alert**</span>
+
+The measurement path can fail too. Alerts need separate handling for absent data or too little traffic.
+
+```mermaid
+flowchart TD
+ App["Application metrics endpoint"] --> Scrape["Prometheus scrape"]
+ Scrape --> Samples["Labelled time-series samples"]
+ Samples --> Rule["PromQL query and alert rule"]
+ Rule --> Manager["Alertmanager groups and routes notifications"]
+ Manager --> Owner["Named owner and response procedure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 For a persistent study server listening on port 9464, a minimal Prometheus configuration is:
 
@@ -235,6 +287,8 @@ groups:
 
 The 5%/one-request-per-second/10-minute values are teaching choices, not an SLO policy. A never-created `error` series makes the ratio absent until initialized/observed; decide whether to preinitialize bounded labels or explicitly handle absent outcomes. `up == 0` detects discovered targets with failed scrapes; `absent` covers removal of the whole selected target set, not each missing replica. Use expected-target inventory for that case. A dashboard showing zero instead of no data can hide this problem.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Validate config/rules with the chosen Prometheus distribution and write `promtool test rules` cases for low volume, real failure, counter reset and missing target. Add a runbook: impact, owner, evidence, mitigation and recovery criteria. Accept when notifications are tested in an owned destination and telemetry outages are separately visible. References: [configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/), [rule tests](https://prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/).
@@ -263,11 +317,28 @@ Grafana queries configured data sources to build dashboards of metrics and other
 
 </div>
 
+<span class="notes-section-label">**Diagnose a blank dashboard backwards**</span>
+
+A missing panel value can arise at several stages. Check the chain rather than assuming no events occurred.
+
+```mermaid
+flowchart TD
+ Collection["Correctly collected signals"] --> Store["Configured storage or data source"]
+ Store --> Query["Query, time range and access permissions"]
+ Query --> Panel["Grafana or Kibana panel"]
+ Panel --> Check["If blank: inspect query and upstream ingestion"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For the primary Grafana path, add a Prometheus data source with the server-reachable URL, test connectivity, then build a request-rate panel with the previous `rate` query. Add error ratio, histogram latency and saturation panels with explicit units, legend, time window and missing-data behavior. Save/provision the dashboard with its data-source identifier rather than relying on a personal unsaved setup. Grant viewers read-only access; keep credentials in configured secrets, not dashboard JSON. Inspect the query output before interpreting a beautiful graph.
 
 For Kibana, first ingest safe structured logs into an owned Elasticsearch index/data stream. Check timestamp mapping and field types, then create a data view matching that data with a chosen time field. In Discover, a KQL example is `service : "products-api" and level : "error"`; ensure those fields actually exist and are mapped appropriately. A missing timestamp or wrong time zone/range can make present events look absent. Current ES|QL workflows can query without a data view; follow the workflow your version provides.
 
 Kibana does not automatically read a local Winston stream or scrape `/metrics`. Grafana does not itself replace every underlying storage backend. Both need access control, retention/cost ownership and a supported deployment version. Alternative tool familiarity is enough here; implement the primary stack deeply before operating two parallel telemetry estates.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -298,6 +369,8 @@ Graphite collects time-series metrics. Zabbix monitors hosts and services throug
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 | Alternative | First owned setup | Evidence and failure check |
 |---|---|---|
 | Graphite | Configure Carbon receiver and storage retention/aggregation; send one bounded metric; query it through Graphite | Verify timestamp seconds, path, retention resolution and missing samples; never expose a plain receiver publicly |
@@ -309,6 +382,8 @@ A Graphite plaintext sample is `study.products.queue_depth 3 1793836800` followe
 Zabbix's item is a measured value, a trigger evaluates a problem condition and an action routes the response. A host appearing in the UI is insufficient if its item is unsupported or collection is stale. For an HTTP check, define expected status/body and authentication so a generic proxy 200 is not mistaken for application health.
 
 For New Relic, CommonJS preloading and ESM loader setup can differ; follow the pinned agent's documented startup procedure. Installing a package after application modules already loaded can miss instrumentation. Keep license keys out of Git/logs, choose approved data region and review captured headers/SQL/attributes before exporting. No account or remote destination is required to understand these comparisons; creating one is separate practice with cost/privacy approval.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

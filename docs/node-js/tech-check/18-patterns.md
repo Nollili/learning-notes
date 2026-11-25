@@ -4,12 +4,12 @@ outline: [2, 3]
 
 # Design patterns in Node.js applications
 
-These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-frameworks.md#application-frameworks). Examples run as `.mjs` on Node.js 24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
+These questions use **plain JavaScript functions and explicit dependencies** alongside the [Express catalog](./16-framework-applications.md#application-frameworks). Examples run as `.mjs` on Node.js 24.18.0 using built-in modules only. They teach intermediate pattern selection and troubleshooting; deeper distributed architecture remains in its own scope.
 
 
 <span class="notes-section-label">**First pass:**</span> Read the [concrete change](#t18-q01), then try a small factory or Adapter/Strategy only when your application needs one. Explain the input, result and reason for the extra function before adding more abstractions. The [full catalogue](#full-worked-catalogue) follows the four introductory questions as reference reading; learning all 23 patterns is not a prerequisite for completing the HTTP milestone.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t18-q01; level: 2 -->
 
@@ -37,6 +37,22 @@ Choose a pattern to solve a concrete problem, such as replacing one algorithm in
 
 </div>
 
+<span class="notes-section-label">**Choose the changing responsibility first**</span>
+
+Use the family as a way to describe the problem. Keep a direct solution when an extra abstraction does not make the change clearer.
+
+```mermaid
+flowchart TD
+    Problem["What needs to change independently?"] --> Kind{"Main responsibility"}
+    Kind -->|construct objects| Create["Creational: how instances are made"]
+    Kind -->|connect interfaces or parts| Structure["Structural: how parts fit"]
+    Kind -->|choose actions or coordinate them| Behavior["Behavioral: how parts act and communicate"]
+    Create --> Check["Compare with the simpler direct solution"]
+    Structure --> Check
+    Behavior --> Check
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 You need a title in its original form or in uppercase. First keep the choice visible:
@@ -54,7 +70,9 @@ Try changing the format to `upper`: it prints `FILE READS`. Two simple choices d
 
 In NestJS, an injected provider can supply the chosen behavior; in Express, a factory argument can do the same. Both express dependency injection. The provider/container vocabulary is useful, but does not require introducing a class for every function.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Reason from a concrete change**</span>
 
@@ -77,6 +95,8 @@ Factory Method is a particular creation hook in a creator's workflow; a function
 The classic [GoF catalogue](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480/9780321700698) contains 23 object-oriented patterns. JavaScript can express many roles with functions, closures and objects; **classes are an implementation choice, not the requirement**. ESM encapsulation, dependency injection, middleware and Repository are useful related techniques, but they are not additional members of those 23. One design may have more than one role; explain its intent instead of counting labels.
 
 For Express, factories connect collaborators explicitly. Nest's provider container can wire a factory or strategy; its `@Controller`/`@Injectable` syntax does not by itself demonstrate the object Decorator pattern. Framework interception can resemble decoration but has its own lifecycle contract.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -104,7 +124,6 @@ Choose one real catalog change. Write a short decision comparing a direct soluti
 
 [Existing design-decision context](../../engineering/design.md), [existing pattern pitfalls](../../senior_growth/Coding_principles_patterns_conventions/What_are_the_common_pitfalls_when_applying_a_design_pattern.md), [official Nest custom-provider mechanics](https://docs.nestjs.com/fundamentals/custom-providers). Pattern selection here is a reasoned design interpretation, not a framework mandate or an official detailed examination rubric.
 
-::::
 
 ---
 
@@ -129,6 +148,22 @@ A factory creates an object or component and connects the dependencies it needs.
 **Creating an object does not automatically make it responsible for every resource it receives.** Decide who owns shared data and who closes connections. **A singleton is not shared across separate processes.** Module caching also does not create one shared instance across server replicas. Choose the intended lifetime and sharing rules explicitly.
 
 </div>
+
+<span class="notes-section-label">**See the scope of shared instances**</span>
+
+The factory supplies dependencies to each application. Sharing within an application does not imply sharing across processes.
+
+```mermaid
+flowchart TD
+    Factory["Factory receives configuration and dependencies"] --> AppA["Application A: one chosen shared service instance"]
+    Factory --> AppB["Application B: a separate service instance"]
+    AppA --> CallA["Callers in A reuse A instance"]
+    AppB --> CallB["Callers in B reuse B instance"]
+    Process["Another process"] --> Other["Its own memory and instances"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**The creational family**</span>
 
@@ -181,9 +216,11 @@ This copying policy is enough only because the retained fields are primitives. S
 
 <span class="notes-section-label">**Apply it to the framework app**</span>
 
-The [catalog composition factory](./16-frameworks.md#t16-q11) already assembles repository, service, controllers and router. Create a real database pool once at an intended application boundary; close it from the owner that acquired it. A failed construction path must dispose of resources acquired before failure. Injecting an externally owned pool does not automatically transfer permission to close it.
+The [catalog composition factory](./16-framework-applications.md#t16-q11) already assembles repository, service, controllers and router. Create a real database pool once at an intended application boundary; close it from the owner that acquired it. A failed construction path must dispose of resources acquired before failure. Injecting an externally owned pool does not automatically transfer permission to close it.
 
 A module-exported object may be shared by consumers of the same loaded module instance, but separate worker/process contexts and replicas have separate memory. Cache identity also depends on module resolution/loading. Keep the authenticated actor in explicit request arguments; never overwrite `singleton.currentUser` for concurrent requests. Nest's default provider lifetime is application-context sharing, with request/transient scopes available deliberately.
+
+::::
 
 <span class="notes-section-label">**Common mistakes and alternatives**</span>
 
@@ -230,6 +267,25 @@ Source mapping: [R063](./requirements.md#r063), [R163](./requirements.md#r163).
 Matching method names is not enough. Preserve the expected results, missing-value behavior, errors, effects and resource cleanup rules. A wrapper does not automatically forward every method or preserve the original object's identity; promise only what it actually supports.
 
 </div>
+
+<span class="notes-section-label">**Compare adapting with decorating**</span>
+
+An Adapter translates an interface. A Decorator surrounds an existing interface while preserving the behavior it promises.
+
+```mermaid
+flowchart TD
+    subgraph Adapt["Adapter: translate the boundary"]
+        Caller["Application reader"] --> Adapter["Adapter maps methods, fields and errors"]
+        Adapter --> Legacy["Legacy provider interface"]
+    end
+    subgraph Decorate["Decorator: add behavior around the boundary"]
+        Consumer["Application reader"] --> Wrapper["Same reader contract plus observation"]
+        Wrapper --> Reader["Original reader implementation"]
+    end
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**The structural family**</span>
 
@@ -298,7 +354,9 @@ The wrapper promises only the read interface plus metrics. **It does not own or 
 
 `withReadMetrics(adaptLegacyReader(legacy))` counts mapping failures as reader failures. Metrics placed only around the raw legacy call would count successful transport before a later mapping failure. Retry inside a wrapper can count one user operation versus several attempts depending on placement. Neither retry nor caching belongs in a “transparent” wrapper unless the operation's correctness and observability contracts permit it.
 
-This is ordinary object/function composition. The [NestJS interceptor](./16-frameworks.md#t16-q11) is a framework-specific interception mechanism; TypeScript `@decorator` syntax is a separate language/compiler feature. Do not copy syntax from one and assume the other has the same lifecycle or metadata behavior.
+This is ordinary object/function composition. The [NestJS interceptor](./16-framework-applications.md#t16-q11) is a framework-specific interception mechanism; TypeScript `@decorator` syntax is a separate language/compiler feature. Do not copy syntax from one and assume the other has the same lifecycle or metadata behavior.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -346,6 +404,46 @@ Source mapping: [R063](./requirements.md#r063), [R164](./requirements.md#r164).
 **Command represents an operation separately from the code that triggers it.** The operation still needs input checks, permission checks and a clear result or failure. Representing a write as a command does not automatically make it safe to retry or possible to undo.
 
 </div>
+
+<span class="notes-section-label">**Picture Strategy**</span>
+
+The caller uses the selected algorithm through one agreed input and result contract.
+
+```mermaid
+flowchart TD
+    Setup["Selection boundary chooses a pricing rule"] --> Selected["Selected strategy function"]
+    Caller["Quote operation"] -->|compatible input| Selected
+    Selected -->|agreed result| Caller
+```
+
+
+<span class="notes-section-label">**Picture Observer**</span>
+
+A publisher notifies listeners without naming them in its business logic. Each subscription and listener failure still needs an owner.
+
+```mermaid
+flowchart TD
+    Publisher["Publisher emits a local event"] --> Emitter["Registered subscriptions"]
+    Emitter --> A["Listener A"]
+    Emitter --> B["Listener B"]
+    Emitter --> C["Listener C"]
+```
+
+
+<span class="notes-section-label">**Picture Command**</span>
+
+The trigger and the operation are separate. The command still performs checks and reports a result or failure.
+
+```mermaid
+flowchart TD
+    Trigger["HTTP handler, CLI or job trigger"] --> Command["Command: represent the requested operation"]
+    Command --> Checks["Validate input and check permission"]
+    Checks --> Action["Perform the operation"]
+    Action --> Outcome["Owned result or failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**The behavioral family**</span>
 
@@ -439,6 +537,8 @@ A retry with version 3 after a successful update to 4 can produce a conflict. It
 
 For State, imagine `Draft` allows rename/publish while `Published` requires a different edit/review policy. Behavior follows current state and permitted transitions; Strategy instead chooses among algorithms for the same operation. Start with a small transition table and explicit guards. State classes become useful when state-specific behavior grows, not merely because a record has a `status` field. Concurrency/authorization still belong in the authoritative service/store operation.
 
+::::
+
 <span class="notes-section-label">**Common mistakes and debugging**</span>
 
 If two strategies disagree on cents versus units, the interface is broken despite both returning numbers. If work finishes after its caller has returned, inspect missing returned/awaited promises. If memory grows, inspect listener ownership and retained command/history data before increasing limits. If a repeated command duplicates an effect, inspect its durable operation contract rather than add an in-memory singleton flag.
@@ -459,7 +559,7 @@ Add pickup shipping and test threshold, negative, oversized, throwing and invali
 
 <span class="notes-section-label">**Official references**</span>
 
-[Node 24 event delivery and listener lifetime](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [promise return/settlement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises), [Node 24 assertions](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). See also the existing [async-iteration explanation](./05-asynchronous-programming.md) and [framework lifecycle](./16-frameworks.md#t16-q08).
+[Node 24 event delivery and listener lifetime](https://nodejs.org/download/release/v24.18.0/docs/api/events.html), [promise return/settlement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises), [Node 24 assertions](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). See also the existing [async-iteration explanation](./05-asynchronous-programming.md) and [framework lifecycle](./16-framework-applications.md#t16-q08).
 
 ## Full worked catalogue
 

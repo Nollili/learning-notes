@@ -48,6 +48,22 @@ Use these interview questions to practise explaining JavaScript in your own word
 
 - Code exercise: A `var` declaration and a function declaration use the same name. What does the supplied code print, and why?
 
+
+
+<span class="notes-section-label">**Sketch the references while practising**</span>
+
+Use these branches to draw your own answer. Which objects and nested objects should share identity in each case?
+
+```mermaid
+flowchart TD
+ Original["Original object with nested data"] --> Assignment["Assign to another variable"]
+ Original --> Shallow["Make a shallow copy"]
+ Original --> Deep["Choose an appropriate deep-copy policy"]
+ Assignment --> Trace["Draw identities, then trace one nested mutation"]
+ Shallow --> Trace
+ Deep --> Trace
+```
+
 ## Object copying
 
 
@@ -161,6 +177,22 @@ Use these interview questions to practise explaining JavaScript in your own word
 
 - Compare Promise.any() and Promise.race().
 
+
+
+<span class="notes-section-label">**Trace scheduling before predicting output**</span>
+
+Use the actual supplied snippet. First separate these categories, then explain the ordering guaranteed by its execution context.
+
+```mermaid
+flowchart TD
+ Snippet["The actual code snippet"] --> Sync["Mark synchronous statements and promise executor"]
+ Snippet --> Micro["Mark promise handlers and microtasks"]
+ Snippet --> Timer["Mark timer callbacks"]
+ Sync --> Trace["Write the observed or justified sequence and explain missing logs"]
+ Micro --> Trace
+ Timer --> Trace
+```
+
 ## async/`await` and error handling
 
 
@@ -201,6 +233,20 @@ Use these interview questions to practise explaining JavaScript in your own word
 - Can you create your own event?
 
   *The exercise asks you to create a `CustomEvent`, supply options and data, attach a listener and dispatch the event.*
+
+
+
+<span class="notes-section-label">**Draw an event path for your example**</span>
+
+Mark the listener target, its options, removal and the default browser action. Fill in the behavior from the event example you are explaining.
+
+```mermaid
+flowchart TD
+ Event["Event source and target"] --> Listeners["Which registered listeners can run, and in which phase?"]
+ Listeners --> Propagation["Does propagation continue?"]
+ Propagation --> Default["Is there a default action, and was it prevented?"]
+ Listeners --> Cleanup["How will the same listener be removed?"]
+```
 
 ## Cookies
 

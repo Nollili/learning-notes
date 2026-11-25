@@ -28,6 +28,8 @@ A useful log record says what happened, which operation it belongs to, its outco
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 Application diagnostics, access/request logs, platform logs and security/audit records have different purposes and retention. A diagnostic event supports troubleshooting; an audit event may require durable accountability, restricted alteration and a transactionally reliable handoff. Ordinary console output is not automatically an audit trail.
 
 | Level in the selected policy | Appropriate use | Common mistake |
@@ -40,6 +42,8 @@ Application diagnostics, access/request logs, platform logs and security/audit r
 Winston's default npm level ordering is numeric (`error`0, `warn`1, `info`2, then more verbose levels). A logger threshold permits levels at least as important under that ordering. Other libraries such as Pino use different level conventions; do not assume `fatal`/`trace` are Winston defaults. Console is useful for tiny local scripts; a structured logger adds consistent fields, level filtering and transport policy.
 
 Define units and schemas: `duration_ms` is different from an epoch timestamp; a route template is different from a raw URL; a safe SQLSTATE is different from the SQL statement/parameter values. Use UTC timestamps, preserve correlation across services and account for clock skew. Request IDs help find related records; they do not establish a total order or prove identity.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -68,6 +72,21 @@ Set Winston's levels, record format and destinations once during application set
 **Choose safe fields before logging instead of relying only on later secret removal.** This avoids accidentally retaining a nested password or token that a redaction rule missed. Define what happens if the destination blocks or fails, and how shutdown flushes pending records. A local transport's finish event does not prove that a remote service durably stored the logs.
 
 </div>
+
+<span class="notes-section-label">**Choose safe fields before the log transport**</span>
+
+Later redaction is not the only protection. The logger emits a bounded record from explicitly allowed fields.
+
+```mermaid
+flowchart TD
+ Context["Operation context and outcome"] --> Fields["Select allowed fields and cap size"]
+ Fields --> Schema["Stable structured log schema and level"]
+ Schema --> Transport["Configured Winston transport"]
+ Transport --> Policy["Bounded buffering, failure and shutdown-flush policy"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This exact fixture captures two JSON records through Winston's Stream transport. Its allowlist ignores extra properties, and correlation/route values come from trusted server state in a real application. No production server or remote collector is created.
 
@@ -163,6 +182,8 @@ The unbounded string accumulator is only a two-event assertion sink; do not depl
 
 Use JSON encoding to keep record boundaries unambiguous, but still limit strings and strip/project sensitive data before formatting. Error stack/cause objects can contain credentials or application data. Serialize classified error codes plus a safe stack only where policy permits, under restricted retention/access. Hashing a stable personal identifier does not automatically anonymize it.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test level thresholds, nested-secret attempts, newline/oversize fields, stream errors and blocked output. Accept with bounded memory, controlled diagnostic loss/unavailability policy, no secret in final bytes and an explicit close/flush contract. References: [Winston transport lifecycle](https://github.com/winstonjs/winston), [Node streams](https://nodejs.org/docs/latest-v24.x/api/stream.html).
@@ -190,6 +211,21 @@ At the entry point, create or validate a correlation ID that links related recor
 **Passing context along does not make client-supplied identity trustworthy.** Permission checks still apply. Keep unrelated concurrent requests' contexts separate, and explicitly pass safe context across worker, process and queue boundaries where it is not shared automatically.
 
 </div>
+
+<span class="notes-section-label">**Keep concurrent contexts separate**</span>
+
+Context follows an operation. Crossing a process or message boundary needs explicit safe propagation.
+
+```mermaid
+flowchart TD
+ RA["Request A: correlation A"] --> SA["Service and database logs with A"]
+ RB["Request B: correlation B"] --> SB["Service and database logs with B"]
+ SA --> Message["Queue or worker message with selected safe context"]
+ Message --> Job["Job logs retain operation correlation"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Generate or validate a bounded incoming correlation value according to your trust policy. In Express, establish context before downstream async work; record request outcome on the appropriate finish/close event with a once-only guard. An error response, client disconnect and committed business operation can differ. In Nest, use compatible middleware/interceptor/provider scope rather than assuming a new logger instance is needed for every call.
 
@@ -220,6 +256,8 @@ For SQL, log operation name, safe error class/SQLSTATE, duration and retry attem
 
 For jobs, retain operation/message ID, consumer name, attempt and safe outcome; use high-cardinality IDs in restricted logs/traces rather than metric labels. A traceparent header can correlate distributed work, but an untrusted caller must not control your sampling cost or tenant authority arbitrarily.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Run concurrent real requests/jobs with distinct IDs, induce SQL retry and client disconnect, then reconstruct each outcome. Accept with no context leakage, no duplicate incident records and a safe explanation of committed-versus-responded behavior. Reference: [Node AsyncLocalStorage](https://nodejs.org/docs/latest-v24.x/api/async_context.html), [production request logging](../module-10-production-ready-applications.md#_7-request-logging-and-correlation-ids).
@@ -249,6 +287,23 @@ A logging system has several stages: collecting and transporting records, proces
 
 </div>
 
+<span class="notes-section-label">**Follow the entire log path**</span>
+
+A local write is an early milestone. Searchable remote storage requires the later ingestion and indexing stages to succeed too.
+
+```mermaid
+flowchart TD
+ Logger["Application logger"] --> Buffer["Bounded transport and collection"]
+ Buffer --> Process["Processing: parse and transform fields"]
+ Process --> Store["Remote storage and indexing"]
+ Store --> Search["Search or dashboard query"]
+ Owner["Access, retention and failure policy across the path"] -.-> Buffer
+ Owner -.-> Store
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Logstash uses input→filter→output pipelines. It is not the same component as Winston (application emission), Elasticsearch (index/storage) or Kibana (query/UI). Prefer structured JSON input over reparsing prose with fragile patterns. This local pipeline fragment demonstrates the shape; it is not a deployed collector or an authenticated network listener:
 
 ```text [logstash-study.conf]
@@ -265,6 +320,8 @@ Removing two top-level fields is only defense in depth; it does not redact every
 For a managed backend such as CloudWatch Logs, configure the application stream/agent or platform integration, region/log group/stream, scoped write identity, retention, encryption and query permissions. Distinguish the platform execution identity from the application's ordinary user permissions. Configure budgets and access controls before exporting personal or sensitive data to any third party.
 
 Batching/backpressure, rotation, disk limits and shutdown deadlines affect loss/latency. A local file inside a replaceable container is not durable centralized storage. A collector's retry can duplicate records; include stable event/operation IDs where deduplication matters. A security audit requirement may need a durable transactional outbox, integrity/access controls and an explicit fail-closed or recovery decision instead of best-effort diagnostics.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

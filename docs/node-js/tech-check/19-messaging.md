@@ -28,6 +28,22 @@ Before choosing a broker, define who sends the message, who handles it, its fiel
 
 </div>
 
+<span class="notes-section-label">**Separate business identity from delivery identity**</span>
+
+Several delivery attempts can carry the same operation. Duplicate-effect handling follows the stable operation identity.
+
+```mermaid
+flowchart TD
+ Operation["Business operation ID: export-42"] --> A["Delivery attempt A"]
+ Operation --> B["Delivery attempt B"]
+ A --> Consumer["Validate version, payload and operation identity"]
+ B --> Consumer
+ Consumer --> Durable["Apply the durable duplicate and outcome policy"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A work queue distributes jobs among consumers; a publish/subscribe topic fans notifications to subscriptions; a retained partitioned log supports replay and independent consumer positions. These overlap in products but differ in ownership. An in-process EventEmitter supplies neither persistent storage nor cross-process recovery.
 
 ```js [message-contract.mjs]
@@ -69,6 +85,8 @@ This is a deliberately small envelope model, not the canonical lab's UUID schema
 
 At-most-once processing can lose work after removal; at-least-once processing can repeat it. Broker “exactly once” features operate within stated boundaries, not automatically across SQL and payment/email APIs. Persist a stable operation ID and durable consumer receipt with the local effect. Retain enough status to reconcile unknown outcomes after a crash.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Specify an export command and its completion event. Test invalid/oversize/old-version messages and two delivery IDs for one operation. Accept with an explicit owner, duplicate policy, retention window and compatible change plan. References: [RabbitMQ reliability](https://www.rabbitmq.com/docs/reliability), [Kafka design](https://kafka.apache.org/42/design/design/).
@@ -97,6 +115,28 @@ Save the business change and an outbox record in one local database transaction.
 
 </div>
 
+<span class="notes-section-label">**Observe both broker and consumer milestones**</span>
+
+Broker confirmation and consumer acknowledgement have different meanings. Either crash window can lead to a repeat.
+
+```mermaid
+sequenceDiagram
+ participant DB as Business DB and outbox
+ participant P as Publisher
+ participant Broker
+ participant C as Consumer
+ DB-->>P: Committed outbox event
+ P->>Broker: Publish message
+ Broker-->>P: Publisher confirm: broker accepted
+ P->>DB: Mark publication progress
+ Broker->>C: Deliver message
+ C->>C: Complete durable effect with duplicate handling
+ C-->>Broker: Acknowledge delivery
+```
+
+
+:::: details Deeper explanation and additional examples
+
 RabbitMQ routes messages through exchanges/bindings to queues. A durable queue and persistent message are configuration choices; a publisher confirmation establishes broker acceptance under its durability policy, not consumer completion. Mandatory routing/returned-message handling detects an unroutable publication that a simple successful send call can miss.
 
 The implementation owner remains the existing lab, included directly here so the code stays aligned:
@@ -108,6 +148,8 @@ Copy the module into the lab's isolated ESM setup with its reviewed amqplib/Zod/
 `applyOnce` commits receipt and SQL effect together. A consumer crash after commit/before ack causes redelivery and no second local effect. A relay crash after publish/before marking its outbox row can publish again. A payment needs a provider idempotency key/status reconciliation as well; the SQL receipt cannot atomically include the provider's transaction.
 
 The sample relay holds a row lock while confirming publication. That keeps claim ownership simple but occupies a database client during network work. For scale, use a reviewed durable claim/lease or CDC design with expiry/fencing/recovery; do not replace ownership with an unbounded in-memory array. The simple rollback path is a teaching baseline, not exhaustive broken-connection cleanup.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -137,6 +179,23 @@ Separate permanent failures, such as invalid messages, from temporary failures t
 
 </div>
 
+<span class="notes-section-label">**Break the requeue loop**</span>
+
+A bounded recovery path distinguishes invalid work from a transient dependency problem.
+
+```mermaid
+flowchart TD
+ Failure["Processing failure"] --> Kind{"Temporary and safe to retry?"}
+ Kind -->|yes, budget remains| Delay["Delayed retry with bounded backoff and jitter"]
+ Delay --> Process["Attempt processing again"]
+ Kind -->|no or exhausted| Dead["Durable dead-letter or recovery state"]
+ Dead --> Owner["Responsible owner inspects and decides replay or repair"]
+ Process -->|failure| Failure
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A malformed schema or permanently forbidden action should not receive endless transient retries. A temporary dependency outage can justify bounded retry, but admission, timeout and maximum age must still protect the dependency. Keep the stable business ID across attempts. Retry metadata is untrusted input too; bound attempt count, body size and timestamp policy.
 
 The canonical adapter confirms its replacement retry/dead-letter publication before acking the original. Its classic-queue TTL/dead-letter demonstration is not a loss-free failover design: dead-letter transfer can fail when the destination is unavailable. For stronger durability, evaluate supported quorum-queue dead-letter policies and capacity settings, or a database-backed scheduler that retains intent until a confirmed handoff. A dead-letter consumer must not replay poison work blindly.
@@ -144,6 +203,8 @@ The canonical adapter confirms its replacement retry/dead-letter publication bef
 Failover needs replicated durable state, quorum/leader policy, tested reconnect and pending-operation semantics. A cluster with nodes on one host is not independent failure-zone resilience. A lost connection can leave publisher acceptance uncertain: reconnect, redeclare/verify compatible topology, publish the same operation ID under its duplicate policy and alert when recovery expires. Backoff must be bounded and cancelled on shutdown.
 
 For Kafka, replication factor, minimum in-sync replicas and producer acknowledgements affect durability/availability. For SQS, the managed service owns infrastructure redundancy while the application still owns visibility/retry/effect semantics. Backups and disaster recovery are different from automatic leader replacement; test recovery time and possible data loss separately.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -173,6 +234,25 @@ Kafka stores records in retained logs split into partitions. Reading a record do
 
 </div>
 
+<span class="notes-section-label">**See the offset crash window**</span>
+
+Recording the effect before the offset avoids claiming unfinished work is done, but duplicate processing remains possible after a crash.
+
+```mermaid
+sequenceDiagram
+ participant Log as Kafka partition
+ participant C as Consumer
+ participant DB as Business store
+ Log->>C: Record at offset N
+ C->>DB: Commit effect with durable duplicate handling
+ Note over C: Crash here can cause N to be read again
+ C->>Log: Commit progress under offset policy
+ Note over Log: Record remains in retained log until retention removes it
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A key chooses a partition according to the producer's partitioning policy. Related aggregate updates need a consistent key and a version/conflict policy; there is no automatic global order across partitions. Different groups can replay the same retained log independently, subject to retention/compaction. Compaction keeps relevant keyed history under its contract, not every event forever.
 
 Use a reviewed Node client compatible with your broker/security/authentication setup. Configure bootstrap servers, TLS/SASL, client/group IDs and offset/reset policy. Create a bounded test topic and publish keyed records; observe partition/offset before adding concurrency. Kafka 4.x uses its documented controller model; do not copy obsolete ZooKeeper setup steps into a new deployment blindly.
@@ -197,6 +277,8 @@ assert.throws(() => nextOffset('-1'));
 For a real database consumer, commit its receipt/effect, then advance the relevant partition position according to the client's API. Do not skip a failed record by committing a later offset accidentally. Bound per-partition concurrency and handle revocation/rebalancing so a stale owner cannot keep making unauthorized effects. Long handlers need the client's documented heartbeat/poll strategy. An offset is a log position, not a globally stable business operation ID.
 
 Kafka transactions can coordinate supported Kafka writes/offsets; they do not automatically include an arbitrary SQL database. A full Kafka implementation is an optional alternative here; independent consumption/replay/effect troubleshooting is the learning objective.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -226,6 +308,22 @@ Source mapping: [R059](./requirements.md#r059).
 
 </div>
 
+<span class="notes-section-label">**Give each subscriber its own backlog**</span>
+
+SNS fan-out to separate SQS queues lets independent consumers make progress and recover separately.
+
+```mermaid
+flowchart TD
+ Publisher["Publisher"] --> SNS["SNS topic"]
+ SNS --> QA["SQS queue A"]
+ SNS --> QB["SQS queue B"]
+ QA --> A["Consumer A and its completion policy"]
+ QB --> B["Consumer B and its completion policy"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 An SQS worker receives messages, hides them for a visibility interval, commits its effect and deletes using the current receipt handle. Standard queues allow duplicates and best-effort ordering. Extend visibility deliberately for bounded long work; a failed extension can permit overlapping consumers. The latest receipt handle identifies a delivery attempt, not the business event. Long polling reduces empty receives; batch APIs require inspecting each entry's failure result.
 
 FIFO message-group IDs serialize within the chosen group; deduplication has a defined window and does not give universal exactly-once database/payment execution. Choose group keys from actual ordering needs; one group for everything can limit throughput. Redrive limits, retention and dead-letter alarms need a recovery owner.
@@ -233,6 +331,8 @@ FIFO message-group IDs serialize within the chosen group; deduplication has a de
 For a sandbox setup, define an SNS topic, one SQS queue per independent consumer and a narrow queue resource policy permitting only the intended topic to send. Add the subscription/filter policy and decide whether SNS wraps the payload or uses raw delivery; parse the configured envelope, not whichever example is convenient. Scope producer/worker IAM actions and resources separately and configure encryption/key permissions as needed.
 
 A Node SDK v3 worker uses an injected SQS client, bounded receive count/WaitTimeSeconds, schema validation, an idempotent use case and DeleteMessage only after completion. The [Lambda partial-batch adapter](./20-serverless.md#t20-q03) is a different event-source contract: do not manually apply HTTP-response or poller acknowledgment semantics to it. Reuse its worked adapter rather than add a competing implementation.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -263,6 +363,20 @@ Source mapping: [R059](./requirements.md#r059).
 
 </div>
 
+<span class="notes-section-label">**Verify the real protocol boundary**</span>
+
+Product choice, wire protocol and Node client are distinct compatibility decisions.
+
+```mermaid
+flowchart TD
+ Product["Identify broker product and version"] --> Protocol["Choose supported wire protocol and routing model"]
+ Protocol --> Client["Verify compatible Node client"]
+ Client --> Contract["Test authentication, acknowledgement, flow control and failure handling"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 An existing enterprise integration may justify Classic or Artemis, especially when JMS/Jakarta Messaging, AMQP 1.0 or other supported protocols already define the contract. Check the selected broker's actual protocol support and Node client compatibility; RabbitMQ's AMQP 0-9-1 library cannot be substituted for an AMQP 1.0 client merely because both say AMQP.
 
 For an Artemis exercise, start an owned instance from its official versioned setup, create an authenticated scoped user and configure an address/queue with the intended routing type. Anycast normally distributes to one eligible queue/consumer path; multicast supports fan-out according to address/queue configuration. Configure persistence, acknowledgment/settlement and redelivery/dead-letter policy through that broker's documented settings. Keep management interfaces private and select TLS in a hosted environment.
@@ -275,6 +389,8 @@ In a Node adapter, validate the protocol message and settle only after the durab
 | Retained replayable partitioned history | Evaluate Kafka's log/group model |
 | AWS-managed independent workers/fan-out | Evaluate SQS/SNS and IAM/cost |
 | Existing JMS/protocol-centered enterprise integration | Verify Classic/Artemis product and protocol contract |
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

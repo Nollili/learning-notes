@@ -198,16 +198,16 @@ The original25 groups and187 source IDs below preserve the original scope. Added
 - [x] **T16-S01** Framework categories: MVC, full-stack MVC, and REST API — covered by [framework foundations](./16-frameworks.md#t16-q01); learner practice remains required
 - [x] **T16-S02** Choosing frameworks for different use cases — covered by [framework foundations](./16-frameworks.md#t16-q02); learner practice remains required
 - [x] **T16-S03** Framework installation, configuration, and execution — covered by [framework foundations](./16-frameworks.md#t16-q03); learner practice remains required
-- [x] **T16-S04** Routing — written in [framework applications](./16-frameworks.md#t16-q05); executable author checks pass; learner practice remains required
-- [x] **T16-S05** Middleware — written in [framework applications](./16-frameworks.md#t16-q06); executable author checks pass; learner practice remains required
-- [x] **T16-S06** Controllers — written in [framework applications](./16-frameworks.md#t16-q07); executable author checks pass; learner practice remains required
-- [x] **T16-S07** Request handling and request/response lifecycle — written in [framework applications](./16-frameworks.md#t16-q08); executable author checks pass; learner practice remains required
-- [x] **T16-S08** CRUD endpoints and pages — written in [framework applications](./16-frameworks.md#t16-q09); executable author checks pass; learner practice remains required
-- [x] **T16-S09** Authentication, validation, and error-handling middleware — written in [framework applications](./16-frameworks.md#t16-q10); executable author checks pass; learner practice remains required
+- [x] **T16-S04** Routing — written in [framework applications](./16-framework-applications.md#t16-q05); executable author checks pass; learner practice remains required
+- [x] **T16-S05** Middleware — written in [framework applications](./16-framework-applications.md#t16-q06); executable author checks pass; learner practice remains required
+- [x] **T16-S06** Controllers — written in [framework applications](./16-framework-applications.md#t16-q07); executable author checks pass; learner practice remains required
+- [x] **T16-S07** Request handling and request/response lifecycle — written in [framework applications](./16-framework-applications.md#t16-q08); executable author checks pass; learner practice remains required
+- [x] **T16-S08** CRUD endpoints and pages — written in [framework applications](./16-framework-applications.md#t16-q09); executable author checks pass; learner practice remains required
+- [x] **T16-S09** Authentication, validation, and error-handling middleware — written in [framework applications](./16-framework-applications.md#t16-q10); executable author checks pass; learner practice remains required
 - [x] **T16-S10** Application configuration and dependencies — covered by [framework foundations](./16-frameworks.md#t16-q04); learner practice remains required
-- [x] **T16-S11** Modules, services, and reusable components — written in [framework applications](./16-frameworks.md#t16-q11); executable author checks pass; learner practice remains required
-- [x] **T16-S12** Extension points and lifecycle hooks — written in [framework applications](./16-frameworks.md#t16-q12); executable author checks pass; learner practice remains required
-- [x] **T16-S13** Framework deployment considerations — written in [framework applications](./16-frameworks.md#t16-q13); executable author checks pass; learner practice remains required
+- [x] **T16-S11** Modules, services, and reusable components — written in [framework applications](./16-framework-applications.md#t16-q11); executable author checks pass; learner practice remains required
+- [x] **T16-S12** Extension points and lifecycle hooks — written in [framework applications](./16-framework-applications.md#t16-q12); executable author checks pass; learner practice remains required
+- [x] **T16-S13** Framework deployment considerations — written in [framework applications](./16-framework-applications.md#t16-q13); executable author checks pass; learner practice remains required
 
 ## 17. Databases and data access
 

@@ -28,6 +28,23 @@ V8 runs JavaScript using an interpreter and several compiler stages, and reclaim
 
 </div>
 
+<span class="notes-section-label">**Keep the engine model conceptual**</span>
+
+V8 adapts execution using observed behavior. Exact compiler tiers and optimization decisions are version-dependent.
+
+```mermaid
+flowchart TD
+ Source["JavaScript program"] --> Engine["V8 parses and executes code"]
+ Engine --> Observe["Observe runtime behavior"]
+ Observe --> Optimize["Optimize suitable hot code under engine rules"]
+ Optimize --> Execute["Continue execution; assumptions may change"]
+ Execute --> Observe
+ Diagnostic["Selected node:v8 diagnostics"] -.->|inspect supported information| Engine
+```
+
+
+:::: details Deeper explanation and additional examples
+
 V8 can specialize frequently executed operations and invalidate assumptions when behavior changes. Object shapes/hidden classes and inline caches help explain why predictable access can matter, but a style rule such as “classes are always faster” is not a measurement. Runtime tiers and flags change across V8 versions. Do not spread engine-specific tricks through business code before locating a real hot path.
 
 Use consistent data models when they also improve clarity. Prefer an algorithm with less unnecessary work or fewer database calls before a small property-access trick. Type changes, sparse arrays or dynamically changing object layouts can affect specialization, but the result depends on the complete workload. A profile's deoptimization event is evidence to investigate, not proof that the event dominates latency.
@@ -47,6 +64,8 @@ console.log({
 ```
 
 `node:v8` is not the C++ addon API. Native addons/Node-API and WebAssembly are specialized later topics, not prerequisites for profiling an Express route. A larger heap limit may postpone out-of-memory failure while increasing retained state/GC cost; it does not remove a leak. Avoid arbitrary `setFlagsFromString` tuning in application startup; use supported deployment configuration and repeatable evidence.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -76,6 +95,22 @@ A wide frame in a CPU flame graph indicates substantial sampled work in that cal
 
 </div>
 
+<span class="notes-section-label">**Ask two different performance questions**</span>
+
+Traffic experiments show service behavior. Profiles help attribute the CPU work seen in that workload.
+
+```mermaid
+flowchart TD
+ Workload["Representative workload"] --> Load["Load test: latency, throughput and errors"]
+ Workload --> Profile["CPU profile: sampled execution paths"]
+ Load --> Compare["Compare with database, network and resource evidence"]
+ Profile --> Compare
+ Compare --> Hypothesis["Choose a measured bottleneck to investigate"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Define input mix, payload/dataset, arrival model, connection reuse, warm-up, duration, concurrency and target latency/error budget. Report achieved throughput and p50/p95/p99 with failures, not only averages. A closed-loop client waits for responses and can hide overload by reducing offered requests; record offered load and queue/admission behavior. Run the generator separately when local CPU competition would distort results.
 
 Use this bounded workload to learn profile acquisition, not to benchmark the Products API:
@@ -101,6 +136,8 @@ node --cpu-prof --cpu-prof-dir=./profiles profile-workload.mjs
 Open the resulting `.cpuprofile` in a compatible DevTools performance viewer. Check self time versus inclusive time and the call chain. A sampled profile can miss short events and includes profiler overhead. A flame graph's width normally aggregates sampled work, not a chronological request trace. Use request/dependency spans to connect an expensive frame to a user operation. Protect inspector access; never expose a debug listener publicly.
 
 For repeatable framework load tests, reuse [Testing's separate benchmark/load work](./15-testing.md#t15-q06) and record the exact tool/version. Compare multiple runs, interleave baseline/candidate when possible, preserve checksums/business invariants and explain variability. Do not turn one fastest iteration or a modified dataset into a performance claim.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -129,6 +166,23 @@ Source mapping: [R078](./requirements.md#r078).
 **These measurements are different from process CPU utilization.** None alone identifies the cause of slow requests. Compare them over the same interval with CPU, memory and dependency timings to distinguish time spent executing from time spent waiting.
 
 </div>
+
+<span class="notes-section-label">**Separate request time from loop activity**</span>
+
+This is a conceptual breakdown rather than an exact formula. Concurrent work and waits can overlap.
+
+```mermaid
+flowchart TD
+ Request["Request starts"] --> Queue["Admission or connection queue"]
+ Queue --> JS["JavaScript execution and scheduling waits"]
+ JS --> Dependency["Database or network wait"]
+ Dependency --> Response["Serialize and send response"]
+ Response --> End["Request completes: elapsed request latency"]
+ Loop["Loop delay and utilization measured over the same interval"] -.-> JS
+```
+
+
+:::: details Deeper explanation and additional examples
 
 High CPU plus high loop delay suggests JavaScript/native synchronous work; low CPU plus growing pool wait suggests a constrained dependency or admission issue. Memory/GC, slow clients and host throttling can complicate both. Measure process CPU deltas, RSS/heap, database wait/execution and request outcomes alongside loop signals.
 
@@ -164,6 +218,8 @@ try {
 
 The histogram reports nanoseconds; convert explicitly. The fixture deliberately creates one blocking interval but does not assert an exact p99 or portable threshold. Reset/rotate observation windows and disable observers on shutdown. Keep metric cardinality bounded: a unique label per URL/user/request can exhaust a monitoring backend. Marks/measures and diagnostic listeners also need retention/cleanup.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Compare a CPU-heavy route, a slow database and a slow response consumer under the same request envelope. Accept when you can distinguish time waiting from time executing, retain correct units and avoid claiming one metric identifies every cause. Reference: [Node performance APIs](https://nodejs.org/download/release/v24.18.0/docs/api/perf_hooks.html), [process CPU/memory](https://nodejs.org/download/release/v24.18.0/docs/api/process.html).
@@ -191,6 +247,20 @@ A memory leak can happen when the application keeps references to objects it no 
 **A small `Buffer` view can keep a much larger underlying allocation alive.** A view also shares its bytes with the original. Copying can let the data live and change independently, but costs allocation and copying work. Compare both retained memory and execution cost for the actual lifetime involved.
 
 </div>
+
+<span class="notes-section-label">**A tiny view can retain a large allocation**</span>
+
+The view still reaches the underlying bytes. A separate copy has a different lifetime and allocation cost.
+
+```mermaid
+flowchart TD
+ Live["Live small Buffer view"] --> Large["Large backing allocation remains reachable"]
+ Copy["Separate small copy"] --> Small["Its own small allocation"]
+ Release["Drop all references to original allocation and its views"] --> Eligible["Original storage can become eligible for reclamation"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 `heapUsed` covers managed JavaScript heap; `external` includes selected externally held memory; `arrayBuffers` is included within external accounting, so do not add the fields as independent totals. RSS includes the resident process memory footprint, including native memory, code and stacks. Rising RSS with stable heap can have causes beyond JavaScript leaks, including native allocations/fragmentation.
 
@@ -233,6 +303,8 @@ The view avoids a copy but aliases source data and can keep the 1 MiB allocation
 
 A healthy heap may rise and fall with GC. Compare post-workload retained object counts/retaining paths over repeated equivalent cycles, not just one before/after `memoryUsage()` sample. Full heap snapshots pause execution, can require substantial extra memory and may contain secrets; take them on a disposable/replaceable instance with a protected artifact location. Sampling allocation profiles have different overhead and cannot show every retaining path. Do not force GC in production as a leak fix.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Create a controlled retained-listener/cache leak in an owned fixture, acquire before/after snapshots or allocation profiles and identify the retaining root. Fix ownership, repeat the workload and compare retained state. Accept with evidence, not a single decreasing RSS number. References: [Buffer semantics](https://nodejs.org/download/release/v24.18.0/docs/api/buffer.html), [heap snapshot safety](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot).
@@ -261,6 +333,23 @@ Async I/O lets other work proceed while an operation waits. A synchronous JavaSc
 
 </div>
 
+<span class="notes-section-label">**Control where work starts**</span>
+
+Async syntax does not move CPU work. A queue needs an admission budget even when execution uses a pool.
+
+```mermaid
+flowchart TD
+ Incoming["Incoming work"] --> Admission["Limit admission and retained queue"]
+ Admission --> Kind{"Measured work type"}
+ Kind -->|supported I/O wait| Async["Async operation with dependency budgets"]
+ Kind -->|CPU-heavy JavaScript| CPU["Reduce work, use bounded chunks or a limited worker pool"]
+ CPU --> Observe["Observe actual completion and release capacity"]
+ Async --> Observe
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A synchronous configuration read before startup may be acceptable, while repeated synchronous disk/crypto work in request handling delays unrelated requests. JSON parse/stringify, regular expressions and decompression can be expensive even when surrounded by async functions. Limit input size/complexity and use known-safe algorithms; never demonstrate catastrophic regex inputs on an unbounded live service.
 
 Break work into bounded chunks with real event-loop yielding when fairness is sufficient, or use a [bounded reusable CPU worker pool](./09-concurrency.md#t09-q04) when parallel execution justifies serialization/startup costs. `await Promise.resolve()` schedules a microtask and does not guarantee timers/I/O get a fair turn. Long microtask chains can starve other work. Workers still consume CPU/memory and need cancellation/error/shutdown ownership.
@@ -268,6 +357,8 @@ Break work into bounded chunks with real event-loop yielding when fairness is su
 Performance asks how the system behaves for a workload; scalability asks how it changes with load/resources. More HTTP replicas help only if the shared database/service can sustain the added pressure. Little's law relates average throughput, time and in-flight work under appropriate stable conditions; it is not a tail-latency prediction or an overload-proof queue-sizing formula. Track offered load, queued age and rejected work as well as successful throughput.
 
 Choose an overload response: reject bounded excess, shed optional work, apply backpressure or queue durably with a documented deadline. An unlimited in-memory queue converts overload into latency and memory failure. A timeout that only abandons waiting can leave expensive work alive and make the next retry worse.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -296,6 +387,23 @@ Before adding a cache, identify the source of truth, what each key represents, h
 **A faster answer is still wrong if it exposes another tenant's data or violates freshness requirements.** Limit both cached data and the work started when an entry is missing. Many simultaneous misses can otherwise overload the source the cache was meant to protect.
 
 </div>
+
+<span class="notes-section-label">**Make cache misses and freshness explicit**</span>
+
+The key must include the context that changes the result. Miss handling also needs a limit so many misses do not overload the source.
+
+```mermaid
+flowchart TD
+ Request["Authorized request and full cache-key context"] --> Cache{"Usable fresh-enough entry?"}
+ Cache -->|yes| Hit["Return permitted cached result"]
+ Cache -->|no| Limit["Bound or coordinate source loads"]
+ Limit --> Source["Read source of truth"]
+ Source --> Store["Store under size, expiry and invalidation policy"]
+ Store --> Return["Return correct result"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This synchronous local TTL/LRU fixture stores only validated immutable product DTOs. It demonstrates entry count, expiry and ownership, not Redis replication, a shared authorization cache or miss-load concurrency control.
 
@@ -381,6 +489,8 @@ Use a monotonic process-local clock for these TTL durations; its timestamps are 
 
 Prevent miss stampedes with bounded single-flight/loading admission, refresh jitter or a durable precomputation strategy. Limit both entries and payload bytes; this fixture's bounded small DTO makes a count cap meaningful. Negative caching needs short deliberate TTL and must not expose another user's existence. Optional cache outages can fall back only under bounded authoritative capacity; required session/rate-limit state needs a different fail-closed/unavailable policy. See the [real Redis adapter](../redis-adapters.md).
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test expiry, eviction, tenant separation, mutation isolation, invalidation race and concurrent misses. Accept with bounded cache and loader capacity, a documented stale window and evidence that permissions remain current. References: [Redis cache patterns](https://redis.io/docs/latest/develop/use/client-side-caching/), [existing consistency notes](../module-12-resilient-distributed-systems.md).
@@ -410,11 +520,31 @@ Source mapping: [R130](./requirements.md#r130), [R188](./requirements.md#r188).
 
 </div>
 
+<span class="notes-section-label">**Measure the complete request path**</span>
+
+Optimize the stage that dominates a representative operation while preserving the required checks.
+
+```mermaid
+flowchart TD
+ Request["Incoming request"] --> Framework["Routing, middleware and validation"]
+ Framework --> Business["Permission and business logic"]
+ Business --> DB["Database queries and waits"]
+ DB --> Mapping["Conversions and serialization"]
+ Mapping --> Logging["Response and necessary observation"]
+ Evidence["Measure stage costs on equivalent requests"] -.-> DB
+ Evidence -.-> Mapping
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A useful route budget separates parsing/validation, identity/authorization, service logic, database acquisition/execution, mapping/serialization and response transfer. Count queries to reveal N+1; project required columns and use bounded pagination before replacing middleware. Bound logging and redact secrets; synchronous or huge logs can become the bottleneck. Compression trades CPU for transfer and may belong at the trusted proxy; avoid compressing secret-bearing responses together with attacker-controlled content without a reviewed threat model.
 
 For Express 5, use deliberate middleware order, production error handling, supported proxy/cache settings and [measured lifecycle gates](./16-advanced-api-frameworks.md#t16-q18). For Nest, understand singleton versus request-scoped providers and interceptor/guard/pipe overhead. An adapter change (for example Fastify) changes plugin/middleware behavior; verify compatibility and actual gains instead of treating it as a universal upgrade.
 
 Disable no security control merely to improve a benchmark. Reuse clients under a clear lifecycle, remove unnecessary deep object conversion and stream large outputs with backpressure when the contract permits it. Reverse-proxy caching must preserve auth, tenant, cookie and `Vary` semantics. A static-asset optimization does not necessarily improve an authenticated database mutation.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

@@ -40,6 +40,21 @@ Hapi collects server options and route definitions around a server instance. Plu
 
 </div>
 
+<span class="notes-section-label">**Separate registration from the request check**</span>
+
+server.inject exercises the configured Hapi request behavior without opening a listening port.
+
+```mermaid
+flowchart TD
+ Config["Create Hapi server with intended options"] --> Plugins["Register plugins and lifecycle extensions"]
+ Plugins --> Routes["Register routes with validation and failure contracts"]
+ Routes --> Inject["server.inject sends a test request"]
+ Inject --> Assert["Check actual response contract"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 ```js [hapi-catalogue.mjs]
 import assert from 'node:assert/strict';
 import Hapi from '@hapi/hapi';
@@ -85,6 +100,8 @@ The configured zero port avoids fixing a shared local port if you later call `se
 
 The ID check bounds the accepted identifier before lookup. In a larger application, put schemas in route validation and reuse application errors rather than duplicating checks in each handler. Plugin registration is the place to compose a route group; it does not by itself isolate database access or grant authorization. Use a pre-handler/auth strategy for access decisions and an appropriate lifecycle extension for response normalization. Preserve status codes when translating failures.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Extract the read operation into an injected repository. Inject a repository failure and verify a controlled 500 response with no raw exception details. Add `onPreResponse` tracing and record the stage reached for success, invalid input, missing route and thrown error. Use `try/finally` to stop the server even when an assertion fails. Explain which result is a client error and which is an operational failure.
@@ -112,6 +129,25 @@ Source mapping: [R123](./requirements.md#r123), [R168](./requirements.md#r168), 
 A Koa middleware receives a context and a continuation. **Awaiting next lets outer middleware observe downstream completion or failure.** Register error translation before the route so it can catch rejected downstream work. Routing/body parsing are separate choices; this tiny GET-only example matches its one route explicitly.
 
 </div>
+
+<span class="notes-section-label">**Watch Koa middleware unwind**</span>
+
+The outer middleware awaits downstream work, so its post-next code runs after the route completes. Rejections can return through that await.
+
+```mermaid
+sequenceDiagram
+ participant Outer as Outer middleware
+ participant Inner as Inner middleware
+ participant Route
+ Outer->>Inner: await next()
+ Inner->>Route: await next()
+ Route-->>Inner: Route completes or rejects
+ Inner-->>Outer: Inner completion or failure
+ Outer->>Outer: Observe result or translate caught error
+```
+
+
+:::: details Deeper explanation and additional examples
 
 ```js [koa-catalogue.mjs]
 import assert from 'node:assert/strict';
@@ -176,6 +212,8 @@ Remove `await` before `next()` as a negative experiment and observe the trace/er
 
 The two middleware functions are composed once when creating the application. Keep request state in `ctx.state` or local variables, not in one global mutable object. The global trace here is only for sequential test requests; concurrent requests need separate trace ownership. A production router must define method handling, encoded paths and route precedence; the manual matcher is deliberately limited. Body limits and proxy trust require explicit configuration if those features are added.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Add a maintained router and a separate POST exercise with bounded JSON parsing. Verify malformed/oversized bodies, wrong methods and downstream rejection. Add a trace entry before and after `await next()` in two middleware layers and predict the complete order. Accept only when failures remain sanitized and the listener closes after a failed assertion.
@@ -203,6 +241,22 @@ Source mapping: [R124](./requirements.md#r124), [R125](./requirements.md#r125), 
 Feathers registers services whose methods are wrapped with hooks. A transport exposes selected methods over HTTP or another protocol. **Put shared validation and access decisions in the service boundary**, and call the wrapped service through `app.service` so direct calls also pass through hooks.
 
 </div>
+
+<span class="notes-section-label">**Share the wrapped service boundary**</span>
+
+Direct application calls use app.service so they pass through the same hooks as the transport path.
+
+```mermaid
+flowchart TD
+ HTTP["HTTP transport call"] --> Wrapped["Registered service with hooks"]
+ Direct["Direct call through app.service"] --> Wrapped
+ Wrapped --> Checks["Shared validation and access decisions"]
+ Checks --> Method["Underlying service method"]
+ Method --> Outcome["Wrapped result or failure"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 ```js [feathers-catalogue.mjs]
 import assert from 'node:assert/strict';
@@ -258,6 +312,8 @@ Only `get` is exposed by this registration. The Koa transport translates the HTT
 
 An internal call is not automatically authorized to act for any tenant. Validate the caller's trusted identity/context and do not treat a missing transport provider as permission. A real database adapter and Socket.IO subscriptions need additional lifecycle and channel authorization checks. This read-only example proves neither persistence nor real-time publication.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Add a fake repository and a before hook that enforces a trusted tenant identity. Test matching/mismatched identity through both a direct call and a transport fixture; external callers must not be able to forge trusted params through query strings. Observe that hooks run only through the registered wrapper. Keep teardown in the failure path.
@@ -287,6 +343,21 @@ Choose one measured cost while preserving the same route, validation, permission
 
 </div>
 
+<span class="notes-section-label">**Verify the contract before timing**</span>
+
+A configuration change is useful only if it preserves the behavior being compared.
+
+```mermaid
+flowchart TD
+ Baseline["Record baseline contract and cost"] --> Change["Change one repeated operation or configuration choice"]
+ Change --> Behavior["Verify equivalent results, errors and permissions"]
+ Behavior --> Timing["Repeat comparable timing measurements"]
+ Timing --> Decide["Assess benefit and refresh or invalidation obligations"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Use the three runnable examples as the baseline. Extend each repository with the same fixed public metadata operation from the [Express experiment](./16-advanced-api-frameworks.md#t16-q18). First compute it for every successful read; then compute the immutable value once during application setup. In both versions return the same metadata field. This is an application-work experiment, not a ranking of Hapi, Koa and Feathers.
 
 | Framework | Place the invariant computation | Preserve on every request/call | Specific pitfall to inspect |
@@ -304,6 +375,8 @@ For the read-only samples, an immutable global metadata value is safe to reuse. 
 3. Warm both variants and alternate run order. Use the same runtime, dependency lockfile, request mix, payload, client concurrency and duration. Report p50/p95/p99, throughput, errors, CPU and event-loop delay.
 4. Use HTTP for all three if comparing end-to-end measurements. Hapi injection, a direct Feathers call and an HTTP request include different costs and cannot be treated as equivalent latency samples.
 5. Repeat under concurrent requests and injected repository failure. Verify response isolation and listener/service teardown. Keep timing observations separate from deterministic correctness assertions.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

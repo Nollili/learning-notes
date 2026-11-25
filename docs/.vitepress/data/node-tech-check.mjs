@@ -5,6 +5,12 @@ export const nodeTechCheckPaths = [
     "description": "Understand the runtime and build command-line programs with modules, asynchronous code and core APIs.",
     "items": [
       {
+        "id": "/node-js/tech-check/foundations-at-a-glance",
+        "title": "At a glance",
+        "href": "/node-js/tech-check/foundations-at-a-glance",
+        "type": "Summary"
+      },
+      {
         "id": "/node-js/tech-check/core-javascript",
         "title": "Core JavaScript",
         "href": "/node-js/tech-check/core-javascript",
@@ -66,9 +72,9 @@ export const nodeTechCheckPaths = [
     "description": "Build and test HTTP applications, handle failures and choose useful application patterns.",
     "items": [
       {
-        "id": "/node-js/tech-check/16-frameworks#application-frameworks",
+        "id": "/node-js/tech-check/16-framework-applications#application-frameworks",
         "title": "Express and NestJS",
-        "href": "/node-js/tech-check/16-frameworks#application-frameworks",
+        "href": "/node-js/tech-check/16-framework-applications#application-frameworks",
         "type": "Explanation"
       },
       {

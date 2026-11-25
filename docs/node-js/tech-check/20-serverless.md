@@ -93,11 +93,29 @@ A serverless function runs code when the platform receives a trigger, such as an
 
 </div>
 
+<span class="notes-section-label">**Give an invocation a bounded job**</span>
+
+The platform owns execution infrastructure. The application still owns business state and repeated-invocation behavior.
+
+```mermaid
+flowchart TD
+ Trigger["HTTP, queue or scheduled trigger"] --> Invocation["Limited-duration function invocation"]
+ Invocation --> Validate["Validate input and authority"]
+ Validate --> Work["Await owned work within resource budgets"]
+ Work --> Durable["Use durable state for required results and duplicate protection"]
+ Durable --> Finish["Return according to trigger contract"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 An HTTP trigger supplies a request event. A queue trigger supplies a batch. A schedule starts work at a planned time. Their responses and retry rules differ. Keep business logic separate from these event formats so it can be tested locally. A `statusCode` response is not appropriate for every trigger.
 
 The platform may reuse an execution environment. Shared database/SDK clients can reduce setup time, but never keep one user’s mutable state for the next invocation. Temporary files can remain during reuse, yet disappear when the environment ends. They are not persistent storage shared across invocations. A cold start means a new environment must initialize; package size, networking and setup work affect its duration.
 
 Prefer the existing long-running API for an always-on Express service that already needs predictable connection ownership and a familiar deployment. A report transformation or queue consumer is a reasonable first function. Long jobs, heavy sustained throughput, custom runtimes or long-lived connections may fit containers better. Compare actual limits and cost rather than rewriting every service into functions.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -126,6 +144,22 @@ Check that the incoming event matches the trigger's expected format. Obtain call
 For an API Gateway proxy invocation, the platform calls your exported handler. **You do not start your own HTTP listener inside that handler.** Test the event-to-response behavior locally, and distinguish those checks from testing the real provider's routing and authentication.
 
 </div>
+
+<span class="notes-section-label">**Adapt the platform event to business logic**</span>
+
+The platform calls the handler. The handler does not open its own listening HTTP server.
+
+```mermaid
+flowchart TD
+ Gateway["Configured API Gateway and authorizer"] --> Event["Proxy event with trusted caller context"]
+ Event --> Handler["Exported Lambda handler validates input"]
+ Handler --> Service["Await business operation"]
+ Service --> Response["Return trigger-specific response object"]
+ Response --> Gateway
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This API Gateway HTTP API payload-v2 example expects a configured JWT authorizer. Protect the deployed route with the correct issuer/audience settings. An untrusted caller must not be allowed to invoke the function directly with fabricated identity fields. The example calculates a square and saves no data.
 
@@ -205,6 +239,8 @@ assert.equal((await handler(denied)).statusCode, 403);
 
 Local events validate adapter logic but cannot prove API Gateway's actual routing/authentication policy. Treat downstream timeouts as failures or pending outcomes according to the operation; do not return success before a durable mutation completes. Log safe request/operation IDs and timings, not entire authorizer events or bodies.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Prepare the ZIP/package and infrastructure configuration for one protected route, then in a sandbox test valid, absent and wrong-audience credentials plus malformed/base64/oversized bodies. Accept with a real authorizer-denial result and logs containing no tokens. Reference: [HTTP API Lambda payload format](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html), [Lambda handler](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html).
@@ -232,6 +268,27 @@ Source mapping: [R056](./requirements.md#r056).
 **An in-memory `Set` cannot provide durable duplicate protection**, because it is lost on restart and is not shared across instances. For batches, report failed records correctly; an overall success must not conceal work that failed. External effects need their own safe-retry and outcome-checking design.
 
 </div>
+
+<span class="notes-section-label">**Acknowledge after durable duplicate protection**</span>
+
+This is an application/database design. The queue trigger still determines how acknowledgement and batch failures are reported.
+
+```mermaid
+sequenceDiagram
+ participant Q as Queue
+ participant F as Function
+ participant DB as Durable store
+ Q->>F: Deliver event E
+ F->>DB: Transaction: claim E receipt and apply effect
+ DB-->>F: Committed outcome or existing receipt
+ F-->>Q: Acknowledge under trigger rules
+ Q->>F: Possible repeated delivery of E
+ F->>DB: Check durable receipt
+ DB-->>F: Existing outcome, do not repeat effect
+```
+
+
+:::: details Deeper explanation and additional examples
 
 For this SQS standard-queue integration, enable `ReportBatchItemFailures` and return IDs for failed messages. Successful records can then be removed while failed ones retry. The adapter handles records one at a time. It assumes a trusted SQS event mapping and an injected `applyOnce` operation that validates business data and saves the effect with a duplicate-protection receipt in one transaction.
 
@@ -269,6 +326,8 @@ Use the [persistent outbox/receipt implementation](../jobs-and-schedules.md) for
 
 Use a batch size of at most 10 for this adapter. Set visibility timeout from the function duration, batching and retry policy, and keep concurrency within dependency capacity. This example is for a standard queue. FIFO processing must stop after the first failure and report later unprocessed records to preserve order. HTTP retries, ordinary asynchronous Lambda invocations and SQS triggers have different rules.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Locally test success/failure ID selection, then run the real durable adapter against a database. In a sandbox queue, redeliver a committed event and inject a crash before acknowledgment. Accept with one business effect, visible bounded poison handling and no swallowed failed record. References: [Lambda with SQS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html), [SQS error handling and partial batches](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-errorhandling.html).
@@ -297,6 +356,24 @@ Configure the runtime, memory, timeout and concurrency, plus execution permissio
 
 </div>
 
+<span class="notes-section-label">**Budget fan-out across invocations**</span>
+
+Per-invocation demand multiplies with concurrency. Limit total pressure on shared dependencies.
+
+```mermaid
+flowchart TD
+ Concurrency["Configured concurrent invocations"] --> A["Invocation A"]
+ Concurrency --> B["Invocation B"]
+ Concurrency --> C["Invocation C"]
+ A --> DB["Shared database and external-service budgets"]
+ B --> DB
+ C --> DB
+ DB --> Measure["Observe connection count, deadlines, errors and cost"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Memory settings also affect available CPU. Benchmark the actual handler instead of choosing the smallest setting only by price. Set maximum concurrency and calculate total database connections across reused environments. Reuse a small client when supported and recover stale connections. A managed proxy may help, subject to its limits. Private-subnet functions still need network routes to dependencies; adding a VPC does not automatically provide internet access.
 
 Give each dependency a deadline shorter than the invocation’s remaining time, with time left for reporting and cleanup. Await work the invocation is responsible for. Work left after the response may be paused or interrupted. Racing a timeout does not cancel arbitrary remote work. Do not store request credentials, user data or a changing tenant identity in reusable global variables.
@@ -304,6 +381,8 @@ Give each dependency a deadline shorter than the invocation’s remaining time, 
 Limit the execution role to required actions/resources. Restrict who may invoke the function or change its trigger. Use a managed secret/configuration mechanism with defined rotation and caching. Never log secrets or commit them as environment settings. Record invocation errors, duration, rejected/throttled calls, concurrency and queue delays with request/operation IDs.
 
 Later options include published versions/aliases for stable release references and controlled traffic changes. Provisioned concurrency pays for prepared environments to reduce startup variation. Event destinations and workflow tools can help recovery. None replaces compatible database and event contracts. Deploy the tested package, record its version and define how rollback affects events already waiting.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -334,6 +413,22 @@ AWS Lambda, Azure Functions and Google Cloud's function platform all run code in
 
 </div>
 
+<span class="notes-section-label">**Keep the provider adapters separate**</span>
+
+Business rules can be reused, while each entry adapter validates its own event and acknowledgement contract.
+
+```mermaid
+flowchart TD
+ AWS["AWS trigger adapter"] --> Logic["Shared business logic"]
+ Azure["Azure trigger adapter"] --> Logic
+ Google["Google trigger adapter"] --> Logic
+ Logic --> Result["Application result or failure"]
+ Result --> Adapt["Provider-specific response or acknowledgement mapping"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Azure Functions’ Node programming model v4 registers handlers through `app.http()` or other functions from `@azure/functions` 4.x. This model version is separate from the Functions host/runtime version. Use compatible runtime/package versions. Do not mix v3 `function.json` registration with v4 code registration in one app. Bindings simplify service connections, but do not automatically provide transactions or duplicate protection. Managed identity can replace fixed cloud keys.
 
 Google's current documentation uses **Cloud Run functions** for the functions platform; older material calls it Cloud Functions. Node functions register HTTP or CloudEvent handlers using the Functions Framework, then deploy with the selected entry point/runtime and invoker/service identity. Do not assume its per-instance concurrency or event retry configuration matches Lambda. A CloudEvent ID identifies an event; the effect still needs durable deduplication and authorization.
@@ -344,6 +439,8 @@ Google's current documentation uses **Cloud Run functions** for the functions pl
 | Event trigger | SQS mapping and partial batch IDs | Trigger delivery/retry/ordering and acknowledgment |
 | Authority | Execution role plus invocation policy | Managed identity/service account and invoker rules |
 | Capacity | Per-function concurrency and DB budget | Plan/instance concurrency, scaling and connection multiplication |
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

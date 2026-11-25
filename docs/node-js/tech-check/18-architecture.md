@@ -32,6 +32,22 @@ Group code by business feature, such as products or orders. Within a feature, se
 
 </div>
 
+<span class="notes-section-label">**Put layers inside a feature**</span>
+
+The feature groups related work. Its internal calls still separate transport, business rules and storage.
+
+```mermaid
+flowchart TD
+ subgraph Products["Products feature"]
+  HTTP["HTTP controller"] --> Service["Product service"]
+  Service --> Repository["Product repository interface"]
+ end
+ Repository --> Adapter["Injected storage adapter"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A layer groups code by responsibility. A controller handles HTTP, an application service runs a use case, and a repository reads or writes stored data. A feature groups code that changes together: `products/` contains its router, service, validation and repository. You can organize features into layers.
 
 ```text
@@ -91,6 +107,8 @@ For Learning Progress, the same shape is the existing `completeItem` operation c
 
 The fake repository shows how dependencies are supplied and how the response selects public fields. This selection is often called DTO projection. The fake does not prove that the real database separates tenants. Its SQL update must include the tenant ID in the `WHERE` condition. Start with a small object contract; adding an interface for every function can make simple code harder to follow.
 
+::::
+
 <span class="notes-section-label">**Examiner follow-up — where does a transaction belong?**</span>
 
 Put the transaction around the use case that must preserve a business rule, also called an invariant. Give each participating operation a repository that uses that transaction. If each repository call opens its own transaction, the whole use case cannot commit or roll back as one unit.
@@ -123,6 +141,21 @@ A maintainable module exposes a small, clear interface, has an identifiable owne
 
 </div>
 
+<span class="notes-section-label">**Make the module boundary explicit**</span>
+
+Callers rely on the public contract. Internal changes should preserve its results, failures and lifetime rules.
+
+```mermaid
+flowchart TD
+ A["Caller A"] --> API["Small public interface"]
+ B["Caller B"] --> API
+ API --> Internal["Private implementation with one coherent responsibility"]
+ Owner["Identified module owner"] -.->|maintains contract and cleanup rules| Internal
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Export application operations instead of exposing mutable data directly. Create and connect dependencies in one setup module, often called the composition root. Supply a clock, ID generator or remote client when tests need predictable behavior. You do not need to inject every built-in language operation. Document the repository’s results, missing-item behavior, ordering, concurrency rules and errors.
 
 For example, the contract for `reserve(productId, quantity)` must answer several questions. Does it check and reduce stock atomically? Which error means insufficient stock? Does it accept an idempotency key to prevent duplicate effects? Is retrying safe? Without these answers, an in-memory replacement can behave differently from SQL even if both expose the same TypeScript signature.
@@ -132,6 +165,8 @@ Use consumer contract tests when several implementations share the boundary. Uni
 <span class="notes-section-label">**Design decision**</span>
 
 A shared `Money` value object can keep currency and integer amounts together. A shared `BaseService` can become difficult to change if it assumes that every feature has identical authorization, retry and transaction rules. Start by combining small components. Add a shared abstraction when several callers need the same stable behavior. Document who may change that contract and how existing callers will move to a new version.
+
+::::
 
 <span class="notes-section-label">**Examiner follow-up — is Flux a backend architecture?**</span>
 
@@ -165,6 +200,24 @@ Consider a separate service when a feature needs independent team ownership, fai
 
 </div>
 
+<span class="notes-section-label">**See the extra remote boundary**</span>
+
+A modular monolith makes local calls. Splitting a deployment introduces a network boundary with independent failures.
+
+```mermaid
+flowchart TD
+ subgraph One["One deployment"]
+  Orders["Orders module"] --> Products["Products module"]
+ end
+ subgraph Separate["Independent deployments"]
+  API["Orders service"] --> Network["Network: timeout or lost reply possible"]
+  Network --> Remote["Products service"]
+ end
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A modular monolith has clear internal interfaces but is deployed as one application. Microservices can be deployed separately and own their data. Service-oriented architecture (SOA) is a broader approach to connecting services. It does not require a particular enterprise service bus (ESB) product. Event-driven architecture connects producers and consumers through events, either inside one application or between services.
 
 Before separating invoicing into a service, identify its team owner, API/event contract and data owner. Plan data migration, including filling existing records into the new system (backfilling). Set a service-level objective: a measurable reliability or performance target. If every change still requires six services to deploy together and share the same tables, the split adds network failures without useful independence.
@@ -179,6 +232,8 @@ Before separating invoicing into a service, identify its team owner, API/event c
 Give an outgoing call a deadline shorter than the caller’s remaining time. Retry only failures known to be temporary, and only when repeating the operation is safe. Limit attempts and add a small random delay, called jitter. Give each dependency separate capacity limits, sometimes called bulkheads, so one failure cannot use every socket or work slot. A circuit breaker temporarily stops calls after repeated failures. It does not store work or make changes transactional. Report failure rather than inventing a successful result.
 
 Some advanced tools may help later. Service discovery finds healthy instances. An API gateway routes incoming requests. A service mesh can apply network policies between services, but also adds operating work. A strangler migration replaces an old system one route or capability at a time, with checks and a way to reverse each step. You do not need Kubernetes or a service mesh for this exercise.
+
+::::
 
 <span class="notes-section-label">**Examiner follow-up — can I share an authentication database?**</span>
 
@@ -214,6 +269,35 @@ A saga coordinates a workflow across several local transactions. If a later step
 
 </div>
 
+<span class="notes-section-label">**Commit publication intent with the change**</span>
+
+The publisher may send twice if it crashes before recording delivery. The consumer therefore records identity with its own local effect.
+
+```mermaid
+flowchart TD
+ Tx["One database transaction"] --> Business["Save business change"]
+ Tx --> Outbox["Save outbox event"]
+ Outbox --> Publisher["Publisher reads committed outbox"]
+ Publisher --> Consumer["Consumer receives event, possibly again"]
+ Consumer --> Receipt["Local transaction: deduplicate event ID and apply effect"]
+```
+
+
+<span class="notes-section-label">**See compensation as another action**</span>
+
+This simplified saga releases stock after a later failure. The release is a business operation with its own possible failures.
+
+```mermaid
+flowchart TD
+ Reserve["Reserve stock: local transaction"] --> Charge["Attempt payment: separate operation"]
+ Charge -->|success| Confirm["Confirm order"]
+ Charge -->|failure under workflow policy| Release["Compensate: release reserved stock"]
+ Release --> Observe["Observe outcome and recover failed compensation"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Writing an order, then publishing an event can crash between the two. Publishing first can announce an order that never commits. An outbox stores both records in the same database commit. A relay publishes pending events, then marks delivery. A crash after broker acceptance but before marking causes duplicates, so each consumer records the event ID in the same transaction as its own database effect.
 
 ```sql [outbox-boundary.sql]
@@ -229,6 +313,8 @@ This SQL fragment assumes that the tables and constraints already exist. A real 
 An external payment or email cannot be part of that local database transaction. Use the provider’s duplicate-protection mechanism and save its operation ID. If the result is unknown, check what actually happened before retrying; this is called reconciliation. **A timeout does not prove the external effect failed.** To preserve event order, use a version or sequence for each business entity and define how events are partitioned. Timestamps from different machines do not provide a reliable global order.
 
 For example, a saga can reserve stock, authorize payment and confirm an order. If payment fails, it releases the reservation. That release is a new business action, not a rollback across databases. It may no longer be valid after the item has shipped. Save the saga’s progress, retry only safe steps, and send cases that cannot be recovered automatically for human review.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -260,11 +346,29 @@ Linearizable means operations behave like they use one shared copy, with each ta
 
 </div>
 
+<span class="notes-section-label">**Picture a network partition**</span>
+
+With communication broken, both sides cannot simply coordinate a single current value. The policy determines which requests wait, fail or risk stale data.
+
+```mermaid
+flowchart TD
+ A["Node A: latest known value"] -.->|network communication unavailable| Split["Partition"]
+ B["Node B: latest known value"] -.-> Split
+ Split --> Decision{"Required behavior during the split"}
+ Decision -->|preserve linearizable results| Refuse["Some requests wait or fail"]
+ Decision -->|respond on both isolated sides| Stale["Stale or conflicting results may occur"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Linearizability means each operation appears to take effect at one moment between its start and response, in real-time order. Under CAP, availability means every request to a node that has not failed eventually receives a response. This differs from a monthly uptime percentage. Decide which operations must wait or fail during a network partition and which may return older data.
 
 For a public catalogue, a stale description may be acceptable with a freshness budget. For spending the last unit of stock, accepting conflicting writes on both sides can oversell; a single authoritative owner or coordinated transaction may reject requests during a partition. “Eventual” consistency promises convergence under the model's assumptions, not a bounded delay by itself.
 
 ACID consistency means database changes preserve the declared rules. Transaction isolation controls how concurrent transactions affect one another. CAP consistency is a different concept. PostgreSQL Read Committed gives each statement a new snapshot. Serializable may reject a transaction so the application can retry the whole operation. A replica can still return older data after the primary has committed a write.
+
+::::
 
 <span class="notes-section-label">**Examiner follow-up — how do users read their own writes?**</span>
 
@@ -299,6 +403,24 @@ Define realistic traffic and acceptable response times and error rates. Measure 
 
 </div>
 
+<span class="notes-section-label">**Locate the shared bottleneck**</span>
+
+More API replicas do not create more database capacity. Measure both admission and the shared dependency.
+
+```mermaid
+flowchart TD
+ Traffic["Accepted traffic under a limit"] --> A["API instance A"]
+ Traffic --> B["API instance B"]
+ Traffic --> C["API instance C"]
+ A --> DB["One shared database capacity"]
+ B --> DB
+ C --> DB
+ DB --> Measure["Measure pool waits, locks and query time before scaling"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Performance describes behavior under a particular workload. Scalability describes how that behavior changes as load and resources increase. Measure request rate, latency percentiles, errors, event-loop delay, CPU, memory, pool wait and dependency time together. For example, p95 latency is the value at or below which 95% of requests finish. An average can hide slow requests. Adding API copies can worsen a saturated database by creating more connections.
 
 For a stable system, Little's law relates average in-flight work, throughput and average time in the measured boundary. It does not predict tail latency or a safe queue size under overload. CPU-heavy work may need a bounded worker pool; asynchronous database calls usually do not benefit from worker threads. See [concurrency capacity ownership](./09-concurrency.md#t09-q08).
@@ -306,6 +428,8 @@ For a stable system, Little's law relates average in-flight work, throughput and
 A cache reduces repeated work but may return older data. Limit its size and time-to-live (TTL). Include user or tenant scope in keys when required. Prevent many requests from refreshing the same missing value at once; one shared refresh is sometimes called single-flight. Define when values are removed or updated. A timeout or cache miss must not trigger unlimited backend calls. Do not retain permission decisions forever or share one user’s private response with another tenant.
 
 For stateful bottlenecks, examine query plans and lock duration before adding a cache. For stateless request handling, test horizontal replicas behind a health-aware load balancer. Track queue age as well as depth; a bounded queue still needs deadline handling, rejection and fair ownership. Autoscaling needs startup time, a maximum and a dependency budget.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

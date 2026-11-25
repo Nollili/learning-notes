@@ -9,7 +9,7 @@ This chapter covers Console, asynchronous filesystem operations, Path and OS. Ex
 
 <span class="notes-section-label">**First pass:**</span> use console output, read/write one small file and build paths (questions 1–3). Then try the file-copy example in question 9. Look up OS facts, bytes, decoding, timers, URLs and readline as your CLI needs them. Custom streams, authentication helpers and bounded decompression are later labs; you do not need to implement them to finish the starter CLI.
 
-The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+The expandable deeper explanations preserve the additional examples. Common mistakes, examiner follow-ups and key takeaways stay visible outside them. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
 
 <!-- tech-check: t07-q01; level: 1 -->
 
@@ -48,6 +48,24 @@ The console helps you print values, error messages and timing information. **`co
 
 </div>
 
+<span class="notes-section-label">**Compare printing with throwing**</span>
+
+A failed console assertion reports a message and continues. A throwing assertion changes control flow.
+
+```mermaid
+flowchart TD
+    Choice{"Failed condition checked with..."}
+    Choice -->|console.assert| Log["Write diagnostic to stderr"]
+    Log --> Continue["Continue with the next statement"]
+    Choice -->|throwing node:assert check| Throw["Throw an assertion error"]
+    Throw --> Catch["Nearest matching catch, or an uncaught failure"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 stdout contains one JSON result line. stderr contains the warning, a diagnostic including fixture invariant, continued after console.assert, then a JSON event with a nonnegative elapsedMs. The process still exits successfully. Exact elapsed duration and assertion formatting are not stable business contracts.
@@ -63,6 +81,8 @@ performance.now or hrtime supplies monotonic elapsed measurements; Date timestam
 Never dump process.env, request credentials or entire user records to diagnose a failure. Select safe fields, redact secrets before output and consider terminal/control-character injection from untrusted text. Structured JSON gives parsers an explicit record shape; it does not automatically provide access control, retention or a bounded queue.
 
 At high volume, use a logger with an explicit buffering/backpressure/failure policy. The default Console can ignore underlying write errors; **successful return is not proof a record reached durable storage**.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -106,6 +126,24 @@ Both callback-based file APIs and `node:fs/promises` can perform asynchronous fi
 
 </div>
 
+<span class="notes-section-label">**Wait for completion before the next file operation**</span>
+
+Both paths express the same dependency: read only after a successful write. Each failure needs an error path.
+
+```mermaid
+flowchart TD
+    subgraph Callback["Callback style"]
+        W1["Start writeFile"] --> C["Write callback runs"]
+        C -->|no error| R1["Start readFile"]
+        C -->|error| E1["Handle failure and return"]
+    end
+    subgraph Promise["Promise style"]
+        W2["await writeFile"] -->|fulfilled| R2["await readFile"]
+        W2 -->|rejected| E2["catch handles failure"]
+    end
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `small-file.mjs` in a learning folder:
@@ -127,7 +165,9 @@ Run `node small-file.mjs`. It prints `Hello from Node!` and leaves the text file
 
 This is for one small local file. The deeper example compares callbacks, raw bytes and exclusive creation without overwriting existing files.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict bytes versus characters and exclusive creation failure**</span>
 
@@ -178,6 +218,8 @@ Serialize modifications to shared files. Overlapping writeFile calls do not crea
 
 AbortSignal support is best effort for supported APIs and can leave partial content. Exclusive creation protects this owned target from overwrite, not hostile ancestor replacement or an entire multi-file workflow.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Starting the read before its required write settles.
@@ -195,7 +237,6 @@ AbortSignal support is best effort for supported APIs and can leave partial cont
 File API style changes composition; ordering, bytes, ownership and persistence still need explicit contracts.
 :::
 
-::::
 
 ---
 
@@ -240,6 +281,23 @@ The default rules follow the current operating system. Use `path.posix` or `path
 
 </div>
 
+<span class="notes-section-label">**Separate a path string from a real file**</span>
+
+The path API computes a name. Accessing that name adds filesystem behavior, including permissions and symbolic links.
+
+```mermaid
+flowchart TD
+    Parts["Path parts and chosen OS rules"] --> Path["node:path joins or resolves strings"]
+    Path --> Name["Computed path string"]
+    Name --> FS["Filesystem operation tries to access the target"]
+    FS --> Checks["Actual files, links, permissions and races matter"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `/srv/app/logs/a.txt`, `/logs/a.txt`, `.gz`, lesson.txt, true and false. The name ..notes is a normal child segment, not the parent segment ... A string startsWith(base) test would incorrectly accept the data-other sibling. The helper uses relative segment boundaries and rejects an absolute result, including different Windows volumes.
@@ -257,6 +315,8 @@ Prefer opaque server-generated storage names, service-owned directories and an O
 Case, drive-relative Windows paths, UNC roots, separators and filesystem normalization require real platform tests. Parsing win32 strings on macOS verifies lexical behaviour only. An extension is metadata, not content validation; a .txt suffix does not prove safe text.
 
 Decode/validate external identifiers according to their input contract before filesystem resolution, without repeated decoding that can change their meaning unexpectedly.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -317,6 +377,10 @@ For CPU work, start with `availableParallelism()` rather than simply counting `c
 
 </div>
 
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The JSON shape is stable but actual platform, memory and parallelism values vary. Memory values are bytes; they are not percentages or evidence that an allocation will succeed. arch describes the architecture for which this Node binary was built, not necessarily the physical machine under emulation. platform is a runtime platform identifier rather than a complete distribution/version inventory.
@@ -330,6 +394,8 @@ EOL is a platform convention. Protocols and file formats can require their own f
 cpus provides per-logical-CPU snapshots; calculating utilization needs deltas, not interpreting cumulative counters as instantaneous percentages. loadavg has Unix-style scope and returns zeros on Windows, so a cross-platform dashboard cannot equate it with request queue length or CPU percentage. networkInterfaces, userInfo, hostname and homedir can expose identifying information; expose only necessary reviewed fields.
 
 Avoid collecting an entire environment dump for one configuration bug.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -403,6 +469,22 @@ A `Buffer` holds a fixed number of bytes and is a type of `Uint8Array`. A JavaSc
 
 </div>
 
+<span class="notes-section-label">**See shared bytes and copied bytes**</span>
+
+This follows the Buffer example after view[0] = 9. The view reaches bytes in the original allocation; the copy has its own bytes.
+
+```mermaid
+flowchart TD
+    O["original"] --> Bytes["Original storage: 1, 9, 3, 4"]
+    V["view = original.subarray 1 to 3"] -->|same storage, positions 1 and 2| Bytes
+    C["copy = Buffer.from view before the edit"] --> Separate["Separate storage: 2, 3"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `1,9,3,4 2,3`, `9,8`, `2 4`, and `00000102 258`. Both view and exact share original's memory, while copy keeps its initial bytes. A Buffer's byteOffset and byteLength matter: its .buffer may describe a larger allocation, especially for pooled small buffers.
@@ -418,6 +500,8 @@ Buffer.allocUnsafe avoids guaranteed zero initialization and must be completely 
 Inspect process.memoryUsage external/arrayBuffers and RSS as well as heap: Buffer-backed growth can escape a heap-only dashboard, and arrayBuffers is included within external accounting rather than a separate value to add blindly.
 
 For binary protocols, specify field widths, signedness and endianness; explicit read/write methods make that contract visible. Range/bounds errors are useful failures, not a reason to truncate unchecked input. Base64 and hex encode bytes for text transport; neither encrypts nor validates a complete message. Keep binary data as bytes until the format actually calls for decoding.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -481,6 +565,28 @@ Data arriving in chunks can split a UTF-8 character between two chunks. **Decodi
 
 </div>
 
+<span class="notes-section-label">**Trace a character split across chunks**</span>
+
+The euro sign uses UTF-8 bytes E2 82 AC. The decoder waits for the missing bytes instead of decoding the first byte by itself.
+
+```mermaid
+sequenceDiagram
+    participant Source as Byte chunks
+    participant Decoder as StringDecoder
+    participant Text as Decoded text
+    Source->>Decoder: write chunk containing E2
+    Note over Decoder: Keep incomplete character, return empty text
+    Source->>Decoder: write next chunk containing 82 AC
+    Decoder-->>Text: Return euro sign
+    Source->>Decoder: end()
+    Note over Decoder: Flush any remaining incomplete input
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `false true`, then `""`, `"�"`, and TypeError. The first truncated write buffers an incomplete sequence without emitting text; end signals no more bytes will arrive and produces the replacement. Omitting end can silently discard a final incomplete tail. Flushing after every chunk instead destroys the state needed to assemble split characters.
@@ -492,6 +598,8 @@ A correctly decoded combining mark can still arrive in a different string fragme
 For strict incremental TextDecoder use decode(chunk, {stream:true}) for each chunk, then decode() to flush; fatal errors can surface during a chunk or final flush. Use a fresh/reset lifecycle for each independent message stream. In Node readable streams, setEncoding('utf8') integrates decoding state, but also changes delivered values and buffering units; stream design is continued in streams, crypto and compression.
 
 Enforce byte budgets before unbounded accumulation and record/decoded-length limits as required by the format. A giant delimiter-free line can exhaust memory even with correct decoding. Distinguish transport truncation, invalid encoding and invalid application content; a replacement character might be acceptable for a log viewer but unacceptable for an integrity-sensitive message.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -561,6 +669,24 @@ Timers normally keep Node running. **`unref()` allows Node to exit without waiti
 
 </div>
 
+<span class="notes-section-label">**Avoid overlapping timer work**</span>
+
+This is an awaited repetition loop. The next operation begins after the previous operation and the chosen delay finish.
+
+```mermaid
+flowchart TD
+    Start["Start one operation"] --> Await["Await its completion; handle failure"]
+    Await --> Again{"Continue?"}
+    Again -->|yes| Delay["Await the delay; handle cancellation"]
+    Delay --> Start
+    Again -->|no| Stop["Stop and release owned resources"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is AbortError, true, false, and `peak 1 active 0`. The abort rejection is observed immediately. The background timer is explicitly cleared after demonstrating its reference state; no delayed callback should print. unref alone would permit a later callback if other work kept the process alive. A pending promise by itself is not a guarantee the process stays alive.
@@ -574,6 +700,8 @@ Validate externally supplied delays. On the stated Node baseline, timer delays o
 A timeout race selects a response, not resource termination. Release deadline handles in finally, propagate a supported signal and retain supervision of operations that ignore it. refresh reschedules an existing timeout using its existing duration, useful for an idle timer whose ownership is clear.
 
 CPU-blocked JavaScript can prevent both timers and cleanup running; use an external supervisor for a hard process boundary. Promise-based setInterval provides async iteration but still needs an intentional backlog and shutdown policy; it is not an automatic distributed scheduler.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -637,6 +765,23 @@ Use `URL` to parse a URL or resolve it against a base, and `URLSearchParams` to 
 
 </div>
 
+<span class="notes-section-label">**See what the URL base contributes**</span>
+
+All three inputs use the same base. A relative path keeps /api/, a leading slash replaces that path, and an absolute URL can replace the host.
+
+```mermaid
+flowchart TD
+    Base["Base: https://example.test/api/"] --> Input{"Input"}
+    Input -->|items| Relative["https://example.test/api/items"]
+    Input -->|/items| Root["https://example.test/items"]
+    Input -->|https://other.test/items| Absolute["https://other.test/items"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `/api/items ["a","b"]`, `a+b & café`, `/items`, `a b`, `a%2Fb%3Fc`, URIError and true. get returns the first matching value, getAll retains duplicates, append adds another value and set replaces values for that key. Define whether duplicates are allowed before using a value for an authorization or business decision.
@@ -654,6 +799,8 @@ URLSearchParams already decodes query values; a second decode can change their m
 A fetch policy additionally needs destination controls, redirect handling and DNS/address rules appropriate to the threat model; parsing alone does not prevent SSRF. A syntactically valid redirect can still send a user to an unwanted origin. This example performs no network validation.
 
 For file URLs, pathname remains URL-encoded and has platform-specific rooting rules; fileURLToPath handles conversion, while pathToFileURL escapes spaces, hashes and percent signs. Round-tripping a name does not prove the file exists or is authorized.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -710,6 +857,24 @@ Streams process data in chunks. A Readable produces data, a Writable receives it
 
 </div>
 
+<span class="notes-section-label">**Follow backpressure**</span>
+
+A false return means the chunk was accepted. Pause before sending the next chunk; do not resend the accepted one.
+
+```mermaid
+sequenceDiagram
+    participant P as Producer
+    participant W as Writable
+    P->>W: write(chunk)
+    W-->>P: false: queue reached its threshold
+    Note over P: Pause further writes
+    W->>W: Consume buffered data
+    W-->>P: drain, if writing can resume
+    P->>W: Write the next chunk
+    Note over P,W: Handle error or closure instead of waiting forever
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Create a small `source.txt` file and save this beside it as `copy.mjs`:
@@ -734,7 +899,9 @@ Run `node copy.mjs` from that folder. Open `copy.txt` and compare it with the so
 
 The readable stream supplies chunks; the writable stream receives them. `pipeline` coordinates their speed and reports completion or failure. This is backpressure: the reader slows down when the writer cannot keep up. A failed copy can leave a partial destination file; reliable publication is a later step. Learn to connect existing streams before implementing custom stream classes below.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict output and identify who owns completion**</span>
 
@@ -782,6 +949,8 @@ Readable end means no more readable data; writable finish follows end and comple
 
 On HTTP sockets, pipeline destruction may close the connection before a separate error response can be sent; design the response boundary intentionally.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Ignoring write(false), retrying the already accepted chunk, or assuming highWaterMark is a strict allocation limit.
@@ -799,7 +968,6 @@ On HTTP sockets, pipeline destruction may close the connection before a separate
 Backpressure is an end-to-end cooperation contract, not a guarantee obtained by choosing one threshold.
 :::
 
-::::
 
 ---
 
@@ -854,6 +1022,25 @@ console.log(await countLines(Readable.from(['one\r', '\ntwo\nlast'])));
 
 </div>
 
+<span class="notes-section-label">**Separate line handling from input ownership**</span>
+
+The interface turns chunks into lines, but the underlying stream has its own errors and lifetime.
+
+```mermaid
+flowchart TD
+    Input["Input byte stream"] --> RL["readline interface: recognize line endings"]
+    RL --> Loop["for await: process each line"]
+    Loop --> Close["finally: close the interface"]
+    Input --> Monitor["Observe source errors and completion separately"]
+    Monitor --> Owner["Input owner closes or destroys the source when appropriate"]
+    Close --> Owner
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is 3: one, two and the final unterminated last line. Delimiters are removed from returned strings, so this is not byte-preserving copying. Empty lines count as lines; a final newline does not create an extra trailing empty record in this fixture. A UTF-8 byte stream needs correct decoding state; readline's line extraction does not make every downstream parser or record valid.
@@ -869,6 +1056,8 @@ For untrusted NDJSON, use bounded byte framing and decoding with record/total/co
 For interactive prompts, node:readline/promises offers awaited question with AbortSignal. Validate answers as external strings, avoid printing secrets and close the interface in finally. Cancellation of a question needs an owner; an open interface can keep a program alive.
 
 TTY editing, history and control-key semantics differ from piped input, so test the actual mode rather than assume a file-stream test proves a terminal experience.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -939,6 +1128,10 @@ Generate secrets with a cryptographic random API, not `Math.random()`. Validate 
 
 </div>
 
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The digest is the SHA-256 known vector for abc, followed by true, false, false and 32. Strict validation for exactly 64 hexadecimal characters prevents permissive hex decoding from accepting partial or malformed tags. timingSafeEqual requires equal byte lengths; this helper checks length before comparing.
@@ -956,6 +1149,8 @@ Node's asynchronous scrypt is a built-in option, but parameters, memory budget, 
 For reversible secret data, use established authenticated-encryption protocols/libraries or a reviewed AES-GCM design; never reuse a nonce under one key, retain authentication tags and reject authentication failure before trusting plaintext. Do not invent encryption schemes or manage production keys in source files.
 
 Use separate keys/purposes, controlled storage, rotation and recovery. TLS, token signing and password hashing solve different problems; randomUUID identifiers are not automatically an authorization mechanism. More complete identity/security flows remain T13/T14 rather than being credited by this API question.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -1035,6 +1230,25 @@ catch (error) { console.log(error.message); }
 
 </div>
 
+<span class="notes-section-label">**Put limits on both sides of decompression**</span>
+
+This shows the successful data path. Exceeding a limit or encountering a pipeline error must fail the operation before publishing success.
+
+```mermaid
+flowchart TD
+    Input["Compressed bytes"] --> InLimit["Check compressed-input budget"]
+    InLimit --> Decode["Matching decompressor"]
+    Decode --> OutLimit["Count and limit expanded bytes"]
+    OutLimit --> Sink["Temporary or owned output"]
+    Sink --> Done["Await successful pipeline completion"]
+    Done --> Publish["Return or publish successful output"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is true, then expanded output limit. The transform rejects before forwarding an output chunk that would exceed its total budget. It cannot prevent the decompressor from allocating/producing that current chunk first, so this is an output-retention limit rather than a strict bound on every native allocation.
@@ -1052,6 +1266,8 @@ Asynchronous native work still competes for resources, and large synchronous com
 For HTTP, distinguish Content-Encoding from Content-Type, negotiate supported encodings and account for cache variation; a compressed body's byte count differs from its decompressed size. Avoid compressing attacker-controlled guesses alongside secrets in a context that exposes compressed lengths.
 
 For file output, use an owned temporary artifact and publish only after successful pipeline completion under a recovery policy; abort or error can leave partial files requiring cleanup.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 

@@ -32,6 +32,21 @@ An Adapter makes an existing interface compatible with another interface. Bridge
 
 </div>
 
+<span class="notes-section-label">**Connect the two independent dimensions**</span>
+
+The abstraction delegates to a selected implementation instead of requiring a subclass for every pair.
+
+```mermaid
+flowchart TD
+ A["Operation abstraction A"] --> I["Implementation interface"]
+ B["Operation abstraction B"] --> I
+ I --> X["Implementation X"]
+ I --> Y["Implementation Y"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 Report content can vary between brief/detail while encoding varies between JSON/text. Four combinations need not mean four named subclasses. Report abstractions depend on an encoder contract, not a particular encoding class.
@@ -88,6 +103,8 @@ assert.throws(() => new Brief({ encode: () => null }).output([]), TypeError);
 
 The two report classes and two implementation objects produce all four combinations. Some code also resembles a template workflow; pattern roles can overlap. The Bridge intent here is independent content and encoding evolution, not merely the presence of inheritance.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Extracting a Bridge for one stable combination adds wiring without useful variation. Check which axis changed before adding another subclass. For small requirements, two composed functions may be clearer than the class representation.
@@ -131,6 +148,22 @@ Composite represents individual items and groups as a tree. Both provide the sam
 **A common interface does not make every tree safe to process.** Limit depth and size, detect or prevent cycles, and decide who may change the children. Also define how group operations combine results and handle failures.
 
 </div>
+
+<span class="notes-section-label">**Use one operation across a tree**</span>
+
+A group delegates to children through the same contract. The traversal still needs depth, size and cycle rules.
+
+```mermaid
+flowchart TD
+ Caller["Caller invokes operation"] --> Root["Composite group"]
+ Root --> LeafA["Leaf A: same operation"]
+ Root --> GroupB["Nested group: same operation"]
+ GroupB --> LeafB["Leaf B"]
+ GroupB --> LeafC["Leaf C"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -193,6 +226,8 @@ assert.throws(() => deep.price(), /Tree budget/);
 
 Product and Bundle expose price while the internal traversal applies a common total operation. Constructors accept only already constructed components, copy/freeze child arrays and do not expose a mutation path that forms cycles. Repeated references are counted per occurrence, not deduplicated. A generic parsed graph would additionally need identity/cycle validation.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Exposing a mutable children array can invalidate ownership and introduce cycles. Unlimited depth or repeated subtrees can exhaust CPU/stack even when each group looks small. A flat list is simpler when nesting is not a real domain concept.
@@ -236,6 +271,28 @@ A Facade gives callers one focused, simpler way to use a subsystem with several 
 **A simpler entry point does not change the underlying failure guarantees.** If its second step fails, the first step may already have changed something. Design authorization, transactions and rollback separately; putting calls behind one method does not automatically provide them.
 
 </div>
+
+<span class="notes-section-label">**A facade hides coordination, not partial effects**</span>
+
+If step two fails, step one may already have changed state. Any compensation or transaction must be designed separately.
+
+```mermaid
+sequenceDiagram
+ participant C as Caller
+ participant F as Facade
+ participant A as Subsystem A
+ participant B as Subsystem B
+ C->>F: One focused operation
+ F->>A: Step one
+ A-->>F: Completed effect
+ F->>B: Step two
+ B-->>F: Failure
+ F-->>C: Failure under the facade contract
+ Note over A,B: Step one is not automatically undone
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -284,6 +341,8 @@ await assert.rejects(broken.preview('p1'), (e) => e === failure);
 
 The caller asks for preview, not a sequence of low-level calls. The returned DTO is explicit. A reader failure is preserved and missing is distinct from outage. The facade has no writes, so there is no fabricated all-or-nothing behavior.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 A facade that grows into every business workflow becomes a dependency hub. Split by cohesive use case. For actual multi-step writes, define the transaction or compensation boundary explicitly; catching an error does not undo earlier calls. Compare with a plain application service: the same object can play both roles.
@@ -328,6 +387,20 @@ Flyweight saves memory by sharing data that many objects have in common. This sh
 
 </div>
 
+<span class="notes-section-label">**Separate shared data from per-use data**</span>
+
+Common immutable data can be reused. Request-specific mutable values stay with their callers.
+
+```mermaid
+flowchart TD
+ A["Use A: its own mutable context"] --> Shared["Shared immutable intrinsic data"]
+ B["Use B: its own mutable context"] --> Shared
+ Shared --> Limit["Bound retention of shared entries"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 Many product badges can reuse one style descriptor for each of two categories. Each badge’s text remains outside the shared descriptor. This fixed finite key space makes retention explicit instead of introducing an unbounded user-keyed cache.
@@ -370,6 +443,8 @@ assert.throws(() => getStyle('private-user-123'), TypeError);
 ```
 
 Only two descriptors can be retained. Text is passed per operation and not captured as shared mutable request state. The color strings are semantic fixture data, not CSS/accessibility guidance. No measured memory-saving claim follows from these two objects.
+
+::::
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
@@ -415,6 +490,22 @@ A Proxy stands in for another object or component and controls how callers reach
 **Check access using the correct caller identity and sufficiently current permission data.** Preserve the reader's results and errors, including remote failures. JavaScript's `Proxy` feature can intercept operations, but using a trap does not by itself create a complete or correct authorization system.
 
 </div>
+
+<span class="notes-section-label">**Keep access control in the proxy path**</span>
+
+The proxy preserves the reader contract while deciding whether and how to call the real reader.
+
+```mermaid
+flowchart TD
+ Caller["Caller and trusted identity"] --> Proxy["Proxy reader"]
+ Proxy --> Check{"Current permission allows read?"}
+ Check -->|yes| Real["Real reader or remote reader"]
+ Real --> Outcome["Preserve agreed result or failure"]
+ Check -->|no| Deny["Return the contract-defined denial"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -472,6 +563,8 @@ await assert.rejects(protectReader({ get() {} }, () => null).get('p1', actor), T
 ```
 
 The reader is not invoked on denial or invalid input. Revocation is visible because permission is not cached forever. Dependency errors propagate rather than become “not found.” The exposed contract is just get; resource ownership and other methods are not automatically forwarded.
+
+::::
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 

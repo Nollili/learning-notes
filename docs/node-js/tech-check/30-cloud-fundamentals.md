@@ -32,6 +32,8 @@ A virtual machine gives you a guest operating system to configure and maintain. 
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 A VM such as EC2 gives control over OS packages, runtime and processes, with corresponding patching, capacity and recovery work. Containers provide repeatable process packaging; ECS Fargate runs those containers without making you manage individual worker hosts. RDS manages selected database operations, but you still own schema, SQL permissions, workload and recovery requirements.
 
 | Service model | Example | You still decide |
@@ -42,6 +44,8 @@ A VM such as EC2 gives control over OS packages, runtime and processes, with cor
 | FaaS | Lambda handler triggered by events | Handler, triggers, permissions, retry/concurrency and state |
 
 These service categories can overlap. Describe the actual responsibilities instead of forcing each product into one category. Horizontal scaling adds application copies; vertical scaling gives one instance more resources. API copies need shared persistent state and sessions. Automatic scaling must account for database connections, dependency quotas, startup time, minimum/maximum size and cost.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -71,6 +75,21 @@ A snapshot saves storage state at a point in time, but the application or databa
 
 </div>
 
+<span class="notes-section-label">**Test the restore, not just the snapshot**</span>
+
+Recovery evidence comes from a usable isolated application and measured recovery time.
+
+```mermaid
+flowchart TD
+ Spec["Repeatable VM and storage specification"] --> Snapshot["Capture appropriately coordinated storage state"]
+ Snapshot --> Restore["Restore into an isolated target"]
+ Restore --> Verify["Verify application data and behavior"]
+ Verify --> Time["Record actual recovery time and limitations"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For your practice VM, choose a maintained OS image and architecture compatible with Node and native dependencies. Limit incoming access and the instance role’s permissions. Use a controlled management tool such as Systems Manager. Do not open SSH to all addresses or put long-lived keys in startup user data. Make non-secret package/configuration setup repeatable. Startup logs and machine metadata are not secret stores.
 
 VM resources include virtual network interfaces, security groups, EBS disks, CPU, memory and optional instance-store disks. A disk’s configured name can differ from its NVMe name inside the VM. Check the actual device before partitioning or formatting it; choosing the wrong one destroys data. Mount using stable filesystem identifiers, set permissions and test after reboot. Instance-store data is temporary and has different loss behavior from EBS.
@@ -78,6 +97,8 @@ VM resources include virtual network interfaces, security groups, EBS disks, CPU
 An EBS snapshot saves disk blocks at a point in time and stores later changes incrementally. Coordinate writes or use an application-consistent backup process. Snapshots of several independently changing disks are not automatically a consistent database backup. Encrypt snapshots, restrict access and define how long to keep them. Test restoration to a **new isolated volume/VM**. Measure recoverable data loss and the time until the application can read verified data, not only until the VM starts.
 
 A machine image helps rebuild the OS and application. A database backup restores data. Stopping a VM may leave chargeable disks, snapshots, IP resources and load balancers. List all resources during cleanup and decide who manages anything retained.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -106,6 +127,8 @@ Object storage keeps objects under keys and exposes APIs for reading and writing
 **Choose the storage interface and guarantees your workload needs.** Consider how data is read, updated and shared, and what must remain consistent. These services are not interchangeable folders; saving an object and committing a database row are separate operations that need a coordinated failure policy.
 
 </div>
+
+:::: details Deeper explanation and additional examples
 
 S3 is appropriate for immutable exports, uploads and assets. EBS is block storage for a VM's filesystem/database under its attachment constraints. EFS provides a shared file interface for workloads that need filesystem semantics. Compare latency, throughput, availability zone/region behavior, access controls, encryption, retention, lifecycle and egress/request costs.
 
@@ -136,6 +159,8 @@ Both arguments come from authorized server state. A correctly formatted key does
 
 S3's documented strong consistency for object operations is not an atomic transaction across several objects and PostgreSQL. Versioning helps recover overwritten/deleted objects but can retain chargeable versions indefinitely. Lifecycle rules, encryption keys and deletion policy need deliberate review.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 In an owned private bucket, upload one authorized report, retrieve it, reject another tenant and test an expired capability. Record checksum/key/version, lifecycle and deletion of all owned versions. Accept only with observed IAM denial as well as app denial. Reference: [S3 concepts and consistency](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html), [presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html).
@@ -164,11 +189,29 @@ The application needs an allowed network route to the database, database credent
 
 </div>
 
+<span class="notes-section-label">**Pass all connection boundaries**</span>
+
+An allowed network route does not supply database privileges, and valid credentials do not verify the TLS server by themselves.
+
+```mermaid
+flowchart TD
+ App["Application runtime identity"] --> Network["Allowed route and endpoint"]
+ Network --> TLS["Verified TLS server identity"]
+ TLS --> DBAuth["Database authentication and limited SQL privileges"]
+ DBAuth --> Pool["Bounded connection pools across all replicas"]
+ Pool --> Query["Authorized application operation"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 In this design, RDS is private and accepts PostgreSQL traffic only from the API security group. The task also needs correct routes and DNS. The database does not need a public endpoint. A timeout may indicate a network, DNS, routing or capacity problem. Authentication errors point to database credentials/permissions. Certificate errors require the correct hostname and CA chain; do not disable verification.
 
 The ECS execution role retrieves the startup secret. The application task role separately controls SDK actions, and the SQL role controls database permissions. Updating a secret does not automatically change an already-running connection pool. Plan how new credentials are adopted and old credentials retired, including restarts or reconnection. Test both steps.
 
 Use [verified driver TLS settings](./17-databases.md#t17-q02), a separate migration identity and a controlled schema rollout. Configure backup retention and test restore/reconnection. Point-in-time recovery (PITR) restores data to a chosen supported time. Replicas can lag behind the primary, so decide how a user reads their own recent write. A database proxy can manage connections but does not provide unlimited capacity or remove transaction/session rules.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -198,11 +241,28 @@ Use separate identities for deploying the system, running the platform's setup t
 
 </div>
 
+<span class="notes-section-label">**Keep administrative and runtime authority separate**</span>
+
+Each identity receives only its required actions and resources. The application should not inherit the deployment administrator role.
+
+```mermaid
+flowchart TD
+ Deploy["Deployment identity"] --> Release["Create or update approved service resources"]
+ Setup["Platform startup identity"] --> Bootstrap["Read required startup material"]
+ Runtime["Application runtime identity"] --> Business["Perform permitted application actions"]
+ Network["Network policy"] -.->|restrict connections separately| Business
+```
+
+
+:::: details Deeper explanation and additional examples
+
 The CI/deployment role changes the selected infrastructure and may pass only approved roles. The ECS execution role pulls the image, sends logs and reads its startup secret. The task role grants the application its required S3 actions. Prefer short-lived role credentials over cloud keys stored in a repository. Protect `PassRole`, role trust rules and deployment environments.
 
 IAM evaluates identity/resource policies and explicit denies alongside other account controls. A wildcard action/resource is not a harmless convenience. Test the exact action/key boundary and inspect denied access safely. Encrypt at rest and in transit with a managed key policy/rotation plan, while remembering encryption does not compensate for an overbroad authorized role.
 
 Subnets, routes, security groups, network endpoints and application authentication protect different boundaries. A private task may need VPC endpoints or NAT to reach image, log, secret and storage services. Both choices have costs and access rules. Security groups do not validate JWTs. HTTPS encrypts a request but does not grant permission. Keep access logs with sensitive values removed and assign responsibility for reviewing them.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -233,6 +293,22 @@ A complete cloud exercise tests a reviewed change in the intended environment. *
 
 </div>
 
+<span class="notes-section-label">**Collect evidence through cleanup**</span>
+
+A locally valid template is the starting point, not evidence that the cloud workload or denial rules work.
+
+```mermaid
+flowchart TD
+ Review["Review intended resources, identity and cost budget"] --> Execute["Run the authorized exercise in its intended environment"]
+ Execute --> Allow["Verify allowed work succeeds"]
+ Allow --> Deny["Verify forbidden access fails"]
+ Deny --> Recover["Observe failure and recovery behavior"]
+ Recover --> Cleanup["Remove or explicitly retain resources; record evidence"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 **This is the live-cloud checkpoint.** For Project 3’s required [local/design checkpoint](./progressive-projects.md#project-3-checkpoint-levels), prepare the plan and mark the execution results not assessed. Proceed with the following live steps only when doing the separate authorized sandbox exercise.
 
 Follow the [AWS example](../aws-service-slice.md) in one sandbox account and region. It requires an existing VPC, subnets, RDS database, load balancer, certificate, endpoints and compatible image. Do not assume its template creates all of them. Record the account/region, resources, expected costs and maximum test duration first. Set budgets and alerts, but remember that an alert does not automatically stop spending.
@@ -240,6 +316,8 @@ Follow the [AWS example](../aws-service-slice.md) in one sandbox account and reg
 Prepare a change set and inspect which resources it creates, replaces or deletes, including permission/network changes. Deploy through the approved process. Test HTTPS, authentication, tenant separation, report storage and database access. Check readiness and replacement behavior, not just the stack’s status. Retain the release digest, test results and outputs with secrets removed.
 
 Estimate costs for compute, load balancer, database, storage/requests, logs, endpoints/NAT, data transfer and backups using current regional prices. Supporting resources may cost more than a small task. During cleanup, also list retained backups, object versions, logs and disks. Record why each retained resource is needed, when it expires and who will remove it.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

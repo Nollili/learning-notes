@@ -32,6 +32,22 @@ Source mapping: [R051](./requirements.md#r051).
 
 </div>
 
+<span class="notes-section-label">**A valid login is only the first boundary**</span>
+
+Authentication supplies a trusted identity. The service checks the specific action against resource ownership and other policy.
+
+```mermaid
+flowchart TD
+ Credential["Caller credential"] --> Auth["Authenticate: identify Alice"]
+ Auth --> Resource["Requested action: edit product 42"]
+ Resource --> Policy{"May Alice edit this resource in this tenant?"}
+ Policy -->|yes| Work["Perform permitted action"]
+ Policy -->|no| Deny["Deny under the public error policy"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A role groups permissions. Attribute-based rules also check facts such as tenant, owner, resource state or time. Deny access unless an explicit rule allows it. Apply checks to background tasks and every API route. Hiding a button can improve usability, but does not enforce access. Knowing an ID is not proof of permission.
 
 ```js [ownership-policy.mjs]
@@ -59,6 +75,8 @@ In the cumulative project, map the product example to study-item ownership: a ve
 Trust `actor` only after verifying credentials and mapping them to server-controlled identity. In the database adapter, include `WHERE id=$1 AND tenant_id=$2` in the operation itself. This avoids reading another tenant’s item or checking ownership separately from the write. If permissions can change concurrently, protect the permission check and sensitive change within the required consistency boundary.
 
 Return 401 for absent/unusable authentication, normally with the API's `WWW-Authenticate` challenge; 403 for a known caller without permission. A consistent 404 policy can conceal object existence. Do not turn a database outage into “invalid password”; operational errors need a separate path without leaking details.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -88,6 +106,27 @@ With a server-side session, the browser holds a random session ID and the server
 
 </div>
 
+<span class="notes-section-label">**Picture a server-side browser session**</span>
+
+The cookie carries an opaque identifier; the login state is stored on the server. Expiry and revocation belong to the session policy.
+
+```mermaid
+sequenceDiagram
+ participant B as Browser
+ participant App as Application
+ participant Store as Session store
+ B->>App: Complete verified login
+ App->>Store: Save session state under random session ID
+ App-->>B: Set session-ID cookie under cookie policy
+ B->>App: Later request with cookie
+ App->>Store: Resolve session and current login state
+ Store-->>App: Session state or missing/expired result
+ App->>App: Apply action-specific permission check
+```
+
+
+:::: details Deeper explanation and additional examples
+
 The session cookie contains a random ID. A shared server-side store links it to the account and manages expiry and revocation. Multiple application copies need the same store and signing configuration. Generate a new session ID after login or a privilege change to prevent session fixation, and save it before responding. Logout removes server-side state and clears the cookie with matching path/domain settings.
 
 For HTTPS, configure `Secure`, `HttpOnly` and `SameSite` appropriately. A `__Host-` cookie also requires Secure, path `/` and no Domain attribute. Trust only the actual proxy chain in Express; do not trust arbitrary forwarded headers. `HttpOnly` prevents JavaScript from reading the cookie. It does not prevent malicious scripts from sending authenticated requests.
@@ -97,6 +136,8 @@ The browser sends cookie credentials automatically. Protect state-changing reque
 A bearer access token can be replayed by whoever holds it. Keep it short-lived; do not log it or put it in URLs. Browser local storage is readable by injected scripts. A backend-for-frontend can keep provider tokens on the server and expose only its session to the browser.
 
 Refresh credentials need persistent server-side state, protected storage, rotation and detection of reuse. Define how to revoke the whole related token family. Two simultaneous refreshes need an atomic rule; generating another token is not enough. Revocation cannot undo work already authorized and running. Configure both idle expiry and a maximum session lifetime. Revoke access after password reset or account disable.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -125,6 +166,22 @@ Source mapping: [R019](./requirements.md#r019).
 **Decoding a JWT only reads its contents; it does not prove they are trustworthy.** A signature protects against unauthorized changes but does not hide the contents through encryption. Even a correctly verified token must pass a separate permission check for the requested resource and action.
 
 </div>
+
+<span class="notes-section-label">**Separate token parsing, verification and permission**</span>
+
+The token is untrusted until the verifier completes its checks. Signature verification alone is not the full acceptance rule.
+
+```mermaid
+flowchart TD
+ Token["Incoming JWT"] --> Parse["Read token structure without trusting claims"]
+ Parse --> Signature["Verify signature with trusted keys and allowed algorithm"]
+ Signature --> Claims["Check issuer, audience, time and required claims"]
+ Claims --> Principal["Create trusted caller context"]
+ Principal --> Permission["Authorize the requested action and resource"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 A compact JWS token contains an encoded header, payload and signature. The header is untrusted until verification succeeds. Do not accept arbitrary algorithms or fetch a token-supplied URL. Use `kid` only to select among keys from the configured trusted issuer. Limit and cache JWKS key-list refreshes. An unknown key is a verification problem, not permission to accept an unsigned token.
 
@@ -183,6 +240,8 @@ await assert.rejects(verify(`${header}.${modified}.${signature}`));
 
 The `typ` value is part of this example issuer’s contract. Other providers may use a different access-token profile. An ID token proves login to its client; do not use it as an API access token. Signed claims can become outdated after an account is disabled, a key is compromised or a user logs out. Immediate invalidation may need a server-side check or revocation/version record. Clock tolerance allows small clock differences; it must not bypass expiry.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Add wrong issuer/key, missing expiry, future `nbf`, malformed claims and revoked-account cases. Accept only when all reject without exposing raw tokens in logs, while a known good access token reaches a separate permission check. References: [jose APIs](https://github.com/panva/jose), [JWT security BCP](https://www.rfc-editor.org/rfc/rfc8725.html), [OWASP REST security](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html).
@@ -211,6 +270,22 @@ Authentication middleware verifies credentials and adds a small amount of truste
 
 </div>
 
+<span class="notes-section-label">**Place the strategy before business authorization**</span>
+
+The strategy handles its configured credential method. The application still owns resource permissions.
+
+```mermaid
+flowchart TD
+ Request["HTTP request"] --> Middleware["Authentication middleware"]
+ Middleware --> Strategy["Configured Passport strategy verifies credentials"]
+ Strategy --> Principal["Trusted principal on request"]
+ Principal --> Service["Service checks action, owner and tenant permissions"]
+ Service --> Result["Permitted business result"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 An Express request pipeline commonly runs a size-limited body parser, session/credential middleware, authentication, input validation and use-case permission checks. Put error middleware last. `passport.session()` needs session middleware before it. A route registered before a guard is not protected by adding that guard later.
 
 The integration shape below assumes an existing injected `passport` instance with a reviewed local strategy and configured session serialization, plus `csrfGuard`, `allowProductRead` and a router. It is not a complete runnable server:
@@ -228,6 +303,8 @@ app.use('/products', requireSessionUser, allowProductRead, productsRouter);
 A local strategy receives credentials and calls its completion callback once. Pass an error for an operating failure, `false` for invalid credentials, or the public account identity for success. Catch rejected password-check promises and call `done(error)`. Use an established password-hashing implementation such as Argon2id with reviewed settings, generic failure responses and abuse limits. Never store plaintext passwords or use fast SHA hashes as password storage.
 
 Save a stable account ID in the session, not a password hash or full account object. When restoring the session, load current allowed account state and define cache/revocation rules. For bearer APIs, disable login-session creation with `{ session: false }` where the strategy supports it. Local-password, OIDC and bearer strategies handle different protocols. Choose the maintained strategy your application needs.
+
+::::
 
 <span class="notes-section-label">**Debugging and acceptance**</span>
 
@@ -257,6 +334,21 @@ Configure which issuer you trust and which audience you accept. **A caller-suppl
 
 </div>
 
+<span class="notes-section-label">**Keep trust local to each receiving service**</span>
+
+A credential accepted at one boundary is not automatically appropriate for another audience.
+
+```mermaid
+flowchart TD
+ IdP["Configured identity provider"] --> BrowserApp["Application verifies login and local account rules"]
+ Issuer["Trusted access-token issuer"] --> Token["Token intended for API B"]
+ Token --> B["API B verifies its issuer, audience and token rules"]
+ B --> Permission["API B applies its own resource permissions"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 For the optional external-login path, handle authorization-code login in the backend-for-frontend using a maintained OIDC client. Configure PKCE, an exact registered redirect URI, a state value bound to the login attempt, and nonce checks when required by the flow. Exchange the code on the server, validate identity and create the existing session. Do not implement the protocol yourself or choose the legacy implicit/password grant for a new application.
 
 Identify users by the stable `(issuer, subject)` pair. Email can change or be shared by identities from different issuers. Linking accounts needs proof; do not merge them automatically. A valid provider login does not grant local tenant membership, ownership or administrator rights. When comparing identity providers, consider protocols, multi-factor authentication, recovery, data location, outages, cost and data export.
@@ -264,6 +356,8 @@ Identify users by the stable `(issuer, subject)` pair. Email can change or be sh
 For a machine job, use workload identity or a client-credentials flow with limited permissions and a short lifetime. A gateway can authenticate at the edge, but downstream services still need trusted identity information and local permission checks. Remove caller-supplied identity headers at that boundary. Verify a token intended for the downstream audience, or exchange it for a more limited token. Forwarding a broad token everywhere increases the damage if it leaks.
 
 mTLS authenticates a transport peer and protects its channel; application authorization still determines which operation that peer may perform. Rotate credentials, bound key-cache refresh and fail closed when authenticity cannot be established. An identity-provider outage may allow existing valid sessions under your expiry policy; it must not switch protected routes into anonymous success.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -292,6 +386,30 @@ When login starts, save a short-lived login attempt that belongs to that browser
 **A callback containing a code is not yet a logged-in application session.** Use a maintained OIDC client to check the response and exchange the code according to the protocol. Only after successful verification and local account checks should the application create its own session. A response from another browser, provider or login attempt must not be accepted as this one.
 
 </div>
+
+<span class="notes-section-label">**Bind the callback to one login attempt**</span>
+
+This is a protocol overview. The maintained OIDC client owns the detailed response and code-exchange verification.
+
+```mermaid
+sequenceDiagram
+ participant B as Browser
+ participant App as Application
+ participant IdP as Configured identity provider
+ B->>App: Start login
+ App->>App: Save short-lived, one-use browser-bound attempt
+ App-->>B: Redirect for configured provider login
+ B->>IdP: Follow login flow
+ IdP-->>B: Redirect with authorization response
+ B->>App: Callback with attempt context
+ App->>App: Match and consume attempt, verify response through OIDC client
+ App->>IdP: Exchange code using protocol checks
+ IdP-->>App: Verified token response
+ App->>App: Apply local account checks and create application session
+```
+
+
+:::: details Deeper explanation and additional examples
 
 For authorization-code login, generate independent random state, nonce and PKCE verifier. Store them server-side under the browser's anonymous session with creation/expiry and a safe local return destination. Send the S256 challenge, state and nonce to the configured issuer. On callback, atomically consume the matching transaction, verify the exact callback/issuer and pass the stored verifier/nonce into the OIDC client's code exchange/validation. Do not accept a return URL, issuer or redirect selected by callback input.
 
@@ -336,6 +454,8 @@ State binds the authorization response to its transaction; PKCE binds code redem
 
 After protocol verification, map `(issuer,subject)` to the local account, apply current tenant/account policy, regenerate the application session and save it before redirecting to the validated local path. A provider email is not enough proof to link accounts. A failed exchange consumes this attempt; let the user start a new login rather than replaying a stale code indefinitely.
 
+::::
+
 <span class="notes-section-label">**Debugging and acceptance**</span>
 
 Check callback URI/proxy origin, transaction cookie scope/SameSite, expired state, nonce and PKCE mismatch separately. Never “fix” a callback loop by disabling validation. Exercise wrong browser, replay, expiry, parallel tabs, provider error and local disabled account. Accept only with the real configured client/strategy denying invalid cases and the application creating exactly one rotated session. References: [OIDC code flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth), [OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html), [Passport strategy boundary](https://www.passportjs.org/concepts/authentication/strategies/).
@@ -363,6 +483,22 @@ Configure which issuer, token purpose and keys the service trusts. A token profi
 **The token's `kid` chooses among trusted keys; it does not authorize arbitrary key downloads.** Plan how old and new keys overlap during rotation, and limit that overlap and key-refresh work. **If authenticity cannot be established, deny access.** Do not trust an unknown key just because the identity provider is unavailable.
 
 </div>
+
+<span class="notes-section-label">**Rotate within a configured trust set**</span>
+
+kid selects a candidate trusted key. Unknown keys do not become trusted merely because verification or refresh is unavailable.
+
+```mermaid
+flowchart TD
+ Profile["Configured issuer, audience and token profile"] --> Keys["Bounded trusted key set with rotation overlap"]
+ Token["Token with kid"] --> Select["Select candidate from trusted key set"]
+ Keys --> Select
+ Select --> Verify["Verify signature and required claims"]
+ Select -->|unknown key after allowed refresh policy| Deny["Deny if authenticity cannot be established"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This jose 6.1.3 fixture models trusted key-set replacement locally; it makes no HTTP/JWKS request. New tokens use the new key while the verifier temporarily accepts the old key for already issued, still-valid tokens. Removing an old key rejects its tokens; emergency compromise response may require earlier removal plus explicit revocation/reconciliation.
 
@@ -416,6 +552,8 @@ Real remote JWKS resolution needs a fixed issuer/discovery trust policy, TLS ver
 
 A resource server accepts its **access-token** profile, not whatever signed token is convenient. An ID token's audience is the OIDC client, and its purpose is login verification. Never substitute it for an API credential. The earlier [application-claim validation](#t13-q03) still applies after this signature/registered-claim fixture. For internal calls, authenticate the service and preserve a constrained delegation contract; do not turn any gateway header into unrestricted user authority.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Test overlapping/retired keys, wrong issuer/audience/type/algorithm, missing time claims, future nbf, stale issuance and malformed tenant/scope. Simulate bounded JWKS outage/unknown-kid traffic only against owned endpoints. Accept with no invalid-token success, no uncontrolled refresh and a documented compromise/revocation policy. References: [jose key-set resolver](https://github.com/panva/jose/blob/main/docs/jwks/local/functions/createLocalJWKSet.md), [JWT security BCP](https://www.rfc-editor.org/rfc/rfc8725.html).
@@ -445,6 +583,25 @@ For sensitive actions, explicitly check current account or credential versions w
 
 </div>
 
+<span class="notes-section-label">**Make refresh consumption a durable decision**</span>
+
+Both requests may present the same credential, but the durable state transition must prevent two successful consumptions.
+
+```mermaid
+sequenceDiagram
+ participant A as Request A
+ participant Store as Refresh-family state
+ participant B as Request B
+ A->>Store: Atomically consume credential R and replace it
+ Store-->>A: Success, new credential R2
+ B->>Store: Try to consume R again
+ Store-->>B: R was already used
+ Note over Store: Apply the defined reuse and family-revocation policy
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Use the existing [account/refresh/reset implementation](../module-09-authentication-authorization.md) as the owner. A server stores only a digest of a high-entropy refresh credential plus account/family, expiry, consumed/revoked state and replacement relationship. Hashing an unpredictable token for lookup differs from password hashing a human secret. Raw credentials travel only through the reviewed client/cookie channel.
 
 A rotation transaction locks the family/account state in a consistent order, checks current credential version and family status, consumes the presented unused token and inserts its replacement before committing. A unique digest and conditional update prevent two winners. If a consumed credential reappears, apply the defined family-revocation policy and commit that revocation before reporting denial; throwing inside a transaction and rolling back the revocation defeats the policy.
@@ -465,6 +622,8 @@ The predicate is not the complete workflow: a zero-row result still needs safe l
 For sensitive writes, stale session permissions can be insufficient. Recheck current membership/credential version within the business transaction where the invariant requires it; otherwise document the maximum stale authorization window. Add recent-auth/MFA requirements for account linking, credential changes or destructive administration. Step-up authentication is a scoped time-limited property, not a permanent admin role.
 
 Service-to-service access has another axis: identify the workload, limit audience/scopes and authorize current resource ownership. Token exchange can narrow delegation. mTLS proves the connecting peer under its trust configuration; it does not independently prove end-user permission. Keep audit records of safe actor/operation/resource/result IDs, never the refresh credential.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

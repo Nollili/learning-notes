@@ -12,7 +12,7 @@ For the chart’s basic Generators topic, start with [synchronous generators](#t
 
 <span class="notes-section-label">**First pass:**</span> work through the short callback, promise and async/await examples in questions 1–3. Then learn why a later error needs its own handler (question 4) and compare sequence with a small `Promise.all` (question 5). Custom worker pools, combinator edge cases, cancellation and async iterators are a second pass. Read the synchronous generator introduction in question 9 before async generators in question 8.
 
-The expandable deeper explanations preserve the additional examples and interview follow-ups. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
+The expandable deeper explanations preserve the additional examples. Common mistakes, examiner follow-ups and key takeaways stay visible outside them. **You can return to them after you can explain and change the starter example.** Career labels describe the eventual assessment target, not what you must master on your first reading.
 
 <!-- tech-check: t05-q01; level: 1 -->
 
@@ -36,6 +36,21 @@ A callback is a function you pass to another function. **A callback is not neces
 
 </div>
 
+<span class="notes-section-label">**Choose exactly one callback outcome**</span>
+
+This is the completion branch of an asynchronous error-first API. It does not imply that every callback API defers its callback.
+
+```mermaid
+flowchart TD
+    Done["Operation reports its outcome"] --> Error{"Failed?"}
+    Error -->|yes| Bad["callback(error)"]
+    Bad --> Return["Return: do not continue to success"]
+    Error -->|no| Good["callback(null, result)"]
+    Good --> End["Completion delivered once"]
+    Return --> End
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Create a small `message.txt` containing `Hello`, then save this as `read-callback.mjs` in the same folder:
@@ -56,7 +71,9 @@ console.log('Read requested');
 
 Run `node read-callback.mjs` from that folder. `Read requested` appears before `Hello`: the callback runs after the file operation reports its result. Its first argument describes a failure; on success it is `null`. Rename the file and run again. The `return` stops the error branch from also printing a success result.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict before reading the answer**</span>
 
@@ -101,6 +118,8 @@ Prefer a consistent documented asynchronous boundary for such an API. queueMicro
 
 Avoid wrapping the entire callback invocation in a catch that invokes the same callback again: if the consumer callback throws, that pattern can misreport a consumer bug as an operation failure and call the consumer twice. Error conversion should surround the operation that can fail, then deliver the result outside that conversion block.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Saying every function passed as an argument runs later: Array.map callbacks run synchronously.
@@ -118,7 +137,6 @@ Avoid wrapping the entire callback invocation in a catch that invokes the same c
 Specify error delivery, timing and completion count before composing a callback API.
 :::
 
-::::
 
 ---
 
@@ -144,6 +162,22 @@ A promise represents one result that may arrive later. It starts pending, then b
 
 </div>
 
+<span class="notes-section-label">**Follow values through a promise chain**</span>
+
+Each arrow leads to a new promise. A catch that returns a value recovers the chain; a throw keeps it rejected.
+
+```mermaid
+flowchart TD
+    P["Promise outcome"] --> Then["then handler"]
+    Then -->|return a value| Value["Next promise fulfills with that value"]
+    Then -->|return a promise| Wait["Next promise adopts its outcome"]
+    Then -->|throw| Reject["Next promise rejects"]
+    Reject --> Catch["catch handler"]
+    Catch -->|return a value| Recover["Following promise fulfills"]
+    Catch -->|throw| Rethrow["Following promise rejects"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `promise.mjs`:
@@ -162,7 +196,9 @@ Run `node promise.mjs`. It prints `Waiting for the result`, then `6`. `Promise.r
 
 For a real operation that can fail, attach a `.catch()` handler. The next question shows the same error handling using `try/catch` and `await`. Learn this simple chain before studying callback adaptation or promise executor timing below.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict both results**</span>
 
@@ -206,6 +242,8 @@ promisify assumes the final argument is an error-first callback. Bind an object 
 
 Do not use an async executor inside new Promise: the executor's returned promise is ignored, so rejection after await can become detached while the outer promise remains pending.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Equating resolve with immediate fulfillment or execution stopping.
@@ -223,7 +261,6 @@ Do not use an async executor inside new Promise: the executor's returned promise
 Keep the completion chain connected; adaptation must preserve the original API's contract.
 :::
 
-::::
 
 ---
 
@@ -249,6 +286,21 @@ Source mapping: [R032](./requirements.md#r032).
 
 </div>
 
+<span class="notes-section-label">**Keep cleanup inside the owned lifetime**</span>
+
+After successful acquisition, both read outcomes pass through finally. The example propagates a cleanup failure if close fails.
+
+```mermaid
+flowchart TD
+    Acquire["Await resource acquisition"] --> Got{"Acquired?"}
+    Got -->|no| AcquireFail["Acquisition fails; opener owns partial cleanup"]
+    Got -->|yes| Read["try: await resource.read"]
+    Read -->|value| Close["finally: await resource.close"]
+    Read -->|rejection| Close
+    Close --> Outcome["Complete with value or error under the cleanup policy"]
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Create a small `message.txt` containing `Hello` and save this beside it as `read-await.mjs`:
@@ -273,7 +325,9 @@ Run `node read-await.mjs` from that folder. `readFile` returns a promise; `await
 
 The file API handles its internal file resource here. When your own code opens a resource explicitly, learn the `finally` cleanup pattern below.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — identify each observable outcome**</span>
 
@@ -328,6 +382,8 @@ Execution before the first await is synchronous. Even awaiting a nonpromise valu
 
 Dependency order also remains real: await user then fetch permissions when permissions need the user ID; starting independent operations concurrently requires a separate failure/limit policy, addressed in async control flow.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Forgetting to await a call inside try and expecting its later rejection to be caught there.
@@ -345,7 +401,6 @@ Dependency order also remains real: await user then fetch permissions when permi
 Use await to express completion and ownership, including the error and cleanup paths.
 :::
 
-::::
 
 ---
 
@@ -396,6 +451,26 @@ Handle a later callback's errors in that callback. Return, await or catch promis
 
 </div>
 
+<span class="notes-section-label">**See where the error handler must live**</span>
+
+A scheduled callback runs after the original try block has ended. Its later throw needs handling inside that callback.
+
+```mermaid
+sequenceDiagram
+    participant Main as Original call
+    participant Timer as Later callback
+    Main->>Timer: Schedule callback inside try
+    Main->>Main: Finish try and return
+    Note over Main: That try is no longer executing
+    Timer->>Timer: Callback runs and throws
+    Note over Timer: Catch here, the earlier catch cannot catch this throw
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The output is `listener present true`, then `handled unknown job`. The true value means a listener was present, not that its asynchronous job succeeded. The wrapper owns handleJob's rejection immediately, records a controlled fixture message and resolves the completion latch in finally.
@@ -413,6 +488,8 @@ Likewise, starting two promises and awaiting them one at a time can leave the se
 For a CLI, use an awaited main with a terminal catch that reports a safe diagnostic and sets process.exitCode. For a server request, propagate to the framework's documented error boundary. Detached tasks require their own supervision and lifetime. A promise alone does not keep a process alive without active supporting resources.
 
 None of these patterns prove retries are safe: duplicate writes need idempotency and transaction reasoning.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -468,6 +545,23 @@ Source mapping: [R031](./requirements.md#r031).
 
 </div>
 
+<span class="notes-section-label">**Compare sequence with a limit of two**</span>
+
+Downward arrows mean later starts. In the limited branch, C starts only after a slot becomes free. This shows overlapping operations, not extra JavaScript threads.
+
+```mermaid
+flowchart TD
+    subgraph Serial["Sequence: dependent operations"]
+        S1["A finishes"] --> S2["Start B using A result"]
+        S2 --> S3["Start C using B result"]
+    end
+    subgraph Limited["Independent operations: at most two active"]
+        Start["Start A and B"] --> Slot["Either one finishes; a slot is free"]
+        Slot --> C["Start C while the other may still be running"]
+    end
+```
+
+
 <span class="notes-section-label">**Start here — one working example**</span>
 
 Save as `sequence.mjs`:
@@ -489,7 +583,9 @@ It prints `8`, then an array containing `6` and `8`. The first two operations ru
 
 Use `Promise.all` for a small known set of independent operations. It rejects if an input rejects, but does not cancel the others. For many inputs, limit how many operations start at once; implementing that worker pool is an optional next step below.
 
-:::: details Deeper explanation and additional examples — optional on your first pass
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — predict the result and peak active count**</span>
 
@@ -538,6 +634,8 @@ Avoid items.forEach(async ...): forEach ignores callback promises. Promise.all(i
 
 Libraries such as p-limit or a job queue can provide different scheduling features; inspect their abort/queue/error semantics rather than assuming every limiter drains or cancels identically.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Limiting promises after the network requests have already started.
@@ -555,7 +653,6 @@ Libraries such as p-limit or a job queue can provide different scheduling featur
 Control when work starts and define what happens to active work when one item fails.
 :::
 
-::::
 
 ---
 
@@ -604,6 +701,27 @@ Choose according to the result you need:
 
 </div>
 
+<span class="notes-section-label">**Compare outcomes on one timeline**</span>
+
+Assume three operations are already running: B rejects first, C fulfills next, A fulfills last. Results from allSettled still follow input order A, B, C.
+
+```mermaid
+sequenceDiagram
+    participant Inputs as Started operations A, B, C
+    participant Combined as Combined promises
+    Inputs-->>Combined: 1. B rejects
+    Note over Combined: race rejects, all rejects
+    Inputs-->>Combined: 2. C fulfills
+    Note over Combined: any fulfills with C value
+    Inputs-->>Combined: 3. A fulfills
+    Note over Combined: allSettled reports all three outcomes
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 The lines are `fixture failure ok fixture failure`, `rejected,fulfilled`, `0`, and `AggregateError 0`. Attaching all combinators before yielding gives each rejected input an observer immediately. With these already settled inputs, reaction registration/input traversal makes the first rejected element win race; do not extrapolate this controlled example to arbitrary I/O ordering.
@@ -617,6 +735,8 @@ Empty inputs are edge cases: all and allSettled fulfill with empty arrays, any r
 In an independent dashboard fan-out, all may fit if all data is mandatory, while allSettled can support visible partial failure. any can select the first successful mirror, but all started mirrors still cost resources and may perform side effects. Do not race writes as if losing meant they never committed.
 
 Sequential dependencies are still sequential; a combinator cannot manufacture an ID that the previous operation has not returned.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -699,6 +819,24 @@ catch (error) { console.log(error.name, error.cause?.message); }
 
 </div>
 
+<span class="notes-section-label">**Separate a timeout result from stopping work**</span>
+
+The top branch changes what the caller observes. The bottom branch requests cooperation from the operation. Neither undoes an already completed write.
+
+```mermaid
+flowchart TD
+    Deadline["Deadline expires"] --> Race["Timeout wins Promise.race"]
+    Race --> Caller["Caller receives timeout; other work may continue"]
+    Deadline --> Abort["AbortController aborts its signal"]
+    Abort --> API["Operation that supports the signal"]
+    API --> Cleanup["Operation stops or unwinds; owner observes completion"]
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `fast`, then `AbortError caller stopped`. Node's promise timer rejects with AbortError and retains the signal reason as cause. Other APIs can expose a different reason/error shape. The helper forwards a caller signal into its own controller and aborts that controller on timer expiry. It never aborts the caller's controller.
@@ -712,6 +850,8 @@ To stop waiting promptly while supervising unfinished work, design an explicit r
 For simple cases, AbortSignal.timeout and AbortSignal.any can compose a timeout and parent signal on this Node baseline. This explicit helper instead demonstrates ownership of a clearable timer and removable caller listener. Neither design is a transaction, a distributed deadline propagation protocol, or a retry policy.
 
 Persisted writes may succeed just before cancellation is observed; retry needs idempotency/reconciliation. Reuse a remaining end-to-end budget across layers rather than granting a fresh full timeout at each hop.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -789,6 +929,34 @@ An async iterator provides values through a `next()` method that returns a promi
 
 </div>
 
+<span class="notes-section-label">**Follow demand and early closing**</span>
+
+This is the cursorValues example. The loop asks again only after processing the previous value, and break closes this generator.
+
+```mermaid
+sequenceDiagram
+    participant Consumer as for await loop
+    participant Gen as Async generator
+    participant Cursor
+    Consumer->>Gen: next()
+    Gen->>Cursor: Open cursor and request item
+    Cursor-->>Gen: Item 1
+    Gen-->>Consumer: Yield item 1
+    Consumer->>Consumer: Process item 1
+    Consumer->>Gen: next()
+    Gen->>Cursor: Request item 2
+    Cursor-->>Gen: Item 2
+    Gen-->>Consumer: Yield item 2
+    Consumer->>Gen: break invokes return()
+    Gen->>Cursor: finally awaits close()
+    Gen-->>Consumer: Closing completed
+```
+
+
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Output is `next,use 1,next,use 2,close`. Calling cursorValues constructs a lazy generator; it does not open the cursor until iteration starts. Each yield suspends the generator until the consumer asks again. The consumer's break initiates iterator closing, so no third value is requested.
@@ -806,6 +974,8 @@ Calling return while the generator is awaiting an uncooperative next does not in
 The sequential loop body naturally limits requests made by this consumer. A database driver, stream adapter or push-to-pull queue may still prefetch or buffer internally. Inspect those limits and use a bounded pipeline when adding concurrency.
 
 For a Node stream, consider its async iterator lifecycle and stream.pipeline for coordinated stream errors/backpressure; stream-specific APIs remain in their own topic group.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -849,6 +1019,27 @@ Calling a function declared with `function*` creates an iterator. **The function
 
 </div>
 
+<span class="notes-section-label">**Trace generator progress**</span>
+
+Each row describes the same iterator from the example. No body code runs when numbers() first creates it.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant G as numbers iterator
+    Caller->>G: numbers() creates iterator
+    Note over G: Body has not started
+    Caller->>G: First next()
+    G-->>Caller: value 10, done false, pause at yield
+    Caller->>G: Second next()
+    G-->>Caller: value 20, done false, pause at yield
+    Caller->>G: Third next()
+    G-->>Caller: finally runs, value 99, done true
+    Caller->>G: Another next()
+    G-->>Caller: value undefined, done true
+```
+
+
 <span class="notes-section-label">**Predict, then run**</span>
 
 Save as `generators.mjs` and run `node generators.mjs`. It needs no packages.
@@ -889,6 +1080,10 @@ assert.deepEqual(manual.return('stopped'), { value: 'stopped', done: true });
 console.log('Generator progression and early closing pass.');
 ```
 
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Detailed explanation**</span>
 
 Each call to `numbers()` owns a separate suspended execution. The generator object is both an iterator (`next`) and iterable (`Symbol.iterator` returns itself). An iterable such as an array can instead create a fresh iterator on each traversal. Reusing an exhausted generator produces no more yielded values.
@@ -898,6 +1093,8 @@ Each call to `numbers()` owns a separate suspended execution. The generator obje
 Breaking a `for...of` loop invokes an available `return()` method. In this example it enters `finally`; manual consumers must close abandoned iterators themselves. Calling `return()` before the first `next()` does not start the body or its `finally`. Acquire resources inside the generator when iteration begins, and avoid yielding from cleanup if callers rely on one closing call finishing it. The [Iterator pattern](./patterns/behavioral-data.md#t18-q18) develops resource-owning traversal further.
 
 A generator is useful for lazy sequences and traversal. Spreading it into an array materializes all results; spreading an infinite generator never finishes. `yield` hands control to the consumer, which may immediately call `next()` again. Compare `async function*`, whose iteration results are promises, with this synchronous protocol.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

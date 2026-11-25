@@ -28,6 +28,23 @@ Verify credentials when a real-time connection starts, then check permission for
 
 </div>
 
+<span class="notes-section-label">**Authorize across instance delivery**</span>
+
+An adapter can move events between servers. Each server still owns session permissions and authorized recipients.
+
+```mermaid
+flowchart TD
+ A["Authenticated client on server A"] --> SA["Server A: authorize action and subscription"]
+ SA --> Bus["Configured cross-instance delivery adapter"]
+ Bus --> SB["Server B: authorized recipient and session policy"]
+ SB --> B["Client connected to server B"]
+ Revocation["Expiry or permission change"] -.-> SA
+ Revocation -.-> SB
+```
+
+
+:::: details Deeper explanation and additional examples
+
 A connection can outlive a token, role or tenant membership. Validate credentials at entry, attach a narrow server-owned identity, enforce permissions on each action and expire/disconnect or refresh sessions under a stated policy. Derive room names from authorized server state; never let a caller join arbitrary tenant rooms. Recheck permissions during reconnect/recovery and before sending protected data when membership changes. A client-supplied user ID is not identity proof.
 
 For browser connections, validate the expected Origin and authentication transport. CORS config alone is not a universal WebSocket authorization mechanism; native clients can forge Origin. Cookie-based sessions also need a cross-site WebSocket hijacking defense. Do not put bearer tokens in query strings that proxies/access logs retain. TLS protects transport, not application permissions.
@@ -38,6 +55,8 @@ Socket.IO multi-node operation has two separate needs:
 - **An adapter for broadcasts across servers:** an in-memory adapter only knows local sockets. A compatible shared adapter transports cross-node events; it does not automatically share your application session store or implement durable business replay.
 
 Choose the adapter by actual guarantees. Redis Pub/Sub forwarding differs from a persistent stream. Socket.IO connection-state recovery has adapter-specific support and a bounded retention window; recovery may fail. With recovery configured, consider `skipMiddlewares:false` so a resumed session is not accepted using obsolete credentials. Even a successful handshake recheck does not replace per-action authorization.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -66,6 +85,25 @@ A slow client can accumulate pending updates, so **limit message sizes, each cli
 A replay cursor records a position in a particular event stream. Use it to recover updates in the defined order. **A missing event must trigger recovery, not silently advance the cursor.** If the needed history has expired, provide a fresh snapshot only after checking the client's current permissions. A cursor is not permission to access the stream.
 
 </div>
+
+<span class="notes-section-label">**Handle a slow client and a missing event**</span>
+
+Queue limits and replay position are separate controls. Do not advance past a gap as if the event was processed.
+
+```mermaid
+flowchart TD
+ Event["Next stream update"] --> Queue{"Client buffer within budget?"}
+ Queue -->|no| Slow["Coalesce replaceable state, resync or disconnect under policy"]
+ Queue -->|yes| Order{"Expected next position?"}
+ Order -->|yes| Apply["Apply update, then advance processed cursor"]
+ Order -->|gap| Recover["Recover missing data under current permission checks"]
+ Recover --> History{"History retained?"}
+ History -->|yes| Replay["Replay required events"]
+ History -->|no| Snapshot["Authorized snapshot and resynchronization"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 A socket accepting writes does not mean its user has processed them. Measure buffered bytes, oldest pending age and application acknowledgments separately. Bound subscriptions per user and broadcasting work per turn. Disconnect/resynchronize a persistently slow consumer; coalesce replaceable state updates only when intermediate transitions are irrelevant. Payments, audit events and commands cannot be dropped as if they were cursor-position updates.
 
@@ -144,6 +182,8 @@ A duplicate here is ignored under an assumption that the authoritative producer 
 
 Avoid the snapshot/subscription race: obtain a consistent snapshot with its high-water mark, then replay retained events after that mark before live delivery, or buffer live events while snapshotting with a strict bound. Define what happens when retention expires during recovery. Global ordering across independent streams is a separate, expensive requirement; do not promise it because TCP orders bytes on one connection.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Extend the feed with bounded history and a deliberately slow client. Accept when duplicate/gap/epoch/expired cursor cases are tested, memory stays within a stated budget and authorization is rechecked for the snapshot/replay. Reference: [Socket.IO delivery guarantees](https://socket.io/docs/v4/delivery-guarantees/), [Node stream backpressure](https://nodejs.org/en/learn/modules/backpressuring-in-streams).
@@ -172,6 +212,22 @@ For shutdown, stop accepting new work, allow active work a limited time to finis
 
 </div>
 
+<span class="notes-section-label">**Stage reconnection before declaring recovery**</span>
+
+Connection success is only one milestone. Timers, adapters and active work also need shutdown owners.
+
+```mermaid
+flowchart TD
+ Lost["Connection lost"] --> Retry["Bounded reconnect attempts with spread-out delays"]
+ Retry --> Connected["Connection and authentication restored"]
+ Connected --> State["Complete replay or snapshot recovery"]
+ State --> Ready["Application state synchronized"]
+ Stop["Shutdown"] --> Cleanup["Stop admission; close sessions, adapters and owned timers by deadline"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 Use library-supported ping/pong and proxy idle settings consistently. A heartbeat timeout can reflect congestion, a blocked event loop or a sleeping client; it is not proof of malicious behavior. Client reconnects need capped exponential backoff with jitter and server-side admission limits so a rolling restart does not synchronize every client. Retry only classified transient failures; repeatedly retrying revoked credentials wastes capacity.
 
 An operational sequence is: mark unready, stop new subscriptions/upgrades, advertise a drain hint if your protocol supports it, stop new job admission, finish or checkpoint bounded active work, close sockets, then terminate remaining owned work at a deadline. Account for upgraded sockets separately from an HTTP server's ordinary request lifecycle. Clear heartbeat timers, reconnect timers and adapter connections; closing one layer does not necessarily close the others.
@@ -184,6 +240,8 @@ An operational sequence is: mark unready, stop new subscriptions/upgrades, adver
 | Memory rises with slow clients | Per-client buffered bytes/age, subscriber counts | Bound/coalesce/disconnect; do not just raise heap size |
 
 Use bounded metric labels for disconnect class/transport, and safe IDs in logs/traces for a particular session. A room containing ten thousand sockets makes one broadcast a fan-out capacity problem. Load-test the selected distribution and recovery strategy; an echo fixture does not measure it.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 
@@ -212,6 +270,22 @@ A native addon makes compiled code available to JavaScript. Node-API provides a 
 **Native code runs with the host process's privileges and can corrupt or crash that process.** It adds build, deployment and cleanup responsibilities. A long synchronous native call can also block its calling thread; compiled code is not automatically asynchronous or isolated.
 
 </div>
+
+<span class="notes-section-label">**See the native process boundary**</span>
+
+A native addon executes with the process privileges. A synchronous native call occupies its calling thread until it returns.
+
+```mermaid
+flowchart TD
+ JS["JavaScript caller"] --> Binding["Node-API binding"]
+ Binding --> Native["Native compiled implementation in the same process"]
+ Native --> Return["Result or failure returns to JavaScript"]
+ Build["OS, architecture and compatible libraries"] -.-> Native
+ Risk["Memory corruption or crash can affect the host process"] -.-> Native
+```
+
+
+:::: details Deeper explanation and additional examples
 
 Use a native dependency for an existing system library, specialized hardware or a measured hot path. It adds compiler/toolchain, OS/architecture/libc and transitive-library compatibility work. Node-API ABI stability does not produce one binary for every operating system or guarantee a third-party library's ABI. Check the target Node-API version, packaging/prebuild matrix and fallback build before release. `node-addon-api` is a C++ wrapper over Node-API, not the same thing as direct V8 bindings.
 
@@ -285,6 +359,8 @@ for (const args of [
 
 This tiny synchronous function is bounded; a long native computation would still block its calling thread. Async native work requires correct ownership, completion/cancellation and safe JavaScript-thread interaction. Node-API async work can contend with the libuv pool; arbitrary native threads cannot call ordinary JavaScript APIs directly. Thread-safe functions have lifecycle and queue limits. A worker thread isolates an event loop, not native memory corruption from the process; a separate process gives a stronger crash boundary.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Compile/run this study addon, then design the lifetime/cancellation contract for a slower operation without implementing unsafe background callbacks. Accept with negative input tests, checked native statuses, a supported-platform matrix and a clear reason to prefer native code over JavaScript/worker/process alternatives. References: [Node-API](https://nodejs.org/api/n-api.html), [ABI stability](https://nodejs.org/en/learn/modules/abi-stability), [node-gyp](https://github.com/nodejs/node-gyp).
@@ -312,6 +388,23 @@ A WebAssembly module is compiled code with explicitly declared imports and expor
 **Define conversions, memory bounds and who owns each allocation.** Strings and arrays need an agreed encoding and pointer/length arrangement. **Wasm integer rules differ from JavaScript `Number` rules**, including overflow behavior. Memory growth can also invalidate existing views, so follow the rules for the specific shared or unshared memory in use rather than assuming old views stay valid.
 
 </div>
+
+<span class="notes-section-label">**Agree on memory layout at the boundary**</span>
+
+For a byte-oriented interface, the host and module must agree on encoding, bounds and allocation lifetime.
+
+```mermaid
+flowchart TD
+ JS["JavaScript values"] --> Encode["Encode input into agreed bytes"]
+ Encode --> Memory["Wasm linear memory: bounded region"]
+ Memory --> Call["Call exported function with agreed pointer and length"]
+ Call --> Read["Read and decode bounded result"]
+ Read --> Ownership["Release allocations under the ownership contract"]
+ Growth["Memory growth"] -.->|recheck applicable view validity| Read
+```
+
+
+:::: details Deeper explanation and additional examples
 
 This text representation declares one exported i32 addition function:
 
@@ -361,6 +454,8 @@ assert.throws(() => memory.grow(1), RangeError);
 
 Imports grant capabilities. A module without file/network imports does not thereby gain them, but imported JavaScript can expose them. Wasm does not automatically enforce execution deadlines or protect availability from infinite loops, huge compilation work or excessive host calls. WASI is a separate system-interface contract with its own capability/runtime limitations; it is not ordinary browser-style Wasm or a complete hostile-code sandbox.
 
+::::
+
 <span class="notes-section-label">**Practice and acceptance**</span>
 
 Compile an owned numeric function from WAT or a source language, compare boundary/overflow results with a deliberate reference and add a validated memory-transfer example. Accept with documented encoding/ownership, refreshed views and malformed-module/input tests. References: [Node with WebAssembly](https://nodejs.org/en/learn/getting-started/nodejs-with-webassembly), [WebAssembly specification](https://webassembly.github.io/spec/), [Node WASI security](https://nodejs.org/api/wasi.html).
@@ -390,6 +485,8 @@ Source mapping: [R170](./requirements.md#r170).
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 | Choice | Good reason | Cost/risk to investigate |
 |---|---|---|
 | JavaScript on main thread | Small bounded work | Event-loop latency if work grows |
@@ -401,6 +498,8 @@ Source mapping: [R170](./requirements.md#r170).
 Benchmark the full path: cold compile/load, warm-up, useful work, data encoding/copying, queue time, concurrency, latency distribution and resident memory. Compare equivalent algorithms/results under the same workload. A million tiny cross-boundary calls can cost more than one batched operation. Measure batching against memory/latency constraints rather than removing all limits for a faster benchmark.
 
 Use trusted artifacts and verify integrity/provenance, supported versions and deployment architecture. Test invalid inputs, oversized work, cancellation, initialization failure, shutdown during active work and missing incompatible binaries. In a process model, the supervisor owns deadline, kill and reaping; an ignored Promise timeout does not stop computation. A worker/process is not by itself a permissions sandbox: choose OS/container restrictions and narrow capabilities for the actual threat model.
+
+::::
 
 <span class="notes-section-label">**Practice and acceptance**</span>
 

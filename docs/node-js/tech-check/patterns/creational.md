@@ -32,6 +32,22 @@ A standalone function that selects and returns an object is a useful simple fact
 
 </div>
 
+<span class="notes-section-label">**Vary creation inside the workflow**</span>
+
+The creator owns the sequence. The subclass customizes the designated construction step.
+
+```mermaid
+flowchart TD
+ Workflow["Creator import workflow"] --> Read["Read input"]
+ Read --> Factory["Call overridable createParser"]
+ Factory --> Parser["Subclass supplies compatible parser"]
+ Parser --> Parse["Parse and validate using the fixed workflow"]
+ Parse --> Result["Return agreed result"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 Use it when a reusable workflow genuinely needs subclasses to supply different products, such as report encoders. The creator is ReportJob, the factory method is createEncoder, and an encoder is the product. Do not invent a hierarchy when injecting one function would be clearer.
@@ -84,6 +100,8 @@ assert.throws(() => new BrokenReport().run([]), TypeError);
 
 The workflow validates input and output regardless of which concrete creator supplies the encoder. Subclasses change construction, not the caller’s invocation. The fixed text format is a fixture, not CSV escaping. Copying the array protects its structure; elements are bounded strings.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 An override that weakens the output contract breaks substitution. Trace which factory method actually ran before blaming serialization. Constructor injection or a direct encoder argument avoids inheritance when the workflow has no other useful creator abstraction.
@@ -127,6 +145,23 @@ An Abstract Factory creates a related set of components through agreed interface
 This arrangement does not make different storage backends behave identically. Transactions, errors and other behavior still need explicit rules and tests.
 
 </div>
+
+<span class="notes-section-label">**Keep each family compatible**</span>
+
+Select a factory family first. Its reader and writer must agree on the storage contract.
+
+```mermaid
+flowchart TD
+ Choice["Choose storage family"] --> File["File family factory"]
+ Choice --> DB["Database family factory"]
+ File --> FR["File reader"]
+ File --> FW["Compatible file writer"]
+ DB --> DR["Database reader"]
+ DB --> DW["Compatible database writer"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -179,6 +214,8 @@ assert.equal(family.createReader().get('p2'), null);
 
 Every product from this factory shares its private Map, while another factory has independent state. Values are primitive strings; a read does not leak a mutable row. This is a synchronous bounded lab with overwrite-on-put behavior, not a durable repository or transaction example.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Mixing a reader from one family with a writer from another loses the compatibility guarantee. Contract-test both halves and their interaction. A single composition factory returning ready collaborators is often simpler; Abstract Factory earns its cost when product families vary together.
@@ -222,6 +259,22 @@ A Builder collects the steps or options needed to create a complex object, then 
 **A finished result should not change when the builder is used again**, unless that sharing is explicitly intended. Returning the builder's mutable internal object can let later builder calls accidentally alter a previously built result. Decide whether `build()` makes an independent copy or transfers the result once.
 
 </div>
+
+<span class="notes-section-label">**Do not return the mutable builder state accidentally**</span>
+
+A completed result needs the independence or transfer semantics promised by build.
+
+```mermaid
+flowchart TD
+ Steps["Configure builder through meaningful steps"] --> State["Mutable builder state"]
+ State --> Build["build validates and creates or transfers result"]
+ Build --> Result["Finished result with defined ownership"]
+ State --> Later["Later builder changes"]
+ Later --> Check["Must not alter earlier result unless sharing was explicit"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -273,6 +326,8 @@ assert.throws(() => builder.format('unknown'), TypeError);
 
 Input arrays and finished arrays are copied; nested columns are frozen too. The supported representation contains only strings, so this explicit shallow-plus-array policy is sufficient. Reusing the builder changes future products without modifying prior ones.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Fluent methods do not automatically make a Builder useful. Validate complete cross-field invariants at build when individual steps cannot establish them. Returning this.#columns directly or freezing only the outer object reintroduces aliasing. A one-shot builder must document that it cannot be reused.
@@ -316,6 +371,21 @@ Prototype creates a new object by cloning an existing example. Define which data
 **`Object.create(source)` creates delegation, not a snapshot.** Property lookup can reach the original object through the prototype chain. That is different from copying its current data into an independent object.
 
 </div>
+
+<span class="notes-section-label">**Compare cloning with delegation**</span>
+
+An independent clone owns the mutable data it needs. Object.create follows a lookup relationship instead of taking a snapshot.
+
+```mermaid
+flowchart TD
+ Source["Exemplar object"] --> Clone["Explicit cloning policy"]
+ Clone --> Copy["New object with independent owned mutable data"]
+ Child["Object.create source"] -->|missing own property lookup| Source
+ Source --> Change["Later source changes may affect delegated lookup"]
+```
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Why and when**</span>
 
@@ -363,6 +433,8 @@ assert.throws(() => new ReportSpec('X', [null]), TypeError);
 
 clone explicitly reconstructs the class and copies its tag array. structuredClone is useful for supported data graphs but does not promise arbitrary class behavior. Delegation intentionally observes later prototype changes, which is different from the cloned draft.
 
+::::
+
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 
 Adding a nested object requires an updated clone contract. A generic JSON roundtrip loses unsupported values and representation information. Prefer plain immutable data or an explicit constructor when cloning a rich object would hide identity/resource semantics.
@@ -408,6 +480,21 @@ A Singleton provides one instance within a defined scope and a way to access it.
 
 </div>
 
+<span class="notes-section-label">**Name the singleton scope**</span>
+
+All callers in one scope reach the same instance. Another process has its own instance unless an external design provides shared state.
+
+```mermaid
+flowchart TD
+ A["Caller A in application context"] --> One["One shared instance in this scope"]
+ B["Caller B in application context"] --> One
+ Other["Another process or application context"] --> Separate["Its own instance"]
+ Owner["Explicit application owner"] -.->|constructs, supplies and closes| One
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Why and when**</span>
 
 A stateless application configuration capability can be shared, while per-request identity belongs in explicit arguments. This example uses a private factory closure to express an application-scoped single access point without exporting a mutable global class field.
@@ -442,6 +529,8 @@ assert.throws(() => otherApp('invalid'), TypeError);
 ```
 
 This is one instance per explicitly created application owner. Another owner deliberately creates another instance for isolation. A classic global Singleton often hides that boundary; ESM caching can supply sharing within one module instance, but workers/replicas and distinct module identities differ.
+
+::::
 
 <span class="notes-section-label">**Mistakes, alternatives and debugging**</span>
 

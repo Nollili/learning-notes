@@ -21,7 +21,7 @@ Keep the lockfile. Place the test files at the scratch project’s root.
 
 <span class="notes-section-label">**First pass:**</span> Run [one unit test](#t15-q01), then [one HTTP test](#t15-q08), now placed immediately after it. Continue with [real-component integration](#t15-q03), [contracts](#t15-q02), then [separate-process E2E](#t15-q04). TDD/BDD, load/stress and performance measurement extend that base. The small Nest app is also exercised through HTTP; keep its compilation separate from this CommonJS Jest scratch lab.
 
-**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations, original labs and examiner follow-ups for a second reading.
+**Learn the small example before expanding the complete version.** The expandable sections retain the deeper explanations and original labs for a second reading. Common mistakes, examiner follow-ups and key takeaways stay visible outside them.
 
 <!-- tech-check: t15-q01; level: 2 -->
 
@@ -44,6 +44,19 @@ A useful unit test checks one coherent behavior in isolation. **Assert what a ca
 **Cover normal inputs, boundary values, invalid inputs and relevant dependency failures.** Work out the expected result independently of the code under test; copying its calculation can copy its bug too. Control randomness, time and other changing inputs. Use the smallest test scope that can reliably detect the problem.
 
 </div>
+
+<span class="notes-section-label">**Test the threshold from both sides**</span>
+
+The pricing rule below has free shipping at 5,000 cents. These neighboring inputs expose a wrong comparison at the boundary.
+
+```mermaid
+flowchart TD
+    Threshold["Free shipping begins at subtotal 5000 cents"] --> Below["4999: shipping is 500 cents"]
+    Threshold --> Exact["5000: shipping is 0 cents"]
+    Threshold --> Above["5001: shipping is 0 cents"]
+    Exact --> Mutation["Changing greater-than-or-equal to greater-than breaks this case"]
+```
+
 
 <span class="notes-section-label">**Start here — one working example**</span>
 
@@ -72,7 +85,9 @@ Run `npm test -- --runInBand first-price.test.js`. `test` names a behavior; `exp
 
 This tiny function assumes validated positive integer inputs; it is not yet the full pricing rule. Next, work through the shipping-threshold example below: test just below, exactly at and just above 5,000 cents, then add invalid inputs. Learn ordinary `test` first, then use `test.each` to avoid repeating the same test structure.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — choose the important partitions first**</span>
 
@@ -147,6 +162,8 @@ No mocks are needed for a deterministic calculation. In a service unit test, a s
 
 Prefer `toBe` for identity/primitive results, `toEqual` for values, and `toStrictEqual` when object types/undefined keys matter. For synchronous exceptions pass a function to `expect`; for promise rejection await or return `.rejects`. Catching an exception without an assertion is not a passing negative test.
 
+::::
+
 <span class="notes-section-label">**Common mistakes**</span>
 
 - Testing many arbitrary values while missing the decision boundary.
@@ -168,7 +185,6 @@ Practice — learner work still required: explain the threshold partitions, run 
 
 Official references: [Jest setup](https://jestjs.io/docs/30.0/getting-started), [matchers](https://jestjs.io/docs/30.0/using-matchers), [mock functions](https://jestjs.io/docs/30.0/mock-functions).
 
-::::
 
 ---
 
@@ -194,6 +210,20 @@ Source mapping: [R130](./requirements.md#r130).
 Export the app separately from starting its server, use isolated fixtures, await each request and close any servers you create. **Also keep a smaller suite with real application components connected together.** It can catch setup mistakes or changes in dependency behavior that mocked tests miss.
 
 </div>
+
+<span class="notes-section-label">**Draw the HTTP test boundary**</span>
+
+Routing, middleware and error responses are real in this test. The injected service double is the deliberate boundary, not proof of real storage behavior.
+
+```mermaid
+flowchart TD
+    Request["Test sends HTTP request"] --> Real["Real Express app: routing, parsing and middleware"]
+    Real --> Controller["Real controller and response handling"]
+    Controller --> Double["Injected service double: chosen result or rejection"]
+    Double --> Response["Real HTTP response"]
+    Response --> Assertions["Assert status, headers, body and intended effects"]
+```
+
 
 <span class="notes-section-label">**Start here — one working example**</span>
 
@@ -234,7 +264,7 @@ test('GET /quote returns the calculated subtotal', async () => {
 
 Run `npm test -- --runInBand first-http.test.js`. Supertest manages a temporary listener for the app; the awaited request observes its response and completion. The test uses real Express routing and JSON output. No `listen()` call belongs in the imported app file. Change the route or response field and confirm the test catches it.
 
-For NestJS, the same three assertions still matter. Build an app with `createFirstNestApp()` from the [Nest starter](./16-frameworks.md#nest-starter), call `await app.init()`, send the request with `request(app.getHttpServer())`, and close it in `finally` with `await app.close()`. Keep the companion's compilation setup; the CommonJS JavaScript Jest lab does not compile TypeScript decorators automatically.
+For NestJS, the same three assertions still matter. Build an app with `createFirstNestApp()` from the [Nest starter](./16-framework-applications.md#nest-starter), call `await app.init()`, send the request with `request(app.getHttpServer())`, and close it in `finally` with `await app.close()`. Keep the companion's compilation setup; the CommonJS JavaScript Jest lab does not compile TypeScript decorators automatically.
 
 <span class="notes-section-label">**NestJS HTTP check — run the companion too**</span>
 
@@ -265,7 +295,9 @@ Run `npm run build`, then `node nest-http-check.cjs`. Success exits quietly; a w
 
 After these first tests, follow the integration, contract and process-level E2E lessons. Before entering those full quote labs, expand the original unit-pricing example to create `pricing.js` and its boundary tests. The larger suite below depends on the later quote files (`pricing.js`, `service.js`, `catalog.js`, `app.js` and `quote-contract.js`); return to it after assembling those files.
 
-:::: details Deeper explanation and complete examples — second reading
+
+
+:::: details Deeper explanation and additional examples
 
 <span class="notes-section-label">**Example — keep the right parts real**</span>
 
@@ -440,6 +472,8 @@ A false green can come from missing `await`, an assertion that never ran, stale 
 
 When a suite hangs, inspect listeners, child processes, pools, watchers and timers. Use `--detectOpenHandles` as a diagnostic, not `--forceExit` as a fix. If a test fails only in the full suite or parallel execution, investigate shared paths/ports, environment and mock state. Fresh directories and ephemeral ports remove common collisions; tests should still pass alone and together.
 
+::::
+
 Common mistakes: mocking `req`/`res` and claiming full HTTP coverage; accepting status alone; letting injected fakes drift from real contracts; treating failed shutdown as success; using coverage to claim professional readiness.
 
 <span class="notes-section-label">**Examiner follow-ups**</span>
@@ -456,7 +490,6 @@ Practice — learner work still required: run the suite and introduce a provider
 
 Official references: [Supertest](https://github.com/forwardemail/supertest), [Express error ownership](https://expressjs.com/en/guide/error-handling/), [Jest coverage configuration](https://jestjs.io/docs/30.0/configuration), [Jest timer controls](https://jestjs.io/docs/30.0/timer-mocks).
 
-::::
 
 <!-- tech-check: t15-q03; level: 2 -->
 
@@ -583,6 +616,23 @@ Run `npm test -- --runInBand integration.test.js`. The last test intentionally n
 
 </div>
 
+<span class="notes-section-label">**Keep the real interaction and its cleanup together**</span>
+
+The fixture owner supplies isolated state. Cleanup must still run when an assertion or interaction fails.
+
+```mermaid
+flowchart TD
+    Setup["Create isolated configuration and data"] --> Seed["Seed the real components being tested"]
+    Seed --> Act["Run the interaction through those components"]
+    Act --> Assert["Assert result and stored effects"]
+    Assert --> Cleanup["finally: await data and resource cleanup"]
+    Act -->|failure| Cleanup
+    Seed -->|failure after acquisition| Cleanup
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Isolation decisions**</span>
 
 Unique temporary directories avoid collisions between test workers. Fresh files prevent order dependence. The catalog path is supplied by the fixture owner; a product ID is never used to construct a filesystem path. The tiny whole-file read is deliberate, not a memory-bounded arbitrary-file loader.
@@ -590,6 +640,8 @@ Unique temporary directories avoid collisions between test workers. Fresh files 
 For a relational repository, the equivalent test needs a real scratch database and actual migrations, queries, constraints and transactions. An in-memory fake cannot demonstrate PostgreSQL SQLSTATE or isolation behavior. Options include a fresh schema/database per worker, carefully coordinated transaction rollback, or targeted unique data cleanup. An outer test transaction cannot roll back writes made on unrelated connections or processes.
 
 Use `beforeAll` for genuinely shared immutable infrastructure and `beforeEach` for mutable state; await/return hooks. Diagnose leaked resources instead of adding `--forceExit`. `--runInBand` is useful for constrained infrastructure but does not repair shared-state correctness.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -681,6 +733,22 @@ A contract test checks the agreement between two parts of a system. For an HTTP 
 
 </div>
 
+<span class="notes-section-label">**Connect both sides of a contract**</span>
+
+A consumer check against a mock is only part of the evidence. The provider must also satisfy the recorded agreement.
+
+```mermaid
+flowchart TD
+    Consumer["Consumer expectations"] --> Contract["Versioned request and response contract"]
+    Contract --> ConsumerTest["Check consumer behavior against the agreement"]
+    Contract --> ProviderTest["Verify the real provider against the agreement"]
+    ConsumerTest --> Decision["Use both results for compatibility decisions"]
+    ProviderTest --> Decision
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Define the agreement before choosing tooling**</span>
 
 | Contract element | This lab's expectation |
@@ -700,6 +768,8 @@ For a repository contract, run the same behavioral suite against a fake and the 
 Tools such as Pact can record consumer interactions and verify them against the provider, tracking versions and deployment compatibility. The useful workflow is consumer expectation → published/versioned contract → provider verification → deployment decision. A green consumer test against a mock alone is only the first step.
 
 Schema checks do not automatically prove authorization, state transitions, transaction isolation or the intended production deployment. Add semantic examples where types alone are insufficient. Coordinate breaking changes with versioning or an expand/migrate/retire process rather than updating both sides' fixtures silently.
+
+::::
 
 <span class="notes-section-label">**Common mistakes**</span>
 
@@ -924,11 +994,31 @@ An end-to-end test follows an important user or client action through the assemb
 
 </div>
 
+<span class="notes-section-label">**Own the whole end-to-end journey**</span>
+
+Wait for observable readiness instead of a fixed sleep. Cleanup surrounds the test so failures do not leave a child or server running.
+
+```mermaid
+flowchart TD
+    Start["Start the real application with isolated infrastructure"] --> Ready["Await readiness within a deadline"]
+    Ready --> HTTP["Send a bounded request from the external entry point"]
+    HTTP --> Assert["Check public response and real effects"]
+    Assert --> Stop["finally: request shutdown and await closure"]
+    Ready -->|failure| Stop
+    HTTP -->|failure| Stop
+    Stop --> Escalate["If cleanup deadline expires: escalate and fail the test"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Trade-offs and diagnosis**</span>
 
 Broad tests detect wiring and deployment mistakes but usually fail less precisely and cost more to run. Start diagnosis from the failing layer: readiness, connect, HTTP status, body contract or business result. Keep enough redacted child diagnostics to investigate a real CI failure; this tiny known fixture discards stderr and reports fixed startup/exit errors.
 
 Do not rely on a fixed “wait two seconds” sleep: the timeout above limits a readiness event, not an assumed startup duration. A forced kill is **a cleanup escalation and should fail the test**, not count as normal shutdown. Failed spawn/early exit must also settle the owner.
+
+::::
 
 Common mistakes: calling a mock-backed route “full production E2E”; checking only status; leaving a child alive after a failed assertion; using a public provider as ordinary CI infrastructure.
 
@@ -1020,6 +1110,20 @@ BDD means behavior-driven development. **Use concrete examples and shared langua
 
 </div>
 
+<span class="notes-section-label">**Follow the TDD cycle**</span>
+
+The failing test must expose a real missing behavior. Refactoring keeps the agreed behavior and tests unchanged.
+
+```mermaid
+flowchart TD
+    Red["RED: write a meaningful failing test"] --> Green["GREEN: implement enough to pass"]
+    Green --> Refactor["REFACTOR: improve structure with tests green"]
+    Refactor --> Red
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Reason about the feedback**</span>
 
 The over-credit example disambiguates an important rule. A negative amount, a thrown business error and a zero amount are different product decisions. Agree on the intended behavior with stakeholders; tests cannot choose it for you.
@@ -1027,6 +1131,8 @@ The over-credit example disambiguates an important rule. A negative amount, a th
 Keep examples readable and technology-independent where possible. “Given a total and available credit, when credit is applied, then the amount due is zero” explains behavior; “Given mock number three was called” usually explains implementation plumbing. Jest can execute behavior-named cases without a Gherkin framework. Cucumber becomes useful when its collaboration/workflow benefits justify maintaining step definitions and fixtures.
 
 For a real feature, evolve a few tests and implementation together rather than create a vast up-front suite. Refactoring needs a green baseline; changing expected outcomes during a refactor is a requirement change, not merely cleanup. Keep lower-level boundary cases alongside a small number of shared acceptance examples.
+
+::::
 
 Common mistakes: counting import/setup failures as the intended red; asserting the internal algorithm; adding a Gherkin layer without shared product examples; skipping the refactor step; treating a green example as complete feature acceptance.
 
@@ -1173,6 +1279,22 @@ The script below performs a smoke check and a limited local increase in load. It
 
 </div>
 
+<span class="notes-section-label">**Check recovery after overload**</span>
+
+This is a bounded test on infrastructure you control. Collect errors and rejected work as well as successful response times.
+
+```mermaid
+flowchart TD
+    Plan["Define workload, limits and stop condition"] --> Smoke["Minimal traffic: verify the experiment"]
+    Smoke --> Load["Expected traffic: check response and error goals"]
+    Load --> Stress["Controlled overload: observe queues and rejection"]
+    Stress --> Reduce["Reduce traffic"]
+    Reduce --> Recovery["Check normal work resumes and resources recover"]
+```
+
+
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Interpret the results carefully**</span>
 
 The script reports successful latency separately from 503, malformed response and transport outcomes. Include all outcomes when deciding whether the service met its goal. A small sample's p95 is only a descriptive observation, not strong tail-latency evidence.
@@ -1180,6 +1302,8 @@ The script reports successful latency separately from 503, malformed response an
 This is a closed-loop workload: a client waits before starting its next request. **When the server slows, offered traffic decreases**. An open arrival-rate model can expose overload that this feedback conceals; record planned arrivals and dropped/delayed work rather than silently measuring only requests that were sent. The client and server sharing one laptop also compete for resources.
 
 Observe CPU, memory, event-loop delay, database/pool waits, queue depth and error rate alongside latency and successful throughput. “Busy” is an intentional admission decision; unbounded queues, rising memory or failure to recover are different concerns. After overload, **reduce traffic and check that normal work resumes**.
+
+::::
 
 Common mistakes: measuring only average latency; counting errors as throughput success; creating an unbounded `Promise.all`; targeting a shared/public system accidentally; claiming capacity from one laptop sample; applying fake timers to a real network load test.
 
@@ -1262,6 +1386,8 @@ First choose a realistic workload and a performance goal, then **verify that the
 
 </div>
 
+:::: details Deeper explanation and additional examples
+
 <span class="notes-section-label">**Different questions need different experiments**</span>
 
 | Question | Evidence to collect |
@@ -1283,6 +1409,8 @@ Establish a stable baseline on comparable infrastructure, run repeated trials an
 Use a functional suite to protect outcomes and a dedicated performance job for an agreed budget. For example, a latency SLO must specify workload, percentile, allowed errors and test environment—not merely “responds in under 100 ms.” Gate only when the experiment can reliably detect a meaningful regression. Keep startup, I/O and representative data sizes in the experiment when they are part of the user-visible cost.
 
 Profiles attribute where resources are spent; measurements show whether the result improved. Inspect an unexpected slow sample, check algorithm/data-size changes and compare equivalent optimizations. Do not remove validation, correctness checks or representative work just to improve benchmark numbers.
+
+::::
 
 Common mistakes: benchmarking a different result; comparing cold and warm runs; using one average; treating heap growth between two points as a leak; replacing an integration workload with a tight loop; requiring every CI runner to match a developer laptop.
 

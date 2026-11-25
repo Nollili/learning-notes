@@ -18,6 +18,20 @@ The application is deliberately simple: create study items, record sessions, mar
 
 Each stage has **four small build steps and one release check**. The stages build on each other. Finish the current step's build, tests and cleanup before moving on.
 
+
+
+<span class="notes-section-label">**See the cumulative learning path**</span>
+
+Each arrow starts from the previous passing release. Keep working behavior while adding or replacing a defined boundary.
+
+```mermaid
+flowchart TD
+ P1["1: CLI, use cases and file storage"] --> P2["2: add HTTP API, browser UI and deeper tests"]
+ P2 --> P3["3: add PostgreSQL, identity, worker and deployment"]
+ P3 --> P4["4: harden and optimize measured risks"]
+ P4 --> P5["5: brokered work, live status and operational evidence"]
+```
+
 ## One repository, five cumulative milestones
 
 **Extend the same application in one repository.** Project 2 starts from the working Project 1 code; Project 3 starts from the working Project 2 code:
@@ -175,6 +189,21 @@ node src/cli/main.mjs report --output progress.jsonl.gz
 ```
 
 The CLI uses only Node built-ins. **This lets you learn Node's APIs directly** before a framework manages some of the work.
+
+
+<span class="notes-section-label">**See the CLI boundary**</span>
+
+The CLI translates terminal input into shared operations. The operations do not depend on process.argv.
+
+```mermaid
+flowchart TD
+ Args["CLI arguments and input"] --> CLI["CLI adapter: parse and validate command"]
+ CLI --> Cases["Application use cases and domain rules"]
+ Cases --> Repo["File-backed repository contract"]
+ Cases --> Report["Bounded report and export operation"]
+ Cases --> Output["CLI result, diagnostic and exit-status mapping"]
+```
+
 
 ### Starter CLI milestone {#starter-cli-milestone}
 
@@ -422,6 +451,20 @@ The page needs only:
 
 Use a real `<form>`, labeled controls, buttons, a list/table appropriate to the content, visible focus, an `aria-live` status region and a layout that becomes one column on a narrow screen. Do not add charts, client-side routing, drag-and-drop, animation or a component library unless a concrete requirement justifies one.
 
+
+<span class="notes-section-label">**Add HTTP without duplicating the rules**</span>
+
+The browser uses the HTTP API; the CLI still calls the same application operations.
+
+```mermaid
+flowchart TD
+ Browser["Same-origin browser UI"] --> HTTP["Express HTTP adapter"]
+ HTTP --> Cases["Existing application use cases"]
+ CLI["Retained CLI"] --> Cases
+ Cases --> Store["Existing JSONL repository contract"]
+```
+
+
 ### First HTTP milestone {#first-http-milestone}
 
 **Keep the full Project 1 release as your starting point.** This checkpoint makes the first Project 2 increment smaller; it does not replace the Foundations handoff or any later Project 2 release check.
@@ -429,7 +472,7 @@ Use a real `<form>`, labeled controls, buttons, a list/table appropriate to the 
 1. Create an importable Express app and a separate server entry. Inject the existing `createStudyApplication` result; do not move file parsing or domain rules into routes.
 2. Implement only `POST /items` and `GET /items`, preserving the handoff's input fields, list envelope, status codes and error codes. Use a bounded JSON parser and one final error handler. The file repository remains the local default, with one owning process.
 3. Add two HTTP tests: create a valid item through the real app, then list it and check the returned fields; submit a blank title and prove the error response leaves storage unchanged. Use a fresh temporary data directory and close resources after each test. Keep the existing CLI/domain tests passing.
-4. Run the [small NestJS read API](./16-frameworks.md#nest-starter) and compare its controller/provider/module wiring with Express. Add one HTTP check for its list response and close the app afterward. This is a small framework companion, not a second implementation of the full homework.
+4. Run the [small NestJS read API](./16-framework-applications.md#nest-starter) and compare its controller/provider/module wiring with Express. Add one HTTP check for its list response and close the app afterward. This is a small framework companion, not a second implementation of the full homework.
 
 You have reached this checkpoint when a request can add an item, a later request can list it, invalid input cannot change the log, both frameworks' request paths can be explained, and every test exits. **Now extend the same application** with the UI, remaining routes, reporting and the networking/lifecycle drills below. The full increments add these concerns one at a time.
 
@@ -525,6 +568,23 @@ The stars show this project's stage in the learning path. The linked lessons kee
 Start from the passing `project-2-http-application` version and **keep the existing API and UI working**. Preserve business rules, application operations, CLI, routes, public responses and applicable tests. Replace production storage with PostgreSQL/MikroORM. Verify user identity and enforce item ownership. Run a CPU-heavy report calculation through a worker pool with fixed limits, behind the existing report operation. Package the whole service for controlled deployment. The UI shows the current user, only that user's items and report progress; **keep it simple**.
 
 Project 3 is still one service. **A worker, a database and a container do not automatically make it a microservice system.** Keep the deployment simple enough that you can reason about failure and recovery.
+
+
+<span class="notes-section-label">**Replace adapters around the same application**</span>
+
+PostgreSQL is the production storage adapter. Trusted identity and ownership checks protect every relevant operation.
+
+```mermaid
+flowchart TD
+ UI["Existing browser UI"] --> HTTP["Existing HTTP contract with trusted identity"]
+ HTTP --> Cases["Application operations and ownership policy"]
+ CLI["Retained CLI"] --> Cases
+ Cases --> DB["PostgreSQL and MikroORM adapter"]
+ Cases --> Worker["Bounded worker report adapter"]
+ Owner["One deployment lifecycle owner"] -.-> DB
+ Owner -.-> Worker
+```
+
 
 ### Project 2 → Project 3 handoff contract {#project-2-to-project-3-handoff}
 
@@ -694,6 +754,22 @@ The stars show this project's stage in the learning path. The linked lessons kee
 
 Begin from the passing `project-3-deployable-service` state. Keep its UI, API contracts, identity, data, worker and deployment behavior. **Project 4 adds tested security controls and measured performance evidence.** State the limits of what each check proves. It maps directly to Section 4 without creating another product.
 
+
+<span class="notes-section-label">**Prove the risk or bottleneck before changing behavior**</span>
+
+Security evidence and performance evidence answer different questions, but both preserve the existing contract.
+
+```mermaid
+flowchart TD
+ Baseline["Passing Project 3 service"] --> Risk["Threat model and demonstrated failure case"]
+ Baseline --> Measure["Representative workload and measured bottleneck"]
+ Risk --> Fix["Focused control or implementation change"]
+ Measure --> Fix
+ Fix --> Regression["Check unchanged public behavior and new evidence"]
+ Regression --> Release["Passing Project 4 release"]
+```
+
+
 ### What this continuation covers
 
 | Section 4 area | Evidence added to the existing service |
@@ -762,6 +838,22 @@ The stars show this project's stage in the learning path. The linked lessons kee
 ### Outcome
 
 Begin from the passing `project-4-hardened-service` state. Keep the same UI and service contracts. Replace only the report-job dispatch adapter with a broker-backed path, add live progress and operational evidence, then introduce one bounded specialist computation adapter.
+
+
+<span class="notes-section-label">**Operate the report path across boundaries**</span>
+
+The broker replaces dispatch, rather than replacing the application. Status delivery and observability follow the same report operation.
+
+```mermaid
+flowchart TD
+ API["Existing authorized report operation"] --> Dispatch["Broker-backed dispatch adapter"]
+ Dispatch --> Worker["Bounded report consumer with duplicate handling"]
+ Worker --> Status["Durable report outcome and progress"]
+ Status --> Live["Authorized live-status adapter"]
+ Live --> UI["Existing UI"]
+ Worker --> Telemetry["Correlated logs, metrics and traces"]
+```
+
 
 ### What this continuation covers
 
