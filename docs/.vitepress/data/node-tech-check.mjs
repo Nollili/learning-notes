@@ -72,6 +72,12 @@ export const nodeTechCheckPaths = [
     "description": "Build and test HTTP applications, handle failures and choose useful application patterns.",
     "items": [
       {
+        "id": "/node-js/tech-check/applications-at-a-glance",
+        "title": "At a glance",
+        "href": "/node-js/tech-check/applications-at-a-glance",
+        "type": "Summary"
+      },
+      {
         "id": "/node-js/tech-check/16-framework-applications#application-frameworks",
         "title": "Express and NestJS",
         "href": "/node-js/tech-check/16-framework-applications#application-frameworks",
@@ -126,6 +132,12 @@ export const nodeTechCheckPaths = [
     "title": "Designing Node.js Services",
     "description": "Design service boundaries, persistence, access control and deployment.",
     "items": [
+      {
+        "id": "/node-js/tech-check/services-at-a-glance",
+        "title": "At a glance",
+        "href": "/node-js/tech-check/services-at-a-glance",
+        "type": "Summary"
+      },
       {
         "id": "/node-js/tech-check/18-architecture",
         "title": "Architecture",
@@ -188,6 +200,12 @@ export const nodeTechCheckPaths = [
     "description": "Strengthen security and use measurements to improve performance and data access.",
     "items": [
       {
+        "id": "/node-js/tech-check/hardening-at-a-glance",
+        "title": "At a glance",
+        "href": "/node-js/tech-check/hardening-at-a-glance",
+        "type": "Summary"
+      },
+      {
         "id": "/node-js/tech-check/14-security",
         "title": "Security",
         "href": "/node-js/tech-check/14-security",
@@ -230,6 +248,12 @@ export const nodeTechCheckPaths = [
     "title": "Specialized Node.js Systems",
     "description": "Operate message-driven and real-time services with logs, monitoring and specialist integrations.",
     "items": [
+      {
+        "id": "/node-js/tech-check/specialized-at-a-glance",
+        "title": "At a glance",
+        "href": "/node-js/tech-check/specialized-at-a-glance",
+        "type": "Summary"
+      },
       {
         "id": "/node-js/tech-check/19-messaging",
         "title": "Queues and message-driven systems",

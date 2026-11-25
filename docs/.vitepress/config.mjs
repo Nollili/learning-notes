@@ -274,6 +274,7 @@ export default defineConfig(withLearningPaths(applyPublicationPolicy(applyConten
           items: path.items.map(item => ({ text: `${item.type}: ${item.title}`, link: item.href }))
         })),
         { text: 'More explanations and practice', items: [
+          { text: 'Summary: At a glance', link: '/node-js/tech-check/more-explanations-at-a-glance' },
           { text: 'Creational patterns', link: '/node-js/tech-check/patterns/creational' },
           { text: 'Structural patterns', link: '/node-js/tech-check/patterns/structural' },
           { text: 'Behavioral workflows', link: '/node-js/tech-check/patterns/behavioral-workflows' },
