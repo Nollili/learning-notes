@@ -600,6 +600,66 @@ Material completion is separate from practice. Do not implement every pattern in
 
 ## Revision and practice evidence
 
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t18-q01 -->
+
+<span class="notes-section-label">**1. Choose — A two-case switch is easy to understand, but someone proposes a large pattern hierarchy. Which changing responsibility and preserved contract would justify the added structure?**</span>
+
+::: details Show answer
+
+**Choose a pattern for an independently changing responsibility.** Creational patterns organize creation, structural patterns connect parts, behavioral patterns organize actions and communication.
+
+[Revisit the explanation and examples](#t18-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q02 -->
+
+<span class="notes-section-label">**2. Compare — How do a factory, builder and singleton answer different creation questions? Who should own an injected shared pool, and what does another process share automatically?**</span>
+
+::: details Show answer
+
+**Factories construct, builders assemble, singletons share within a defined scope.** Decide state lifetime and resource ownership; a singleton is not shared across processes.
+
+[Revisit the explanation and examples](#t18-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q03 -->
+
+<span class="notes-section-label">**3. Compare and explain diagram — Use the [Adapter/Decorator diagram](#t18-q03). A legacy reader changes field names, while another wrapper records metrics: which role fits each, and what behavior must remain stable?**</span>
+
+::: details Show answer
+
+**An Adapter translates an interface; a Decorator adds behavior while preserving its contract.** Results, errors, effects and cleanup matter as much as method names.
+
+[Revisit the explanation and examples](#t18-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q04 -->
+
+<span class="notes-section-label">**4. Compare — Shipping rules need interchangeable algorithms, optional listeners need notifications, and a UI button triggers a stored operation. Where do Strategy, Observer and Command fit, and what guarantees do their names not provide?**</span>
+
+::: details Show answer
+
+**Strategy chooses an algorithm; Observer notifies listeners; Command represents an operation.** None automatically supplies durable delivery, safe retries or undo.
+
+[Revisit the explanation and examples](#t18-q04).
+
+:::
+
+
 | Design question | Evidence to retain |
 |---|---|
 | Why this pattern? | A concrete change, simpler alternative and accepted trade-off |

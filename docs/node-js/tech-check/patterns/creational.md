@@ -551,3 +551,79 @@ Singleton restricts access to one instance within a defined owner/scope.
 <span class="notes-section-label">**Official implementation reference**</span>
 
 [Documentation](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). References explain runtime mechanics; the design choices and bounded contracts are the teaching examples above.
+
+## Revision
+
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t18-q05 -->
+
+<span class="notes-section-label">**1. Compare — A createService function selects an implementation. A subclass instead overrides createParser inside a fixed import workflow. Which case expresses classic Factory Method, and why?**</span>
+
+::: details Show answer
+
+The subclass's creation hook inside the stable creator workflow expresses Factory Method. The standalone function is a useful simple factory, but its name alone does not establish that pattern. Choose the structure for a real need to vary construction while preserving the workflow and its contract.
+
+[Revisit the explanation and examples](#t18-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q06 -->
+
+<span class="notes-section-label">**2. Choose — A factory creates a reader for one backend and a writer for another with different consistency behavior. Why do two create methods not establish a compatible Abstract Factory family?**</span>
+
+::: details Show answer
+
+**Create a compatible family of collaborators through agreed interfaces.** Backend-specific transactions and failures still need explicit contracts and tests.
+
+[Revisit the explanation and examples](#t18-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q07 -->
+
+<span class="notes-section-label">**3. Predict — A builder returns its internal mutable options object, then changes an option before building again. Why can the first result change, and how should build define ownership?**</span>
+
+::: details Show answer
+
+Both the builder and first result still refer to the same mutable state, so later edits can affect the already built result. build should validate and produce an independent result or explicitly transfer it once under a clear sharing contract. Use Builder only when its meaningful steps clarify construction better than a simple options object.
+
+[Revisit the explanation and examples](#t18-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q08 -->
+
+<span class="notes-section-label">**4. Compare — How does Object.create(source) differ from cloning source's current data? What must be copied independently when the new object should own nested mutable state?**</span>
+
+::: details Show answer
+
+**Cloning needs an explicit copy-versus-share policy.** `Object.create(source)` delegates property lookup to the source rather than capturing an independent snapshot.
+
+[Revisit the explanation and examples](#t18-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q09 -->
+
+<span class="notes-section-label">**5. Diagnose — A module singleton stores currentUser and assumes all replicas see the same cache. Which two different sharing mistakes does this make?**</span>
+
+::: details Show answer
+
+**One instance means one within a defined application or module scope.** Shared mutable state needs ownership; it is not global across processes or replicas.
+
+[Revisit the explanation and examples](#t18-q09).
+
+:::

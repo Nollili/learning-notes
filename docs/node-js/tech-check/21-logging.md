@@ -329,10 +329,76 @@ In an owned collector or authorized service, verify ingestion/query timestamps, 
 
 ## Revision and mixed practice
 
-1. A request times out after its database mutation commits. Should the log say the mutation failed?
-2. A logger reports finish, but the collector is unreachable. Can you claim the audit event was stored?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt both cases first**</span>
+<!-- revision-covers: t21-q01 -->
 
-1. Record the separate committed business outcome and failed/unknown response delivery under one operation ID; do not infer rollback from a timeout.
-2. No. Check the destination's actual acknowledgment/durability contract and the policy for retained/failed delivery.
+<span class="notes-section-label">**1. Scenario — A request times out after its database mutation commits. Should the log say the mutation failed?**</span>
+
+::: details Show answer
+
+Record the separate committed business outcome and failed/unknown response delivery under one operation ID; do not infer rollback from a timeout.
+
+[Revisit the explanation and examples](#t21-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t21-q02 -->
+
+<span class="notes-section-label">**2. Explain diagram — Trace the [structured-logging diagram](#t21-q02). Why should an application allowlist fields before the transport instead of relying solely on redaction afterward?**</span>
+
+::: details Show answer
+
+Start from the known operation outcome, select only allowed bounded fields, format the structured record and send it through configured transports. This avoids retaining nested secrets that a later redaction rule might miss. The transport still needs a bounded buffer, failure policy and shutdown flush owner. Local finish alone is not proof of durable remote storage.
+
+[Revisit the explanation and examples](#t21-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t21-q03 -->
+
+<span class="notes-section-label">**3. Diagnose — Two concurrent requests log through one mutable global request ID. What can go wrong, and how must safe correlation context cross a worker or queue boundary?**</span>
+
+::: details Show answer
+
+**Propagate a safe correlation ID while keeping concurrent operations separate.** Record each important outcome once and pass context explicitly across process and queue boundaries.
+
+[Revisit the explanation and examples](#t21-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t21-q04 -->
+
+<span class="notes-section-label">**4. Scenario — A logger reports finish, but the collector is unreachable. Can you claim the audit event was stored?**</span>
+
+::: details Show answer
+
+No. Check the destination's actual acknowledgment/durability contract and the policy for retained/failed delivery.
+
+[Revisit the explanation and examples](#t21-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t21-q04 -->
+
+<span class="notes-section-label">**5. Explain diagram — Trace the [remote-log pipeline](#t21-q04). How do Logstash-style processing, durable storage/indexing and the viewing tool have different responsibilities?**</span>
+
+::: details Show answer
+
+**Collection, processing, storage and search are distinct stages.** Verify ingestion and retention policies; a successful local log call does not prove a searchable remote record. Logstash processes input/filter/output stages; it is not automatically the storage backend or viewing layer. Access, buffering, retention and lost-record policy need owners across the whole path.
+
+[Revisit the explanation and examples](#t21-q04).
+
+:::

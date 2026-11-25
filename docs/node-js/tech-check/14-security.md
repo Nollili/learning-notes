@@ -533,12 +533,139 @@ Write an execution authority matrix and a rejection/cleanup plan. Test a bounded
 
 ## Revision and mixed practice
 
-1. An HTTPS route uses Helmet and escapes HTML but still reads another tenant's record. Which control is missing?
-2. A dependency fix changes a major version and breaks the artifact's startup. May a clean audit report bypass the failure?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt both cases first**</span>
+<!-- revision-covers: t14-q01 -->
 
-1. Resource authorization and scoped persistence. Transport, browser headers and encoding do not grant tenant authority.
-2. No. Review compatibility, fix the integration or document a bounded exception; the actual release must still pass its required checks.
+<span class="notes-section-label">**1. Scenario — An HTTPS route uses Helmet and escapes HTML but still reads another tenant's record. Which control is missing?**</span>
+
+::: details Show answer
+
+Resource authorization and scoped persistence. Transport, browser headers and encoding do not grant tenant authority.
+
+[Revisit the explanation and examples](#t14-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q01 -->
+
+<span class="notes-section-label">**2. Explain — How do you turn a named threat into an enforceable control and a negative test across HTTP, internal and job entry points?**</span>
+
+::: details Show answer
+
+**For each realistic threat, name the asset, trust boundary, control and test.** Enforce controls at protected operations reached through HTTP, jobs or internal callers. Name who can reach the operation and which boundary grants authority, then show both permitted behavior and denied misuse. A visible route check is insufficient if another caller reaches unprotected persistence.
+
+[Revisit the explanation and examples](#t14-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q02 -->
+
+<span class="notes-section-label">**3. Compare — A cookie-authenticated mutation binds SQL values and escapes HTML. Why might it still need validation, authorization and CSRF/origin checks? Name the boundary each defense protects.**</span>
+
+::: details Show answer
+
+Validation checks allowed shape and values; SQL binding separates query values from instructions; encoding protects a particular output context. CSRF/origin controls address unwanted browser actions using automatically attached credentials, while authorization checks this caller's resource permission. These are different boundaries, so one passing check does not replace the others.
+
+[Revisit the explanation and examples](#t14-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q03 -->
+
+<span class="notes-section-label">**4. Choose — A service fetches a caller-selected HTTPS URL and follows redirects. Why is parsing and scheme checking insufficient, and how can a server-controlled provider mapping reduce authority?**</span>
+
+::: details Show answer
+
+**Prefer server-controlled destinations instead of arbitrary caller URLs.** Enforce policy at actual connection and redirect boundaries; a parsed HTTPS URL alone proves no permission.
+
+[Revisit the explanation and examples](#t14-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q04 -->
+
+<span class="notes-section-label">**5. Compare — How do verified TLS, secret management and authenticated encryption protect different boundaries? Why does encryption not establish permission or repair a leaked key?**</span>
+
+::: details Show answer
+
+**TLS protects verified connections; secret management controls key access; authenticated encryption protects stored data and detects changes.** Encryption does not authorize use or repair leaked keys.
+
+[Revisit the explanation and examples](#t14-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q05 -->
+
+<span class="notes-section-label">**6. Choose — A login endpoint uses a fast SHA-256 password hash and accepts unlimited parallel attempts. Which password-storage and resource-abuse properties are missing?**</span>
+
+::: details Show answer
+
+**Use maintained, salted, deliberately expensive password hashing and bound verification work.** Protect attempts and recovery; fast hashes and reversible encryption are unsuitable password storage.
+
+[Revisit the explanation and examples](#t14-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q06 -->
+
+<span class="notes-section-label">**7. Scenario — A dependency fix changes a major version and breaks the artifact's startup. May a clean audit report bypass the failure?**</span>
+
+::: details Show answer
+
+No. Review compatibility, fix the integration or document a bounded exception; the actual release must still pass its required checks.
+
+[Revisit the explanation and examples](#t14-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q07 -->
+
+<span class="notes-section-label">**8. Diagnose — Helmet is installed but deployed responses differ behind a proxy. What must be checked in effective headers and deployment configuration, and which validation/identity/permission duties remain separate?**</span>
+
+::: details Show answer
+
+**Helmet configures browser-facing headers, not record permissions or credential verification.** Test effective responses alongside parsing, proxy, cookie, safe-error and resource-limit policies.
+
+[Revisit the explanation and examples](#t14-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t14-q08 -->
+
+<span class="notes-section-label">**9. Choose — A feature needs user-defined filtering, and someone proposes arbitrary JavaScript inside node:vm. How could a limited data language reduce the problem, and what boundary is still required for hostile code?**</span>
+
+::: details Show answer
+
+**A VM context, worker, child process or container name alone does not establish a safe sandbox.** Prefer constrained data languages; hostile execution needs reviewed isolation and external limits.
+
+[Revisit the explanation and examples](#t14-q08).
+
+:::
+
 
 Each question's exercise remains learner work. Exact local fixture checks and their limitations are recorded in the combined progress tracker.

@@ -398,10 +398,121 @@ Write a concrete adapter contract and an owned setup plan: product/version, prot
 
 ## Revision and mixed practice
 
-1. A publisher timed out after the broker accepted an outbox event. Should a retry use a new business ID?
-2. A Kafka consumer finishes record 42 after record 41 fails, then commits 43. What went wrong?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt both cases first**</span>
+<!-- revision-covers: t19-q01 -->
 
-1. Retain the stable operation ID and reconcile/retry under the duplicate contract; a new ID can bypass deduplication.
-2. The committed position can skip failed work. Preserve partition ordering/ownership or implement an explicit durable failure policy before advancing past it.
+<span class="notes-section-label">**1. Scenario — A publisher timed out after the broker accepted an outbox event. Should a retry use a new business ID?**</span>
+
+::: details Show answer
+
+Retain the stable operation ID and reconcile/retry under the duplicate contract; a new ID can bypass deduplication.
+
+[Revisit the explanation and examples](#t19-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q01 -->
+
+<span class="notes-section-label">**2. Compare — How does a command differ from an event, and why can a delivery ID be insufficient to deduplicate the business operation?**</span>
+
+::: details Show answer
+
+**A command requests work; an event reports something that happened.** Define version, payload, ordering and recovery; keep business-operation identity distinct from delivery-attempt identity. Several deliveries can ask for one operation, while retries with newly invented business IDs can bypass duplicate protection. Define payload/version, ordering, authority and durable outcome meaning before selecting the broker.
+
+[Revisit the explanation and examples](#t19-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q02 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the [outbox and broker diagram](#t19-q02). What do publisher confirm and consumer acknowledgement each prove, and where can a crash still cause repeated delivery?**</span>
+
+::: details Show answer
+
+The database first commits business data and outbox intent together. Publisher confirm then proves broker acceptance, while consumer acknowledgement permits removal under that delivery contract after the required durable effect or recovery handoff. A crash before marking published or before acknowledging a committed consumer effect can cause another delivery. Keep stable operation identity and durable duplicate handling rather than treating either acknowledgement as all business work complete.
+
+[Revisit the explanation and examples](#t19-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q03 -->
+
+<span class="notes-section-label">**4. Diagnose — A consumer rejects and immediately requeues the same message throughout a dependency outage. How should temporary/permanent classification, backoff and dead-letter ownership change the loop?**</span>
+
+::: details Show answer
+
+**Delay and bound replay-safe temporary retries; separate permanent failures.** Immediate requeue loops worsen outages; dead letters need durable recovery state and a responsible owner.
+
+[Revisit the explanation and examples](#t19-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q04 -->
+
+<span class="notes-section-label">**5. Scenario — A Kafka consumer finishes record 42 after record 41 fails, then commits 43. What went wrong?**</span>
+
+::: details Show answer
+
+The committed position can skip failed work. Preserve partition ordering/ownership or implement an explicit durable failure policy before advancing past it.
+
+[Revisit the explanation and examples](#t19-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q04 -->
+
+<span class="notes-section-label">**6. Compare — How do retained Kafka partition records and consumer offsets differ from removing an acknowledged work-queue delivery?**</span>
+
+::: details Show answer
+
+**Kafka retains partition records; consumers track progress rather than deleting each message.** Offset-before-effect can skip work; effect-before-offset can repeat it, so plan durable duplicate handling. Reading does not remove the Kafka record, and ordering applies within a partition. Ownership can move during rebalance, so offset advancement and the effect/recovery contract must remain explicit.
+
+[Revisit the explanation and examples](#t19-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q05 -->
+
+<span class="notes-section-label">**7. Explain diagram — In the [SNS-to-SQS diagram](#t19-q05), why do two subscriber queues provide independent backlogs, and why is receiving a notification still not durable business completion?**</span>
+
+::: details Show answer
+
+SNS distributes notifications to the two SQS queues; each queue retains its own backlog for its consumer, so one consumer can lag independently. Every consumer still owns validation, durable effect, retry/visibility and acknowledgement rules. Receiving a notification is only a transport milestone, not proof the operation committed, and repeated delivery needs duplicate protection.
+
+[Revisit the explanation and examples](#t19-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t19-q06 -->
+
+<span class="notes-section-label">**8. Choose — A Java/JMS tutorial targets ActiveMQ Classic, while the deployment uses Artemis and a Node client. Which product, protocol and acknowledgement assumptions must be verified before copying the example?**</span>
+
+::: details Show answer
+
+**ActiveMQ Classic and Artemis are different products.** Verify exact product, protocol and Node-client acknowledgement, security, flow-control and failure contracts.
+
+[Revisit the explanation and examples](#t19-q06).
+
+:::

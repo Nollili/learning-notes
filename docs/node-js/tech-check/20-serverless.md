@@ -452,10 +452,106 @@ Explain the trigger’s input/output contract before discussing retries. Run loc
 
 ### Mixed practice
 
-1. One standard-queue record fails after another succeeded. What does the enabled partial-batch adapter report?
-2. A function caches the last tenant in a module variable and reuses it on the next request. Is warm reuse safe?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t20-q01 -->
 
-1. Report only the failed delivery ID under ReportBatchItemFailures; keep durable business-event deduplication because even successful work can redeliver. Apply the separate stop-on-failure policy for FIFO.
-2. No. Reuse infrastructure clients, not request identity. Derive a fresh trusted principal per invocation and enforce its permission on the current resource.
+<span class="notes-section-label">**1. Choose — A task reacts to bursts of queue events but can run longer than a function's execution budget. Which trigger, duration, state and retry requirements determine whether a function fits?**</span>
+
+::: details Show answer
+
+A trigger-driven function can suit bursty, bounded-duration work, but a job exceeding the platform execution contract needs another decomposition or execution owner. Compare trigger behavior, duration, resource demand, state and retry semantics rather than selecting by traffic alone. The application still owns authorization, durable results, duplicate protection and cost even when the provider owns infrastructure.
+
+[Revisit the explanation and examples](#t20-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q02 -->
+
+<span class="notes-section-label">**2. Compare — An HTTP Lambda receives an API Gateway event. Why should it validate that event and return a proxy response instead of starting its own HTTP listener, and which work must it await?**</span>
+
+::: details Show answer
+
+API Gateway invokes the exported handler with its event contract, so the handler translates that event rather than binding an HTTP socket. Validate the event and obtain identity from the configured trusted authorizer, then await owned business work and return the required proxy response. Local event-format tests do not establish real gateway authentication or routing behavior, and other providers require their own adapters.
+
+[Revisit the explanation and examples](#t20-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q03 -->
+
+<span class="notes-section-label">**3. Scenario — One standard-queue record fails after another succeeded. What does the enabled partial-batch adapter report?**</span>
+
+::: details Show answer
+
+Report only the failed delivery ID under ReportBatchItemFailures; keep durable business-event deduplication because even successful work can redeliver. Apply the separate stop-on-failure policy for FIFO.
+
+[Revisit the explanation and examples](#t20-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q03 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace receipt, effect and acknowledgement in the [duplicate-delivery diagram](#t20-q03). Why must the receipt and local business change commit together?**</span>
+
+::: details Show answer
+
+**Commit a durable event receipt with its business effect.** Repeated delivery checks that record; an in-memory Set cannot coordinate restarts and multiple instances. If the receipt records success without the effect, a repeat can skip unfinished work; if the effect commits without durable duplicate protection, a repeat can apply it again. Report batch failures according to the trigger and design external effects separately.
+
+[Revisit the explanation and examples](#t20-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q04 -->
+
+<span class="notes-section-label">**5. Scenario — A function caches the last tenant in a module variable and reuses it on the next request. Is warm reuse safe?**</span>
+
+::: details Show answer
+
+No. Reuse infrastructure clients, not request identity. Derive a fresh trusted principal per invocation and enforce its permission on the current resource.
+
+[Revisit the explanation and examples](#t20-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q04 -->
+
+<span class="notes-section-label">**6. Predict — If each function invocation can open several database connections, what happens to maximum pressure as invocation concurrency increases?**</span>
+
+::: details Show answer
+
+Potential aggregate connection and downstream-work demand grows with active invocations, so a harmless-looking per-invocation limit can exhaust a shared dependency. Configure concurrency and pool behavior against the total capacity and measure actual reuse. Separate runtime/memory/timeout settings from downstream deadlines, safe retries, identity and durable duplicate handling; extending a timeout fixes none of those automatically.
+
+[Revisit the explanation and examples](#t20-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t20-q05 -->
+
+<span class="notes-section-label">**7. Compare — A business function works under Lambda. Which provider-specific event, identity, retry and acknowledgement contracts must change or be verified before using Azure or Google entry adapters?**</span>
+
+::: details Show answer
+
+**Reuse business logic through provider-specific entry adapters.** Event formats, identities, concurrency, retry and acknowledgement behavior need tests for the chosen platform.
+
+[Revisit the explanation and examples](#t20-q05).
+
+:::

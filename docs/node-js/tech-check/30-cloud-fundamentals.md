@@ -329,10 +329,91 @@ Explain what the provider manages, what your team manages and which evidence sup
 
 ### Mixed practice
 
-1. A task role permits S3 reads, but the private task cannot pull its image. Which boundary do you inspect?
-2. A snapshot completed. Can you claim a ten-minute recovery objective?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t30-q01 -->
 
-1. Inspect the execution role and the ECR/S3/DNS/network endpoint path. The application task role is a separate authority; do not grant blanket admin to both.
-2. No. Restore to an isolated target, make the application usable and verify data; measure that elapsed time and the recoverable data timestamp. Snapshot completion alone does not test application consistency.
+<span class="notes-section-label">**1. Compare — How do a VM, a container platform and a managed database move operational responsibilities? Which application, data and permission responsibilities remain with the team?**</span>
+
+::: details Show answer
+
+**Managed infrastructure transfers specified operations, not application correctness or access policy.** Name which platform duties the provider handles and which your team retains.
+
+[Revisit the explanation and examples](#t30-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t30-q02 -->
+
+<span class="notes-section-label">**2. Scenario — A snapshot completed. Can you claim a ten-minute recovery objective?**</span>
+
+::: details Show answer
+
+No. Restore to an isolated target, make the application usable and verify data; measure that elapsed time and the recoverable data timestamp. Snapshot completion alone does not test application consistency.
+
+[Revisit the explanation and examples](#t30-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t30-q03 -->
+
+<span class="notes-section-label">**3. Choose — A workload needs object downloads, a database disk and a shared file interface. Why are object, block and file storage not interchangeable folders, and why are object/database writes separate effects?**</span>
+
+::: details Show answer
+
+**Object storage uses keys/APIs, block storage offers disk-like blocks, file storage exposes directories/files.** Choose needed semantics; object writes and database commits remain separate effects.
+
+[Revisit the explanation and examples](#t30-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t30-q04 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace the [managed-database connection diagram](#t30-q04). Why do an allowed route, database privilege and verified TLS each solve a different part of the connection problem?**</span>
+
+::: details Show answer
+
+The application first needs an allowed route to the intended endpoint, then verified TLS and appropriate database authentication/SQL privileges. A private subnet or IAM allowance cannot stand in for all those checks. Bound aggregate connection demand across application pools and replicas, and retain explicit operation-level authorization. A secure connection can still overload a database without capacity controls.
+
+[Revisit the explanation and examples](#t30-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t30-q05 -->
+
+<span class="notes-section-label">**5. Scenario — A task role permits S3 reads, but the private task cannot pull its image. Which boundary do you inspect?**</span>
+
+::: details Show answer
+
+Inspect the execution role and the ECR/S3/DNS/network endpoint path. The application task role is a separate authority; do not grant blanket admin to both.
+
+[Revisit the explanation and examples](#t30-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t30-q06 -->
+
+<span class="notes-section-label">**6. Choose — An infrastructure template parses locally. Which allowed/forbidden operations, recovery observations, cost controls and cleanup evidence are still required for a complete cloud exercise?**</span>
+
+::: details Show answer
+
+**Prove permitted work succeeds and forbidden access fails in the intended environment.** Observe recovery, control cost and record cleanup or explicitly retained resources.
+
+[Revisit the explanation and examples](#t30-q06).
+
+:::

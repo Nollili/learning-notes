@@ -1127,25 +1127,188 @@ Acceptance: assert the peak limit, no assignment after observed failure under th
 
 State that cancellation cannot undo a committed save and demonstrate an idempotency/reconciliation strategy. Never use real production data for this exercise.
 
-<span class="notes-section-label">**Mixed practice — attempt all before reading the answers**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A pool receives promises from 1000 already-started requests and sets limit 4. What has it failed to limit?
-2. all rejects while a sibling write is still active. Has that write been rolled back?
-3. Which combinator produces the first successful mirror result, and what happens if every mirror fails?
-4. A timeout wins race but the request API ignores its signal. What still needs an owner?
-5. A consumer breaks after two values from cursorValues. How many next calls occur in the fixture, and what releases the cursor?
-6. The owner stores an iterator after one next call and never resumes or closes it. Is cleanup guaranteed?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t05-q01 -->
 
-1. Request starts and resource admission. Give the scheduler task factories or inputs so it controls invocation.
-2. No. Aggregation rejection is not cancellation or a transaction. Observe the sibling outcome and reconcile side effects.
-3. any; all failures produce AggregateError with input-ordered errors. Losing work is not automatically cancelled.
-4. The unfinished request, its eventual failure/success and resources. A response deadline does not imply completed cleanup.
-5. Two; the loop calls the iterator's return during early closing, entering the generator's finally and awaiting close.
-6. No. The iterator can remain suspended at yield. The owner must call return or consume it through a construct with an appropriate closing path.
+<span class="notes-section-label">**1. Compare — Why does returning immediately after callback(error) matter, and why can the same callback API be difficult to use if cache hits run synchronously but misses run later?**</span>
+
+::: details Show answer
+
+A one-result operation must choose one completion path. Continuing after callback(error) can also reach success or repeat an effect, so return after reporting the failure. If a cache hit calls back immediately while a miss calls back later, callers face inconsistent reentrancy and setup order; document and preserve consistent timing rather than assuming every callback is asynchronous.
+
+[Revisit the explanation and examples](#t05-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q02 -->
+
+<span class="notes-section-label">**2. Predict — What prints first when new Promise(resolve => { console.log('executor'); resolve(3); }).then(console.log) is followed by console.log('sync')? Does resolving stop the executor?**</span>
+
+::: details Show answer
+
+The order is **executor, sync, 3**. The executor runs immediately, but the then handler runs later. resolve chooses the promise's outcome; it does not return from the executor, so later executor statements can still run.
+
+[Revisit the explanation and examples](#t05-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q03 -->
+
+<span class="notes-section-label">**3. Compare — Inside try/finally, why can return resource.read() close a resource too early, while return await resource.read() keeps the read inside the owned lifetime?**</span>
+
+::: details Show answer
+
+Without awaiting the read, the function leaves try with a pending promise and runs finally before that read settles. **return await keeps the read inside try until it completes or rejects**, then finally can await close. Cleanup failure still needs an explicit precedence policy because it can replace a pending result or error.
+
+[Revisit the explanation and examples](#t05-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q04 -->
+
+<span class="notes-section-label">**4. Diagnose — A timer callback throws after its caller's try block has returned. Why does that catch miss it, and why does void someAsyncWork() not handle a rejection?**</span>
+
+::: details Show answer
+
+The later callback executes outside the original running try block and needs its own error boundary. void discards a value; it does not attach a rejection handler. Return, await or catch promise work, and supervise any deliberately detached task through its full lifetime.
+
+[Revisit the explanation and examples](#t05-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q05 -->
+
+<span class="notes-section-label">**5. Scenario — A pool receives promises from 1000 already-started requests and sets limit 4. What has it failed to limit?**</span>
+
+::: details Show answer
+
+Request starts and resource admission. Give the scheduler task factories or inputs so it controls invocation.
+
+[Revisit the explanation and examples](#t05-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q06 -->
+
+<span class="notes-section-label">**6. Scenario — all rejects while a sibling write is still active. Has that write been rolled back?**</span>
+
+::: details Show answer
+
+No. Aggregation rejection is not cancellation or a transaction. Observe the sibling outcome and reconcile side effects.
+
+[Revisit the explanation and examples](#t05-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q06 -->
+
+<span class="notes-section-label">**7. Scenario — Which combinator produces the first successful mirror result, and what happens if every mirror fails?**</span>
+
+::: details Show answer
+
+any; all failures produce AggregateError with input-ordered errors. Losing work is not automatically cancelled.
+
+[Revisit the explanation and examples](#t05-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q06 -->
+
+<span class="notes-section-label">**8. Compare — Which combinator fits every required success, a report of every outcome, the first success and the first settlement? What happens for empty inputs?**</span>
+
+::: details Show answer
+
+Use all, allSettled, any and race respectively. all and allSettled fulfill with empty arrays; any rejects with an empty AggregateError; race remains pending. all rejection does not mean siblings stopped, allSettled can wait forever on one pending input, and none of the combinators cancels or rolls back work. Results/outcome arrays follow their documented input-order contracts rather than arbitrary completion order.
+
+[Revisit the explanation and examples](#t05-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q07 -->
+
+<span class="notes-section-label">**9. Scenario — A timeout wins race but the request API ignores its signal. What still needs an owner?**</span>
+
+::: details Show answer
+
+The unfinished request, its eventual failure/success and resources. A response deadline does not imply completed cleanup.
+
+[Revisit the explanation and examples](#t05-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q08 -->
+
+<span class="notes-section-label">**10. Scenario — A consumer breaks after two values from cursorValues. How many next calls occur in the fixture, and what releases the cursor?**</span>
+
+::: details Show answer
+
+Two; the loop calls the iterator's return during early closing, entering the generator's finally and awaiting close.
+
+[Revisit the explanation and examples](#t05-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q08 -->
+
+<span class="notes-section-label">**11. Scenario — The owner stores an iterator after one next call and never resumes or closes it. Is cleanup guaranteed?**</span>
+
+::: details Show answer
+
+No. The iterator can remain suspended at yield. The owner must call return or consume it through a construct with an appropriate closing path.
+
+[Revisit the explanation and examples](#t05-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t05-q09 -->
+
+<span class="notes-section-label">**12. Predict and explain diagram — Trace the [generator diagram](#t05-q09): what do the first three next() calls return for yield 10, yield 20, return 99? Does yield itself let I/O callbacks run?**</span>
+
+::: details Show answer
+
+The calls return {value: 10, done: false}, {value: 20, done: false}, and {value: 99, done: true}. The body starts only on the first next call and pauses at each yield. A synchronous yield hands control to the caller, not automatically to the event loop; another call after exhaustion returns undefined with done true.
+
+[Revisit the explanation and examples](#t05-q09).
+
+:::
+
 
 Additional official references checked 2026-11-04: Node.js 24.18 [promise timers and cancellation](https://nodejs.org/download/release/v24.18.0/docs/api/timers.html#timers-promises-api), [AbortController and AbortSignal](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#class-abortcontroller); ECMAScript [Promise combinators](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-promise.all), [async generator objects](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-asyncgenerator-objects), [for-in/of evaluation and closing](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-for-in-and-for-of-statements).
 
 <span id="next-batch-checkpoint"></span>
-

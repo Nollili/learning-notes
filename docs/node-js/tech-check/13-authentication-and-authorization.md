@@ -635,10 +635,136 @@ For one mutation explain credential verification, account state, permission/tena
 
 ### Mixed practice
 
-1. A JWT signature is valid but its audience is another API. May this route accept it?
-2. An authenticated tenant A user sends a tenant B product ID with a valid CSRF token. What must reject it?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t13-q01 -->
 
-1. No. Signature authenticity alone does not establish intended recipient, time validity, token profile or current permission. Reject at credential validation.
-2. The server-side resource authorization and tenant-scoped persistence predicate. CSRF protection proves neither ownership nor permission; test every alternate route too.
+<span class="notes-section-label">**1. Scenario — An authenticated tenant A user sends a tenant B product ID with a valid CSRF token. What must reject it?**</span>
+
+::: details Show answer
+
+The server-side resource authorization and tenant-scoped persistence predicate. CSRF protection proves neither ownership nor permission; test every alternate route too.
+
+[Revisit the explanation and examples](#t13-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q02 -->
+
+<span class="notes-section-label">**2. Compare — For a browser application, how do an opaque server-side session ID and a signed token place login state and trust differently? Which expiry and revocation needs should guide the choice?**</span>
+
+::: details Show answer
+
+**A browser session keeps login state server-side behind an opaque ID.** Choose sessions or tokens from client/trust/revocation needs, not a claim that JWTs are automatically safer.
+
+[Revisit the explanation and examples](#t13-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q03 -->
+
+<span class="notes-section-label">**3. Scenario — A JWT signature is valid but its audience is another API. May this route accept it?**</span>
+
+::: details Show answer
+
+No. Signature authenticity alone does not establish intended recipient, time validity, token profile or current permission. Reject at credential validation.
+
+[Revisit the explanation and examples](#t13-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q03 -->
+
+<span class="notes-section-label">**4. Compare — Why is decoding or checking only a JWT signature insufficient, and why does signing not make its contents secret?**</span>
+
+::: details Show answer
+
+**Decoding is not verification.** Check trusted signature keys, allowed algorithms, issuer, audience, time and required claims, then authorize the requested operation separately. A signature detects unauthorized alteration under trusted verification; encryption is a different property. Even accepted credentials need current permission checks for this action and resource.
+
+[Revisit the explanation and examples](#t13-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q04 -->
+
+<span class="notes-section-label">**5. Compare — Passport successfully authenticates a caller. What does the resulting principal establish, and why must the application still check resource ownership and manage session lifetime?**</span>
+
+::: details Show answer
+
+**A strategy verifies its configured credential method and supplies a trusted principal.** The application still owns resource permissions, secure strategy setup and session lifecycle.
+
+[Revisit the explanation and examples](#t13-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q05 -->
+
+<span class="notes-section-label">**6. Choose — Service A verifies a provider login, then calls service B. Why must B verify a credential intended for B rather than trust an arbitrary forwarded identity header?**</span>
+
+::: details Show answer
+
+**Each receiving service verifies a credential intended for it.** Provider login or a caller-supplied identity header does not grant local membership, roles or permissions.
+
+[Revisit the explanation and examples](#t13-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q06 -->
+
+<span class="notes-section-label">**7. Explain diagram — Use the [OIDC login diagram](#t13-q06) to explain how a callback is linked to the initiating browser. Why is a returned code not yet an application login session?**</span>
+
+::: details Show answer
+
+The application saves a short-lived one-use attempt associated with the initiating browser, configured provider and callback. It matches the callback to that attempt and uses a maintained OIDC client to verify the response and code exchange, including required protocol values. Only successful protocol verification and local account checks lead to a new application session. A code from another attempt/browser/provider must not be accepted just because it is present.
+
+[Revisit the explanation and examples](#t13-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q07 -->
+
+<span class="notes-section-label">**8. Diagnose — A JWT supplies an unknown kid and a URL from which to download its key. Why must those fields not expand the verifier's trust, and what should happen if authenticity cannot be established?**</span>
+
+::: details Show answer
+
+**A token's kid selects among trusted keys, not arbitrary downloads.** Verify purpose, issuer, audience and time; bounded rotation must deny unverifiable authenticity.
+
+[Revisit the explanation and examples](#t13-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t13-q08 -->
+
+<span class="notes-section-label">**9. Predict — Two requests simultaneously present the same refresh credential. What durable transition must prevent both from succeeding, and why does a valid access-token signature not prove permissions are still current?**</span>
+
+::: details Show answer
+
+**Consume refresh credentials atomically using durable family state.** Valid signatures can outlive current permissions; sensitive writes may need coordinated current-version checks.
+
+[Revisit the explanation and examples](#t13-q08).
+
+:::

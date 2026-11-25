@@ -391,12 +391,106 @@ Choose one alternative that addresses a real gap in the primary lab. Document se
 
 ## Revision and mixed practice
 
-1. Error ratio disappears after restart. Is that proof no requests failed?
-2. Every request gets a unique route label. Why can a small application overload telemetry storage?
-3. A Grafana panel is blank while the process is running. What do you check first?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt the scenarios first**</span>
+<!-- revision-covers: t22-q01 -->
 
-1. Check scrape health, counter initialization, traffic and window; absent is not zero.
-2. Unique labels multiply series across metrics/buckets/instances; normalize to bounded route templates.
-3. Query the data source directly, inspect scrape/ingestion health and time range, then panel permissions/query/units.
+<span class="notes-section-label">**1. Compare — A process is running but users cannot finish their work. How would metrics, logs, traces and profiles provide different evidence, and why is missing data different from zero errors?**</span>
+
+::: details Show answer
+
+First establish whether real user operations succeed under their response/error goals. Metrics show trends, logs describe events, traces connect steps and profiles attribute execution or memory cost. Compare those scopes rather than interpreting a running process or dashboard color as a successful transaction. Also test measurement ingestion: absent evidence is not a measured zero.
+
+[Revisit the explanation and examples](#t22-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q02 -->
+
+<span class="notes-section-label">**2. Scenario — Every request gets a unique route label. Why can a small application overload telemetry storage?**</span>
+
+::: details Show answer
+
+Unique labels multiply series across metrics/buckets/instances; normalize to bounded route templates.
+
+[Revisit the explanation and examples](#t22-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q02 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the [metric completion diagram](#t22-q02). How should success, error and applicable abort paths balance an active gauge, a counter and a duration histogram?**</span>
+
+::: details Show answer
+
+**Counters accumulate, gauges show current values, histograms describe distributions.** Count completion once, balance active gauges and keep labels bounded rather than using raw URLs or user IDs. Increment active work at admission and decrement through one completion owner on every terminal path. Choose bounded route/outcome labels and a consistent measurement lifetime rather than creating one series per request.
+
+[Revisit the explanation and examples](#t22-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q03 -->
+
+<span class="notes-section-label">**4. Scenario — Error ratio disappears after restart. Is that proof no requests failed?**</span>
+
+::: details Show answer
+
+Check scrape health, counter initialization, traffic and window; absent is not zero.
+
+[Revisit the explanation and examples](#t22-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q03 -->
+
+<span class="notes-section-label">**5. Explain diagram — Follow the [metrics-to-alert diagram](#t22-q03). What can fail between an application metric and a useful notification, and who should own the response?**</span>
+
+::: details Show answer
+
+**Scraping collects samples, PromQL evaluates them, Alertmanager routes notifications.** Distinguish failures, low traffic and missing data; test rules and the notification path. A healthy local endpoint does not prove scraping, rule evaluation or notification routing succeeded. Validate the end-to-end path and give each actionable alert an owner and procedure.
+
+[Revisit the explanation and examples](#t22-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q04 -->
+
+<span class="notes-section-label">**6. Scenario — A Grafana panel is blank while the process is running. What do you check first?**</span>
+
+::: details Show answer
+
+Query the data source directly, inspect scrape/ingestion health and time range, then panel permissions/query/units.
+
+[Revisit the explanation and examples](#t22-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t22-q05 -->
+
+<span class="notes-section-label">**7. Choose — A team considers Graphite, Zabbix and New Relic. Which concrete data and operational need would justify a choice, and what must be verified beyond installing a product?**</span>
+
+::: details Show answer
+
+**Graphite, Zabbix and New Relic occupy different monitoring roles.** Choose a concrete need and verify actual collection, access, retention and failure detection.
+
+[Revisit the explanation and examples](#t22-q05).
+
+:::

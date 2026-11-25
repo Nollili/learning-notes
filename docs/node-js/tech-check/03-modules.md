@@ -934,23 +934,158 @@ Dynamic import/top-level await require an async readiness boundary; cycles can e
 - [ ] Diagnose syntax/mode/resolution/link/evaluation failures from a real emitted artifact.
 - [ ] Reproduce and repair an initialization cycle; explain why cache reset is not disposal.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A package file exists but a deep import returns ERR_PACKAGE_PATH_NOT_EXPORTED. What should you inspect?
-2. Two requests import one cached module that stores currentUser. Why can private module scope still leak request state?
-3. A .mjs dependency contains top-level await of an already-resolved promise. Can a synchronous require simply ignore the await?
-4. Syntax checking succeeds but running the file fails to import a missing relative module. Were the checks contradictory?
-5. Removing require.cache makes an exported pool look new, but the process still has two live pools. Why?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t03-q01 -->
 
-1. The package's public exports mapping and selected conditions; use the supported entry or a deliberate API migration. File existence is not a published subpath contract.
-2. Both callers can reach the same cached instance. Keep current identity in request/job context and pass it explicitly; private lexical scope does not create one instance per request.
-3. No. The graph is asynchronous under the loading contract. Use an async import boundary; distinguish it from an eligible synchronous ESM graph on a supported runtime.
-4. No. Syntax validation and dependency resolution/evaluation are different checks. Test the executed artifact and actual graph.
-5. Existing callers/resources retain their old instance. Dispose through an explicit resource owner; cache identity replacement does not close a connection.
+<span class="notes-section-label">**1. Choose — An import uses node:fs, another ./helper.mjs, and a third express. Which needs package installation, and where is the relative path anchored?**</span>
+
+::: details Show answer
+
+node:fs is built into the selected Node runtime. ./helper.mjs is resolved relative to the importing module. express is a package dependency that must already be available under the package-loading rules; importing it does not install it.
+
+[Revisit the explanation and examples](#t03-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q02 -->
+
+<span class="notes-section-label">**2. Compare — Why can identical JavaScript text behave differently in .cjs, .mjs and .js files? What would you inspect before changing import syntax?**</span>
+
+::: details Show answer
+
+The extension and nearest package metadata select the runtime module contract, not merely how the source looks. Use .cjs for CommonJS and .mjs for ESM; for .js inspect the nearest package.json type and applicable Node rules. Check the actual emitted file, selected package entry and Node version before rewriting imports, because synchronous interop also depends on the dependency graph.
+
+[Revisit the explanation and examples](#t03-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q03 -->
+
+<span class="notes-section-label">**3. Scenario — Two requests import one cached module that stores currentUser. Why can private module scope still leak request state?**</span>
+
+::: details Show answer
+
+Both callers can reach the same cached instance. Keep current identity in request/job context and pass it explicitly; private lexical scope does not create one instance per request.
+
+[Revisit the explanation and examples](#t03-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q04 -->
+
+<span class="notes-section-label">**4. Predict and explain diagram — A CommonJS file runs exports = {answer: 42}. Why does require still receive the old object in the [exports diagram](#t03-q04), and which assignment replaces the exported value?**</span>
+
+::: details Show answer
+
+exports began as an alias for module.exports, but reassigning the local variable only points that alias elsewhere. **require receives module.exports**, which still points to the original object. Use module.exports = {answer: 42} to replace the value, or exports.answer = 42 to change a property of the original object.
+
+[Revisit the explanation and examples](#t03-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q05 -->
+
+<span class="notes-section-label">**5. Scenario — A package file exists but a deep import returns ERR_PACKAGE_PATH_NOT_EXPORTED. What should you inspect?**</span>
+
+::: details Show answer
+
+The package's public exports mapping and selected conditions; use the supported entry or a deliberate API migration. File existence is not a published subpath contract.
+
+[Revisit the explanation and examples](#t03-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q05 -->
+
+<span class="notes-section-label">**6. Compare — How do main, exports and package-local imports differ, and why can import and require of one package create different state?**</span>
+
+::: details Show answer
+
+**`exports` takes priority over `main`** in supported Node package resolution. Conditions can select different entries; `imports` defines package-local `#` shortcuts. Conditional entries can select separately evaluated CJS and ESM files, so shared state must be designed and tested rather than assumed from the package name.
+
+[Revisit the explanation and examples](#t03-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q06 -->
+
+<span class="notes-section-label">**7. Scenario — A .mjs dependency contains top-level await of an already-resolved promise. Can a synchronous require simply ignore the await?**</span>
+
+::: details Show answer
+
+No. The graph is asynchronous under the loading contract. Use an async import boundary; distinguish it from an eligible synchronous ESM graph on a supported runtime.
+
+[Revisit the explanation and examples](#t03-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q07 -->
+
+<span class="notes-section-label">**8. Scenario — Syntax checking succeeds but running the file fails to import a missing relative module. Were the checks contradictory?**</span>
+
+::: details Show answer
+
+No. Syntax validation and dependency resolution/evaluation are different checks. Test the executed artifact and actual graph.
+
+[Revisit the explanation and examples](#t03-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q08 -->
+
+<span class="notes-section-label">**9. Scenario — Removing require.cache makes an exported pool look new, but the process still has two live pools. Why?**</span>
+
+::: details Show answer
+
+Existing callers/resources retain their old instance. Dispose through an explicit resource owner; cache identity replacement does not close a connection.
+
+[Revisit the explanation and examples](#t03-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t03-q08 -->
+
+<span class="notes-section-label">**10. Explain diagram — Trace ready=false and sawAReady through the [CommonJS cycle](#t03-q08). Why is the final ready true while saw remains false, and what differs for an early ESM const read?**</span>
+
+::: details Show answer
+
+B reads A while A is still initializing and records the primitive false. A later sets ready=true, but that does not turn the earlier observed value into a live formula. CommonJS can expose partial exports in a cycle; an ESM let/const binding read before initialization can instead throw. Remove the dependency/initialization cycle or introduce explicit composition, rather than relying on timers or cache clearing.
+
+[Revisit the explanation and examples](#t03-q08).
+
+:::
+
 
 Official references checked 2026-11-04: Node 24.18 [CommonJS](https://nodejs.org/download/release/v24.18.0/docs/api/modules.html), [ES Modules](https://nodejs.org/download/release/v24.18.0/docs/api/esm.html), [package metadata](https://nodejs.org/download/release/v24.18.0/docs/api/packages.html), [node:module](https://nodejs.org/download/release/v24.18.0/docs/api/module.html). Loader/tooling features change; these answers deliberately identify their baseline rather than assume every installed version has identical interop.
 
 <span id="batch-b05-progress"></span>
-

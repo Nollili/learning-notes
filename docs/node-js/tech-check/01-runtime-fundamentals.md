@@ -521,23 +521,115 @@ Sync APIs can suit bounded startup/CLI tasks; async I/O normally suits request p
 
 These are learner checks, not completed learner evidence.
 
-<span class="notes-section-label">**Mixed practice — attempt all questions first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A frontend helper uses document.querySelector. Why does importing it into Node fail when it runs, even though its JavaScript syntax is valid?
-2. An endpoint awaits a resolved promise, then parses a 200 MiB JSON string. Does await prevent a service-wide pause? What would you change?
-3. A file-inspection CLI prints `sampledBytes: 1024` for a 5 MiB file. Is it reporting the file size correctly?
-4. A health server prints “started” before calling listen. Another process already owns the port. Which contract is wrong and how would you fix it?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t01-q01 -->
 
-1. Ordinary Node has no document/DOM host. Keep DOM access in a browser adapter or provide an explicitly appropriate environment; a language parser accepting the file does not provide the missing host API.
-2. No. JSON.parse is synchronous CPU/memory work. Bound accepted bytes before parsing, reconsider format/streaming, measure cost and move genuinely expensive work to an owned worker/job when appropriate. Merely adding async/await is not offloading.
-3. No. It intentionally reports only the bytes returned by one bounded sample read. Use stat for a point-in-time size when that is the requirement, remembering files can change; do not relabel a sample as total size.
-4. It reports success before the resource is acquired. Observe the error event and emit success from the listening callback; a bind failure must produce a controlled failure outcome.
+<span class="notes-section-label">**1. Scenario — A frontend helper uses document.querySelector. Why does importing it into Node fail when it runs, even though its JavaScript syntax is valid?**</span>
+
+::: details Show answer
+
+Ordinary Node has no document/DOM host. Keep DOM access in a browser adapter or provide an explicitly appropriate environment; a language parser accepting the file does not provide the missing host API.
+
+[Revisit the explanation and examples](#t01-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q01 -->
+
+<span class="notes-section-label">**2. Compare — What is a runtime, and how do JavaScript, V8 and Node contribute different parts of the program you run?**</span>
+
+::: details Show answer
+
+JavaScript is the language. V8 executes that language and manages its JavaScript heap; Node is the runtime environment that combines the engine with APIs and native/OS integration. The host supplies capabilities such as filesystem or DOM access, so valid JavaScript alone does not imply the same APIs or authority in a browser and Node.
+
+[Revisit the explanation and examples](#t01-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q02 -->
+
+<span class="notes-section-label">**3. Scenario — An endpoint awaits a resolved promise, then parses a 200 MiB JSON string. Does await prevent a service-wide pause? What would you change?**</span>
+
+::: details Show answer
+
+No. JSON.parse is synchronous CPU/memory work. Bound accepted bytes before parsing, reconsider format/streaming, measure cost and move genuinely expensive work to an owned worker/job when appropriate. Merely adding async/await is not offloading.
+
+[Revisit the explanation and examples](#t01-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q03 -->
+
+<span class="notes-section-label">**4. Compare and explain diagram — Trace the [sync/async file diagram](#t01-q03). Which JavaScript work can proceed during each read, and when is a small synchronous read a reasonable choice?**</span>
+
+::: details Show answer
+
+A synchronous read occupies the current JavaScript thread until it finishes, so unrelated callbacks wait. With an asynchronous read, the function can await its promise while other callbacks run during the I/O wait; later JSON parsing is still synchronous work. A bounded startup or one-task CLI read can reasonably be synchronous, but a request-serving path normally needs async I/O and separate size/concurrency limits.
+
+[Revisit the explanation and examples](#t01-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q04 -->
+
+<span class="notes-section-label">**5. Scenario — A file-inspection CLI prints `sampledBytes: 1024` for a 5 MiB file. Is it reporting the file size correctly?**</span>
+
+::: details Show answer
+
+No. It intentionally reports only the bytes returned by one bounded sample read. Use stat for a point-in-time size when that is the requirement, remembering files can change; do not relabel a sample as total size.
+
+[Revisit the explanation and examples](#t01-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q04 -->
+
+<span class="notes-section-label">**6. Scenario — A health server prints “started” before calling listen. Another process already owns the port. Which contract is wrong and how would you fix it?**</span>
+
+::: details Show answer
+
+It reports success before the resource is acquired. Observe the error event and emit success from the listening callback; a bind failure must produce a controlled failure outcome.
+
+[Revisit the explanation and examples](#t01-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t01-q04 -->
+
+<span class="notes-section-label">**7. Compare — Why can a short-lived CLI and a long-running HTTP service use the same core modules but need different lifetime owners?**</span>
+
+::: details Show answer
+
+**A CLI usually finishes one task; a service keeps accepting work.** Both can use built-in modules without installing packages and must close their resources.
+
+[Revisit the explanation and examples](#t01-q04).
+
+:::
+
 
 ## References
 
 Official sources checked 2026-11-04: [Node introduction](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs), [browser differences](https://nodejs.org/en/learn/getting-started/differences-between-nodejs-and-the-browser), [do not block the loop/worker pool](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop), [Node 24 filesystem](https://nodejs.org/docs/latest-v24.x/api/fs.html), [Node 24 HTTP](https://nodejs.org/docs/latest-v24.x/api/http.html). The runnable examples are original teaching fixtures, not copied production applications.
 
 <span id="batch-b01-progress"></span>
-

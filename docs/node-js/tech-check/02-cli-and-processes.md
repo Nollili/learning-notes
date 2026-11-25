@@ -892,23 +892,173 @@ Diagnose scope/units carefully and launch subprocesses with fixed authority, bou
 - [ ] Select execFile/spawn/exec and diagnose launch/exit/stdio failure.
 - [ ] Implement a finite fork/IPC protocol and show it leaves no child/channel alive.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. `node app.mjs --inspect` runs without a debugger. Why?
-2. FEATURE_ENABLED=false enables a feature through Boolean(...). What contract should replace it?
-3. A test prints its final assertion but never exits. What do you inspect before forcing termination?
-4. A child writes stderr but exits 0. Is it necessarily a failed command?
-5. A forked child exits 0 without sending a reply. Should the parent resolve undefined as success?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t02-q01 -->
 
-1. --inspect is after the entry and reaches the application as an argument; put a deliberately restricted runtime inspector flag before the entry. Do not expose the debugger publicly.
-2. Accept an explicit boolean string set and reject malformed values. Apply a default only for absence and compare to the exact accepted true value.
-3. Referenced timers, interfaces, sockets, IPC and unsettled owned work. Trace their owners and cleanup rather than conceal leaks with process.exit.
-4. No. stderr is a channel; the command's documented status/result semantics determine success. A failed launch/nonzero/signal is a separate outcome from diagnostic text.
-5. No. The protocol requires a valid result and successful closure. Clean missing-result exit is a protocol failure; preserve the operation's unknown/outcome policy instead of inventing a value.
+<span class="notes-section-label">**1. Scenario — `node app.mjs --inspect` runs without a debugger. Why?**</span>
+
+::: details Show answer
+
+--inspect is after the entry and reaches the application as an argument; put a deliberately restricted runtime inspector flag before the entry. Do not expose the debugger publicly.
+
+[Revisit the explanation and examples](#t02-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q02 -->
+
+<span class="notes-section-label">**2. Scenario — FEATURE_ENABLED=false enables a feature through Boolean(...). What contract should replace it?**</span>
+
+::: details Show answer
+
+Accept an explicit boolean string set and reject malformed values. Apply a default only for absence and compare to the exact accepted true value.
+
+[Revisit the explanation and examples](#t02-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q03 -->
+
+<span class="notes-section-label">**3. Diagnose — An experiment works in a REPL but fails in a fresh .mjs file. Which session assumptions would you remove before deciding that Node is inconsistent?**</span>
+
+::: details Show answer
+
+Check whether earlier REPL entries supplied variables, imports or state that the file never initializes. The REPL also prints inspected values and supports its own interactive evaluation rules, so a displayed result is not automatically a console.log or a portable file-mode result. Recreate the minimal experiment with explicit imports, runtime and module format in a fresh process; the REPL is not a sandbox.
+
+[Revisit the explanation and examples](#t02-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q04 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace the [standard-stream diagram](#t02-q04). Why can adding one debug console.log break a CLI that another program expects to return JSON?**</span>
+
+::: details Show answer
+
+stdin supplies input, stdout carries the promised result, and stderr carries diagnostics. An extra log on stdout can make the output invalid JSON even when the calculation is correct. Send diagnostics to stderr and report failure through an appropriate nonzero status separately.
+
+[Revisit the explanation and examples](#t02-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q05 -->
+
+<span class="notes-section-label">**5. Scenario — A test prints its final assertion but never exits. What do you inspect before forcing termination?**</span>
+
+::: details Show answer
+
+Referenced timers, interfaces, sockets, IPC and unsettled owned work. Trace their owners and cleanup rather than conceal leaks with process.exit.
+
+[Revisit the explanation and examples](#t02-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q05 -->
+
+<span class="notes-section-label">**6. Compare — How do process.exitCode, process.exit(), beforeExit and exit differ? Can an unresolved promise alone keep the process alive?**</span>
+
+::: details Show answer
+
+exitCode sets the status for natural completion, while exit stops execution immediately and can interrupt asynchronous output or cleanup. beforeExit can schedule work when the loop naturally empties, but it is not a universal shutdown hook; exit permits only synchronous final work. A promise alone does not keep the loop active without supporting resources. Own and await cleanup before termination instead of using exit events to save required data.
+
+[Revisit the explanation and examples](#t02-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q06 -->
+
+<span class="notes-section-label">**7. Compare — A file request has high elapsed time but little CPU time. Is that contradictory, and why would heapUsed alone be insufficient to describe its process memory?**</span>
+
+::: details Show answer
+
+No: elapsed time includes waiting, while CPU time measures processor work. heapUsed covers only part of process memory; buffers and other resident allocations also matter. Check units and scope before comparing measurements, and distinguish process.cwd from the module's location when investigating file paths.
+
+[Revisit the explanation and examples](#t02-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q07 -->
+
+<span class="notes-section-label">**8. Scenario — A child writes stderr but exits 0. Is it necessarily a failed command?**</span>
+
+::: details Show answer
+
+No. stderr is a channel; the command's documented status/result semantics determine success. A failed launch/nonzero/signal is a separate outcome from diagnostic text.
+
+[Revisit the explanation and examples](#t02-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q07 -->
+
+<span class="notes-section-label">**9. Choose — Compare spawn, execFile and exec for a fixed executable receiving an untrusted filename. Which layer interprets shell operators, and which output/lifetime budgets remain?**</span>
+
+::: details Show answer
+
+**`spawn` streams output; `execFile` normally buffers it; `exec` adds a shell.** Prefer direct executable arguments when shell features are unnecessary, and observe failures and closure. Bound time, collected bytes and active children, consume required streams and observe launch errors and actual closure. Direct arguments remove a shell layer, not all semantic input or permission risks.
+
+[Revisit the explanation and examples](#t02-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q08 -->
+
+<span class="notes-section-label">**10. Scenario — A forked child exits 0 without sending a reply. Should the parent resolve undefined as success?**</span>
+
+::: details Show answer
+
+No. The protocol requires a valid result and successful closure. Clean missing-result exit is a protocol failure; preserve the operation's unknown/outcome policy instead of inventing a value.
+
+[Revisit the explanation and examples](#t02-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t02-q08 -->
+
+<span class="notes-section-label">**11. Compare — Does Node fork create a thread or clone a shared live Map? What must a one-request IPC exchange prove beyond successful sending?**</span>
+
+::: details Show answer
+
+**`fork()` creates another Node process with a message channel.** Validate replies and observe completion; sending a message does not prove the task finished. The child has its own heap and needs a valid final result plus the closure required by its protocol, with failure, deadline and channel cleanup ownership.
+
+[Revisit the explanation and examples](#t02-q08).
+
+:::
+
 
 Official references checked 2026-11-04: [Node 24.18 CLI](https://nodejs.org/download/release/v24.18.0/docs/api/cli.html), [Process API](https://nodejs.org/docs/latest-v24.x/api/process.html), [REPL](https://nodejs.org/download/release/v24.18.0/docs/api/repl.html), [child processes](https://nodejs.org/download/release/v24.18.0/docs/api/child_process.html). APIs used here were exercised on the stated local Node 24.18 runtime; do not assume latest online documentation matches every older runtime.
 
 <span id="batch-b03-progress"></span>
-

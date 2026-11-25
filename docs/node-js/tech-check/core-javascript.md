@@ -170,3 +170,49 @@ The output is `1 0`. Both functions returned by the first call see the same `cou
 [Homework on closures, races and cleanup](../../practice/frontend/f03-javascript.md).
 
 ::::
+
+## Revision
+
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t26-q01 -->
+
+<span class="notes-section-label">**1. Predict and explain diagram — In the [reference diagram](#t26-q01), copy is made with object spread. Why does changing copy.settings.retries also change original.settings.retries, while original === copy is false?**</span>
+
+::: details Show answer
+
+The spread creates a **different outer object**, so the identity comparison is false. Both settings properties still point to the same nested object, so editing retries through either path changes that shared object. Copy the nested branch too when it needs independent ownership.
+
+[Revisit the explanation and examples](#t26-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t26-q02 -->
+
+<span class="notes-section-label">**2. Compare — In an ES module, how do counter.read(), a detached ordinary read(), and an arrow function choose this? What does bind preserve?**</span>
+
+::: details Show answer
+
+The ordinary method call uses counter as its receiver. A detached plain call has undefined as this in an ES module; it has lost the object-before-the-dot connection. A bound function keeps its specified receiver, while an arrow keeps this from the surrounding scope.
+
+[Revisit the explanation and examples](#t26-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t26-q03 -->
+
+<span class="notes-section-label">**3. Predict and explain diagram — Two calls to makeCounter create first and second. After first.increment(), why does first.read() return 1 while second.read() returns 0?**</span>
+
+::: details Show answer
+
+The two functions returned by the first call reach **one shared count binding**, so its reader sees the increment. The second outer call created a separate count binding. Closures preserve access to variables, not a shared global counter or a frozen copy of the initial value.
+
+[Revisit the explanation and examples](#t26-q03).
+
+:::

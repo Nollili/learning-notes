@@ -490,12 +490,79 @@ For the equivalent Hapi, Koa and Feathers exercise, see [preserving contracts du
 
 ## Revision and mixed practice
 
-1. A decrypting stream starts updating application records before the GCM tag is checked. Can pipeline error handling undo it?
-2. A faster candidate skips the authorization guard and uses a global user-response cache. Is the performance comparison valid?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt both cases first**</span>
+<!-- revision-covers: t16-q14 -->
 
-1. No. Withhold/stage untrusted plaintext and commit/publish only after authentication; prior irreversible effects need their own recovery and should not have happened.
-2. No. The candidate changed security/correctness semantics. Restore equivalent behavior before comparing work and use appropriately scoped bounded caching.
+<span class="notes-section-label">**1. Compare — A cluster worker sends a result, disconnects IPC, then remains alive with a timer. Which milestones have occurred, and which readiness, closure and global-resource obligations remain?**</span>
+
+::: details Show answer
+
+**Readiness, task result, IPC disconnect and closure are different protocol facts.** Stop admission before bounded shutdown and budget resources across all processes.
+
+[Revisit the explanation and examples](#t16-q14).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q15 -->
+
+<span class="notes-section-label">**2. Diagnose — A final export name becomes visible, then temporary-file cleanup fails. Why must recovery distinguish successful publication from cleanup failure, and which filesystem guarantees need separate tests?**</span>
+
+::: details Show answer
+
+**Complete visibility, overwrite prevention and crash durability are separate guarantees.** Finish private output before the chosen publication operation, and retain the known outcome even if cleanup fails.
+
+[Revisit the explanation and examples](#t16-q15).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q16 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the [bounded stream diagram](#t16-q16). Why do encoded input, expanded output and active work need different budgets, and why must cancellation reach the actual source and sink?**</span>
+
+::: details Show answer
+
+The source feeds input limits, transformations, expanded/output limits and the destination under an awaited pipeline. A compressed or encoded byte budget cannot bound the size of every later representation, and backpressure does not cap total output or arbitrary async work. Forward cancellation to supported source/sink adapters and observe their final errors and closure. Validate before sending headers where possible because a later failure cannot retract them.
+
+[Revisit the explanation and examples](#t16-q16).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q17 -->
+
+<span class="notes-section-label">**4. Scenario — A decrypting stream starts updating application records before the GCM tag is checked. Can pipeline error handling undo it?**</span>
+
+::: details Show answer
+
+No. Withhold/stage untrusted plaintext and commit/publish only after authentication; prior irreversible effects need their own recovery and should not have happened.
+
+[Revisit the explanation and examples](#t16-q17).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q18 -->
+
+<span class="notes-section-label">**5. Scenario — A faster candidate skips the authorization guard and uses a global user-response cache. Is the performance comparison valid?**</span>
+
+::: details Show answer
+
+No. The candidate changed security/correctness semantics. Restore equivalent behavior before comparing work and use appropriately scoped bounded caching.
+
+[Revisit the explanation and examples](#t16-q18).
+
+:::
+
 
 These are learning-material extensions to existing source IDs and ladder checkpoints. Actual process/DB/cloud integration and independent performance/security practice remain separate evidence.

@@ -552,10 +552,121 @@ Use the advanced framework experiment to change one middleware/service operation
 
 ## Revision and mixed practice
 
-1. p99 rises while CPU is low and database pool wait grows. Should you tune V8 first?
-2. A Buffer view is faster in a loop but keeps an 8 MiB upload alive for a 20-byte cache value. Is it necessarily better?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt both cases first**</span>
+<!-- revision-covers: t12-q01 -->
 
-1. Investigate dependency capacity, client leaks, transaction duration and admission first. Correlate metrics and profile before changing runtime flags.
-2. No. Compare retained memory, aliasing and lifetime as well as copying cost; a small independent copy can fit the ownership requirement better.
+<span class="notes-section-label">**1. Compare — What does node:v8 let application tooling inspect, and why is an engine-specific optimization trick not a stable substitute for workload evidence?**</span>
+
+::: details Show answer
+
+**V8 adapts execution using workload observations; engine internals can change.** Use supported diagnostics and measured profiles before relying on engine-specific optimization tricks.
+
+[Revisit the explanation and examples](#t12-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q02 -->
+
+<span class="notes-section-label">**2. Compare — A load test shows poor latency but a CPU profile has little expensive JavaScript. What different questions did the experiments answer, and which dependency evidence might explain the gap?**</span>
+
+::: details Show answer
+
+**Load tests measure service outcomes; profiles attribute sampled CPU work.** Slow requests with little CPU may instead be waiting on pools, locks or dependencies.
+
+[Revisit the explanation and examples](#t12-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q03 -->
+
+<span class="notes-section-label">**3. Scenario — p99 rises while CPU is low and database pool wait grows. Should you tune V8 first?**</span>
+
+::: details Show answer
+
+Investigate dependency capacity, client leaks, transaction duration and admission first. Correlate metrics and profile before changing runtime flags.
+
+[Revisit the explanation and examples](#t12-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q03 -->
+
+<span class="notes-section-label">**4. Compare — If request latency, loop delay, loop utilization and process CPU differ, which quantities should be compared over the same observation interval?**</span>
+
+::: details Show answer
+
+**Request latency, loop delay, loop utilization and CPU usage measure different things.** Compare them over the same interval with dependency and memory evidence. Latency includes queues and dependency waits, delay measures lateness and utilization distinguishes active from idle loop time. Neither a single percentile nor utilization alone identifies the faulty function.
+
+[Revisit the explanation and examples](#t12-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q04 -->
+
+<span class="notes-section-label">**5. Scenario — A Buffer view is faster in a loop but keeps an 8 MiB upload alive for a 20-byte cache value. Is it necessarily better?**</span>
+
+::: details Show answer
+
+No. Compare retained memory, aliasing and lifetime as well as copying cost; a small independent copy can fit the ownership requirement better.
+
+[Revisit the explanation and examples](#t12-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q05 -->
+
+<span class="notes-section-label">**6. Diagnose — An overloaded endpoint wraps its expensive calculation in Promise.resolve().then. Why can responsiveness remain bad, and which execution and admission changes would target the real constraint?**</span>
+
+::: details Show answer
+
+**Promises do not move CPU work to another core.** Reduce the measured work, choose bounded chunks or workers where appropriate, and limit admission before queues grow.
+
+[Revisit the explanation and examples](#t12-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q06 -->
+
+<span class="notes-section-label">**7. Choose — A global cache returns a fast answer computed for another tenant, and many misses start identical database loads. Which key, freshness, invalidation and admission rules are missing?**</span>
+
+::: details Show answer
+
+**Define source of truth, key scope, freshness, invalidation and failure behavior first.** Bound entries and simultaneous source loads; a fast cross-tenant or stale answer is still wrong.
+
+[Revisit the explanation and examples](#t12-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q07 -->
+
+<span class="notes-section-label">**8. Explain diagram — Trace the [complete request path](#t12-q07). If database waits and serialization dominate, what would replacing the router fail to establish, and what should an equivalent optimization preserve?**</span>
+
+::: details Show answer
+
+Follow routing/checks, business logic, queries/waits, conversion/serialization and necessary observation rather than measuring only a trivial response. If database waits or serialization dominate, a router replacement may leave that cost unchanged. Compare the same operation, input and correctness contract repeatedly, preserving validation, authorization, errors and cleanup. Reduce the work evidence shows is unnecessary rather than removing required behavior.
+
+[Revisit the explanation and examples](#t12-q07).
+
+:::

@@ -1527,25 +1527,233 @@ Keep HTTP/HTTPS as the primary API and add a transport only when its interaction
 
 Acceptance: assert protocol outcomes, close/error paths, bounded completion, zero owned clients/listeners/timers and explicit untested infrastructure. Do not expose these unauthenticated/synthetic-token local labs. Writing and author-checking the notes does not complete learner practice or demonstrate professional readiness.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A WebSocket send callback succeeds, then the connection drops before a business acknowledgement. Is the command known to have committed?
-2. Can a browser-compatible WebSocket connect to a Socket.IO event server without implementing its protocol?
-3. Socket.IO retries a write after an ack is lost. Which application property prevents a duplicate business effect?
-4. An adapter shares broadcasts across nodes while polling is enabled. What other routing requirement remains?
-5. The SSE client reconnects with an ID older than retained history. What should happen?
-6. The transport is healthy but a user loses resource access. Can the old subscription remain authorized automatically?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t08-q09 -->
 
-1. No. Transport acceptance is not application commit; reconcile the outcome using a command ID/outcome protocol.
-2. No. They are not wire-compatible at the application protocol level.
-3. A durable idempotency/outcome record atomically aligned with the effect, including conflict handling for reused IDs.
-4. Session affinity/compatible routing for related polling requests, unless the chosen deployment deliberately removes that transport or supplies equivalent session handling.
-5. Follow an explicit reset/snapshot protocol rather than pretending replay is complete.
-6. No. Recheck/revoke subscriptions under the application's authorization/session-lifetime policy.
+<span class="notes-section-label">**1. Diagnose — fetch resolves with status 500, and a different request returns 200 with invalid JSON. Which layers succeeded and failed, and where should each outcome be checked?**</span>
+
+::: details Show answer
+
+A resolved fetch does not mean an acceptable HTTP status: inspect status and headers explicitly. A 200 can still fail body reading, decoding or application-schema checks. Separate transport failure, HTTP error and invalid data, and keep ownership until the body is consumed or cancelled.
+
+[Revisit the explanation and examples](#t08-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q01 -->
+
+<span class="notes-section-label">**2. Explain diagram — The sender writes ABC and then DEF, but the [TCP diagram](#t08-q01) shows chunks A, BCDE and F. What stayed guaranteed, and what must the application reconstruct?**</span>
+
+::: details Show answer
+
+TCP preserves the byte order ABCDEF, not the boundaries of those two writes. The application must use a defined framing rule to reconstruct complete messages, with byte and time budgets. Handle stream failures and actual closure; a timeout event alone does not terminate a socket.
+
+[Revisit the explanation and examples](#t08-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q02 -->
+
+<span class="notes-section-label">**3. Compare — A UDP send callback succeeds. What can the sender claim about remote processing, and how does that differ from TCP byte-stream guarantees?**</span>
+
+::: details Show answer
+
+The callback only supports the local send milestone, not proof that a remote application received or processed the datagram. UDP keeps datagram boundaries but can lose, reorder or duplicate them; TCP instead supplies an ordered byte stream without application-message boundaries. Choose address family and bind address deliberately, and add only the application delivery/authentication/budget protocol the use case requires.
+
+[Revisit the explanation and examples](#t08-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q03 -->
+
+<span class="notes-section-label">**4. Diagnose — An HTTPS request receives headers, then the body stalls. Which verification, budget and cleanup responsibilities still belong to the client?**</span>
+
+::: details Show answer
+
+The client still owns body progress, status interpretation, byte limits and a deadline covering the whole request. Verify the intended server through normal certificate trust and identity checks rather than disabling TLS verification. On failure or cancellation, stop and observe the owned request/body resources; a redirect or retry needs a deliberate policy, especially when a prior write may already have succeeded.
+
+[Revisit the explanation and examples](#t08-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q04 -->
+
+<span class="notes-section-label">**5. Compare — Why can dns.lookup and dns.resolve4 return different evidence, and why does either successful result fail to prove the target is permitted or reachable?**</span>
+
+::: details Show answer
+
+lookup uses operating-system name resolution, potentially including host files, while resolve methods request particular DNS records through a resolver. Different rules, record types and address order can produce different evidence. Neither result proves authorization, reachability or TLS identity; supervise the actual connection and its deadline separately, and handle multiple address families and lookup failures.
+
+[Revisit the explanation and examples](#t08-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q05 -->
+
+<span class="notes-section-label">**6. Choose — A dashboard needs occasional checks, an audit feed needs one-way updates, and an editor needs frequent messages both ways. Compare polling, SSE and WebSocket, including what reconnecting does not prove.**</span>
+
+::: details Show answer
+
+Occasional updates can fit ordinary polling; SSE supplies server-to-client events, with commands still possible through HTTP; WebSocket supports messages both ways. Socket.IO adds another event protocol and needs compatible clients. Every choice still needs authorized delivery, bounded resources and a separate replay or snapshot policy for missed business data.
+
+[Revisit the explanation and examples](#t08-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q06 -->
+
+<span class="notes-section-label">**7. Scenario — A WebSocket send callback succeeds, then the connection drops before a business acknowledgement. Is the command known to have committed?**</span>
+
+::: details Show answer
+
+No. Transport acceptance is not application commit; reconcile the outcome using a command ID/outcome protocol.
+
+[Revisit the explanation and examples](#t08-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q06 -->
+
+<span class="notes-section-label">**8. Scenario — The transport is healthy but a user loses resource access. Can the old subscription remain authorized automatically?**</span>
+
+::: details Show answer
+
+No. Recheck/revoke subscriptions under the application's authorization/session-lifetime policy.
+
+[Revisit the explanation and examples](#t08-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q07 -->
+
+<span class="notes-section-label">**9. Scenario — Can a browser-compatible WebSocket connect to a Socket.IO event server without implementing its protocol?**</span>
+
+::: details Show answer
+
+No. They are not wire-compatible at the application protocol level.
+
+[Revisit the explanation and examples](#t08-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q07 -->
+
+<span class="notes-section-label">**10. Scenario — Socket.IO retries a write after an ack is lost. Which application property prevents a duplicate business effect?**</span>
+
+::: details Show answer
+
+A durable idempotency/outcome record atomically aligned with the effect, including conflict handling for reused IDs.
+
+[Revisit the explanation and examples](#t08-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q07 -->
+
+<span class="notes-section-label">**11. Compare — Socket.IO preserves delivered event order. Does that establish guaranteed delivery or durable commit, and what is its default delivery guarantee?**</span>
+
+::: details Show answer
+
+**Default delivery is at most once; acknowledgements mean what the handler defines.** Reconnects and retries need durable command identity when duplicate effects matter. Plain WebSocket clients are not automatically compatible with the Socket.IO application protocol; rooms and namespaces do not grant permission.
+
+[Revisit the explanation and examples](#t08-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q08 -->
+
+<span class="notes-section-label">**12. Scenario — An adapter shares broadcasts across nodes while polling is enabled. What other routing requirement remains?**</span>
+
+::: details Show answer
+
+Session affinity/compatible routing for related polling requests, unless the chosen deployment deliberately removes that transport or supplies equivalent session handling.
+
+[Revisit the explanation and examples](#t08-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q08 -->
+
+<span class="notes-section-label">**13. Scenario — The SSE client reconnects with an ID older than retained history. What should happen?**</span>
+
+::: details Show answer
+
+Follow an explicit reset/snapshot protocol rather than pretending replay is complete.
+
+[Revisit the explanation and examples](#t08-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q10 -->
+
+<span class="notes-section-label">**14. Explain diagram — Search A starts before B but its response arrives later in the [browser diagram](#t08-q10). Which result may update the UI, and why does cancelling A not prove its server work never happened?**</span>
+
+::: details Show answer
+
+Only a result that still belongs to the current UI request/version should be applied; the older A result must not overwrite B. fetch pauses its async function without freezing all browser code. Cancellation ends or requests stopping part of the interaction, but a server operation may already be running or committed.
+
+[Revisit the explanation and examples](#t08-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q11 -->
+
+<span class="notes-section-label">**15. Explain diagram — Trace the [connection-pool diagram](#t08-q11). Why can a two-socket limit still allow an unbounded memory queue, and where must the deadline begin?**</span>
+
+::: details Show answer
+
+The socket pool can cap active connections while an application admits arbitrarily many waiting requests. Add a separate admission/queue limit, then include queueing, connection setup and body reading in the operation budget. Consume or cancel each body so the connection lifecycle is owned, and close the pool at shutdown. A reused connection does not make an uncertain write safe to retry.
+
+[Revisit the explanation and examples](#t08-q11).
+
+:::
+
 
 Additional official references checked 2026-11-04: Node 24.18 [WebSocket client](https://nodejs.org/download/release/v24.18.0/docs/api/globals.html#class-websocket), ws [server/authentication/heartbeat examples](https://github.com/websockets/ws#readme); Socket.IO 4 [introduction](https://socket.io/docs/v4/), [delivery guarantees](https://socket.io/docs/v4/delivery-guarantees/), [middleware](https://socket.io/docs/v4/middlewares/), [multiple nodes](https://socket.io/docs/v4/using-multiple-nodes/), [server options](https://socket.io/docs/v4/server-options/); OWASP [WebSocket security](https://cheatsheetseries.owasp.org/cheatsheets/WebSocket_Security_Cheat_Sheet.html). Library installation/version and actual runtime checks are recorded in progress; local tests do not validate a production deployment.
 
 <span id="next-batch-checkpoint"></span>
-

@@ -338,10 +338,91 @@ Explain the path from source to checks, package, environment, migration, health,
 
 ### Mixed practice
 
-1. CI tested an image, then a deployment job rebuilds from the same revision. Is the tested release preserved?
-2. The new release drops a column used by the previous binary. Can the operator safely restore the old image?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t24-q01 -->
 
-1. No. Dependencies, base images or build inputs may have changed. Promote the exact verified digest and retain its trusted evidence/provenance.
-2. Not without a compatible schema/data plan. Use staged expand/bridge/backfill/contract and a known rollback window; after destructive contraction, forward repair or a reviewed restore may be needed.
+<span class="notes-section-label">**1. Diagnose — All source tests pass, but the packaged service is missing a template. Which release gate was absent, and why must its result retain the actual artifact identity?**</span>
+
+::: details Show answer
+
+**Required checks must report failures and test what will run.** Passing source tests does not prove the packaged application includes its runtime files or starts correctly.
+
+[Revisit the explanation and examples](#t24-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t24-q02 -->
+
+<span class="notes-section-label">**2. Scenario — CI tested an image, then a deployment job rebuilds from the same revision. Is the tested release preserved?**</span>
+
+::: details Show answer
+
+No. Dependencies, base images or build inputs may have changed. Promote the exact verified digest and retain its trusted evidence/provenance.
+
+[Revisit the explanation and examples](#t24-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t24-q03 -->
+
+<span class="notes-section-label">**3. Choose — A release needs different database endpoints in staging and production. Which values belong outside the fixed artifact, and what does SSH access fail to provide by itself?**</span>
+
+::: details Show answer
+
+**Keep the release artifact separate from environment settings and secrets.** Validate before readiness and record a repeatable, limited-authority deployment procedure.
+
+[Revisit the explanation and examples](#t24-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t24-q04 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace the [readiness and drain diagram](#t24-q04). When should an instance stop receiving work, why can liveness stay healthy during a database outage, and what proves completed shutdown?**</span>
+
+::: details Show answer
+
+Stop readiness/admission before draining accepted work and closing resources within the platform budget. Liveness can stay healthy during a database outage because the process itself still functions; restarting all healthy instances may add dependency pressure. Observe actual operation/resource closure and make forced-deadline escalation explicit rather than calling an abandoned promise successful cleanup.
+
+[Revisit the explanation and examples](#t24-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t24-q05 -->
+
+<span class="notes-section-label">**5. Scenario — The new release drops a column used by the previous binary. Can the operator safely restore the old image?**</span>
+
+::: details Show answer
+
+Not without a compatible schema/data plan. Use staged expand/bridge/backfill/contract and a known rollback window; after destructive contraction, forward repair or a reviewed restore may be needed.
+
+[Revisit the explanation and examples](#t24-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t24-q06 -->
+
+<span class="notes-section-label">**6. Compare — Someone reports prepared locally, pushed to registry and deployed as if they were the same milestone. What evidence and recovery information should a delivery handoff distinguish?**</span>
+
+::: details Show answer
+
+**Record exact release identity, actual checks, risks and recovery ownership.** Preparation, registry publication and deployment are separate actions; Git pushes remain for the user.
+
+[Revisit the explanation and examples](#t24-q06).
+
+:::

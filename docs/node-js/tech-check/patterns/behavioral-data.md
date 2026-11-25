@@ -536,3 +536,64 @@ Visitor separates operations from a stable family of node types.
 [Documentation](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). References explain runtime mechanics; the design choices and bounded contracts are the teaching examples above.
 
 Security reference: [OWASP Node.js guidance](https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Security_Cheat_Sheet.html) supports avoiding untrusted-code execution; the bounded Interpreter is a domain-specific data evaluator.
+
+## Revision
+
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t18-q17 -->
+
+<span class="notes-section-label">**1. Choose — A valid filter expression has deeply nested operations and is applied to an invalid record. Which grammar, evaluation-budget and data-validation checks does an Interpreter need?**</span>
+
+::: details Show answer
+
+**Evaluate only the intended small language under syntax and work bounds.** Valid expression syntax does not validate the record being examined.
+
+[Revisit the explanation and examples](#t18-q17).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q18 -->
+
+<span class="notes-section-label">**2. Diagnose — A consumer takes one value from a resource-owning iterator, stores it and never calls next or return again. Why is cleanup not automatic, and what should a traversal owner define?**</span>
+
+::: details Show answer
+
+**Expose traversal without exposing storage details, and define closing on exhaustion, early exit and failure.** A manually abandoned resource-owning iterator still needs an owner.
+
+[Revisit the explanation and examples](#t18-q18).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q20 -->
+
+<span class="notes-section-label">**3. Explain diagram — In the [Memento sequence](#t18-q20), who creates and restores the snapshot and who stores it? Why does restoring it not automatically reverse a sent payment?**</span>
+
+::: details Show answer
+
+The originator creates a snapshot of the state it agrees to save; the caretaker holds it without interpreting or mutating its internals. The originator later validates and restores that covered state. A payment already sent is outside the snapshot unless an explicit external recovery design covers it, so restoring local memory is not a general transaction rollback.
+
+[Revisit the explanation and examples](#t18-q20).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q23 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace node.accept through the [Visitor diagram](#t18-q23). Why is adding another operation easier than adding another node type, and how should unsupported dispatch fail?**</span>
+
+::: details Show answer
+
+A node calls the visitor method for its own type, such as visitA or visitB, and that visitor supplies the operation. Another visitor can add an operation over the same stable node family, but a new node type requires the relevant visitors to handle another method. Define a deliberate failure for unsupported types or missing methods rather than silently inventing a result.
+
+[Revisit the explanation and examples](#t18-q23).
+
+:::

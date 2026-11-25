@@ -817,23 +817,203 @@ SemVer ranges communicate allowed versions but do not prove quality; registries/
 - [ ] Build/test an emitted module, catch a deliberate behavior defect and preserve candidate identity.
 - [ ] Explain installation/build/runtime failure stages without unreviewed global resets or forced upgrades.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A private application declares its database driver only under devDependencies. What happens after a runtime-only installation?
-2. A manifest permits ^0.2.3. Is 0.3.0 compatible under that range's normal rule?
-3. A lifecycle post hook removes a temporary database, but the main script failed first. Can cleanup be assumed?
-4. A package works from its source checkout but fails when imported from the tarball. What should you inspect?
-5. ci retains a locked patch while outdated reports a newer allowed one. Which command should decide the deliberate update?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t04-q01 -->
 
-1. The running app can lose a required dependency. Correct the category and reviewed lock/build/runtime design; private:true does not supply missing runtime code.
-2. No. Its stable upper bound is below 0.3.0; pre-1.0 range details are not the same as caret on 1.x.
-3. No. A post hook is not a universal finally. Cleanup needs an explicit owner/error path and bounded termination.
-4. The actual file list, exports/main targets, built outputs, dependencies and selected runtime conditions. Fresh-consumer tests expose author-checkout assumptions.
-5. Use an intentional supported update/install workflow in a development fixture, then review/test the changed graph. ci recreates the locked contract rather than silently upgrading it.
+<span class="notes-section-label">**1. Scenario — A private application declares its database driver only under devDependencies. What happens after a runtime-only installation?**</span>
+
+::: details Show answer
+
+The running app can lose a required dependency. Correct the category and reviewed lock/build/runtime design; private:true does not supply missing runtime code.
+
+[Revisit the explanation and examples](#t04-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q01 -->
+
+<span class="notes-section-label">**2. Compare — Which jobs belong to package.json, the lockfile, installed node_modules and the Node loader? What does private:true actually prevent?**</span>
+
+::: details Show answer
+
+**`package.json` declares contracts; npm installs dependencies; Node loads code.** `"private": true` prevents accidental npm publication, not access to files. The lock records a resolved dependency graph and node_modules is the prepared installation; neither is the source code or proof of runtime compatibility.
+
+[Revisit the explanation and examples](#t04-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q02 -->
+
+<span class="notes-section-label">**3. Scenario — ci retains a locked patch while outdated reports a newer allowed one. Which command should decide the deliberate update?**</span>
+
+::: details Show answer
+
+Use an intentional supported update/install workflow in a development fixture, then review/test the changed graph. ci recreates the locked contract rather than silently upgrading it.
+
+[Revisit the explanation and examples](#t04-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q02 -->
+
+<span class="notes-section-label">**4. Diagnose — The manifest changes but its lockfile does not. Should npm ci silently repair the mismatch, and what happens to an existing node_modules tree?**</span>
+
+::: details Show answer
+
+No: ci requires compatible manifest/lock metadata and does not rewrite the lock as a deployment-time repair. It removes the existing node_modules tree before reproducing the locked installation. Reconcile the intentional dependency change with the development install workflow, review it and rerun the clean check under consistent settings.
+
+[Revisit the explanation and examples](#t04-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q03 -->
+
+<span class="notes-section-label">**5. Diagnose — Two machines use the same project .npmrc but install differently. Which other configuration and failure evidence should you compare without exposing credentials?**</span>
+
+::: details Show answer
+
+**Flags, environment and configuration files all affect npm.** Inspect the effective nonsecret settings and failure stage before changing them.
+
+[Revisit the explanation and examples](#t04-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q04 -->
+
+<span class="notes-section-label">**6. Scenario — A lifecycle post hook removes a temporary database, but the main script failed first. Can cleanup be assumed?**</span>
+
+::: details Show answer
+
+No. A post hook is not a universal finally. Cleanup needs an explicit owner/error path and bounded termination.
+
+[Revisit the explanation and examples](#t04-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q04 -->
+
+<span class="notes-section-label">**7. Predict — A script named inspect-args runs node args.mjs. What does npm run inspect-args -- --mode test deliver to process.argv.slice(2), and does a script named build imply a compiler?**</span>
+
+::: details Show answer
+
+The script receives ["--mode", "test"]. The separator forwards those arguments to the configured script; the script name does not supply a compiler or task implementation. Read its actual command and applicable hooks, preserve failure status and await required work.
+
+[Revisit the explanation and examples](#t04-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q05 -->
+
+<span class="notes-section-label">**8. Scenario — A manifest permits ^0.2.3. Is 0.3.0 compatible under that range's normal rule?**</span>
+
+::: details Show answer
+
+No. Its stable upper bound is below 0.3.0; pre-1.0 range details are not the same as caret on 1.x.
+
+[Revisit the explanation and examples](#t04-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q05 -->
+
+<span class="notes-section-label">**9. Compare — For stable versions, compare ~1.2.3, ^1.2.3 and ^0.2.3. Does ^1.2.3 normally admit 1.3.0-beta.1?**</span>
+
+::: details Show answer
+
+The stable intervals are at least 1.2.3 and below 1.3.0 for the tilde range, below 2.0.0 for ^1.2.3, and at least 0.2.3 but below 0.3.0 for ^0.2.3. The ordinary ^1.2.3 rule does not admit that prerelease. A range match is not an integration or security test, and ci retains the reviewed compatible lock rather than automatically choosing a newer allowed release.
+
+[Revisit the explanation and examples](#t04-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q06 -->
+
+<span class="notes-section-label">**10. Scenario — A package works from its source checkout but fails when imported from the tarball. What should you inspect?**</span>
+
+::: details Show answer
+
+The actual file list, exports/main targets, built outputs, dependencies and selected runtime conditions. Fresh-consumer tests expose author-checkout assumptions.
+
+[Revisit the explanation and examples](#t04-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q06 -->
+
+<span class="notes-section-label">**11. Compare — How do a registry tag, retained package version and integrity value provide different evidence? Does a matching checksum prove trustworthy code?**</span>
+
+::: details Show answer
+
+**Inspect the tarball consumers actually receive.** Tags can move; integrity checks verify expected bytes, not whether the code is trustworthy. A moved tag does not rewrite an existing lock; validate the intended package identity and test the packed artifact in a fresh consumer.
+
+[Revisit the explanation and examples](#t04-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q07 -->
+
+<span class="notes-section-label">**12. Diagnose — Source tests pass, but a fresh consumer cannot import the packaged dist entry. What should the build verification actually consume and check?**</span>
+
+::: details Show answer
+
+**npm orchestrates tools; the configured tools build the output.** Check the emitted artifact that will run, including missing or stale files.
+
+[Revisit the explanation and examples](#t04-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t04-q08 -->
+
+<span class="notes-section-label">**13. Choose — A CI compiler is missing after npm ci --omit=dev. Why are deleting the lockfile and globally installing the latest compiler poor first fixes?**</span>
+
+::: details Show answer
+
+The build stage omitted development tools it needs. Make the declared build tools available in that stage, then run the clean install, build and emitted-artifact checks again. Changing the lock or global compiler at the same time changes the evidence without addressing the original category/stage mistake.
+
+[Revisit the explanation and examples](#t04-q08).
+
+:::
+
 
 Official sources checked 2026-11-04: npm 11 [package metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [scripts](https://docs.npmjs.com/cli/v11/using-npm/scripts/), [configuration](https://docs.npmjs.com/cli/v11/using-npm/config/), [registry](https://docs.npmjs.com/cli/v11/using-npm/registry/), [pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/), [SemVer specification](https://semver.org/), [npm range implementation](https://github.com/npm/node-semver).
 
 <span id="batch-b07-progress"></span>
-

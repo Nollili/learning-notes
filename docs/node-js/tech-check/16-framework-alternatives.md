@@ -384,14 +384,76 @@ Submit the before/after invocation counts, contract results and repeated measure
 
 ## Revision
 
-1. Why can a Koa outer error handler miss a downstream rejection when `next()` is not awaited?
-2. Why should Feathers callers use `app.service('products')` rather than the original service object?
-3. Why is Hapi injection not an end-to-end network benchmark?
-4. What makes a global catalogue response cache different from immutable public build metadata?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide**</span>
+<!-- revision-covers: t16-q19 -->
 
-1. The outer middleware no longer awaits and owns that downstream completion/failure.
-2. The registered wrapper supplies hooks and other service behavior.
-3. Injection avoids a real socket/proxy/TLS path, so it measures a different boundary.
-4. Catalogue responses can vary by tenant, permissions and mutable data; their scope and invalidation must be enforced.
+<span class="notes-section-label">**1. Scenario — Why is Hapi injection not an end-to-end network benchmark?**</span>
+
+::: details Show answer
+
+Injection avoids a real socket/proxy/TLS path, so it measures a different boundary.
+
+[Revisit the explanation and examples](#t16-q19).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q20 -->
+
+<span class="notes-section-label">**2. Scenario — Why can a Koa outer error handler miss a downstream rejection when `next()` is not awaited?**</span>
+
+::: details Show answer
+
+The outer middleware no longer awaits and owns that downstream completion/failure.
+
+[Revisit the explanation and examples](#t16-q20).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q20 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the return path in the [Koa middleware diagram](#t16-q20). Why can an outer try/catch observe a downstream rejection through await next, unlike Express continuation?**</span>
+
+::: details Show answer
+
+Koa middleware awaits the promise representing downstream work, so completion or rejection unwinds through the outer await. The outer catch can then own that rejection. Omitting the await detaches that local completion/error boundary. Express next advances its middleware chain rather than returning the same Koa-style downstream completion promise.
+
+[Revisit the explanation and examples](#t16-q20).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q21 -->
+
+<span class="notes-section-label">**4. Scenario — Why should Feathers callers use `app.service('products')` rather than the original service object?**</span>
+
+::: details Show answer
+
+The registered wrapper supplies hooks and other service behavior.
+
+[Revisit the explanation and examples](#t16-q21).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q22 -->
+
+<span class="notes-section-label">**5. Scenario — What makes a global catalogue response cache different from immutable public build metadata?**</span>
+
+::: details Show answer
+
+Catalogue responses can vary by tenant, permissions and mutable data; their scope and invalidation must be enforced.
+
+[Revisit the explanation and examples](#t16-q22).
+
+:::

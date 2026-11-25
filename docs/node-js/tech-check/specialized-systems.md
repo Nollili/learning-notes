@@ -507,12 +507,136 @@ Add one justified specialist feature to the products service: bounded image/nume
 
 ## Revision and mixed practice
 
-1. Does a Redis adapter give a disconnected client durable replay automatically?
-2. Does a Node-API binary built for macOS run unchanged on Linux?
-3. Can a timed-out Promise stop a Wasm infinite loop on the main thread?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — attempt the scenarios first**</span>
+<!-- revision-covers: t08-q12 -->
 
-1. No. Check the selected adapter's persistence/recovery contract and provide authorized snapshot/replay fallback.
-2. No. Stable Node-API does not erase OS, architecture, linker and external-library differences.
-3. No. A blocked thread cannot run the timeout callback; use a controlled execution boundary and external termination where appropriate.
+<span class="notes-section-label">**1. Explain diagram — Trace the [multi-server session diagram](#t08-q12). Why does adapter delivery or room membership not grant permanent access after a credential expires or permissions change?**</span>
+
+::: details Show answer
+
+Server A authorizes its connection/action and sends through the configured cross-instance adapter; server B still needs an authorized recipient/session policy. Adapter delivery and room membership do not renew expired credentials or permanently grant access. Recheck or revoke protected subscriptions under the session policy, and derive room membership from trusted state. Transport affinity and cross-node distribution solve deployment concerns separately.
+
+[Revisit the explanation and examples](#t08-q12).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q13 -->
+
+<span class="notes-section-label">**2. Scenario — Does a Redis adapter give a disconnected client durable replay automatically?**</span>
+
+::: details Show answer
+
+No. Check the selected adapter's persistence/recovery contract and provide authorized snapshot/replay fallback.
+
+[Revisit the explanation and examples](#t08-q13).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q13 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the slow-consumer and gap branches in the [replay diagram](#t08-q13). When should a cursor advance, and what happens if required history expired?**</span>
+
+::: details Show answer
+
+**Bound each client's buffers and recover gaps without silently advancing the cursor.** If history expired, use an authorized resynchronization or snapshot policy. Advance the processed cursor only for the defined completed position, not silently over a missing event. Choose a bounded slow-client policy such as coalescing replaceable state, authorized resynchronization or disconnect, and enforce current permissions on replay too.
+
+[Revisit the explanation and examples](#t08-q13).
+
+:::
+
+
+---
+
+<!-- revision-covers: t08-q14 -->
+
+<span class="notes-section-label">**4. Compare — A reconnect succeeds during a reconnect storm, but the UI missed updates. What else establishes recovered state, and which session/adapter/timer owners must cooperate during shutdown?**</span>
+
+::: details Show answer
+
+**Connection recovery, session-state recovery and heartbeat are separate concerns.** Spread and limit reconnects; close sessions, adapters and timers within shutdown deadlines.
+
+[Revisit the explanation and examples](#t08-q14).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q08 -->
+
+<span class="notes-section-label">**5. Scenario — Does a Node-API binary built for macOS run unchanged on Linux?**</span>
+
+::: details Show answer
+
+No. Stable Node-API does not erase OS, architecture, linker and external-library differences.
+
+[Revisit the explanation and examples](#t12-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q08 -->
+
+<span class="notes-section-label">**6. Compare — Why can a Node-API addon with compatible ABI still block or crash its host, and why does OS-compatible packaging not establish isolation?**</span>
+
+::: details Show answer
+
+**Node-API stability does not remove platform or library compatibility requirements.** Native code shares host authority and can crash the process or block its calling thread. It runs native code with process privileges, not inside an automatically asynchronous or hostile-code-safe boundary. Account for build, library, deployment and resource-closure contracts.
+
+[Revisit the explanation and examples](#t12-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q09 -->
+
+<span class="notes-section-label">**7. Explain diagram — Use the [Wasm memory diagram](#t12-q09) to explain encoding, pointer/length, bounds and ownership. Why should JavaScript integer assumptions and old memory views not be reused blindly?**</span>
+
+::: details Show answer
+
+The host encodes values into agreed bounded bytes, invokes an export with its pointer/length contract and decodes the bounded result. Both sides need explicit allocation ownership and encoding; Wasm integer and overflow rules differ from JavaScript Number behavior. Memory growth can change view validity under the chosen shared/unshared memory contract, so do not keep using old views without applying those rules. Include conversion and copying costs in performance evidence.
+
+[Revisit the explanation and examples](#t12-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q10 -->
+
+<span class="notes-section-label">**8. Scenario — Can a timed-out Promise stop a Wasm infinite loop on the main thread?**</span>
+
+::: details Show answer
+
+No. A blocked thread cannot run the timeout callback; use a controlled execution boundary and external termination where appropriate.
+
+[Revisit the explanation and examples](#t12-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t12-q10 -->
+
+<span class="notes-section-label">**9. Choose — A Wasm kernel is faster in isolation but requires large copies per request. Which complete-path costs and failure checks decide whether to adopt it?**</span>
+
+::: details Show answer
+
+**Compare the complete useful workload, including conversion, startup, queues and copying.** Native or Wasm execution does not automatically improve requests or secure hostile inputs. Include useful computation, conversion, copying, startup and queues in representative measurements. Test invalid inputs, cancellation and termination at the actual execution boundary with explicit authority and cleanup.
+
+[Revisit the explanation and examples](#t12-q10).
+
+:::

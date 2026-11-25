@@ -441,10 +441,106 @@ Explain the ownership boundary before naming a pattern. For one Products API, dr
 
 ### Mixed practice
 
-1. A product update commits, but the process dies before notifying billing. What changes?
-2. The team proposes six services sharing one schema and one release. What evidence would justify this?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t18-q24 -->
 
-1. Commit a business change plus outbox intent locally, relay with durable retry, and deduplicate the consumer effect. A crash after publication can still duplicate delivery; do not promise exactly-once external effects.
-2. Require a concrete ownership/scaling/isolation need and an independent contract/recovery plan. Otherwise preserve explicit modules in one deployable rather than pay the network cost without autonomy.
+<span class="notes-section-label">**1. Explain diagram — In the [feature/layer diagram](#t18-q24), where do products belong as a feature, and where do transport, use-case and persistence responsibilities belong? What should business logic receive instead of req/res?**</span>
+
+::: details Show answer
+
+Products is the feature boundary; inside it, the controller, service and repository separate transport, business and storage responsibilities. The service receives explicit operation values, trusted actor context and injected capabilities rather than Express req/res or a pool it quietly creates itself. Folder names do not enforce these rules; inspect actual dependency direction and the transaction/resource owner.
+
+[Revisit the explanation and examples](#t18-q24).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q25 -->
+
+<span class="notes-section-label">**2. Choose — Two helpers look similar but change for different business reasons. Why might moving them into one shared module reduce maintainability, and what should a reusable contract include?**</span>
+
+::: details Show answer
+
+**A small public interface includes results, errors, state and cleanup rules.** Share one coherent responsibility rather than collecting unrelated helpers in a shared folder.
+
+[Revisit the explanation and examples](#t18-q25).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q26 -->
+
+<span class="notes-section-label">**3. Scenario — The team proposes six services sharing one schema and one release. What evidence would justify this?**</span>
+
+::: details Show answer
+
+Require a concrete ownership/scaling/isolation need and an independent contract/recovery plan. Otherwise preserve explicit modules in one deployable rather than pay the network cost without autonomy.
+
+[Revisit the explanation and examples](#t18-q26).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q27 -->
+
+<span class="notes-section-label">**4. Scenario — A product update commits, but the process dies before notifying billing. What changes?**</span>
+
+::: details Show answer
+
+Commit a business change plus outbox intent locally, relay with durable retry, and deduplicate the consumer effect. A crash after publication can still duplicate delivery; do not promise exactly-once external effects.
+
+[Revisit the explanation and examples](#t18-q27).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q27 -->
+
+<span class="notes-section-label">**5. Compare — How do outbox publication, consumer idempotency and saga compensation address different failure points?**</span>
+
+::: details Show answer
+
+An outbox records publication intent in the same local transaction as the business change. Consumers handle repeat delivery with durable identity/effect rules. A saga coordinates several local steps and may run explicit compensation after a later failure; compensation is another business action with its own failure possibilities, not an automatic distributed rollback.
+
+[Revisit the explanation and examples](#t18-q27).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q28 -->
+
+<span class="notes-section-label">**6. Explain diagram — In the [partition diagram](#t18-q28), two nodes cannot communicate. Why can preserving one linearizable history require some requests to fail or wait instead of succeeding independently everywhere?**</span>
+
+::: details Show answer
+
+If isolated nodes both accept arbitrary conflicting work without communicating, a later operation cannot always behave as though one current copy reflects the prior completed work. Preserving a linearizable history can therefore require some requests to wait or fail during the partition. Choosing responses on every isolated side may instead allow stale or conflicting results. CAP describes this partition-time guarantee, not a permanent pick-two slogan or an ordinary uptime percentage.
+
+[Revisit the explanation and examples](#t18-q28).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q29 -->
+
+<span class="notes-section-label">**7. Diagnose — An extra API instance improves CPU headroom but worsens pool waits and p99 latency. Which shared bottleneck and admission policy should be investigated before adding more instances?**</span>
+
+::: details Show answer
+
+**Scale the measured bottleneck and bound admitted work.** More API replicas can worsen pressure on an already saturated shared database.
+
+[Revisit the explanation and examples](#t18-q29).
+
+:::

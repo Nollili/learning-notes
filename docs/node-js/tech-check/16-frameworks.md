@@ -623,19 +623,82 @@ Official references: [Node 24 environment files](https://nodejs.org/download/rel
 - [ ] Validate configuration before resource acquisition and stop the local service cleanly.
 
 
-<span class="notes-section-label">**Mixed practice — answer before revealing the explanations**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A service returns HTML today and JSON tomorrow. Which concerns must change, and which can remain?
-2. A faster framework benchmark appears, but your database accounts for nearly all endpoint latency. What should you measure first?
-3. A deployment sets `PORT=3000junk`. Why might one parser accept it, and what should this lab do?
-4. A test imports the application and never exits. What side effects should you inspect?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-::: details Practice explanations
-1. The transport/presentation response changes; business rules and storage can remain when boundaries are explicit. New contracts still require tests.
-2. Profile the real request and its database operations before changing the HTTP adapter. Compare equivalent behavior and include migration cost.
-3. `parseInt()` can accept a numeric prefix. This lab validates the entire string and rejects the malformed setting before binding.
-4. Look for module-level listeners, database connections, timers or background work. Importing this lab's `app.mjs` alone should acquire none of them.
+<!-- revision-covers: t16-q01 -->
+
+<span class="notes-section-label">**1. Scenario — A service returns HTML today and JSON tomorrow. Which concerns must change, and which can remain?**</span>
+
+::: details Show answer
+
+The transport/presentation response changes; business rules and storage can remain when boundaries are explicit. New contracts still require tests.
+
+[Revisit the explanation and examples](#t16-q01).
+
 :::
+
+
+---
+
+<!-- revision-covers: t16-q01 -->
+
+<span class="notes-section-label">**2. Explain diagram — In the [framework request diagram](#t16-q01), which responsibilities belong to Node, the framework and application code? How does MVC differ from merely returning JSON?**</span>
+
+::: details Show answer
+
+**Node supplies the runtime; frameworks organize HTTP handling.** MVC separates model, view and controller; an API commonly returns data instead of a rendered page. The framework matches routes and composes request handling; the application supplies its business rules and data. MVC describes responsibilities, and returning JSON alone does not supply persistence, authorization or a complete REST contract.
+
+[Revisit the explanation and examples](#t16-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q02 -->
+
+<span class="notes-section-label">**3. Scenario — A faster framework benchmark appears, but your database accounts for nearly all endpoint latency. What should you measure first?**</span>
+
+::: details Show answer
+
+Profile the real request and its database operations before changing the HTTP adapter. Compare equivalent behavior and include migration cost.
+
+[Revisit the explanation and examples](#t16-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q03 -->
+
+<span class="notes-section-label">**4. Scenario — A test imports the application and never exits. What side effects should you inspect?**</span>
+
+::: details Show answer
+
+Look for module-level listeners, database connections, timers or background work. Importing this lab's `app.mjs` alone should acquire none of them.
+
+[Revisit the explanation and examples](#t16-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q04 -->
+
+<span class="notes-section-label">**5. Scenario — A deployment sets `PORT=3000junk`. Why might one parser accept it, and what should this lab do?**</span>
+
+::: details Show answer
+
+`parseInt()` can accept a numeric prefix. This lab validates the entire string and rejects the malformed setting before binding.
+
+[Revisit the explanation and examples](#t16-q04).
+
+:::
+
 
 ## References and scope
 

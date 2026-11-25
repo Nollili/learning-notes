@@ -631,3 +631,79 @@ Template Method fixes a workflow skeleton and lets subclasses provide selected s
 <span class="notes-section-label">**Official implementation reference**</span>
 
 [Documentation](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). References explain runtime mechanics; the design choices and bounded contracts are the teaching examples above.
+
+## Revision
+
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t18-q15 -->
+
+<span class="notes-section-label">**1. Predict — Handler A fails and the chain automatically invokes B as if A had passed. Why can this hide failure or repeat an effect, and which three outcomes must the contract distinguish?**</span>
+
+::: details Show answer
+
+**Handlers must distinguish handled, passed-on and failed.** Order affects behavior, and failure is not automatically permission to run the next handler.
+
+[Revisit the explanation and examples](#t18-q15).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q16 -->
+
+<span class="notes-section-label">**2. Compare — How does representing a payment as a Command differ from making it safely retryable or undoable? Contrast restoring an owned local value with compensating an external effect.**</span>
+
+::: details Show answer
+
+**Separate the operation from its trigger, then define execution, retry and undo independently.** Reversing an external effect is another checked operation that may fail.
+
+[Revisit the explanation and examples](#t18-q16).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q19 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the [Mediator diagram](#t18-q19). How does focused coordination reduce peer-to-peer coupling, and why must ordering, overlapping work and failure remain explicit?**</span>
+
+::: details Show answer
+
+The peers send outcomes through a mediator focused on that interaction instead of all calling each other directly. The mediator selects and coordinates the next action, so it must define order, overlapping requests and failure/cleanup behavior. Keep that responsibility coherent; a global catch-all mediator can become a hidden dependency hub.
+
+[Revisit the explanation and examples](#t18-q19).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q21 -->
+
+<span class="notes-section-label">**4. Predict — An object changes status and mutates fields before checking whether publish is allowed. Why is that unsafe, and what makes state-specific behavior more than a status field?**</span>
+
+::: details Show answer
+
+**The current lifecycle state defines permitted behavior and transitions.** Validate transitions before mutation; a status field alone is not the pattern.
+
+[Revisit the explanation and examples](#t18-q21).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q22 -->
+
+<span class="notes-section-label">**5. Compare — Which steps stay fixed in Template Method, which may subclasses change, and how do contract tests protect validation order and cleanup without a JavaScript final keyword?**</span>
+
+::: details Show answer
+
+**Keep the overall workflow fixed while designated subclass steps vary.** Conventions and contract checks protect order and cleanup; JavaScript supplies no final-method guarantee.
+
+[Revisit the explanation and examples](#t18-q22).
+
+:::

@@ -929,6 +929,156 @@ Load the document in Swagger UI and inspect the documented status and body. In a
 
 ## Tooling revision and practice
 
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t29-q01 -->
+
+<span class="notes-section-label">**1. Diagnose — Build and unit tests pass, but start prints ready before binding and shutdown leaves a socket open. Which build/test/start milestones still need executable evidence?**</span>
+
+::: details Show answer
+
+**Build produces files, tests check behavior, start runs the service.** Confirm listening before reporting startup success and check shutdown through a bounded smoke test.
+
+[Revisit the explanation and examples](#t29-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q02 -->
+
+<span class="notes-section-label">**2. Choose — You change a lint rule and the command stays green. How do you prove that the intended rule checked the intended file rather than silently excluding it?**</span>
+
+::: details Show answer
+
+**Prove the intended violation fails in the intended files.** Then fix it and confirm success; disabling a rule changes policy rather than correcting behavior.
+
+[Revisit the explanation and examples](#t29-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q03 -->
+
+<span class="notes-section-label">**3. Compare — A formatter passes but a type check and a behavior test fail. Why is this consistent, and why should formatting-only edits be separate from a behavior fix?**</span>
+
+::: details Show answer
+
+**Formatting, linting, typechecking and tests check different properties.** Passing one does not supply the others' evidence; separate formatting edits from behavior edits.
+
+[Revisit the explanation and examples](#t29-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q04 -->
+
+<span class="notes-section-label">**4. Diagnose — A CI gate is green only from the wrong working directory. Which command, inclusion, version and output evidence would you capture before changing the tool policy?**</span>
+
+::: details Show answer
+
+**Identify the exact command, directory, version and file scope.** A check that never examines the intended file can produce a false green.
+
+[Revisit the explanation and examples](#t29-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q05 -->
+
+<span class="notes-section-label">**5. Choose — A breakpoint exposes a wrong value in one local run. What must you verify about the process and source maps, and which check shows the fix works without the debugger?**</span>
+
+::: details Show answer
+
+**Use navigation to find callers and breakpoints to inspect one real execution path.** Verify the actual process and source maps, then test the fix without the debugger.
+
+[Revisit the explanation and examples](#t29-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q06 -->
+
+<span class="notes-section-label">**6. Choose — Production logs identify a failing build. How would you investigate a staging copy with Inspector while limiting access and avoiding secret exposure?**</span>
+
+::: details Show answer
+
+**Identify the deployed build before attaching to its process.** Prefer isolated staging and loopback Inspector through an authenticated private connection; close the session afterward.
+
+[Revisit the explanation and examples](#t29-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q07 -->
+
+<span class="notes-section-label">**7. Explain diagram — Trace the [async failure diagram](#t29-q07). How do request ID and error cause answer different diagnostic questions, and what should the HTTP client receive?**</span>
+
+::: details Show answer
+
+The request ID lets records from the HTTP entry, service and dependency call be joined into one operation. Preserving cause retains the original failure while an application error adds useful context. Keep detailed, bounded diagnostics in controlled logs and send only stable, safe fields to the client. Neither a correlation ID nor copied caller context establishes access permission.
+
+[Revisit the explanation and examples](#t29-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q08 -->
+
+<span class="notes-section-label">**8. Diagnose — Startup completes module loading and configuration but then reports EADDRINUSE. What would you inspect next, and what would successful listening still not prove?**</span>
+
+::: details Show answer
+
+EADDRINUSE points to failure at the address/port acquisition step, so inspect the intended bind configuration and the process already owning that endpoint. Do not fix it by changing unrelated import or validation policy. Readiness is a later claim: even after the listener succeeds, required services and application operations may still be unavailable.
+
+[Revisit the explanation and examples](#t29-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q09 -->
+
+<span class="notes-section-label">**9. Compare — A JSDoc parameter says number and an editor accepts the code, but HTTP input arrives as a string. What did documentation/static checking establish, and what must runtime validation still do?**</span>
+
+::: details Show answer
+
+**Document inputs, results, expected failures and units beside the function.** Editor checks can use JSDoc, but incoming values still need runtime validation.
+
+[Revisit the explanation and examples](#t29-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t29-q10 -->
+
+<span class="notes-section-label">**10. Compare — Swagger UI displays a valid OpenAPI document while the route returns the wrong status and private fields. Which part documents, which implements, and which verifies the agreement?**</span>
+
+::: details Show answer
+
+**OpenAPI describes the HTTP agreement; Swagger UI displays it.** Contract tests compare actual behavior with that agreement; documentation alone enforces nothing.
+
+[Revisit the explanation and examples](#t29-q10).
+
+:::
+
+
 - [ ] Reproduce the build/test/serve gate and supervise readiness/shutdown.
 - [ ] Make a scoped lint-rule change with effective-config and negative-control evidence.
 - [ ] Repair formatting drift and prove idempotence without hiding a behavior defect.

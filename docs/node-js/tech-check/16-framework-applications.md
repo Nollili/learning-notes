@@ -1454,6 +1454,141 @@ Deployment is the complete runtime/lifecycle contract around the framework, not 
 
 ## Application revision
 
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t16-q05 -->
+
+<span class="notes-section-label">**1. Predict — For a router mounted at /products, how does GET /products/stats?limit=5 interact with routes /stats and /:id? Where does limit belong, and what must still be checked?**</span>
+
+::: details Show answer
+
+Register /stats before the overlapping /:id route, or stats can be treated as an ID. The mount prefix participates in matching, while limit comes from the query rather than the path parameter. Validate each input source and authorize the action; matching a route establishes neither.
+
+[Revisit the explanation and examples](#t16-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q06 -->
+
+<span class="notes-section-label">**2. Diagnose — Middleware sends JSON and then calls next. Another middleware neither responds nor continues. How do their failure modes differ, and why does await next not fix Express composition?**</span>
+
+::: details Show answer
+
+The first path risks downstream work or a second response after completion; return after sending. The second leaves no response or continuation and can hang. Express uses registration-order continuation, not Koa-style downstream completion promises; pass errors to the appropriate error boundary.
+
+[Revisit the explanation and examples](#t16-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q07 -->
+
+<span class="notes-section-label">**3. Explain diagram — Trace the [controller/service/repository diagram](#t16-q07). Which layer should choose an HTTP status, enforce reusable ownership rules, and perform storage access?**</span>
+
+::: details Show answer
+
+The controller handles HTTP input interpretation, status, headers and representation. It calls a service with plain operation input and trusted actor context; that service enforces reusable rules and authorization and calls the repository for storage. Results return through the service to the controller for an explicit public response. Keeping req/res out of the inner components lets the CLI or jobs reuse the same business operation.
+
+[Revisit the explanation and examples](#t16-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q08 -->
+
+<span class="notes-section-label">**4. Compare — A browser disconnects, the response emits finish locally, and the service later commits. Why are these separate facts, and when should an active-work slot be released?**</span>
+
+::: details Show answer
+
+Reading the request, finishing local response output and completing business work are different lifetimes. A disconnected client does not cancel unsupported service work or undo a commit, and finish does not prove the remote application consumed the result. Retain the active-work slot until the service actually settles, even if the connection has already closed. Propagate supported cancellation and observe late failures without sending a second response.
+
+[Revisit the explanation and examples](#t16-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q09 -->
+
+<span class="notes-section-label">**5. Choose — The same product operation supports a JSON route and an HTML page. Where should ownership checks and public field selection live, and what extra output rule does HTML need?**</span>
+
+::: details Show answer
+
+Keep ownership and shared business rules in the service so both HTTP presentations and non-HTTP callers use them. Return deliberately selected public data instead of raw storage entities, then let the controller choose JSON or an HTML view. Escape untrusted text for its actual output context; HTML-text escaping is not a universal script or URL defense. An in-memory CRUD demo does not establish durable, multi-instance storage.
+
+[Revisit the explanation and examples](#t16-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q10 -->
+
+<span class="notes-section-label">**6. Compare — How do invalid input, invalid credentials, insufficient permission and an unavailable verifier differ? Why must a submitted role field not become trusted caller context?**</span>
+
+::: details Show answer
+
+Invalid input is a validation outcome, invalid credentials are an authentication decision, and an identified caller may still fail resource authorization. An unexpected verifier outage means the server could not establish its authentication result; it must not be treated as proof the credential was invalid. Build actor identity from verified server-side evidence and enforce permissions in the service. A caller-submitted role or owner field is untrusted input, not a grant of authority.
+
+[Revisit the explanation and examples](#t16-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q11 -->
+
+<span class="notes-section-label">**7. Diagnose — A shared service stores currentUser before awaiting storage. Two requests overlap. Why is constructor injection not enough to prevent cross-request identity mixing?**</span>
+
+::: details Show answer
+
+A shared instance still has shared mutable fields, regardless of how it was constructed. Pass the trusted actor as operation-specific context rather than mutating currentUser. Construct repository, service and controller capabilities at an explicit setup boundary, with clear owners and contracts.
+
+[Revisit the explanation and examples](#t16-q11).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q12 -->
+
+<span class="notes-section-label">**8. Explain diagram — Using the [Nest request-hook diagram](#t16-q12), explain guards, pipes, interceptors and filters. Why should provider cleanup not be inferred from a successful request hook?**</span>
+
+::: details Show answer
+
+Guards decide access to handlers, pipes interpret/validate input, interceptors surround handler execution, and filters translate applicable uncaught exceptions. Their scope and ordering affect which work runs. Provider/application lifecycle and actual resource disposal are separate; hooks alone do not guarantee completion after a crash or within a platform deadline.
+
+[Revisit the explanation and examples](#t16-q12).
+
+:::
+
+
+---
+
+<!-- revision-covers: t16-q13 -->
+
+<span class="notes-section-label">**9. Compare — A service is listening and its liveness endpoint responds, but a required database is unavailable. Is it necessarily ready, and what else changes when several replicas serve the same application?**</span>
+
+::: details Show answer
+
+Not necessarily: listening proves a port is open and liveness proves the process can answer its check, while readiness must reflect ability to perform required work. A missing required database may make the instance unready without proving that restarting Node fixes the dependency. Multiple replicas also multiply pools and make process-local session/data Maps independent and non-durable. Deploy a verified artifact with checked configuration and one explicit startup/shutdown owner.
+
+[Revisit the explanation and examples](#t16-q13).
+
+:::
+
+
 | Responsibility | Express example | NestJS companion |
 |---|---|---|
 | Routing | Router, ordered literals and parameters | Controller and method decorators |
@@ -1464,7 +1599,6 @@ Deployment is the complete runtime/lifecycle contract around the framework, not 
 | Cross-cutting observation | Bounded finish/close observer | Interceptor with finalization |
 | Resource ownership | Explicit server owner and idempotent close | Application initialization/close hooks |
 
-**Explain the decisions, not just the method names.** Why do literal routes precede parameter routes? Why does an authenticated actor still need authorization? What does a disconnected client tell you about a database write? Which state survives a restart?
 
 ### Mixed application practice
 

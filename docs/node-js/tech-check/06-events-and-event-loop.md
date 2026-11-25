@@ -931,25 +931,173 @@ Diagnose responsiveness with contextual scheduling experiments, loop metrics and
 
 Acceptance: retain command/runtime/platform, assertions and measurements. Close every owned timer, monitor, child and subscription. Exercise failure paths intentionally and distinguish observed behaviour from native implementation inferred from documentation. Writing or author-checking these examples does not complete learner practice.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. Async file reads slow down during many native crypto tasks, but the loop remains responsive. Which shared resource merits investigation?
-2. A SIGTERM listener is installed but the server still accepts work. Why can the process remain alive?
-3. The loop monitor's max is 80,000,000. What is its millisecond value?
-4. ELU is high while CPU is low. Is that impossible?
-5. A child endlessly refills nextTick and its own shutdown timer never runs. Where must the final watchdog live?
-6. Does chunking with setImmediate make each chunk interruptible?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t06-q01 -->
 
-1. The native worker pool and storage/operation queue; measure before changing its size.
-2. The listener changes default signal behaviour, while referenced server resources remain. Stop admission and drain/close owned work under a deadline.
-3. 80 ms; histogram durations are nanoseconds.
-4. No. An active loop can be blocked in a synchronous native wait; ELU is not CPU percentage.
-5. In an external supervisor/owned parent process able to force termination independently.
-6. No. It permits progress between chunks. Each chunk must itself have bounded acceptable cost.
+<span class="notes-section-label">**1. Predict — Two synchronous listeners A and B are registered in that order. What happens before emit returns, what does its boolean mean, and what changes if a listener returns a promise?**</span>
+
+::: details Show answer
+
+A runs before B and both synchronous calls happen before emit returns, unless a throw interrupts delivery. The boolean reports whether listeners existed, not successful completion. Ordinary emit does not await a returned listener promise; its rejection needs an explicit owner, and subscriptions need disposal.
+
+[Revisit the explanation and examples](#t06-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q02 -->
+
+<span class="notes-section-label">**2. Diagnose — A producer emits ready and then done in one turn. Why can awaiting ready before registering for done hang, and how should both waits be arranged?**</span>
+
+::: details Show answer
+
+EventEmitter does not retain done for a listener added later. Register both waits and their rejection handling **before starting the producer**, then observe both promises. Abort unused waits on failure so their listeners do not remain registered; cancelling a wait does not necessarily stop the producer.
+
+[Revisit the explanation and examples](#t06-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q03 -->
+
+<span class="notes-section-label">**3. Explain diagram — In the [I/O scheduling diagram](#t06-q03), why does immediate from io precede timer from io? Why should the same order not be asserted at program startup?**</span>
+
+::: details Show answer
+
+The shown file callback schedules both operations from an I/O context. The immediate runs in the check phase before the next eligible timer opportunity in that example. A timer delay is a minimum rather than an exact deadline, and startup has a different scheduling context, so the example does not establish a universal top-level order.
+
+[Revisit the explanation and examples](#t06-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q04 -->
+
+<span class="notes-section-label">**4. Compare — The same queue example runs as .cjs and .mjs. Why can its top-level tick/promise order change while ticks inside the immediate callback still precede its microtasks?**</span>
+
+::: details Show answer
+
+After an ordinary Node callback, its next-tick queue is processed before standard promise/microtask work. Top-level ESM evaluation is already occurring in a microtask context, so the demonstrated top-level promise and microtask handlers precede its tick; the CJS example differs there. Both immediate callbacks are ordinary callback contexts and have the same tick-before-microtask relationship. State runtime, file mode and scheduling origin before predicting order, and remember that repeatedly refilling either queue can starve I/O.
+
+[Revisit the explanation and examples](#t06-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q05 -->
+
+<span class="notes-section-label">**5. Scenario — Async file reads slow down during many native crypto tasks, but the loop remains responsive. Which shared resource merits investigation?**</span>
+
+::: details Show answer
+
+The native worker pool and storage/operation queue; measure before changing its size.
+
+[Revisit the explanation and examples](#t06-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q05 -->
+
+<span class="notes-section-label">**6. Explain diagram — Trace the [OS/native-pool diagram](#t06-q05). Why does a supported asynchronous operation not imply one extra JavaScript thread per request?**</span>
+
+::: details Show answer
+
+Network readiness/completion often comes through the OS, while many file, system-DNS, crypto and compression operations use libuv native pool work. Their JavaScript completion callbacks still need a turn on their JavaScript event-loop thread. worker_threads is a different API for additional JavaScript execution. Mechanisms depend on the operation/platform; async syntax alone does not identify one.
+
+[Revisit the explanation and examples](#t06-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q06 -->
+
+<span class="notes-section-label">**7. Scenario — A SIGTERM listener is installed but the server still accepts work. Why can the process remain alive?**</span>
+
+::: details Show answer
+
+The listener changes default signal behaviour, while referenced server resources remain. Stop admission and drain/close owned work under a deadline.
+
+[Revisit the explanation and examples](#t06-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q07 -->
+
+<span class="notes-section-label">**8. Scenario — The loop monitor's max is 80,000,000. What is its millisecond value?**</span>
+
+::: details Show answer
+
+80 ms; histogram durations are nanoseconds.
+
+[Revisit the explanation and examples](#t06-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q07 -->
+
+<span class="notes-section-label">**9. Scenario — ELU is high while CPU is low. Is that impossible?**</span>
+
+::: details Show answer
+
+No. An active loop can be blocked in a synchronous native wait; ELU is not CPU percentage.
+
+[Revisit the explanation and examples](#t06-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q08 -->
+
+<span class="notes-section-label">**10. Scenario — A child endlessly refills nextTick and its own shutdown timer never runs. Where must the final watchdog live?**</span>
+
+::: details Show answer
+
+In an external supervisor/owned parent process able to force termination independently.
+
+[Revisit the explanation and examples](#t06-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t06-q08 -->
+
+<span class="notes-section-label">**11. Scenario — Does chunking with setImmediate make each chunk interruptible?**</span>
+
+::: details Show answer
+
+No. It permits progress between chunks. Each chunk must itself have bounded acceptable cost.
+
+[Revisit the explanation and examples](#t06-q08).
+
+:::
+
 
 Additional official references checked 2026-11-04: Node 24.18 [performance APIs](https://nodejs.org/download/release/v24.18.0/docs/api/perf_hooks.html), [signal events](https://nodejs.org/download/release/v24.18.0/docs/api/process.html#signal-events), [filesystem watcher caveats](https://nodejs.org/download/release/v24.18.0/docs/api/fs.html#caveats); libuv [design](https://docs.libuv.org/en/v1.x/design.html) and [native pool](https://docs.libuv.org/en/v1.x/threadpool.html). These describe stated runtime contracts; local execution does not test every OS backend.
 
 <span id="next-batch-checkpoint"></span>
-

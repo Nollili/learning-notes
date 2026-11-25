@@ -1458,23 +1458,172 @@ Select evidence by the risk, not by a test filename. A unit test checks a focuse
 
 Advanced Pact deployment gates, real-browser/proxy E2E, database adapters beyond the earlier transaction labs, long soak/spike campaigns and advanced profiling remain explicit extensions, not requirements to master every tool. Their introductory purpose and limitations are covered here.
 
-<span class="notes-section-label">**Mixed practice — answer before opening the explanations**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A service unit test uses a fake repository and passes. Which new evidence is needed before claiming a real PostgreSQL unique constraint works?
-2. A 503 response is faster than normal quotes. Is the service's useful throughput necessarily improved?
-3. Your consumer test passes against a hard-coded fixture. What provider step is missing?
-4. An E2E test passes every assertion but the test process never exits. What should you fix?
-5. A benchmark's results changed as well as its timing. Can it demonstrate an optimization?
-6. A coverage report reaches 100% after excluding an unimported adapter. What has this established?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-::: details Practice explanations
-1. A real controlled PostgreSQL adapter test exercising the actual constraint/concurrency and transaction behavior; the fake cannot establish it.
-2. No. Count successful results separately from rejection/errors and measure the stated workload and latency goals.
-3. Verify that the actual provider satisfies the recorded consumer agreement; the later HTTP reader test supplies that local evidence.
-4. Find and close the owned server, child, pool, timer or other resource. Forcing exit hides the lifecycle defect.
-5. No. First establish equivalent correct behavior; then compare repeated measurements and their variation.
-6. Only the execution metrics for the listed sources, with that exclusion. It does not establish the omitted adapter's behavior or assertion quality.
+<!-- revision-covers: t15-q01 -->
+
+<span class="notes-section-label">**1. Choose — A shipping rule changes at 5000 cents. Which inputs best expose an off-by-one error, and why is checking only that a result exists insufficient?**</span>
+
+::: details Show answer
+
+Test just below, exactly at and just above the threshold, with expected shipping totals chosen independently of the implementation. The exact boundary distinguishes greater-than from greater-than-or-equal. Also test invalid inputs and deliberate failures; useful assertions check the promised value or effect rather than mere existence.
+
+[Revisit the explanation and examples](#t15-q01).
+
 :::
+
+
+---
+
+<!-- revision-covers: t15-q08 -->
+
+<span class="notes-section-label">**2. Scenario — A coverage report reaches 100% after excluding an unimported adapter. What has this established?**</span>
+
+::: details Show answer
+
+Only the execution metrics for the listed sources, with that exclusion. It does not establish the omitted adapter's behavior or assertion quality.
+
+[Revisit the explanation and examples](#t15-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q08 -->
+
+<span class="notes-section-label">**3. Choose — What can a mocked res.json call prove, and which routing, parsing and error behavior needs a request through the real framework?**</span>
+
+::: details Show answer
+
+**Use the real HTTP handling chain to verify routing, parsing and error responses.** A deliberately injected service double does not prove real storage behavior. Keep the app import separate from starting a server, isolate fixtures, await requests and close owned servers. Coverage percentages do not establish that these boundary assertions are useful.
+
+[Revisit the explanation and examples](#t15-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q03 -->
+
+<span class="notes-section-label">**4. Scenario — A service unit test uses a fake repository and passes. Which new evidence is needed before claiming a real PostgreSQL unique constraint works?**</span>
+
+::: details Show answer
+
+A real controlled PostgreSQL adapter test exercising the actual constraint/concurrency and transaction behavior; the fake cannot establish it.
+
+[Revisit the explanation and examples](#t15-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q02 -->
+
+<span class="notes-section-label">**5. Scenario — Your consumer test passes against a hard-coded fixture. What provider step is missing?**</span>
+
+::: details Show answer
+
+Verify that the actual provider satisfies the recorded consumer agreement; the later HTTP reader test supplies that local evidence.
+
+[Revisit the explanation and examples](#t15-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q04 -->
+
+<span class="notes-section-label">**6. Scenario — An E2E test passes every assertion but the test process never exits. What should you fix?**</span>
+
+::: details Show answer
+
+Find and close the owned server, child, pool, timer or other resource. Forcing exit hides the lifecycle defect.
+
+[Revisit the explanation and examples](#t15-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q04 -->
+
+<span class="notes-section-label">**7. Explain — How does an assembled-system end-to-end journey differ from a unit test, and which parts remain unproven if its repository is fake?**</span>
+
+::: details Show answer
+
+**Exercise a valuable journey through the assembled system.** Wait for readiness, bound requests, isolate state and verify resource closure afterward. A fake repository can support an HTTP journey through that fake, but cannot demonstrate real SQL, storage or migration behavior. Bound actual request and startup lifetimes rather than assuming a test-framework timeout cancels them.
+
+[Revisit the explanation and examples](#t15-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q05 -->
+
+<span class="notes-section-label">**8. Compare — How do red/green/refactor and Given/When/Then help different parts of development? Why is changing expected behavior during a refactor not merely cleanup?**</span>
+
+::: details Show answer
+
+TDD cycles through a meaningful failing test, a passing implementation and structural refactoring under green tests. BDD uses shared concrete examples, often Given/When/Then, to agree what behavior is wanted. Refactoring preserves the agreed results and failure contract; editing expected results to accept changed behavior is a requirement change, not merely cleanup. Neither approach requires a particular testing framework.
+
+[Revisit the explanation and examples](#t15-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q06 -->
+
+<span class="notes-section-label">**9. Scenario — A 503 response is faster than normal quotes. Is the service's useful throughput necessarily improved?**</span>
+
+::: details Show answer
+
+No. Count successful results separately from rejection/errors and measure the stated workload and latency goals.
+
+[Revisit the explanation and examples](#t15-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q06 -->
+
+<span class="notes-section-label">**10. Compare — How do expected load, stress, spike and soak experiments ask different questions? Why must recovery and rejected requests remain in the report?**</span>
+
+::: details Show answer
+
+Expected load checks stated traffic goals; stress explores capacity/resource limits; a spike tests a sudden burst; a soak looks for changes over a long run. Successful latency alone can hide rejected or unsent work, and a closed-loop client may reduce offered traffic as the service slows. Define a workload, budget and stop condition on owned infrastructure, include failures and resource trends, then lower traffic and verify recovery.
+
+[Revisit the explanation and examples](#t15-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t15-q07 -->
+
+<span class="notes-section-label">**11. Scenario — A benchmark's results changed as well as its timing. Can it demonstrate an optimization?**</span>
+
+::: details Show answer
+
+No. First establish equivalent correct behavior; then compare repeated measurements and their variation.
+
+[Revisit the explanation and examples](#t15-q07).
+
+:::
+
 
 ## References and validation scope
 

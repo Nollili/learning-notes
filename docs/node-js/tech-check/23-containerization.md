@@ -300,10 +300,91 @@ Follow the complete path: source/build context → image layers → release dige
 
 ### Mixed practice
 
-1. The API connects to localhost:5432 inside its container while PostgreSQL is a separate Compose service. What changes?
-2. A database password file changes, but the persistent database keeps rejecting it. Why?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t23-q01 -->
 
-1. Use the database service DNS name and its container port on the shared network. Publishing another host port is unnecessary for service-to-service traffic.
-2. A changed bootstrap file does not rotate an initialized database role. Coordinate actual role credential rotation, application secret adoption and pool restart/reconnect without deleting the authoritative volume.
+<span class="notes-section-label">**1. Explain diagram — Trace image, old container, replacement container and volume in the [storage diagram](#t23-q01). What survives replacement, and why is that not evidence of a usable backup?**</span>
+
+::: details Show answer
+
+The registry distributes an image; each container adds its own replaceable writable layer. A replacement can attach a retained volume, so container replacement need not delete that data. The same retained data may still be damaged or lost, so a volume alone is not a backup. Prove recovery through a separate backup/restore procedure and usable application data checks.
+
+[Revisit the explanation and examples](#t23-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t23-q02 -->
+
+<span class="notes-section-label">**2. Choose — A final runtime image includes the entire compiler toolchain and runs as root. What can a multi-stage, lockfile-based build improve, and why does pinning still require updates and retesting?**</span>
+
+::: details Show answer
+
+**Build from reviewed inputs and the lockfile, then keep only runtime necessities.** Use the intended non-root identity and retest security updates to pinned content.
+
+[Revisit the explanation and examples](#t23-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t23-q03 -->
+
+<span class="notes-section-label">**3. Scenario — The API connects to localhost:5432 inside its container while PostgreSQL is a separate Compose service. What changes?**</span>
+
+::: details Show answer
+
+Use the database service DNS name and its container port on the shared network. Publishing another host port is unnecessary for service-to-service traffic.
+
+[Revisit the explanation and examples](#t23-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t23-q03 -->
+
+<span class="notes-section-label">**4. Explain diagram — Trace the [Compose readiness diagram](#t23-q03). Why does start order not prove initial readiness or guarantee availability after a later database outage?**</span>
+
+::: details Show answer
+
+**Service names, ports, mounts and secret access need explicit configuration.** A started dependency is not necessarily ready, and initial ordering does not handle later outages. The API must check required capability before admission and handle later failures with an explicit bounded policy. Give secrets only to services that need them and use the intended service network rather than confusing container localhost with another service.
+
+[Revisit the explanation and examples](#t23-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t23-q04 -->
+
+<span class="notes-section-label">**5. Compare — A deployment references latest, while CI recorded a digest and architecture. Which identity preserves the tested image, and what health/state duties does orchestration leave to the application?**</span>
+
+::: details Show answer
+
+**Tags can move; digests identify fixed content.** Deploy the tested digest and architecture, while still owning health, resource, state and shutdown policies.
+
+[Revisit the explanation and examples](#t23-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t23-q05 -->
+
+<span class="notes-section-label">**6. Scenario — A database password file changes, but the persistent database keeps rejecting it. Why?**</span>
+
+::: details Show answer
+
+A changed bootstrap file does not rotate an initialized database role. Coordinate actual role credential rotation, application secret adoption and pool restart/reconnect without deleting the authoritative volume.
+
+[Revisit the explanation and examples](#t23-q05).
+
+:::

@@ -1275,20 +1275,153 @@ Keep the contracts separate: the Error value describes a failure; the asynchrono
 - [ ] Coordinate a real serialization conflict, observe the complete transaction retry and verify final data plus released clients.
 - [ ] Explain which checks were simulated, which used real infrastructure, and which remain untested.
 
-<span class="notes-section-label">**Mixed practice — answer all before opening the explanations**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. A product lookup rejects and the controller returns 404 for every rejection. Which distinction has been lost?
-2. An async EventEmitter listener rejects, but code awaits `emit()`. Who observes the returned promise?
-3. Express starts sending a successful response and then a dependency fails. Can error middleware replace that response with JSON 500?
-4. A PostgreSQL serialization failure happens after the application reads stock. Why is retrying only UPDATE insufficient?
-5. A database connection disappears after COMMIT was sent. Why does a client-side error not prove rollback?
-6. Your test reproduces the failure by constructing an EACCES-shaped object. What can it establish, and what cannot it establish?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-::: details Practice explanations
-1. A completed lookup with no record differs from failure to obtain a result. Translate the known absence separately and preserve other failures.
-2. Ordinary EventEmitter does not await returned listener promises; `emit()` returns a boolean. An explicit operation/supervisor or configured rejection path must own the failure.
-3. No. The response is committed. Delegate to the downstream error/transport owner; the client must detect an incomplete or aborted response.
-4. The earlier read and business decision can be stale. Roll back and repeat the entire replay-safe transaction, with bounded attempts and cleanup.
-5. The server may already have committed before its reply was lost. Reconcile a durable operation identity/outcome rather than blindly repeating the write.
-6. It can verify classification and adapter policy for a supplied failure shape. It does not prove real permissions, driver behavior or an actual denied filesystem operation.
+<!-- revision-covers: t10-q01 -->
+
+<span class="notes-section-label">**1. Compare — Why should response logic use a stable error category instead of matching error.message? Compare a type problem, a range problem and invalid syntax.**</span>
+
+::: details Show answer
+
+TypeError, RangeError and SyntaxError describe different kinds of failure; the operation context still determines the response. Messages and stacks help people diagnose, but their text is not a stable control-flow contract. Use documented codes or application classes for program decisions, and keep internal details out of public responses.
+
+[Revisit the explanation and examples](#t10-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q02 -->
+
+<span class="notes-section-label">**2. Diagnose — A service wraps a database error with a clearer message and returns the entire wrapper to HTTP clients. Which useful information should it retain internally, and what should the public boundary select?**</span>
+
+::: details Show answer
+
+**Keep the original failure in `cause` when adding context.** Select safe public error fields separately from private stacks and dependency details.
+
+[Revisit the explanation and examples](#t10-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q03 -->
+
+<span class="notes-section-label">**3. Scenario — A product lookup rejects and the controller returns 404 for every rejection. Which distinction has been lost?**</span>
+
+::: details Show answer
+
+A completed lookup with no record differs from failure to obtain a result. Translate the known absence separately and preserve other failures.
+
+[Revisit the explanation and examples](#t10-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q03 -->
+
+<span class="notes-section-label">**4. Scenario — An async EventEmitter listener rejects, but code awaits `emit()`. Who observes the returned promise?**</span>
+
+::: details Show answer
+
+Ordinary EventEmitter does not await returned listener promises; `emit()` returns a boolean. An explicit operation/supervisor or configured rejection path must own the failure.
+
+[Revisit the explanation and examples](#t10-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q04 -->
+
+<span class="notes-section-label">**5. Scenario — Your test reproduces the failure by constructing an EACCES-shaped object. What can it establish, and what cannot it establish?**</span>
+
+::: details Show answer
+
+It can verify classification and adapter policy for a supplied failure shape. It does not prove real permissions, driver behavior or an actual denied filesystem operation.
+
+[Revisit the explanation and examples](#t10-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q04 -->
+
+<span class="notes-section-label">**6. Diagnose — What makes a debugging hypothesis and regression check stronger than changing several settings until the symptom disappears?**</span>
+
+::: details Show answer
+
+**Reproduce the failure and test one explanation at a time.** Keep safe context and a regression check that fails before the fix and passes afterward. Retain the actual runtime/build and failure stage, reproduce with controlled data and make the check fail with the original defect. A fabricated error can test classification but cannot prove the real OS or database generated it.
+
+[Revisit the explanation and examples](#t10-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q05 -->
+
+<span class="notes-section-label">**7. Choose — A request fails while shared process state remains trustworthy; another failure leaves shared state unsafe. How should request response, retry, shutdown and human escalation be decided?**</span>
+
+::: details Show answer
+
+A request can fail safely while the service continues, but unsafe shared state can require stopping admission and bounded process shutdown. Decide the public result, service lifecycle and human notification separately rather than turning every exception into the same global action. Retry only a temporary failure whose complete operation is safe to repeat, within both attempt and time budgets; uncertain writes need outcome checks rather than blind retries.
+
+[Revisit the explanation and examples](#t10-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q06 -->
+
+<span class="notes-section-label">**8. Scenario — Express starts sending a successful response and then a dependency fails. Can error middleware replace that response with JSON 500?**</span>
+
+::: details Show answer
+
+No. The response is committed. Delegate to the downstream error/transport owner; the client must detect an incomplete or aborted response.
+
+[Revisit the explanation and examples](#t10-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q07 -->
+
+<span class="notes-section-label">**9. Scenario — A PostgreSQL serialization failure happens after the application reads stock. Why is retrying only UPDATE insufficient?**</span>
+
+::: details Show answer
+
+The earlier read and business decision can be stale. Roll back and repeat the entire replay-safe transaction, with bounded attempts and cleanup.
+
+[Revisit the explanation and examples](#t10-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t10-q07 -->
+
+<span class="notes-section-label">**10. Scenario — A database connection disappears after COMMIT was sent. Why does a client-side error not prove rollback?**</span>
+
+::: details Show answer
+
+The server may already have committed before its reply was lost. Reconcile a durable operation identity/outcome rather than blindly repeating the write.
+
+[Revisit the explanation and examples](#t10-q07).
+
 :::

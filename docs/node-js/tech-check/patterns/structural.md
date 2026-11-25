@@ -587,3 +587,79 @@ A Proxy stands in for another capability to control access, loading or remote in
 [Documentation](https://nodejs.org/download/release/v24.18.0/docs/api/assert.html). References explain runtime mechanics; the design choices and bounded contracts are the teaching examples above.
 
 Security reference: [OWASP authorization checks and fail-closed behavior](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html). The proxy fixture does not implement authentication.
+
+## Revision
+
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t18-q10 -->
+
+<span class="notes-section-label">**1. Explain diagram — Trace the [Bridge diagram](#t18-q10). Which two dimensions can change independently, and how does that design intent differ from adapting a legacy incompatible interface?**</span>
+
+::: details Show answer
+
+The caller-facing abstraction and the implementation family can each vary through their connecting interface. This avoids defining one subclass for every pair while keeping a stable operation contract. Bridge plans independent variation; Adapter primarily translates an existing incompatible interface. Names alone do not establish either role.
+
+[Revisit the explanation and examples](#t18-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q11 -->
+
+<span class="notes-section-label">**2. Explain diagram — In the [Composite tree](#t18-q11), how can the caller use a leaf and a group through one operation? Which cycle, depth, size and failure rules remain necessary?**</span>
+
+::: details Show answer
+
+A group and a leaf both support the agreed operation; the group recursively calls its children and combines results under the application rule. The common method does not prevent a cycle, excessive depth or huge input. Define size/depth limits, child mutation rights, combination behavior and how any child failure affects the group result.
+
+[Revisit the explanation and examples](#t18-q11).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q12 -->
+
+<span class="notes-section-label">**3. Explain diagram — A Facade completes subsystem A and then subsystem B fails in the [sequence diagram](#t18-q12). What does the simpler entry point not guarantee about the first effect?**</span>
+
+::: details Show answer
+
+The Facade gives the caller one entry point while it coordinates A and B. A may already have changed state when B fails, so returning failure does not undo A. Authorization, local transaction scope or an explicit compensating/recovery action must be designed for the real effects. Hiding several calls behind one method does not strengthen their atomicity.
+
+[Revisit the explanation and examples](#t18-q12).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q13 -->
+
+<span class="notes-section-label">**4. Choose — Many requests use the same immutable document style but different current-user data. Which belongs in Flyweight shared state, and what retention/mutation risks should be avoided?**</span>
+
+::: details Show answer
+
+**Share common immutable data and supply per-use mutable context separately.** Bound retention so the shared cache does not grow without limit.
+
+[Revisit the explanation and examples](#t18-q13).
+
+:::
+
+
+---
+
+<!-- revision-covers: t18-q14 -->
+
+<span class="notes-section-label">**5. Diagnose — An authorization Proxy exposes the same method names but uses stale user permissions and converts all remote errors to missing. Which parts of the reader contract has it broken?**</span>
+
+::: details Show answer
+
+**Control access while preserving the reader's results and failure contract.** Use trusted caller identity and sufficiently current policy; a JavaScript trap alone is not authorization.
+
+[Revisit the explanation and examples](#t18-q14).
+
+:::

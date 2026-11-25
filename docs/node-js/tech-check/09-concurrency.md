@@ -1619,6 +1619,141 @@ Reference: [Node.js partitioning and offloading guidance](https://nodejs.org/en/
 
 ## Concurrency revision
 
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
+
+<!-- revision-covers: t09-q01 -->
+
+<span class="notes-section-label">**1. Compare — Which boundaries separate worker threads, forked children and cluster workers? Explain ordinary memory sharing, communication and the significance of a shared listening port.**</span>
+
+::: details Show answer
+
+A forked child and each cluster worker are separate OS processes with separate ordinary memory; fork additionally provides IPC. Worker threads run additional JavaScript threads in one process with separate ordinary heaps, exchanging cloned data or explicit transfer/shared-memory structures. Cluster can share a listening endpoint without sharing session Maps. Choose authority, isolation, communication and cleanup deliberately instead of inferring them from the word worker.
+
+[Revisit the explanation and examples](#t09-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q02 -->
+
+<span class="notes-section-label">**2. Diagnose — A worker exits with code 0 but sends no valid result. Should the caller succeed, and what must the terminal owner finish before settling?**</span>
+
+::: details Show answer
+
+No: the task contract requires a valid result, not merely an exit status. Observe result, error, exit, timeout and cancellation through one terminal decision. Clear the deadline/abort listener, stop and await the owned worker, remove listeners, then resolve or reject once; termination does not reverse prior effects.
+
+[Revisit the explanation and examples](#t09-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q03 -->
+
+<span class="notes-section-label">**3. Explain diagram — Use the [copy/transfer/share diagram](#t09-q03) to explain what the sender can access after each choice. What happens to other sender views of a transferred ArrayBuffer?**</span>
+
+::: details Show answer
+
+Copying leaves independent data on each side; editing one copy does not mutate the other. Transferring an ArrayBuffer moves its storage and detaches all sender views of that buffer, not just the view named in the message. SharedArrayBuffer instead leaves both sides accessing the same bytes and requires a coordination protocol. None of these choices establishes authorization, durable storage or rollback after cancellation.
+
+[Revisit the explanation and examples](#t09-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q04 -->
+
+<span class="notes-section-label">**4. Diagnose — A pool has four workers but accepts unlimited waiting jobs. A caller times out while its worker keeps computing. Which capacity limits and ownership decisions are missing?**</span>
+
+::: details Show answer
+
+A worker limit caps execution slots, not the retained waiting queue or message bytes. Bound all three, correlate task IDs and keep an assigned slot occupied until its work actually stops or completes. A caller timing out is only a waiting outcome, so freeing the slot immediately can admit more expensive work than intended. Shutdown stops admission, drains under a budget and then terminates and observes remaining workers.
+
+[Revisit the explanation and examples](#t09-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q05 -->
+
+<span class="notes-section-label">**5. Explain diagram — In the [cluster diagram](#t09-q05), both workers accept connections through one endpoint. Why can a session saved in worker A be absent in worker B, and who supervises shutdown?**</span>
+
+::: details Show answer
+
+The primary coordinates worker startup, readiness, failures and shutdown, while each worker owns its server resources and heap. A port shared by the cluster does not make a session Map in A visible to B; use an explicitly shared store when the application requires it. Treat request completion, IPC disconnect and process/stdio closure as different protocol milestones and observe the required one.
+
+[Revisit the explanation and examples](#t09-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q06 -->
+
+<span class="notes-section-label">**6. Compare — A forked child reports a job result and later sends stopped. Which event actually supports a claim that its process and stdio resources have closed?**</span>
+
+::: details Show answer
+
+**A job result or stopped reply does not prove child closure.** Control authority and I/O, then observe real process and stream closure before declaring cleanup complete.
+
+[Revisit the explanation and examples](#t09-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q07 -->
+
+<span class="notes-section-label">**7. Diagnose — A late IPC reply arrives after its request timed out and a new job has started. Why must the reply not complete that new job, and which message fields and limits matter?**</span>
+
+::: details Show answer
+
+A reply must carry the correct request identity and be valid for the live protocol stage. A stale or duplicate reply cannot settle a different job just because a promise is waiting. Validate version, kind, payload and request ID, cap active requests and queue/message sizes, and assign one owner to each terminal outcome. A successful send callback is not a valid job result.
+
+[Revisit the explanation and examples](#t09-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q08 -->
+
+<span class="notes-section-label">**8. Choose — When would async I/O, a worker pool, a child process or more service replicas address different bottlenecks? Include communication, dependency capacity and uncertain effects in the decision.**</span>
+
+::: details Show answer
+
+Async I/O addresses supported waiting, worker threads can address CPU-heavy JavaScript, children run separate programs or provide process boundaries, and replicas distribute independent request capacity. Measure queue time, computation, copying and dependency waits before selecting a mechanism. Budget authority, retained data and aggregate pool demand across every instance, with explicit cancellation and closure. If a failure leaves a business effect uncertain, identify and reconcile it before replay.
+
+[Revisit the explanation and examples](#t09-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t09-q09 -->
+
+<span class="notes-section-label">**9. Compare — How does chunking a calculation with setImmediate differ from running it in worker threads? What limits are still needed when chunking improves responsiveness?**</span>
+
+::: details Show answer
+
+**Split a long operation into bounded chunks with scheduling opportunities between them.** This improves fairness, not parallel CPU execution; total work and active jobs still need limits.
+
+[Revisit the explanation and examples](#t09-q09).
+
+:::
+
+
 | Boundary | Retained material |
 |---|---|
 | Isolation and per-task ownership | Questions 1–2: process/thread differences, result/error/exit/cancel semantics |

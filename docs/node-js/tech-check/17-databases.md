@@ -1054,10 +1054,181 @@ Explain the schema invariant, bound query, transaction client, tenant predicate,
 
 ### Mixed practice
 
-1. Two buyers read stock=1 and each writes stock=0. Is a transaction around each sequence sufficient?
-2. A LEFT JOIN report suddenly omits products without sales after adding WHERE lines.quantity > 0. Why?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Answer guide — read after attempting both cases**</span>
+<!-- revision-covers: t17-q01 -->
 
-1. Not at default Read Committed with that stale read/absolute update. Use a conditional atomic decrement, appropriate row locking or a stronger isolation design with full-unit retry, then test with separate clients.
-2. The WHERE predicate excludes NULL unmatched rows. Move the intended right-side filter into the ON condition and aggregate at the correct product grain; verify the zero-sales row explicitly.
+<span class="notes-section-label">**1. Choose — A Products API has related records, multi-row updates and uniqueness rules. Which workload and recovery evidence would support a database choice beyond the SQL/NoSQL label?**</span>
+
+::: details Show answer
+
+**Choose from data rules, relationships, operations and recovery needs.** SQL versus NoSQL alone does not establish transaction guarantees.
+
+[Revisit the explanation and examples](#t17-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q02 -->
+
+<span class="notes-section-label">**2. Predict — Four replicas each allow 10 ORM connections and 5 session-store connections. What maximum configured demand can they contribute, and what lifecycle obligations remain?**</span>
+
+::: details Show answer
+
+They can contribute **60 connections**: four times the combined 15-per-replica limit. This excludes other clients and does not guarantee that the database can sustain that demand. Budget all pools together, use limited credentials and verified TLS, bound waits, release checked-out clients after errors and close pools at shutdown.
+
+[Revisit the explanation and examples](#t17-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q03 -->
+
+<span class="notes-section-label">**3. Compare — A query uses parameters but selects by an untrusted tenant ID, and another query uses a client-supplied column name. Which problems do value parameters solve, and which need different controls?**</span>
+
+::: details Show answer
+
+Parameters bind values instead of interpolating them into SQL instructions, but do not choose safe table/column names or establish resource permission. Select dynamic identifiers from an explicit allowlist and use trusted tenant/owner context in predicates. Validate input for useful errors, let constraints protect the database invariant for all writers, and check affected-row outcomes.
+
+[Revisit the explanation and examples](#t17-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q04 -->
+
+<span class="notes-section-label">**4. Scenario — A LEFT JOIN report suddenly omits products without sales after adding WHERE lines.quantity > 0. Why?**</span>
+
+::: details Show answer
+
+The WHERE predicate excludes NULL unmatched rows. Move the intended right-side filter into the ON condition and aggregate at the correct product grain; verify the zero-sales row explicitly.
+
+[Revisit the explanation and examples](#t17-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q04 -->
+
+<span class="notes-section-label">**5. Choose — You are asked to merge tables. Which clarification distinguishes JOIN, UNION, upsert/MERGE and a migration?**</span>
+
+::: details Show answer
+
+**JOIN combines related columns; UNION combines result rows; upsert changes stored data; migration changes schema.** Clarify what “merge” means before choosing an operation. Define the intended matching keys and conflict behavior; a filtering predicate in WHERE can also remove unmatched LEFT JOIN rows, unlike an intended right-side filter in ON.
+
+[Revisit the explanation and examples](#t17-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q05 -->
+
+<span class="notes-section-label">**6. Scenario — Two buyers read stock=1 and each writes stock=0. Is a transaction around each sequence sufficient?**</span>
+
+::: details Show answer
+
+Not at default Read Committed with that stale read/absolute update. Use a conditional atomic decrement, appropriate row locking or a stronger isolation design with full-unit retry, then test with separate clients.
+
+[Revisit the explanation and examples](#t17-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q06 -->
+
+<span class="notes-section-label">**7. Compare — Two requests load the same database row. Why should a request-scoped identity map not become a global shared user cache, and what does ORM mapping leave for application policy?**</span>
+
+::: details Show answer
+
+An identity map provides consistent entity identity within a request context, not a global cache for unrelated users or jobs. Use the appropriate separate context for each request/job so mutable tracked state is not accidentally shared. The ORM still needs authorized predicates, transaction ownership, constraints and diagnosis of the actual generated SQL.
+
+[Revisit the explanation and examples](#t17-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q07 -->
+
+<span class="notes-section-label">**8. Diagnose — A request spends most time waiting to acquire a client rather than executing SQL. Would adding a query index necessarily help, and which stages should be measured?**</span>
+
+::: details Show answer
+
+An index targets particular query access patterns; it does not create an available pool client or release a leaked one. Separate pool acquisition, lock waits, SQL execution, row transfer and object conversion before selecting a change. Use representative data and a real plan to test a query/index hypothesis, checking correct results as well as cost.
+
+[Revisit the explanation and examples](#t17-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q08 -->
+
+<span class="notes-section-label">**9. Choose — A database is overloaded and the platform starts more API replicas. Why can that worsen the outage, and which admission, connection, statement and retry limits should be considered?**</span>
+
+::: details Show answer
+
+**Bound admission, connections, statement duration and retries.** Classify failures and uncertain effects; adding replicas may amplify the outage rather than restore capacity.
+
+[Revisit the explanation and examples](#t17-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q09 -->
+
+<span class="notes-section-label">**10. Explain diagram — Trace both clients in the [write-skew diagram](#t17-q09). Why can a stable snapshot let each doctor leave, and how should a serializable abort be handled?**</span>
+
+::: details Show answer
+
+Each transaction sees the other doctor still on call, then changes a different row. The combined commits can violate the cross-row rule even though each decision looked valid in its snapshot. Test the actual isolation and constraint design with independent clients; serializable isolation can abort an unsafe combination and requires bounded replay of the complete transaction with fresh reads.
+
+[Revisit the explanation and examples](#t17-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q10 -->
+
+<span class="notes-section-label">**11. Choose — Several feed rows share one timestamp. Why is a timestamp-only cursor ambiguous, and what must stay in the next-page predicate besides the complete ordering key?**</span>
+
+::: details Show answer
+
+A timestamp alone cannot uniquely identify the boundary when several rows share it. Include a unique tie-breaker and use the complete stable ordering pair to continue after the last row. Keep the trusted tenant restriction on every page; a cursor carries position, not permission. Verify plans and pagination behavior with representative data and concurrent changes.
+
+[Revisit the explanation and examples](#t17-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t17-q11 -->
+
+<span class="notes-section-label">**12. Diagnose — A migration waits on a long transaction while requests queue for clients. Why is increasing the pool not a sufficient fix, and what compatibility and lock budgets should the migration owner define?**</span>
+
+::: details Show answer
+
+**Distinguish pool wait, lock wait and execution before increasing connections.** Give migrations one owner, bounded lock waits and a defined application-compatibility and rollback window.
+
+[Revisit the explanation and examples](#t17-q11).
+
+:::

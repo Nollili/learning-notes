@@ -1300,25 +1300,263 @@ Core APIs expose different contracts: diagnostics are output interfaces; files r
 
 Acceptance: prove values, failure identities/codes, termination, resource cleanup and stated budgets. Measure a slow consumer under representative concurrency before claiming a memory/throughput result. No exercise completion or professional readiness is inferred from these notes.
 
-<span class="notes-section-label">**Mixed practice — attempt all first**</span>
+<span class="notes-section-label">**Recall, compare and apply**</span>
 
-1. write returned false. Must you resend that chunk?
-2. A readline loop counts some records, then its source fails. Is the partial count automatically a success?
-3. Does a public SHA-256 checksum establish who sent a payload?
-4. What is missing from a valid HMAC check if replay must be rejected?
-5. A 64 KiB compressed input expands to 100 MiB. Which budget was insufficient?
-6. A gunzip pipeline writes half a file then rejects. Can the filename be advertised as a finished export?
+Try each question without opening its answer. Explain the reason, not just the term; then expand **Show answer** to check. Diagram questions link back to the visual so you can trace its parts and arrows.
 
-<span class="notes-section-label">**Practice answers**</span>
+<!-- revision-covers: t07-q01 -->
 
-1. No. It was accepted; stop sending more until drain or failure.
-2. No. Observe source errors and apply an explicit partial-result contract; countLines rejects.
-3. No. Use an appropriate shared-key MAC or signature plus a trusted key/protocol.
-4. A timestamp/nonce/identifier and replay policy appropriate to the protocol, with persistence/atomicity where necessary.
-5. Compressed ingress limits alone do not bound expanded output. Add output, time/concurrency and upstream/resource controls.
-6. No. Clean up or mark the owned partial artifact; publish only on successful completion under the chosen recovery policy.
+<span class="notes-section-label">**1. Predict — console.assert(false, 'bad input') is followed by a write to storage. Does the assertion prevent the write, and what should control a required failure?**</span>
+
+::: details Show answer
+
+No: console.assert reports a diagnostic and does not throw, so the next statement can run. Use explicit validation or a throwing assertion when the operation must stop. Keep normal stdout data separate from stderr diagnostics and avoid assuming console timing is uniform across destinations.
+
+[Revisit the explanation and examples](#t07-q01).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q02 -->
+
+<span class="notes-section-label">**2. Compare — How do callback and promise writeFile APIs report completion, and why must another write to the same target wait? What changes with the wx flag?**</span>
+
+::: details Show answer
+
+The callback receives an error/result contract; the promise settles and can be awaited in try/catch. Both require observing completion before starting another write to the same target. The wx flag requests creation that fails when the target exists; successful completion still does not prove a transaction or crash durability, and handles you open need closing.
+
+[Revisit the explanation and examples](#t07-q02).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q03 -->
+
+<span class="notes-section-label">**3. Diagnose — A normalized path looks inside the allowed directory. Why is that insufficient to authorize a file read or prove the target stays there?**</span>
+
+::: details Show answer
+
+**Path helpers transform strings, not filesystem permissions.** A normalized path can still be missing, unauthorized or redirected by a symbolic link.
+
+[Revisit the explanation and examples](#t07-q03).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q04 -->
+
+<span class="notes-section-label">**4. Choose — A host reports many CPUs and plenty of free memory. Why should the application not automatically allocate that many workers or treat that memory as its heap budget?**</span>
+
+::: details Show answer
+
+Host totals do not specify the resources actually available to this application or its container. availableParallelism is a useful starting hint for CPU concurrency, but deployment quotas, other traffic and measurements still determine a safe worker limit. System memory, process RSS and the JavaScript heap limit are different quantities; do not turn free host memory into an unchecked allocation budget.
+
+[Revisit the explanation and examples](#t07-q04).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q05 -->
+
+<span class="notes-section-label">**5. Predict and explain diagram — In the [Buffer example](#t07-q05), a subarray view is copied with Buffer.from before view[0] is changed. Which bytes change, and why can a tiny view retain a large allocation?**</span>
+
+::: details Show answer
+
+The edit changes the view and the overlapping original bytes, because they share storage. The earlier Buffer.from copy keeps its own previous bytes. Any live view can keep its backing allocation reachable, so choose copying versus sharing from both mutation and lifetime requirements; text length and encoded byte size are separate measures.
+
+[Revisit the explanation and examples](#t07-q05).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q06 -->
+
+<span class="notes-section-label">**6. Explain diagram — Trace UTF-8 bytes E2 followed by 82 AC through the [decoder diagram](#t07-q06). Why can separate chunk decoding damage the euro sign, and what must happen at end of input?**</span>
+
+::: details Show answer
+
+The first byte is only part of the euro sign, so StringDecoder retains it rather than decoding that chunk independently. The next write completes the character. Call end to flush remaining state; tolerant replacement behavior does not establish strict UTF-8 validity or message framing.
+
+[Revisit the explanation and examples](#t07-q06).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q07 -->
+
+<span class="notes-section-label">**7. Compare — An interval starts async work that takes longer than its interval. Why can runs overlap, and how do clearTimeout/clearInterval and unref solve different problems?**</span>
+
+::: details Show answer
+
+An interval does not await the promise returned by its callback, so another run can start before the previous work finishes. An awaited operation followed by an awaited delay expresses non-overlapping repetition. Clearing cancels the timer; unref only lets Node exit without waiting for it, and neither makes timing exact.
+
+[Revisit the explanation and examples](#t07-q07).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q08 -->
+
+<span class="notes-section-label">**8. Predict — With base https://example.test/api/, how do items, /items and https://other.test/items resolve? Does successful parsing authorize the destination?**</span>
+
+::: details Show answer
+
+They resolve to https://example.test/api/items, https://example.test/items and https://other.test/items respectively. A leading slash replaces the path; an absolute URL can replace the origin. Parse and encode components with the appropriate URL APIs, but enforce destination permission separately.
+
+[Revisit the explanation and examples](#t07-q08).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q09 -->
+
+<span class="notes-section-label">**9. Scenario — write returned false. Must you resend that chunk?**</span>
+
+::: details Show answer
+
+No. It was accepted; stop sending more until drain or failure.
+
+[Revisit the explanation and examples](#t07-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q09 -->
+
+<span class="notes-section-label">**10. Compare — How do pipeline backpressure, highWaterMark and a total-output budget solve different problems?**</span>
+
+::: details Show answer
+
+Backpressure coordinates producer demand with a slower consumer, and pipeline helps own errors, completion and cleanup across connected streams. highWaterMark is a queue threshold rather than a strict total-memory or total-output cap. Separately limit chunks, expansion, active work and retained application queues; an accepted write that returns false must not be resent.
+
+[Revisit the explanation and examples](#t07-q09).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q10 -->
+
+<span class="notes-section-label">**11. Scenario — A readline loop counts some records, then its source fails. Is the partial count automatically a success?**</span>
+
+::: details Show answer
+
+No. Observe source errors and apply an explicit partial-result contract; countLines rejects.
+
+[Revisit the explanation and examples](#t07-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q10 -->
+
+<span class="notes-section-label">**12. Predict — The input chunks are one followed by a split CRLF, then two and a final unterminated line. Which boundaries does readline reconstruct, and why is a post-line length check not a hard input-memory limit?**</span>
+
+::: details Show answer
+
+With the lesson input ["one\r", "\ntwo\nlast"] and crlfDelay: Infinity, there are three logical lines: one, two and last. Chunk boundaries and a split CRLF do not create extra application lines. readline may accumulate a huge line before your body checks it, so hostile input needs earlier byte/framing budgets. Observe source errors and manage the interface and input stream separately.
+
+[Revisit the explanation and examples](#t07-q10).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q11 -->
+
+<span class="notes-section-label">**13. Scenario — Does a public SHA-256 checksum establish who sent a payload?**</span>
+
+::: details Show answer
+
+No. Use an appropriate shared-key MAC or signature plus a trusted key/protocol.
+
+[Revisit the explanation and examples](#t07-q11).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q11 -->
+
+<span class="notes-section-label">**14. Scenario — What is missing from a valid HMAC check if replay must be rejected?**</span>
+
+::: details Show answer
+
+A timestamp/nonce/identifier and replay policy appropriate to the protocol, with persistence/atomicity where necessary.
+
+[Revisit the explanation and examples](#t07-q11).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q11 -->
+
+<span class="notes-section-label">**15. Choose — Compare a public hash, an HMAC, a digital signature, authenticated encryption and password hashing. Which property would a fast checksum fail to provide for passwords?**</span>
+
+::: details Show answer
+
+**Hash: change detection; HMAC/signature: authenticity; encryption: secrecy; password hashing: expensive salted verification.** Choose the primitive for the goal and protect its keys. A public hash does not prove sender identity; passwords need a reviewed deliberately expensive scheme rather than fast repeated guessing. Generate secrets cryptographically and treat replay, encoding validation and key handling as separate protocol responsibilities.
+
+[Revisit the explanation and examples](#t07-q11).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q12 -->
+
+<span class="notes-section-label">**16. Scenario — A 64 KiB compressed input expands to 100 MiB. Which budget was insufficient?**</span>
+
+::: details Show answer
+
+Compressed ingress limits alone do not bound expanded output. Add output, time/concurrency and upstream/resource controls.
+
+[Revisit the explanation and examples](#t07-q12).
+
+:::
+
+
+---
+
+<!-- revision-covers: t07-q12 -->
+
+<span class="notes-section-label">**17. Scenario — A gunzip pipeline writes half a file then rejects. Can the filename be advertised as a finished export?**</span>
+
+::: details Show answer
+
+No. Clean up or mark the owned partial artifact; publish only on successful completion under the chosen recovery policy.
+
+[Revisit the explanation and examples](#t07-q12).
+
+:::
+
 
 Additional official references checked 2026-11-04: Node 24.18 [streams](https://nodejs.org/download/release/v24.18.0/docs/api/stream.html), [readline](https://nodejs.org/download/release/v24.18.0/docs/api/readline.html), [crypto](https://nodejs.org/download/release/v24.18.0/docs/api/crypto.html), [zlib](https://nodejs.org/download/release/v24.18.0/docs/api/zlib.html); OWASP [password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) and [cryptographic storage](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html). No claim of production security review follows from local fixture execution.
 
 <span id="next-batch-checkpoint"></span>
-
